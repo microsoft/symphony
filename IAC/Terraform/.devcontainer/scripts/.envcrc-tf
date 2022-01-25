@@ -1,0 +1,9 @@
+# terraform init
+terraform init -reconfigure
+
+# configure tmp path
+declare md5=$(printf '%s' "/home/vscode/repos/Terraform-Code" | md5sum | awk '{print $1}')
+declare compiledFilePath=~/.lucidity/tmp/$md5
+
+# load dev.compiled.env
+dotenv "$compiledFilePath/dev.compiled.env"

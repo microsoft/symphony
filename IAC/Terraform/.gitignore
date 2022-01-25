@@ -1,0 +1,40 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/out/
+/secrets
+
+### Terraform ###
+**/.terraform
+*.tfstate
+*.tfplan
+*.backup
+*.plan
+.terraform.lock.hcl
+
+### VSCode ###
+**/.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### OTHER ###
+/temp
+**/*/plugins/*
+.DS_Store
+tools/**/local-*
+tools/install/temp
+tools/install/users.csv
+debug.log
+environments/dev/arm.env
+environments/dev/backend.tfvars
+environments/**/*.compiled.env
+scripts/env/out
+scripts/env/*.compiled.env
+.envrc
+!.devcontainer/scripts/.envrc
+terraform/**/_override.tf
