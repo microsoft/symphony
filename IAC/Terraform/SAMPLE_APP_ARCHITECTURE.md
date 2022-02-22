@@ -52,3 +52,6 @@ graph TD
 
 _01_init_ layer is a _special_ layer, that provisions the symphony infrastructure, for example, an Azure Storage Account to hold remote state of terraform modules.
 
+### Database layer
+
+_02_sql_ layer has only one deployment; _01_deployment_, that provisions the database for the sample app.
