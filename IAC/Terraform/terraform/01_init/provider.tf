@@ -7,7 +7,7 @@ provider "azurerm" {
   # client_id       = "..."
   # client_secret   = "..."
   # tenant_id       = "..."
-  version           = "~>2.15.0"
+  version           = "~>2.85.0"
   features {} 
 }
 provider "azuread" {
@@ -16,5 +16,5 @@ provider "azuread" {
 }
 
 terraform {
-  required_version = ">= v0.12.28"
+  required_version = "= v1.0.10"
 }
