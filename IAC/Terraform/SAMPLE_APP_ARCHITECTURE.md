@@ -54,4 +54,10 @@ _01_init_ layer is a _special_ layer, that provisions the symphony infrastructur
 
 ### Database layer
 
-_02_sql_ layer has only one deployment; _01_deployment_, that provisions the database for the sample app.
+_02_sql_ layer has only one deployment; _01_deployment_, that provisions the following resources for the sample app;
+
+- Sql Server
+- Sql Server database for catalogs
+- Sql Server database for identities
+- Sql Server firewall rule
+
