@@ -29,3 +29,7 @@ _DevContainer_ also has the following _VS Code_ extensions installed to make the
 
 Orchestrator that runs the pipelines uses the same _DevContainer_ to make development and pipeline experience same.
 
+## Sample App
+
+[Official eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb) is cloned into this repo ([./apps/eShopOnWeb](./apps/eShopOnWeb/) folder).
+
