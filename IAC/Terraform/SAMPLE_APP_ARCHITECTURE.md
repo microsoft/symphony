@@ -33,3 +33,11 @@ Orchestrator that runs the pipelines uses the same _DevContainer_ to make develo
 
 [Official eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb) is cloned into this repo ([./apps/eShopOnWeb](./apps/eShopOnWeb/) folder).
 
+## Symphony Layers
+
+There are three symphony layers to deploy the sample app;
+
+- [Init layer](./terraform/01_init/)
+- [Database layer](./terraform/02_sql/)
+- [Web app layer](./terraform/03_webapp/)
+
