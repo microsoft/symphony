@@ -15,3 +15,10 @@ This repo has the following components to deploy the sample app using Symphony;
 
 _DevContainer_ image is based on _Ubuntu:focal_ image and has the following packages installed;
 
+- golang 1.15.6
+- Terraform 0.14.2
+- tflint
+- tflint Azure Resource Manager ruleset
+- direnv
+- lucidity
+
