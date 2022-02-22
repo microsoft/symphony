@@ -49,7 +49,11 @@ graph TD
 
 ### Init Layer
 
-_01_init_ layer is a _special_ layer, that provisions the symphony infrastructure, for example, an Azure Storage Account to hold remote state of terraform modules.
+_01_init_ layer is a _special_ layer, that provisions the symphony infrastructure, for example, an _Azure Storage Account_ to hold remote state of terraform modules.
+
+- Storage Account
+  - Storage Container
+- Storage Account for backup
 
 ### Database layer
 
