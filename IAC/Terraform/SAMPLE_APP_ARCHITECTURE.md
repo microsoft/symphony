@@ -22,3 +22,10 @@ _DevContainer_ image is based on _Ubuntu:focal_ image and has the following pack
 - direnv
 - lucidity
 
+_DevContainer_ also has the following _VS Code_ extensions installed to make the development experience better;
+
+- HashiCorp.terraform
+- mikestead.dotenv
+
+Orchestrator that runs the pipelines uses the same _DevContainer_ to make development and pipeline experience same.
+
