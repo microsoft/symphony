@@ -61,3 +61,9 @@ _02_sql_ layer has only one deployment; _01_deployment_, that provisions the fol
 - Sql Server database for identities
 - Sql Server firewall rule
 
+### WebApp layer
+
+_03_webapp_ layer has only one deployment; _01_deployment_, that provisions the following resources for the sample app.
+
+- App Service plan
+- App Service
