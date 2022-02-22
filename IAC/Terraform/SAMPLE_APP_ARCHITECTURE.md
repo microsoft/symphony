@@ -41,6 +41,12 @@ There are three symphony layers to deploy the sample app;
 - [Database layer](./terraform/02_sql/)
 - [Web app layer](./terraform/03_webapp/)
 
+### Layout of the symphony layers and deployments
+
+```mermaid
+graph TD
+  A[init layer] --> B[database layer] --> C[webapp layer]
+```
 
 ### Init Layer
 
