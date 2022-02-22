@@ -41,3 +41,8 @@ There are three symphony layers to deploy the sample app;
 - [Database layer](./terraform/02_sql/)
 - [Web app layer](./terraform/03_webapp/)
 
+
+### Init Layer
+
+_01_init_ layer is a _special_ layer, that provisions the symphony infrastructure, for example, an Azure Storage Account to hold remote state of terraform modules.
+
