@@ -1,56 +1,71 @@
+# ------------------------------------------------------------------------------------------------------
+# DEPLOY  primary and backup reources group, storage accounts, and containers for Remote state
+# See test/agent_module_test.go for this module automated tests.
+# ------------------------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------------
+# Deploy primary resource Group
+# ------------------------------------------------------------------------------------------------------
 resource "azurerm_resource_group" "tfstate_rg" {
-  name     = var.BACKEND_RESOURCE_GROUP_NAME
-  location = var.LOCATION
+  name     = var.resource_group_name
+  location = var.location
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Deploy primary Storage Account
+# ------------------------------------------------------------------------------------------------------
 resource "azurerm_storage_account" "tfstate" {
-  name                     = var.BACKEND_STORAGE_ACCOUNT_NAME # globally unique
+  name                     = var.storage_account_name # globally unique
   resource_group_name      = azurerm_resource_group.tfstate_rg.name
   location                 = azurerm_resource_group.tfstate_rg.location
-  account_tier             = var.STORAGE_ACCOUNT_ACCOUNT_TIER
-  account_replication_type = var.STORAGE_ACCOUNT_ACCOUNT_REPLICATION_TYPE # LRS, GRS, RAGRS, ZRS
-  account_kind             = var.STORAGE_ACCOUNT_ACCOUNT_KIND
+  account_tier             = var.storage_account_tier
+  account_replication_type = var.storage_account_replication_type # LRS, GRS, RAGRS, ZRS
+  account_kind             = var.storage_account_kind
 
   identity {
-    type = var.IDENTITY_TYPE
+    type = var.identity_type
   }
 
   tags = {
-    environment = var.TAGS_ENVIRONMENT
-    version     = var.TAGS_VERSION
+    env = var.env
+    version     = var.env_version
   }
 }
 
-
-### TF State Container for Terraform###
-
+# ------------------------------------------------------------------------------------------------------
+# Deploy primary Storage Account Container
+# ------------------------------------------------------------------------------------------------------
 resource "azurerm_storage_container" "tfstate_container" {
-  name = var.BACKEND_CONTAINER_NAME
+  name                  = var.Container_name
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
 }
 
-### BAK
-
+# ------------------------------------------------------------------------------------------------------
+# Deploy backup resource Group
+# ------------------------------------------------------------------------------------------------------
 resource "azurerm_resource_group" "tfstatebak_rg" {
-  name     = var.BACKEND_BACKUP_RESOURCE_GROUP_NAME
-  location = var.LOCATION
+  name     = var.backup_resource_group_name
+  location = var.location
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Deploy backup Storage Account
+# ------------------------------------------------------------------------------------------------------
 resource "azurerm_storage_account" "tfstatebak" {
-  name                     = var.BACKUP_STORAGE_ACCOUNT_NAME
+  name                     = var.backup_storage_account_name
   resource_group_name      = azurerm_resource_group.tfstatebak_rg.name
   location                 = azurerm_resource_group.tfstatebak_rg.location
-  account_tier             = var.STORAGE_ACCOUNT_ACCOUNT_TIER
-  account_replication_type = var.STORAGE_ACCOUNT_ACCOUNT_REPLICATION_TYPE # LRS, GRS, RAGRS, ZRS
-  account_kind             = var.STORAGE_ACCOUNT_ACCOUNT_KIND
+  account_tier             = var.storage_account_tier
+  account_replication_type = var.storage_account_replication_type
+  account_kind             = var.storage_account_kind
 
   identity {
-    type = var.IDENTITY_TYPE
+    type = var.identity_type
   }
 
   tags = {
-    environment = var.TAGS_ENVIRONMENT
-    version     = var.TAGS_VERSION
+    env = var.env
+    version     = var.env_version
   }
 }
