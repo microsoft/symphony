@@ -1,6 +1,4 @@
-###########################################################################################################
-# PROVIDERS
-###########################################################################################################
+#Set the terraform required version, and Configure the Azure Provider.Use remote storage
 
 # Configure the Azure Provider
 terraform {
