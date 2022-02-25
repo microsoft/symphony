@@ -1,8 +1,0 @@
-name: someName
-
-trigger:
-  - 1
-  - 2
-
-pool:
-  vmImage: "ubuntu-latest"
