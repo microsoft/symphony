@@ -26,8 +26,8 @@ resource "azurerm_storage_account" "tfstate" {
   }
 
   tags = {
-    env = var.env
-    version     = var.env_version
+    env     = var.env
+    version = var.env_version
   }
 }
 
@@ -64,7 +64,7 @@ resource "azurerm_storage_account" "tfstatebak" {
   }
 
   tags = {
-    env = var.env
-    version     = var.env_version
+    env     = var.env
+    version = var.env_version
   }
 }
