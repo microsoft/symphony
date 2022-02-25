@@ -1,39 +1,35 @@
-// +build 01
-
 package terraform
 
 import (
 	"testing"
 
-	"dev.azure.com/csedevops/terraform-template-public/test/helper"
+	"github.com/gruntwork-io/terratest/modules/azure"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+
+	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-type StorageConfig struct {
-	AccountName       string `env:"TF_VAR_BACKEND_STORAGE_ACCOUNT_NAME"`
-	ResourceGroupName string `env:"TF_VAR_BACKEND_RESOURCE_GROUP_NAME"`
-	ContainerName     string `env:"TF_VAR_BACKEND_CONTAINER_NAME"`
-}
-
-func TestStaticTest_01_storage_test(t *testing.T) {
-	helper.LoadEnvFile(t)
-	config := helper.DeserializeVariablesStruct(&StorageConfig{}).(*StorageConfig)
-	assert.True(t, helper.ValidateVariablesStruct(config, true))
-
-}
-
 func Test01_Init_Storage(t *testing.T) {
-	teardownTestCase := helper.SetupTestCase(t)
-	defer teardownTestCase(t)
-	config := helper.DeserializeVariablesStruct(&StorageConfig{}).(*StorageConfig)
-	assert.True(t, helper.ValidateVariablesStruct(config, false))
+	t.Parallel()
+	// Configure Terraform setting up a path to Terraform code.
+	terraformOptions := &terraform.Options{
+		// The path to where our Terraform code is located
+		TerraformDir: "../../terraform/01_init",
+	}
 
-	// GetStorageAccount
-	account, err := helper.GetStorageAccountProperty(config.ResourceGroupName, config.AccountName)
-	require.NoError(t, err)
-	assert.Equal(t, "Standard_RAGRS", string(account.Sku.Name))
-	container, err := helper.GetBlobContainer(config.ResourceGroupName, config.AccountName, config.ContainerName)
-	require.NoError(t, err)
-	assert.Equal(t, config.ContainerName, *container.Name)
+	// Run `terraform output` to get the values of output variables from the terraform.tfstate
+	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
+	storageAccountName := terraform.Output(t, terraformOptions, "storage_account_name")
+	containerName := terraform.Output(t, terraformOptions, "Container_name")
+
+	bkResourceGroupName := terraform.Output(t, terraformOptions, "backup_resource_group_name")
+	bkStorageAccoutName := terraform.Output(t, terraformOptions, "backup_storage_account_name")
+
+	// assert the resource group, storage account, and container exists
+	assert.True(t, azure.ResourceGroupExists(t, resourceGroupName, ""), "Primary Resource group does not exist")
+	assert.True(t, azure.StorageAccountExists(t, storageAccountName, resourceGroupName, ""), "Storage Account does not exist")
+	assert.True(t, azure.StorageBlobContainerExists(t, containerName, storageAccountName, resourceGroupName, ""), "Container deos not exist")
+
+	assert.True(t, azure.ResourceGroupExists(t, bkResourceGroupName, ""), "Backup Resource group does not exist")
+	assert.True(t, azure.StorageAccountExists(t, bkStorageAccoutName, bkResourceGroupName, ""), "Backup Storage Account does not exist")
 }
