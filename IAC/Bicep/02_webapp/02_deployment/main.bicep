@@ -1,51 +1,60 @@
 param location string = resourceGroup().location
 param environment string
 param deploymentName string = ''
+param appSvcPlanSkuName string
+param appSvcPlanSkuTier string
+param appSvcDockerImage string
+param appSvcDockerImageTag string
+param catalogDbConnectionString string
+param identityDbConnectionString string
 
-var deploymentNameValidated = empty(deploymentName) ? uniqueString(subscription().subscriptionId, location, environment) : deploymentName
+
+var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscriptionId, location, environment) : deploymentName
+var _dockerImage = '${appSvcDockerImage}:${appSvcDockerImageTag}'
 
 // App Service Plan
 
-module appSvcPlanName './../../modules/nameGenerator.bicep' = {
-  name: '${deploymentNameValidated}-appSvcPlanName'
+module appSvcPlanNameGenerator './../../modules/nameGenerator.bicep' = {
+  name: '${_deploymentName}-appSvcPlanNameGenerator'
   params: {
     name: 'app-svc-plan'
     prefix: environment
-    delimiter: '-'
   }
 }
 
 module appSvcPlan './modules/appSvcPlan.bicep' = {
-  name: '${deploymentNameValidated}-appSvcPlanDeployment'
+  name: '${_deploymentName}-appSvcPlan'
   params: {
-    name: appSvcPlanName.outputs.name
+    name: appSvcPlanNameGenerator.outputs.name
     location: location
     environment: environment
-    skuName: 'TODO VAR S1'
-    skuTier: 'TODO VAR Standard'
+    skuName: appSvcPlanSkuName
+    skuTier: appSvcPlanSkuTier
   }
 }
 
 // App Service
 
-module appSvcName './../../modules/nameGenerator.bicep' = {
-  name: '${deploymentNameValidated}-appSvcName'
+module appSvcNameGenerator './../../modules/nameGenerator.bicep' = {
+  name: '${_deploymentName}-appSvcNameGenerator'
   params: {
     name: 'app-svc'
     prefix: environment
-    delimiter: '-'
   }
 }
 
 module appSvc './modules/appSvc.bicep' = {
-  name: '${deploymentNameValidated}-appSvcDeployment'
+  name: '${_deploymentName}-appSvc'
   params: {
-    name: appSvcName.outputs.name
+    name: appSvcNameGenerator.outputs.name
     location: location
     environment: environment
     appSvcPlanId: appSvcPlan.outputs.id
-    dockerImage: 'TODO VAR'
-    catalogDbConnectionString: 'TODO'
-    identityDbConnectionString: 'TODO'
+    dockerImage: _dockerImage
+    catalogDbConnectionString: catalogDbConnectionString
+    identityDbConnectionString: identityDbConnectionString
   }
+  dependsOn: [
+    appSvcPlan
+  ]
 }
