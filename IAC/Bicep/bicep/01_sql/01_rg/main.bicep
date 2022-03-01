@@ -8,7 +8,7 @@ var deploymentNameValidated = empty(deploymentName) ? uniqueString(subscription(
 
 // Resource Group
 
-module resourceGroupName './modules/nameGenerator.bicep' = {
+module resourceGroupName './../../modules/nameGeneratorSubscription.bicep' = {
   name: '${deploymentNameValidated}-resourceGroupName'
   params: {
     name: 'rg-sql'
@@ -18,7 +18,7 @@ module resourceGroupName './modules/nameGenerator.bicep' = {
   scope: subscription(subscription().id)
 }
 
-module resourceGroup './modules/resourceGroup.bicep' = {
+module resourceGroup './../../modules/resourceGroup.bicep' = {
   name: '${deploymentNameValidated}-resourceGroupDeployment'
   params: {
     name: resourceGroupName.outputs.name

@@ -6,7 +6,7 @@ var deploymentNameValidated = empty(deploymentName) ? uniqueString(subscription(
 
 // App Service Plan
 
-module appSvcPlanName './modules/nameGenerator.bicep' = {
+module appSvcPlanName './../../modules/nameGenerator.bicep' = {
   name: '${deploymentNameValidated}-appSvcPlanName'
   params: {
     name: 'app-svc-plan'
@@ -28,7 +28,7 @@ module appSvcPlan './modules/appSvcPlan.bicep' = {
 
 // App Service
 
-module appSvcName './modules/nameGenerator.bicep' = {
+module appSvcName './../../modules/nameGenerator.bicep' = {
   name: '${deploymentNameValidated}-appSvcName'
   params: {
     name: 'app-svc'
