@@ -1,8 +1,10 @@
+targetScope = 'subscription'
+
 @maxLength(12)
 param name string
 
 @maxLength(1)
-param delimiter string = ''
+param delimiter string = '-'
 
 @maxLength(6)
 param prefix string = ''
