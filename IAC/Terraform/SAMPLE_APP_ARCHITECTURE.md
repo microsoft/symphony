@@ -39,7 +39,7 @@ Following decisions were made for the sample project:
 
 ## Sample App
 
-[Official eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb) is cloned into this repo ([./apps/eShopOnWeb](./apps/eShopOnWeb/) folder).
+Most recent version of the [eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb) is published to _`TBD`_ and used as the sample app.
 
 ## Symphony Layers
 
