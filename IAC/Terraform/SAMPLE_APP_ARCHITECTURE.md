@@ -28,6 +28,15 @@ _DevContainer_ also has the following _VS Code_ extensions installed to make the
 
 Orchestrator that runs the pipelines uses the same _DevContainer_ to make development and pipeline experience same.
 
+## Sample App Design Decisions
+
+Following decisions were made for the sample project:
+
+- Sample project should be a simple project that can be used to learn Symphony
+- Sample project should have at least 2 layers, each with at least 1 deployment
+- Sample project should be easy to deploy and use
+- Sample project source code should not be in the `symphony` repo
+
 ## Sample App
 
 [Official eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb) is cloned into this repo ([./apps/eShopOnWeb](./apps/eShopOnWeb/) folder).
