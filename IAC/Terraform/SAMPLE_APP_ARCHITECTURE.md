@@ -83,3 +83,51 @@ _03_webapp_ layer has only one deployment; _01_deployment_, that provisions the 
 ## Deployment
 
 To have a successfull deployment, following guideline is suggested;
+
+First, the init layer should be deployed. Modify the below command as needed and run it in the [01_init](./terraform/01_init/) folder to deploy the init layer;
+
+```bash
+terraform init -upgrade
+
+location="westus"
+project_name="<UNIQUE_PROJECT_NAME>"
+environment="dev"
+environment_version="1.0.0"
+resource_group_name="rg-tf-remote-state-${environment}"
+storage_account_name="tfrs${project_name}${environment}"
+storage_account_tier="Standard"
+storage_account_kind="StorageV2"
+storage_account_replication_type="LRS"
+identity_type="SystemAssigned"
+container_name="tfstate"
+backup_resource_group_name="rg-tf-remote-state-${environment}-bak"
+backup_storage_account_name="tfrs${project_name}${environment}bak"
+
+terraform plan \
+  -var "location=${location}" \
+  -var "container_name=${container_name}" \
+  -var "environment=${environment}" \
+  -var "environment_version=${environment_version}" \
+  -var "resource_group_name=${resource_group_name}" \
+  -var "storage_account_name=${storage_account_name}" \
+  -var "storage_account_tier=${storage_account_tier}" \
+  -var "storage_account_kind=${storage_account_kind}" \
+  -var "storage_account_replication_type=${storage_account_replication_type}" \
+  -var "identity_type=${identity_type}" \
+  -var "backup_resource_group_name=${backup_resource_group_name}" \
+  -var "backup_storage_account_name=${backup_storage_account_name}" \
+  -out "${environment}.tfplan"
+
+  terraform apply "${environment}.tfplan"
+```
+
+When the init layer resources are provisioned, run the following command to save some of the important values to a common file to use them on the later layers and deployments;
+
+```bash
+cat > ../backend.tfvars <<EOL
+resource_group_name = "${resource_group_name}"
+storage_account_name = "${storage_account_name}"
+container_name = "${container_name}"
+key = "terraform.tfstate"
+EOL
+```
