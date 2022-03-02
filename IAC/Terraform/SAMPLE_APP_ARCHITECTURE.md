@@ -131,3 +131,23 @@ container_name = "${container_name}"
 key = "terraform.tfstate"
 EOL
 ```
+
+Next, make the needed changes and run the below command in the [02_sql/01_deployment](./terraform/02_sql/01_deployment) folder to deploy the database layer;
+
+```bash
+terraform init -backend-config="../../backend.tfvars" -upgrade
+
+location="eastus"
+environment="dev"
+project_name="<UNIQUE_PROJECT_NAME>"
+
+terraform plan \
+  -var "location=${location}" \
+  -var "environment=${environment}" \
+  -var "project_name=${project_name}" \
+  -out "${environment}_l02_d01.tfplan"
+
+terraform apply "${environment}_l02_d01.tfplan"
+```
+
+> Above command uses the `backend.tfvars` file that was created in the previos step, to access the _Remote State Storage_ (_Azure Storage Account_) and save the state there.
