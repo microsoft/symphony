@@ -79,3 +79,7 @@ _03_webapp_ layer has only one deployment; _01_deployment_, that provisions the 
 
 - App Service plan
   - App Service
+
+## Deployment
+
+To have a successfull deployment, following guideline is suggested;
