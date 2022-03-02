@@ -151,3 +151,35 @@ terraform apply "${environment}_l02_d01.tfplan"
 ```
 
 > Above command uses the `backend.tfvars` file that was created in the previos step, to access the _Remote State Storage_ (_Azure Storage Account_) and save the state there.
+
+Finally, modify as needed and run the below command in the [03_webapp/01_deployment](./terraform/03_webapp/01_deployment) folder to deploy the webapp layer;
+
+```bash
+location="eastus"
+environment="dev"
+project_name="<UNIQUE_PROJECT_NAME>"
+resource_group_name="rg-tf-remote-state-${environment}"
+storage_account_name="tfrs${project_name}${environment}"
+container_name="tfstate"
+docker_image_name="eshop/webmvc"
+app_service_sku_size="S1"
+app_service_sku_tier="Standard"
+
+terraform init -backend-config="../../backend.tfvars" -upgrade
+
+terraform plan \
+  -var "location=${location}" \
+  -var "environment=${environment}" \
+  -var "project_name=${project_name}" \
+  -var "resource_group_name=${resource_group_name}" \
+  -var "storage_account_name=${storage_account_name}" \
+  -var "container_name=${container_name}" \
+  -var "docker_image_name=${docker_image_name}" \
+  -var "app_service_sku_size=${app_service_sku_size}" \
+  -var "app_service_sku_tier=${app_service_sku_tier}" \
+  -out "${environment}_l03_d01.tfplan"
+
+terraform apply "${environment}_l03_d01.tfplan"
+```
+
+> Above command uses the `backend.tfvars` file that was created in the previos step, to access the _Remote State Storage_ (_Azure Storage Account_) and save the state there.
