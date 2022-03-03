@@ -14,8 +14,7 @@ resource_group_name=$(echo "${output}" | jq -r -c '.properties.outputs.name.valu
 
 # 01_sql | 02_deployment
 deployment_path="${layer_path}/02_deployment"
-# sql_password=$(openssl rand -base64 14)
-sql_password="demo!P@55w0rd123"
+sql_password=$(openssl rand -base64 14)
 output=$(az deployment group create --resource-group "${resource_group_name}" --template-file "${deployment_path}/main.bicep" --parameters "@parameters.${enviroment}.json" "@${deployment_path}/parameters.${enviroment}.json" sqlServerAdministratorPassword="${sql_password}")
 catalogdb_cs=$(echo "${output}" | jq -r -c '.properties.outputs.sqlDatabaseCatalogDbCS.value')
 identitydb_cs=$(echo "${output}" | jq -r -c '.properties.outputs.sqlDatabaseIdentityDbCS.value')
