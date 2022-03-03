@@ -60,10 +60,6 @@ module sqlDatabaseIdentityDb './modules/sqlDatabase.bicep' = {
   ]
 }
 
-// Databases Seed
-
-// TODO
-
 output sqlServerName string = sqlServer.outputs.name
 
 output sqlDatabaseCatalogDbName string = sqlDatabaseCatalogDb.outputs.name
