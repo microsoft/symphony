@@ -7,7 +7,8 @@ param appSvcDockerImage string
 param appSvcDockerImageTag string
 param catalogDbConnectionString string
 param identityDbConnectionString string
-
+param containerRegistryResourceGroupName string
+param containerRegistryName string
 
 var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscriptionId, location, environment) : deploymentName
 var _dockerImage = '${appSvcDockerImage}:${appSvcDockerImageTag}'
@@ -53,6 +54,8 @@ module appSvc './modules/appSvc.bicep' = {
     dockerImage: _dockerImage
     catalogDbConnectionString: catalogDbConnectionString
     identityDbConnectionString: identityDbConnectionString
+    containerRegistryResourceGroupName: containerRegistryResourceGroupName
+    containerRegistryName: containerRegistryName
   }
   dependsOn: [
     appSvcPlan

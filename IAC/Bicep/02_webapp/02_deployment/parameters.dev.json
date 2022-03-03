@@ -9,10 +9,16 @@
         "value": "Standard"
       },
       "appSvcDockerImage": {
-        "value": "https://mcr.microsoft.com/cseamerica/hello-world"
+        "value": "cruqhtquzzdev225.azurecr.io/eshoppublicapi"
       },
       "appSvcDockerImageTag": {
-        "value": "latest"
+        "value": "a87f571"
+      },
+      "containerRegistryResourceGroupName": {
+        "value": "rg-uqhtquzz-dev-225"
+      },
+      "containerRegistryName": {
+        "value": "cruqhtquzzdev225"
       }
     }
   }
