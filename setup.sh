@@ -19,9 +19,8 @@ CR_NAME="cr${NAME}${ENVIROMENT}${NN}"
 az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
 
 git clone "${APP_REPO}" "_app"
-git checkout "${APP_COMMIT}"
-
 pushd "_app"
+git checkout "${APP_COMMIT}"
 az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
 az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
 popd
