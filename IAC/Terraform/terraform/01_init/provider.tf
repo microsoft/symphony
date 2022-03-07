@@ -14,5 +14,5 @@ provider "azuread" {
 }
 
 terraform {
-  required_version = ">= v0.12.28"
+  required_version = ">= 1.1.7"
 }
