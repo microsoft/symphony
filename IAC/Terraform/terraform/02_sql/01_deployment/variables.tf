@@ -1,8 +1,9 @@
-###########################################################################################################
-# VARIABLES
-###########################################################################################################
+variable "location" {
+  description = "The supported azure location where the resource deployed"
+}
 
-variable "LOCATION" {}
-variable "ENVIRONMENT" {}
-variable "SUBSCRIPTION_ID" {}
-variable "NAME" {}
+variable "env" {
+  description = "The name of the evnironemnt to be deployed"
+}
+
+

@@ -1,17 +1,21 @@
-###########################################################################################################
-# PROVIDERS
-###########################################################################################################
+#Set the terraform required version, and Configure the Azure Provider.Use remote storage
 
-provider "azurerm" {
-  version = "~>2.28.0"
-  features {}
+# Configure the Azure Provider
+terraform {
+  required_version = "= v1.1.7"
+  backend "azurerm" {}
+  required_providers {
+    azurerm = {
+      version = "~>2.98.0"
+      source  = "hashicorp/azurerm"
+    }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = "1.2.15"
+    }
+  }
 }
 
-###########################################################################################################
-# BACKEND (REMOTE STATE)
-###########################################################################################################
-
-terraform {
-  required_version = ">= v0.12.28"
-  backend "azurerm" {}
+provider "azurerm" {
+  features {}
 }

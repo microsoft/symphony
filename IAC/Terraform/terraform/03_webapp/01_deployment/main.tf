@@ -1,72 +1,92 @@
-module "naming" {
-  source = "git::https://github.com/Azure/terraform-azurerm-naming?ref=0.1.0"
-  # levarage naming module.  Naming convention is resoure
-  prefix = [ var.ENVIRONMENT ]
-  suffix = [ var.NAME, "l03", "d01" ]
-}
-
 data "terraform_remote_state" "l02_d01" {
- backend = "azurerm"
- config = {
-   resource_group_name  = var.BACKEND_RESOURCE_GROUP_NAME
-   storage_account_name = var.BACKEND_STORAGE_ACCOUNT_NAME
-   container_name = var.BACKEND_CONTAINER_NAME
-   key = "02_sql/01_deployment"
- }
-}
-
-resource "null_resource" "configure_cs" {
-    provisioner "local-exec" {
-    command = "chmod +x setcs.sh && ./setcs.sh"
-
-    environment = {
-        CATALOGDBCS = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
-        IDENTITYDBCS = data.terraform_remote_state.l02_d01.outputs.identitydbcs
-    }
+  backend = "azurerm"
+  config = {
+    resource_group_name  = var.rs_resource_group_name
+    storage_account_name = var.rs_storage_account_name
+    container_name       = var.rs_container_name
+    key                  = var.rs_container_key #"02_sql/01_deployment"
   }
 }
 
-resource "null_resource" "configure_sql" {
-  provisioner "local-exec" {
-    command = "chmod +x setupdb.sh && ./setupdb.sh"
-  }
-  depends_on = [null_resource.configure_cs]
+# ------------------------------------------------------------------------------------------------------
+# Deploy resource group
+# ------------------------------------------------------------------------------------------------------
+resource "azurecaf_name" "rg_name" {
+  name          = "web"
+  resource_type = "azurerm_resource_group"
+  prefixes      = [var.env]
+  random_length = 3
+  clean_input   = true
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = module.naming.resource_group.name_unique
-  location = var.LOCATION
-
-  depends_on = [null_resource.configure_sql]
+  name     = azurecaf_name.rg_name.result
+  location = var.location
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Deploy app service plan
+# ------------------------------------------------------------------------------------------------------
+resource "azurecaf_name" "app_svc_plan" {
+  name          = "app-svc"
+  resource_type = "azurerm_app_service_plan"
+  prefixes      = [var.env]
+  random_length = 3
+  clean_input   = true
+}
 resource "azurerm_app_service_plan" "plan" {
-  name                = var.APP_PLAN_NAME
+  name                = azurecaf_name.app_svc_plan.result
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "Linux"
   reserved            = true
 
   sku {
-    tier = var.PLAN_SKU_TIER
-    size = var.PLAN_SKU_SIZE
+    tier = var.app_service_sku_tier
+    size = var.app_service_sku_size
   }
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Deploy app service
+# ------------------------------------------------------------------------------------------------------
+resource "azurecaf_name" "app_svc" {
+  name          = "web"
+  resource_type = "azurerm_app_service"
+  prefixes      = [var.env]
+  random_length = 3
+  clean_input   = true
+}
 resource "azurerm_app_service" "app" {
-  name                = var.APP_NAME
+  name                = azurecaf_name.app_svc.result
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "DOCKER|${var.DOCKER_IMAGE_NAME}"
+    acr_use_managed_identity_credentials = true
+    linux_fx_version                     = "DOCKER|${var.docker_image_name}:${var.docker_image_tag}"
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 
   app_settings = {
-    "ASPNETCORE_ENVIRONMENT" = "Docker"
-    "ASPNETCORE_URL" = "http://+:80"
-    "ConnectionStrings__CatalogConnection" = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
+    "ASPNETCORE_ENVIRONMENT"                = "Docker"
+    "ASPNETCORE_URL"                        = "http://+:80"
+    "ConnectionStrings__CatalogConnection"  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
     "ConnectionStrings__IdentityConnection" = data.terraform_remote_state.l02_d01.outputs.identitydbcs
   }
+}
+
+resource "azurerm_role_assignment" "cr_role_assignment" {
+  scope                = data.azurerm_container_registry.cr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_app_service.app.identity[0].principal_id
+}
+
+data "azurerm_container_registry" "cr" {
+  name                = var.cr_name
+  resource_group_name = var.cr_resource_group_name
 }
