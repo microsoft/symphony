@@ -13,6 +13,7 @@
 *.backup
 *.plan
 .terraform.lock.hcl
+*.lock.info
 
 ### VSCode ###
 **/.vscode

@@ -19,7 +19,7 @@ resource "random_password" "sqlserverpassword" {
 # Deploy resource Group
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "rg_name" {
-  name          = "rg-sql"
+  name          = "sql"
   resource_type = "azurerm_resource_group"
   prefixes      = [var.env]
   random_length = 3

@@ -8,47 +8,28 @@ data "terraform_remote_state" "l02_d01" {
   }
 }
 
-resource "null_resource" "configure_cs" {
-  provisioner "local-exec" {
-    command = "chmod +x setcs.sh && ./setcs.sh"
-
-    environment = {
-      CATALOGDBCS  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
-      IDENTITYDBCS = data.terraform_remote_state.l02_d01.outputs.identitydbcs
-    }
-  }
-}
-
-resource "null_resource" "configure_sql" {
-  provisioner "local-exec" {
-    command = "chmod +x setupdb.sh && ./setupdb.sh"
-  }
-  depends_on = [null_resource.configure_cs]
-}
-
 # ------------------------------------------------------------------------------------------------------
 # Deploy resource group
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "rg_name" {
-  name          = "rg-web"
+  name          = "web"
   resource_type = "azurerm_resource_group"
   prefixes      = [var.env]
   random_length = 3
   clean_input   = true
 }
+
 resource "azurerm_resource_group" "rg" {
   name     = azurecaf_name.rg_name.result
   location = var.location
-
-  depends_on = [null_resource.configure_sql]
 }
 
 # ------------------------------------------------------------------------------------------------------
 # Deploy app service plan
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "app_svc_plan" {
-  name          = "app-svc-plan"
-  resource_type = "azurerm_app_service"
+  name          = "app-svc"
+  resource_type = "azurerm_app_service_plan"
   prefixes      = [var.env]
   random_length = 3
   clean_input   = true
@@ -70,7 +51,7 @@ resource "azurerm_app_service_plan" "plan" {
 # Deploy app service
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "app_svc" {
-  name          = "app-svc"
+  name          = "web"
   resource_type = "azurerm_app_service"
   prefixes      = [var.env]
   random_length = 3
@@ -83,7 +64,12 @@ resource "azurerm_app_service" "app" {
   app_service_plan_id = azurerm_app_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "DOCKER|${var.docker_image_name}"
+    acr_use_managed_identity_credentials = true
+    linux_fx_version                     = "DOCKER|${var.docker_image_name}:${var.docker_image_tag}"
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 
   app_settings = {
@@ -92,4 +78,15 @@ resource "azurerm_app_service" "app" {
     "ConnectionStrings__CatalogConnection"  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
     "ConnectionStrings__IdentityConnection" = data.terraform_remote_state.l02_d01.outputs.identitydbcs
   }
+}
+
+resource "azurerm_role_assignment" "cr_role_assignment" {
+  scope                = data.azurerm_container_registry.cr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_app_service.app.identity[0].principal_id
+}
+
+data "azurerm_container_registry" "cr" {
+  name                = var.cr_name
+  resource_group_name = var.cr_resource_group_name
 }

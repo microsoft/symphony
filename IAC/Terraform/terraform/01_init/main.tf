@@ -35,7 +35,7 @@ resource "azurerm_storage_account" "tfstate" {
 # Deploy primary Storage Account Container
 # ------------------------------------------------------------------------------------------------------
 resource "azurerm_storage_container" "tfstate_container" {
-  name                  = var.Container_name
+  name                  = var.container_name
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
 }

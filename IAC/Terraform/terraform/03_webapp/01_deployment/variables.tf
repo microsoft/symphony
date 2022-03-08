@@ -10,8 +10,16 @@ variable "docker_image_name" {
   description = "The url to the app docker image"
 }
 
-variable "app_service_plan" {
-  description = ""
+variable "docker_image_tag" {
+  description = "The url to the app docker image"
+}
+
+variable "cr_resource_group_name" {
+  description = "Container Registry Resource Group Name"
+}
+
+variable "cr_name" {
+  description = "Container Registry Name"
 }
 
 variable "app_service_sku_size" {
