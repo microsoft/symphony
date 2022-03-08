@@ -8,24 +8,6 @@ data "terraform_remote_state" "l02_d01" {
   }
 }
 
-resource "null_resource" "configure_cs" {
-  provisioner "local-exec" {
-    command = "chmod +x setcs.sh && ./setcs.sh"
-
-    environment = {
-      CATALOGDBCS  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
-      IDENTITYDBCS = data.terraform_remote_state.l02_d01.outputs.identitydbcs
-    }
-  }
-}
-
-resource "null_resource" "configure_sql" {
-  provisioner "local-exec" {
-    command = "chmod +x setupdb.sh && ./setupdb.sh"
-  }
-  depends_on = [null_resource.configure_cs]
-}
-
 # ------------------------------------------------------------------------------------------------------
 # Deploy resource group
 # ------------------------------------------------------------------------------------------------------
@@ -83,7 +65,12 @@ resource "azurerm_app_service" "app" {
   app_service_plan_id = azurerm_app_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "DOCKER|${var.docker_image_name}"
+    acr_use_managed_identity_credentials = true
+    linux_fx_version                     = "DOCKER|${var.docker_image_name}:${var.docker_image_tag}"
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 
   app_settings = {
@@ -92,4 +79,15 @@ resource "azurerm_app_service" "app" {
     "ConnectionStrings__CatalogConnection"  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
     "ConnectionStrings__IdentityConnection" = data.terraform_remote_state.l02_d01.outputs.identitydbcs
   }
+}
+
+resource "azurerm_role_assignment" "cr_role_assignment" {
+  scope                = azurerm_container_registry.cr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_app_service.app.identity[0].principal_id
+}
+
+data "azurerm_container_registry" "cr" {
+  name                = var.cr_name
+  resource_group_name = var.cr_resource_group_name
 }

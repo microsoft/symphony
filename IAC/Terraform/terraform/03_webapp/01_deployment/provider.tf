@@ -2,16 +2,16 @@
 
 # Configure the Azure Provider
 terraform {
-  required_version = "= v1.0.10"
+  required_version = "= v1.1.7"
   backend "azurerm" {}
   required_providers {
     azurerm = {
-      version = "~>2.85.0"
+      version = "~>2.98.0"
       source  = "hashicorp/azurerm"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = "1.1.3"
+      version = "1.2.15"
     }
   }
 }
