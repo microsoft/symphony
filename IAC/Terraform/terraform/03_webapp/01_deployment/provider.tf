@@ -3,7 +3,6 @@
 ###########################################################################################################
 
 provider "azurerm" {
-  version = "~>2.28.0"
   features {}
 }
 
@@ -12,6 +11,19 @@ provider "azurerm" {
 ###########################################################################################################
 
 terraform {
-  required_version = ">= v0.12.28"
+  required_version = ">= 1.1.7"
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 2.98.0"
+    }
+
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 2.18.0"
+    }
+  }
+
   backend "azurerm" {}
 }
