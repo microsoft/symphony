@@ -12,7 +12,7 @@ data "terraform_remote_state" "l02_d01" {
 # Deploy resource group
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "rg_name" {
-  name          = "rg-web"
+  name          = "web"
   resource_type = "azurerm_resource_group"
   prefixes      = [var.env]
   random_length = 3
