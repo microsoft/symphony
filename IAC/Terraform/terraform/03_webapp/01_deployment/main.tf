@@ -1,27 +1,27 @@
 module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming?ref=0.1.0"
   # levarage naming module.  Naming convention is resoure
-  prefix = [ var.ENVIRONMENT ]
-  suffix = [ var.NAME, "l03", "d01" ]
+  prefix = [var.ENVIRONMENT]
+  suffix = [var.NAME, "l03", "d01"]
 }
 
 data "terraform_remote_state" "l02_d01" {
- backend = "azurerm"
- config = {
-   resource_group_name  = var.BACKEND_RESOURCE_GROUP_NAME
-   storage_account_name = var.BACKEND_STORAGE_ACCOUNT_NAME
-   container_name = var.BACKEND_CONTAINER_NAME
-   key = "02_sql/01_deployment"
- }
+  backend = "azurerm"
+  config = {
+    resource_group_name  = var.BACKEND_RESOURCE_GROUP_NAME
+    storage_account_name = var.BACKEND_STORAGE_ACCOUNT_NAME
+    container_name       = var.BACKEND_CONTAINER_NAME
+    key                  = "02_sql/01_deployment"
+  }
 }
 
 resource "null_resource" "configure_cs" {
-    provisioner "local-exec" {
+  provisioner "local-exec" {
     command = "chmod +x setcs.sh && ./setcs.sh"
 
     environment = {
-        CATALOGDBCS = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
-        IDENTITYDBCS = data.terraform_remote_state.l02_d01.outputs.identitydbcs
+      CATALOGDBCS = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
+      IDENTITYDBCS = data.terraform_remote_state.l02_d01.outputs.identitydbcs
     }
   }
 }
@@ -64,9 +64,9 @@ resource "azurerm_app_service" "app" {
   }
 
   app_settings = {
-    "ASPNETCORE_ENVIRONMENT" = "Docker"
-    "ASPNETCORE_URL" = "http://+:80"
-    "ConnectionStrings__CatalogConnection" = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
+    "ASPNETCORE_ENVIRONMENT"                = "Docker"
+    "ASPNETCORE_URL"                        = "http://+:80"
+    "ConnectionStrings__CatalogConnection"  = data.terraform_remote_state.l02_d01.outputs.catalogdbcs
     "ConnectionStrings__IdentityConnection" = data.terraform_remote_state.l02_d01.outputs.identitydbcs
   }
 }
