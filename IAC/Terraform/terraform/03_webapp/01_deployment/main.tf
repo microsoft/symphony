@@ -28,8 +28,8 @@ resource "azurerm_resource_group" "rg" {
 # Deploy app service plan
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "app_svc_plan" {
-  name          = "app-svc-plan"
-  resource_type = "azurerm_app_service"
+  name          = "app-svc"
+  resource_type = "azurerm_app_service_plan"
   prefixes      = [var.env]
   random_length = 3
   clean_input   = true
@@ -51,7 +51,7 @@ resource "azurerm_app_service_plan" "plan" {
 # Deploy app service
 # ------------------------------------------------------------------------------------------------------
 resource "azurecaf_name" "app_svc" {
-  name          = "app-svc"
+  name          = "web"
   resource_type = "azurerm_app_service"
   prefixes      = [var.env]
   random_length = 3
