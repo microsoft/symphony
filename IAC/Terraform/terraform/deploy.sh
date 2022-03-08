@@ -18,19 +18,19 @@ popd
 # 02_sql
 layer_path="02_sql"
 deployment_path="${layer_path}/01_deployment"
-TFSTATE_KEY="02_sql/01_deployment"
+TFSTATE_KEY="02_sql/01_deployment.tfstate"
 pushd "${deployment_path}"
-terraform init -backend-config=storage_account_name="${TFSTATE_STORAGE_ACCOUNT_NAME}" -backend-config=container_name="${TFSTATE_STORAGE_CONTAINER_NAME}" -backend-config=key="${TFSTATE_KEY}" -backend-config=resource_group_name="${TFSTATE_RESOURCES_GROUP_NAME}"
+terraform init -migrate-state -backend-config=storage_account_name="${TFSTATE_STORAGE_ACCOUNT_NAME}" -backend-config=container_name="${TFSTATE_STORAGE_CONTAINER_NAME}" -backend-config=key="${TFSTATE_KEY}" -backend-config=resource_group_name="${TFSTATE_RESOURCES_GROUP_NAME}"
 terraform plan -var-file="${enviroment}.tfvars.json" -out="${enviroment}.plan"
 terraform apply -auto-approve "${enviroment}.plan"
 popd
 
 # 02_webapp
-layer_path="02_webapp"
+layer_path="03_webapp"
 deployment_path="${layer_path}/01_deployment"
-TFSTATE_KEY="02_webapp/01_deployment"
+TFSTATE_KEY="03_webapp/01_deployment.tfstate"
 pushd "${deployment_path}"
-terraform init -backend-config=storage_account_name="${TFSTATE_STORAGE_ACCOUNT_NAME}" -backend-config=container_name="${TFSTATE_STORAGE_CONTAINER_NAME}" -backend-config=key="${TFSTATE_KEY}" -backend-config=resource_group_name="${TFSTATE_RESOURCES_GROUP_NAME}"
+terraform init -migrate-state -backend-config=storage_account_name="${TFSTATE_STORAGE_ACCOUNT_NAME}" -backend-config=container_name="${TFSTATE_STORAGE_CONTAINER_NAME}" -backend-config=key="${TFSTATE_KEY}" -backend-config=resource_group_name="${TFSTATE_RESOURCES_GROUP_NAME}"
 terraform plan -var-file="${enviroment}.tfvars.json" -out="${enviroment}.plan"
 terraform apply -auto-approve "${enviroment}.plan"
 popd

@@ -18,11 +18,10 @@ resource "azurecaf_name" "rg_name" {
   random_length = 3
   clean_input   = true
 }
+
 resource "azurerm_resource_group" "rg" {
   name     = azurecaf_name.rg_name.result
   location = var.location
-
-  depends_on = [null_resource.configure_sql]
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -82,7 +81,7 @@ resource "azurerm_app_service" "app" {
 }
 
 resource "azurerm_role_assignment" "cr_role_assignment" {
-  scope                = azurerm_container_registry.cr.id
+  scope                = data.azurerm_container_registry.cr.id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_app_service.app.identity[0].principal_id
 }
