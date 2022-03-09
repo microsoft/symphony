@@ -14,7 +14,6 @@
 			"INSTALL_DOCKER": "true",
 			"ENABLE_NONROOT_DOCKER": "true",
 			"USE_MOBY": "true",
-			// "INSTALL_GO": "true",
 			"NODE_VERSION": "lts/*",
 			"UPGRADE_PACKAGES": "true",
 			"INSTALL_ZSH": "true"
