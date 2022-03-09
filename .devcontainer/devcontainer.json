@@ -6,9 +6,9 @@
 		"dockerfile": "Dockerfile",
 		"args": { 
 			"VARIANT": "bullseye",
-			"TERRAFORM_VERSION": "1.1.7",
-			"TFLINT_VERSION": "0.34.1",
-			"TERRAGRUNT_VERSION": "0.36.3",
+			"TERRAFORM_VERSION": "latest",
+			"TFLINT_VERSION": "latest",
+			"TERRAGRUNT_VERSION": "latest",
 			"INSTALL_AZURE_CLI": "true",
 			"INSTALL_AZURE_BICEP": "true",
 			"INSTALL_DOCKER": "true",
