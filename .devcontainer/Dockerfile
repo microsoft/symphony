@@ -44,11 +44,6 @@ RUN if [ "${INSTALL_AZURE_CLI}" = "true" ]; then bash /tmp/library-scripts/azcli
         echo '#!/bin/bash\n"$@"' > /usr/local/share/docker-init.sh && chmod +x /usr/local/share/docker-init.sh; \
     fi
 
-# [Option] Install Go tools
-# ARG INSTALL_GO="true"
-# ENV GO111MODULE=auto
-# RUN if [ "${INSTALL_GO}" = "true" ]; then bash /tmp/library-scripts/go-debian.sh "none" "/usr/local/go" "${GOPATH}" "${USERNAME}" "false"; fi
-
 # Install Terraform, tflint, Terragrunt
 ARG TERRAFORM_VERSION=1.1.7
 ARG TFLINT_VERSION=0.34.1
