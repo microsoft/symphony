@@ -1,0 +1,86 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.224.2/containers/azure-terraform
+{
+	"name": "Symphony",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"VARIANT": "bullseye",
+			"TERRAFORM_VERSION": "1.1.7",
+			"TFLINT_VERSION": "0.34.1",
+			"TERRAGRUNT_VERSION": "0.36.3",
+			"INSTALL_AZURE_CLI": "true",
+			"INSTALL_AZURE_BICEP": "true",
+			"INSTALL_DOCKER": "true",
+			"ENABLE_NONROOT_DOCKER": "true",
+			"USE_MOBY": "true",
+			// "INSTALL_GO": "true",
+			"NODE_VERSION": "lts/*",
+			"UPGRADE_PACKAGES": "true",
+			"INSTALL_ZSH": "true"
+		}
+	},
+	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
+	// "mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
+	"overrideCommand": false,
+	"runArgs": ["--env-file",".devcontainer/devcontainer.env", "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
+    "remoteEnv": {
+		// Sets environment variables required for terrafom remote backend
+		"TF_BACKEND_RESOURCE_GROUP" : "${containerEnv:TF_BACKEND_RESOURCE_GROUP}",
+		"TF_BACKEND_LOCATION": "${containerEnv:TF_BACKEND_LOCATION}",
+		"TF_BACKEND_STORAGE_ACCOUNT" : "${containerEnv:TF_BACKEND_STORAGE_ACCOUNT}",                
+		"TF_BACKEND_CONTAINER" : "${containerEnv:TF_BACKEND_CONTAINER}",
+		"TF_BACKEND_KEY" : "${containerEnv:TF_BACKEND_KEY}"
+
+		// Use 'TF_VAR' prefix to set input variables for terraform templates
+		// "TF_VAR_rg_name":  "${containerEnv:TF_VAR_RG_NAME}"
+	},
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+		"terraform.languageServer": {
+			"enabled": true,
+			"args": []
+		},
+		"azureTerraform.terminal": "integrated",
+		"go.toolsManagement.checkForUpdates": "local",
+		"go.useLanguageServer": true,
+		"go.gopath": "/go",
+		"go.goroot": "/usr/local/go"
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"hashicorp.terraform",
+		"ms-vscode.azurecli",
+		"ms-azuretools.vscode-azureterraform",
+		"ms-azuretools.vscode-docker",
+		"ms-dotnettools.vscode-dotnet-runtime",
+		"ms-azuretools.vscode-bicep",
+		"ms-azuretools.vscode-docker",
+		"golang.Go"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "terraform --version",
+
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode",
+	"features": {
+		"docker-in-docker": "latest",
+		"docker-from-docker": "latest",
+		// "terraform": {
+		// 	"version": "latest",
+		// 	"tflint": "latest",
+		// 	"terragrunt": "latest"
+		// },
+		"git": "os-provided",
+		"github-cli": "latest",
+		// "azure-cli": "latest",
+		"golang": "latest",
+		"powershell": "latest",
+		"dotnet": "latest"
+	}
+}
