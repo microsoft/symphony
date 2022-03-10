@@ -57,9 +57,6 @@ ARG TFLINT_VERSION=""
 ARG TERRAGRUNT_VERSION=""
 RUN if [ "${INSTALL_TERRAFORM}" = "true" ]; then bash /tmp/library-scripts/terraform-debian.sh "${TERRAFORM_VERSION}" "${TFLINT_VERSION}" "${TERRAGRUNT_VERSION}"; fi
 
-# RUN ls /usr/local/go/bin && return 1
-# RUN export PATH=/usr/local/go/bin:${PATH} && chmod +x /usr/local/go/bin/go && go version
-
 # # Install TFLint Azure RM Ruleset
 ARG TFLINT_RULESET_AZURERM_VERSION=""
 RUN if [ "${INSTALL_TERRAFORM}" = "true" ]; then curl -Lo ~/tflint-ruleset-azurerm.zip https://github.com/terraform-linters/tflint-ruleset-azurerm/releases/download/${TFLINT_RULESET_AZURERM_VERSION}/tflint-ruleset-azurerm_linux_amd64.zip \
