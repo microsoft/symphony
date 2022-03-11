@@ -6,9 +6,9 @@ This repo has the following components to deploy the sample app using Symphony:
 - [Azure SQL Database](https://azure.microsoft.com/en-us/products/azure-sql/database)
 - [Symphony layers (Terraform or Bicep) to deploy web app and database](./IAC/)
 - Tests to perform tests for symphony layers
-  - [golang (Terraform)](./IAC/terraform/test)
-  - [ShellSpec (Bicep)](./IAC/bicep/test)
-- [DevContainer to develop symphony layers, also used in the CI/CD pipelines](./devcontainer)
+  - [golang (Terraform)](./IAC/Terraform/test)
+  - [ShellSpec (Bicep)](./IAC/Bicep/test)
+- [DevContainer to develop Symphony](./devcontainer)
 
 ## DevContainer
 
