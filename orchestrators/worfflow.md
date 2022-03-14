@@ -4,7 +4,7 @@ Creating pipelines for Ifrasctructure as code while seems an easy to build task,
 ## workflow steps
 To ensure best practices in IAC code repos, pipeline work flows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on deatures availablity on the IAC tool the orchestrator used.
 
-![workflow](.\images\workflow.JPG)
+![workflow](images/workflow.JPG)
 
 
 ### Validate
