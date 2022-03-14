@@ -21,14 +21,35 @@ flowchart LR
 ### Plan
 this stage plans the execution of IAC code and estimated the scope of the chages. It initializes the IAC tool selected, run plan/what-if commands to detect the change scope, and publish the results of the planning as an artifact.
 
-![Plan](.\images\workflow-plan.JPG)
+```mermaid
+flowchart LR
+    A(Init IAC tool) --> B(Run IAC cmds to preview changes) --> C(Store preview cmd changes/output)
+    C -->D(Check for resources destroy operations)
+    D -->E(Finalize/Publish reports)
+```
 
 ### Deploy
-This stage deploys the IAC code to apply the changes from the plan stage. It initializes the IAC tool selected, run deploy cmds to update the resources, and ensure the successful updates of the resources.  
+This stage deploys the IAC code to apply the changes from the plan stage. It initializes the IAC tool selected, run deploy cmds to update the resources, and ensure the successful updates of the resources.
 
-![Deploy](.\images\workflow-deploy.JPG)
+```mermaid
+flowchart LR
+    A(Init IAC tool) --> B(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
+
+```
+
 
 ### Test
 This stage executes the integration or end to end tests against the recent deployed/updated resources to ensure the configurations/changes are reflected and resources are working as expected, it then publishes the tests results and drop them as artifacts for future references.
 
-![Test](.\images\workflow-test.JPG)
+```mermaid
+flowchart LR
+    A(Init test framework) --> B(Execute e2e tests) -->E(Finalize/Publish reports)
+```
+
+### Report
+This stage generates the needed scripts to repro the deployments, publish the created reports, and backup statefile if needed.
+
+```mermaid
+flowchart LR
+    A(Generate deplyment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
+```
