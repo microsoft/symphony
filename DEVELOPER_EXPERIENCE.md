@@ -58,4 +58,4 @@ Each IAC configuration (Terraform and Bicep) contains `deploy.sh` script. This s
 
 ## Input Variables
 
-For local development experience, you can use predefined input variables files (*env*.tfvars.json for Terraform, parameters.*env*.json for Bicep). FIles contains hardcoded values. Feel free to adjust to your needs.
+For local development experience, you can use predefined input variables files (*env*.tfvars.json for Terraform, parameters.*env*.json for Bicep). Files contains hardcoded values. Feel free to adjust to your needs.
