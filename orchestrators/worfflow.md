@@ -11,8 +11,11 @@ To ensure best practices in IAC code repos, pipeline work flows need to handle a
 This stage ensures code readiness. It runs validations and linting tools, scan code for possible cred leaks, and execute any unit tests. Satge steps are executed in the follwoing sequential order.
 
 ```mermaid
-graph TD
-    Prep Env --> Run Custom Scanners --> Run IAC linters cmd --> Run IAC validate cmd --> Run IAC unit test --> Finalize/Publish reports
+flowchart LR
+    A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
+    C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
+    E -->F(Finalize/Publish reports)
+
 ```
 
 ### Plan
