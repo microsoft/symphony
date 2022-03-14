@@ -10,7 +10,10 @@ To ensure best practices in IAC code repos, pipeline work flows need to handle a
 ### Validate
 This stage ensures code readiness. It runs validations and linting tools, scan code for possible cred leaks, and execute any unit tests. Satge steps are executed in the follwoing sequential order.
 
-![Validate](.\images\workflow-validate.JPG)
+```mermaid
+graph TD
+    Prep Env --> Run Custom Scanners --> Run IAC linters cmd --> Run IAC validate cmd --> Run IAC unit test --> Finalize/Publish reports
+```
 
 ### Plan
 this stage plans the execution of IAC code and estimated the scope of the chages. It initializes the IAC tool selected, run plan/what-if commands to detect the change scope, and publish the results of the planning as an artifact.
@@ -18,7 +21,7 @@ this stage plans the execution of IAC code and estimated the scope of the chages
 ![Plan](.\images\workflow-plan.JPG)
 
 ### Deploy
-This stage deploys the IAC code to apply the changes from the plan stage. It initializes the IAC tool selected, run deploy cmds to update the resources, and ensure the suncessful updates of the resources.  
+This stage deploys the IAC code to apply the changes from the plan stage. It initializes the IAC tool selected, run deploy cmds to update the resources, and ensure the successful updates of the resources.  
 
 ![Deploy](.\images\workflow-deploy.JPG)
 
