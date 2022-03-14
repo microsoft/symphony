@@ -35,7 +35,7 @@ _01_init_ layer is a _special_ layer, that provisions the symphony infrastructur
 
 ### Database layer
 
-_02_sql_ layer has only one deployment; _01_deployment_, that provisions the following resources for the sample app;
+_02_sql_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app:
 
 - SQL Server
 - SQL Server database for catalogs
@@ -44,17 +44,17 @@ _02_sql_ layer has only one deployment; _01_deployment_, that provisions the fol
 
 ### WebApp layer
 
-_03_webapp_ layer has only one deployment; _01_deployment_, that provisions the following resources for the sample app.
+_03_webapp_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app.
 
 - App Service plan
   - Web App for Containers
 
 ## Symphony Layers (Bicep)
 
-There are two Symphony layers to deploy the Sample App;
+There are two Symphony layers to deploy the Sample App
 
-- [Database layer](./IAC/Bicep/01_sql)
-- [Web App layer](./IAC/Bicep/02_webapp)
+- [Database layer](./IAC/Bicep/bicep/01_sql)
+- [Web App layer](./IAC/Bicep/bicep/02_webapp)
 
 ### Layout of the symphony layers and deployments
 
