@@ -26,7 +26,7 @@ flowchart LR
 
 ```
 
-### Plan
+### Preview
 
 This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, and publishes the planning results as an artifact.
 
