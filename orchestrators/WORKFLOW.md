@@ -6,13 +6,7 @@ Creating pipelines for Infrastructure as code seems easy to build task, but in a
 
 To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
 
-| ON  | Stage    | Description                                                                                                                                                                                        |
-| --- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Validate | The validate stage ensures code readiness. It runs validations and linting tools, scans code for possible credential leaks, and executes any unit tests.                                           |
-| 2   | Preview  | The preview stage plans the IAC code changes. It initializes the IAC tool selected, executes plan/what-if commands to detect the scope changes, and publishes the planning results as an artifact. |
-| 3   | Deploy   | The deploy stage deploys the IAC code to apply the changes from the preview stage. It ensures the successful updates of the resources.                                                             |
-| 4   | Test     | The test stage executes e2e tests against the deployed resources, ensures the updated resources are working as expected, and then publishes the results.                                           |
-| 5   | Report   | This stage generates the needed scripts to repro the deployments, publish the created reports, and backup state files if required.                                                                 |
+![Workflow steps](images/workflow.png)
 
 ### Validate
 
