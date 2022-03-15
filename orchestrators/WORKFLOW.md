@@ -1,16 +1,22 @@
-# Orchestraros workflow
+# Orchestrates workflow
 
-Creating pipelines for Ifrasctructure as code while seems an easy to build task, but in mature system things can get complicated as it need to handle a lot of changing dynamics parts. A mature worfflow for IAC not only automate the deployment of the IAC resources, but also incorporates engineering fundamentals, resources validation, dependency management, test execution, security scanning, and more.
+Creating pipelines for Infrastructure as code seems easy to build task, but in a mature system, things can get complicated as it needs to handle many changing dynamics parts. A mature workflow for IAC not only automates the deployment of the IAC resources but also incorporates engineering fundamentals, resources validation, dependency management, test execution, security scanning, and more.
 
-## workflow steps
+## Workflow steps
 
-To ensure best practices in IAC code repos, pipeline work flows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on deatures availablity on the IAC tool the orchestrator used.
+To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
 
-![workflow](images/workflow.JPG)
+| ON  | Stage    | Description                                                                                                                                                                                        |
+| --- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Validate | The validate stage ensures code readiness. It runs validations and linting tools, scans code for possible credential leaks, and executes any unit tests.                                           |
+| 2   | Preview  | The preview stage plans the IAC code changes. It initializes the IAC tool selected, executes plan/what-if commands to detect the scope changes, and publishes the planning results as an artifact. |
+| 3   | Deploy   | The deploy stage deploys the IAC code to apply the changes from the preview stage. It ensures the successful updates of the resources.                                                             |
+| 4   | Test     | The test stage executes e2e tests against the deployed resources, ensures the updated resources are working as expected, and then publishes the results.                                           |
+| 5   | Report   | This stage generates the needed scripts to repro the deployments, publish the created reports, and backup state files if required.                                                                 |
 
 ### Validate
 
-This stage ensures code readiness. It runs validations and linting tools, scan code for possible cred leaks, and execute any unit tests. Satge steps are executed in the follwoing sequential order.
+This stage ensures code readiness. It runs validations and linting tools, scans code for possible cred leaks, and executes any unit tests. Stage steps are executed in the following sequential order.
 
 ```mermaid
 flowchart LR
@@ -22,7 +28,7 @@ flowchart LR
 
 ### Plan
 
-this stage plans the execution of IAC code and estimated the scope of the chages. It initializes the IAC tool selected, run plan/what-if commands to detect the change scope, and publish the results of the planning as an artifact.
+This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, and publishes the planning results as an artifact.
 
 ```mermaid
 flowchart LR
@@ -33,7 +39,7 @@ flowchart LR
 
 ### Deploy
 
-This stage deploys the IAC code to apply the changes from the plan stage. It initializes the IAC tool selected, run deploy cmds to update the resources, and ensure the successful updates of the resources.
+This stage deploys the IAC code to apply the changes from the planning stage. It initializes the IAC tool selected, runs deploy commands to update the resources, and ensures successful resource updates.
 
 ```mermaid
 flowchart LR
@@ -43,7 +49,7 @@ flowchart LR
 
 ### Test
 
-This stage executes the integration or end to end tests against the recent deployed/updated resources to ensure the configurations/changes are reflected and resources are working as expected, it then publishes the tests results and drop them as artifacts for future references.
+This stage executes the integration or end-to-end tests against the recent deployed/updated resources to ensure the configurations/changes are reflected and resources are working as expected. It then publishes the results of the tests and drops them as artifacts for future references.
 
 ```mermaid
 flowchart LR
@@ -52,7 +58,7 @@ flowchart LR
 
 ### Report
 
-This stage generates the needed scripts to repro the deployments, publish the created reports, and backup statefile if needed.
+This stage generates the needed scripts to repro the deployments, publish the created reports, and backup state files if required.
 
 ```mermaid
 flowchart LR
