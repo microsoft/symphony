@@ -4,7 +4,7 @@ This repo has the following components to deploy the sample app using Symphony:
 
 - [Official eShopOnWeb project](https://github.com/dotnet-architecture/eShopOnWeb)
 - [Azure SQL Database](https://azure.microsoft.com/en-us/products/azure-sql/database)
-- [Symphony layers (Terraform or Bicep) to deploy web app and database](./IAC/)
+- [Symphony layers (Terraform or Bicep) to deploy web app and database](./../IAC/)
 - Tests to perform tests for symphony layers
   - [golang (Terraform)](./../IAC/Terraform/test)
   - [ShellSpec (Bicep)](./../IAC/Bicep/test)
