@@ -2,7 +2,7 @@
 
 ## DevContainer
 
-[DevContainer configuration](./.devcontainer/devcontainer.json) uses [Dockerfile](./.devcontainer/Dockerfile) to build the _DevContainer_.
+[DevContainer configuration](./../.devcontainer/devcontainer.json) uses [Dockerfile](./../.devcontainer/Dockerfile) to build the _DevContainer_.
 
 _DevContainer_ image is based on _Ubuntu:bullseye_ image and has the following packages installed:
 
@@ -46,7 +46,7 @@ _DevContainer_ also has the following _VSCode_ extensions installed to make the 
 
 ## Initial Setup
 
-Under [IAC](./IAC/), you can find the initial setup bash script. This script deploys required Azure Services for Symphony for development and testing:
+Under [IAC](./../IAC/), you can find the initial setup bash script. This script deploys required Azure Services for Symphony for development and testing:
 
 - [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry)
 - [eShop Web docker image](https://github.com/dotnet-architecture/eShopOnWeb/tree/main/src/Web)
