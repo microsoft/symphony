@@ -6,17 +6,17 @@ This repo has the following components to deploy the sample app using Symphony:
 - [Azure SQL Database](https://azure.microsoft.com/en-us/products/azure-sql/database)
 - [Symphony layers (Terraform or Bicep) to deploy web app and database](./IAC/)
 - Tests to perform tests for symphony layers
-  - [golang (Terraform)](./IAC/Terraform/test)
-  - [ShellSpec (Bicep)](./IAC/Bicep/test)
-- [DevContainer to develop Symphony](./DEVELOPER_EXPERIENCE.md)
+  - [golang (Terraform)](./../IAC/Terraform/test)
+  - [ShellSpec (Bicep)](./../IAC/Bicep/test)
+- [DevContainer to develop Symphony](DEVELOPER_EXPERIENCE.md)
 
 ## Symphony Layers (Terraform)
 
 There are three Symphony layers to deploy the Sample App;
 
-- [Init layer](./IAC/Terraform/terraform/01_init)
-- [Database layer](./IAC/Terraform/terraform/02_sql)
-- [Web App layer](./IAC/Terraform/terraform/03_webapp)
+- [Init layer](./../IAC/Terraform/terraform/01_init)
+- [Database layer](./../IAC/Terraform/terraform/02_sql)
+- [Web App layer](./../IAC/Terraform/terraform/03_webapp)
 
 ### Layout of the symphony layers and deployments
 
@@ -53,8 +53,8 @@ _03_webapp_ layer has only one deployment: _01_deployment_, that provisions the 
 
 There are two Symphony layers to deploy the Sample App
 
-- [Database layer](./IAC/Bicep/bicep/01_sql)
-- [Web App layer](./IAC/Bicep/bicep/02_webapp)
+- [Database layer](./../IAC/Bicep/bicep/01_sql)
+- [Web App layer](./../IAC/Bicep/bicep/02_webapp)
 
 ### Layout of the symphony layers and deployments
 
