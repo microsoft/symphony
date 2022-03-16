@@ -51,14 +51,29 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"hashicorp.terraform",
-		"ms-vscode.azurecli",
 		"ms-azuretools.vscode-azureterraform",
-		"ms-azuretools.vscode-docker",
 		"ms-dotnettools.vscode-dotnet-runtime",
-		"ms-azuretools.vscode-bicep",
-		"ms-azuretools.vscode-docker",
 		"golang.Go",
-		"mikestead.dotenv"
+		"mikestead.dotenv",
+		"esbenp.prettier-vscode",
+		"GitHub.vscode-pull-request-github",
+		"GitHub.codespaces",
+		"GitHub.copilot",
+		"GitHub.remotehub",
+		"GitHub.vscode-codeql",
+		"ms-vscode.azure-account",
+		"yzhang.markdown-all-in-one",
+		"cschleiden.vscode-github-actions",
+		"ms-vscode-remote.vscode-remote-extensionpack",
+		"VisualStudioExptTeam.vscodeintellicode",
+		"ms-vscode.powershell",
+		"ms-vsliveshare.vsliveshare-pack",
+		"ms-vscode.azure-repos",
+		"azps-tools.azps-tools",
+		"ms-vscode.vscode-node-azure-pack",
+		"eamodio.gitlens",
+		"tfsec.tfsec",
+		"bierner.markdown-mermaid"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -78,7 +93,7 @@
 		// 	"terragrunt": "0.36.3"
 		// },
 		"git": "os-provided",
-		"github-cli": "latest",
+		"github-cli": "2.5.2",
 		// "azure-cli": "2.34.1",
 		// "golang": "1.17.8",
 		"powershell": "7.2.1",
