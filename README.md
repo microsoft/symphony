@@ -26,7 +26,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## License
 
-This project is under an [MIT License](./LICENSE).
+This project is under an [MIT License](LICENSE).
 
 ## Trademarks
 
