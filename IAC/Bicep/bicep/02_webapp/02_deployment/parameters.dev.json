@@ -9,16 +9,16 @@
         "value": "Standard"
       },
       "appSvcDockerImage": {
-        "value": "cruqhtquzzdev225.azurecr.io/eshoppublicapi"
+        "value": "crghusuofrdev103.azurecr.io/eshoppublicapi"
       },
       "appSvcDockerImageTag": {
         "value": "a87f571"
       },
       "containerRegistryResourceGroupName": {
-        "value": "rg-uqhtquzz-dev-225"
+        "value": "rg-ghusuofr-dev-103"
       },
       "containerRegistryName": {
-        "value": "cruqhtquzzdev225"
+        "value": "crghusuofrdev103"
       }
     }
   }

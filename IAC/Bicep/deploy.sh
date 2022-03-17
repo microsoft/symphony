@@ -1,7 +1,7 @@
 #!/bin/bash
 
 enviroment="dev"
-parameters=$(cat parameters.${enviroment}.json)
+parameters=$(cat bicep/parameters.${enviroment}.json)
 location=$(echo ${parameters} | jq -r -c '.parameters.location.value')
 
 # 01_sql
