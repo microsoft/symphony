@@ -1,0 +1,47 @@
+﻿
+name: RunPester
+on: 
+  workflow_dispatch: 
+  push: 
+  pull_request: 
+jobs: 
+  TestPowerShellOnLinux: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: InstallPester
+        id: InstallPester
+        shell: pwsh
+        run: |
+          $Parameters = @{}
+          $Parameters.PesterMaxVersion = ${env:PesterMaxVersion}
+          foreach ($k in @($parameters.Keys)) {
+              if ([String]::IsNullOrEmpty($parameters[$k])) {
+                  $parameters.Remove($k)
+              }
+          }
+          Write-Host "::debug:: InstallPester $(@(foreach ($p in $Parameters.GetEnumerator()) {'-' + $p.Key + ' ' + $p.Value}) -join ' ')"
+          & './GitHubWorkflow/Steps/InstallPester.ps1' @Parameters
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: RunPester
+        id: RunPester
+        shell: pwsh
+        run: |
+          $Parameters = @{}
+          $Parameters.ModulePath = ${env:ModulePath}
+          $Parameters.PesterMaxVersion = ${env:PesterMaxVersion}
+          foreach ($k in @($parameters.Keys)) {
+              if ([String]::IsNullOrEmpty($parameters[$k])) {
+                  $parameters.Remove($k)
+              }
+          }
+          Write-Host "::debug:: RunPester $(@(foreach ($p in $Parameters.GetEnumerator()) {'-' + $p.Key + ' ' + $p.Value}) -join ' ')"
+          & './GitHubWorkflow/Steps/RunPester.ps1' @Parameters
+      - name: PublishTestResults
+        uses: actions/upload-artifact@v2
+        with: 
+          name: PesterResults
+          path: '**.TestResults.xml'
+        if: ${{always()}}
+env: 
+  ModulePath: .\arm-ttk\arm-ttk.psd1
