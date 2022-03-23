@@ -1,5 +1,5 @@
 BeforeDiscovery {
-    Import-Module ./AzCli -Force
+    Import-Module $PSScriptRoot/AzCli -Force
 }
 
 BeforeAll {
