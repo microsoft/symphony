@@ -62,7 +62,6 @@ validate(){
     _information "Execute terraform validate"
     terraform validate
     exit $?
-
 }
 
 preview() {
@@ -77,6 +76,7 @@ preview() {
         echo "terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}"
         terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}
     fi
+    
     exit $?
 }
 
@@ -92,6 +92,8 @@ deploy() {
 destroy () {
     _information "Execute terraform destroy"
     terraform destroy -input=false -auto-approve
+
+    exit $?
 }
 
 detect_destroy (){
@@ -105,7 +107,9 @@ detect_destroy (){
         _information "Plan file ${plan_file_name} has not delete changes"
     else
         _information "Plan file ${plan_file_name} has delete changes"
-    fi   
+    fi
+
+    exit $?
 }
 
 lint() { 
