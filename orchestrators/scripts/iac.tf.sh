@@ -90,20 +90,29 @@ deploy() {
 }
 
 destroy () {
-    echo "destroy"
+    _information "Execute terraform destroy"
+    terraform destroy -input=false -auto-approve
 }
 
 detect_destroy (){
-    echo "detect_destroy"
+    plan_file_name=$1
+    _information "Detect destroy in .tfplan file"
+
+    terraform show -no-color -json ${plan_file_name} > mytmp.json
+    actions=$(cat  mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
+
+    if [[ -z $actions ]]; then
+        _information "Plan file ${plan_file_name} has not delete changes"
+    else
+        _information "Plan file ${plan_file_name} has delete changes"
+    fi   
 }
 
 lint() { 
     _information "Execute tflint"
     
     lint_res_file_name="$(basename $PWD)_lint_res.xml"
-
     filePath=$(echo "${lint_res_file_name}" | sed -e 's/\//-/g')
-    echo "file path :${filePath}"
 
     "tflint"  > $filePath 2>&1
 
@@ -111,10 +120,9 @@ lint() {
         echo "tflint passed"
         exit 0
     else
-        echo "tflint failed.lint result file name ${lint_res_file_name}"
+        echo "tflint failed. lint results in file name ${lint_res_file_name}"
         sed -i 's/\x1b\[[0-9;]*m//g' $filePath
         cat $filePath
         exit 1
     fi
-
 }
