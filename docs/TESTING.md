@@ -1,41 +1,77 @@
-# ARM-TTK
+# Testing
 
-https://github.com/Azure/arm-ttk
+## Bicep
+
+All below test examples have assumption for working directory - should be [IAC/Bicep/test](./../IAC/Bicep/test)
+
+### Azure Resource Manager Template Toolkit (arm-ttk)
+
+The tests will check a template or set of templates for coding best practices using [arm-ttk](https://github.com/Azure/arm-ttk).
+
+1. Generate ARM template based on Bicep
 
 ```powershell
 az bicep build --file ../bicep/01_sql/02_deployment/main.bicep
-Import-Module .\arm-ttk\arm-ttk.psd1
+```
+
+2. Install ARM TTK module
+
+```powershell
+Import-Module .\arm-ttk\arm-ttk.psd12. Run the test
+```
+
+3. Run the test
+
+```powershell
 Test-AzTemplate -TemplatePath ../bicep/01_sql/02_deployment/main.json
+```
+
+4. Cleanup
+
+```powershell
 Remove-Item -Force -Path ../bicep/01_sql/02_deployment/main.json
 ```
 
-# Pester
+### Integration Tests with Pester
 
-https://pester.dev/docs/quick-start
+[Pester](https://pester.dev/docs/quick-start) is a testing and mocking framework for PowerShell.
+
+1. Install Pester modeule
 
 ```powershell
-# az login --use-device-code
-# az account set --subscription 802fee76-8ce7-4508-b2de-ef2c10aede2a
-# Connect-AzAccount -UseDeviceAuthentication
-# Set-AzContext -Subscription "802fee76-8ce7-4508-b2de-ef2c10aede2a"
-
-# Install Pester
-# Install-Module -Name Pester -AllowClobber -Force -Confirm:$False -SkipPublisherCheck
-
-Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1
-Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -OutputFormat JUnitXml
-
+Install-Module -Name Pester -AllowClobber -Force -Confirm:$False -SkipPublisherCheck
 ```
 
-# ShellSpec
+2. (option 1) Run the test
 
-https://github.com/shellspec/shellspec
-https://github.com/hattan/azureverify
+```powershell
+Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1
+```
+
+3. (option 2) Run the test with JUnit report
+
+```powershell
+Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -OutputFormat JUnitXml
+```
+
+### Integration Tests with ShellSpec
+
+[ShellSpec](https://github.com/shellspec/shellspec) is a full-featured BDD unit testing framework for dash, bash, ksh, zsh and all POSIX shells that provides first-class features such as code coverage, mocking, parameterized test, parallel execution and more.
+
+1. Install shellspece
 
 ```bash
-# Install shellspec
-# curl -fsSL https://git.io/shellspec | sh -s -- --yes
+curl -fsSL https://git.io/shellspec | sh -s -- --yes
+```
 
+2. (option 1) Run the test
+
+```powershell
 shellspec -f d
+```
+
+3. (option 2) Run the test with JUnit report
+
+```powershell
 shellspec -f j > tests.xml
 ```
