@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# lint()         :  Runs linters to verify Bicep code.
+# validate() :  validates Bicep code.
+# perview() :  Runs what-if  to show the scope of changes in a deployment.
+# deploy()   : Runs deploy cmd to deploy resources in bicep code.
+# destroy()  : Runs cmd to delete resources deployed by bicep code.
+
+    # group     : Manage Azure Resource Manager template deployment at resource group.
+    # mg        : Manage Azure Resource Manager template deployment at management group.
+    # operation : Manage deployment operations at subscription scope.
+    # sub       : Manage Azure Resource Manager template deployment at subscription scope.
+    # tenant    : Manage Azure Resource Manager template deployment at tenant scope.
+
 # Includes
 source _helpers.sh
 
@@ -31,12 +43,25 @@ init() {
 # }
 
 validate(){
-    _information "Execute terraform validate"
-    az deployment sub validate \
-        --name ${{ github.run_id }} \
-        --template-file ${{ env.WORKDIR }}/main.bicep \
-        --location "${{ secrets.LOCATION }}" \
-        --parameters resourcesPrefix=${{ steps.resources_prefix.outputs.result }}
+    scope=$1
+    bicep_file_path=$2
+    deployment_name=$3
+    location=$4
+    optional_parameters=$5 # --management-group-id or --resource-group
+
+    _information "Execute Bicep validate"
+
+    if [[ "${scope}" == "mg" ]]; then
+        az deployment mg validate --management-group-id "${optional_parameters}" --name "${BUILD_ID}" --template-file "${bicep_file_path}" --location "${LOCATION}" --parameters @myparameters.json
+    elif [[ "${scope}" == "sub" ]]; then
+        az deployment sub validate --name "${BUILD_ID}" --template-file "${bicep_file_path}" --location "${LOCATION}" --parameters @myparameters.json
+    fi
+    elif [[ "${scope}" == "tenant" ]]; then
+        az deployment tenant validate --name "${BUILD_ID}" --template-file "${bicep_file_path}" --location "${LOCATION}" --parameters @myparameters.json
+    fi
+    else
+        az deployment group validate --resource-group "${optional_parameters}" --name "${BUILD_ID}" --template-file "${bicep_file_path}" --location "${LOCATION}" --parameters @myparameters.json
+    fi
 }
 
 preview() {
