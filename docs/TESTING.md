@@ -75,3 +75,24 @@ shellspec -f d
 ```powershell
 shellspec -f j > tests.xml
 ```
+
+
+## Terraform
+
+All below test examples have assumption for working directory - should be [IAC/Terraform/test/terraform](./../IAC/Terraform/test/terraform/)
+
+### Terratest 
+[Terratest](https://github.com/gruntwork-io/terratest)  is a Go library that makes it easier to write automated tests for your infrastructure code. It provides a variety of helper functions and patterns for common infrastructure testing tasks,and offers a good
+support for the most commonly used Azure resources.
+
+1. Ensure Go 1.16 is installed, and [Terratest Go environment](https://github.com/gruntwork-io/terratest/blob/master/examples/azure/README.md) as properly configured.
+
+2. Run the tests.
+
+```bash
+
+go build 01_storage_integration_test.go
+
+go test -v -run Test01_Init_Storage
+
+```
