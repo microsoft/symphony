@@ -1,16 +1,7 @@
 #!/bin/bash
-_error() {
-    printf "\e[31mERROR: $@\n\e[0m"
-}
 
-_information() {
-    printf "\e[36m$@\n\e[0m"
-}
-
-_success() {
-    printf "\e[32m$@\n\e[0m"
-}
-
+# Includes
+source _helpers.sh
 
 environment="__ENVIRONMENT__"
 subscription_id="__SUBSCRIPTION_ID__"
