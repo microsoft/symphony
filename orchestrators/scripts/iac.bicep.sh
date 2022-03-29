@@ -3,12 +3,6 @@
 # Includes
 source _helpers.sh
 
-environment="__ENVIRONMENT__"
-subscription_id="__SUBSCRIPTION_ID__"
-tenant_id="__TENANT_ID__"
-layers="__LAYERS__"
-deployments="__DEPLOYMENTS__"
-
 usage() {
     _information "Usage: IAC Bicep commands helper"
     exit 1
