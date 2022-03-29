@@ -58,7 +58,7 @@ Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -Outp
 
 [ShellSpec](https://github.com/shellspec/shellspec) is a full-featured BDD unit testing framework for dash, bash, ksh, zsh and all POSIX shells that provides first-class features such as code coverage, mocking, parameterized test, parallel execution and more.
 
-1. Install shellspece
+1. Install ShellSpec
 
 ```bash
 curl -fsSL https://git.io/shellspec | sh -s -- --yes
@@ -66,13 +66,13 @@ curl -fsSL https://git.io/shellspec | sh -s -- --yes
 
 2. (option 1) Run the test
 
-```powershell
+```bash
 shellspec -f d
 ```
 
 3. (option 2) Run the test with JUnit report
 
-```powershell
+```bash
 shellspec -f j > tests.xml
 ```
 
