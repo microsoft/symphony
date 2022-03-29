@@ -1,3 +1,5 @@
+// +build 01_init
+
 package terraform
 
 import (

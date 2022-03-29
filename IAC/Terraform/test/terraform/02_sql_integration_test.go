@@ -1,3 +1,5 @@
+// +build 02_sql
+
 package terraform
 
 import (
