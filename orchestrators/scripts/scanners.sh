@@ -41,7 +41,7 @@ run_gitleaks (){
         cmd_options="${cmd_options} --no-git"
     fi
 
-    echo "gitleaks.exe detect ${cmd_options}"
+    echo "gitleaks detect ${cmd_options}"
     gitleaks.exe detect ${cmd_options}
     exit $?    
 }
