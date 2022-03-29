@@ -85,7 +85,7 @@ All below test examples have assumption for working directory - should be [IAC/T
 [Terratest](https://github.com/gruntwork-io/terratest)  is a Go library that makes it easier to write automated tests for your infrastructure code. It provides a variety of helper functions and patterns for common infrastructure testing tasks,and offers a good
 support for the most commonly used Azure resources.
 
-1. Ensure Go 1.16 is installed, and [Terratest Go environment](https://github.com/gruntwork-io/terratest/blob/master/examples/azure/README.md) as properly configured.
+1. Ensure Go 1.16 is installed, and [Terratest Go environment](https://github.com/gruntwork-io/terratest/blob/master/examples/azure/README.md) is properly configured.
 
 2. Run the tests.
 
