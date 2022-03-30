@@ -1,16 +1,7 @@
 #!/bin/bash
-_error() {
-    printf "\e[31mERROR: $@\n\e[0m"
-}
 
-_information() {
-    printf "\e[36m$@\n\e[0m"
-}
-
-_success() {
-    printf "\e[32m$@\n\e[0m"
-}
-
+# Includes
+source _helpers.sh
 
 environment="__ENVIRONMENT__"
 subscription_id="__SUBSCRIPTION_ID__"
@@ -52,13 +43,13 @@ init() {
     fi
 }
 
-format(){
+format() {
     _information "Execute terraform fmt"
     terraform fmt
     exit $?
 }
 
-validate(){
+validate() {
     _information "Execute terraform validate"
     terraform validate
     exit $?
@@ -72,11 +63,11 @@ preview() {
     if [[ -z "$2" ]]; then
         echo "terraform plan -input=false -out=${plan_file_name}"
         terraform plan -input=false -out=${plan_file_name}
-    else    
+    else
         echo "terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}"
         terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}
     fi
-    
+
     exit $?
 }
 
@@ -89,19 +80,19 @@ deploy() {
     exit $?
 }
 
-destroy () {
+destroy() {
     _information "Execute terraform destroy"
     terraform destroy -input=false -auto-approve
 
     exit $?
 }
 
-detect_destroy (){
+detect_destroy() {
     plan_file_name=$1
     _information "Detect destroy in .tfplan file"
 
-    terraform show -no-color -json ${plan_file_name} > mytmp.json
-    actions=$(cat  mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
+    terraform show -no-color -json ${plan_file_name} >mytmp.json
+    actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
 
     if [[ -z $actions ]]; then
         _information "Plan file ${plan_file_name} has not delete changes"
@@ -112,13 +103,13 @@ detect_destroy (){
     exit $?
 }
 
-lint() { 
+lint() {
     _information "Execute tflint"
-    
+
     lint_res_file_name="$(basename $PWD)_lint_res.xml"
     filePath=$(echo "${lint_res_file_name}" | sed -e 's/\//-/g')
 
-    "tflint"  > $filePath 2>&1
+    "tflint" >$filePath 2>&1
 
     if [[ -s $filepath ]]; then
         echo "tflint passed"
