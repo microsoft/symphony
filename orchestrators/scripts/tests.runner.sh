@@ -42,5 +42,13 @@ terraform() {
 
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
+  else
+      # find the go file based on the filename
+      TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
+
+      print "Running tests for '${TEST_FILE}'"
+
+      # run a specific test
+      go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
   fi
 }
