@@ -55,6 +55,23 @@ terraform() {
 
 bicep() {
 
+  arm_ttk() {
+    # run arm-ttk tests
+    pushd ./arm-ttk
+
+      az bicep build --file ../../bicep/01_sql/02_deployment/main.bicep
+
+      pwsh -Command \
+      "
+        Import-Module ./arm-ttk.psd1
+        Test-AzTemplate -TemplatePath ../../bicep/01_sql/02_deployment/main.json
+        Remove-Item -Force -Path ../../bicep/01_sql/02_deployment/main.json
+      "
+
+    # return to the previous directory
+    popd
+  }
+
   # cd to the tests directory
   cd ../../IAC/Bicep/test
 
