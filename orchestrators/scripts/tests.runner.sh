@@ -32,4 +32,15 @@ terraform() {
 
   CWD=$(pwd)
 
+  if [ -z "${TEST_FILE_NAME}" ]; then
+      # find all tests
+      TEST_FILE_NAMES=`find ${CWD}/**/*.go`
+
+      # run all tests
+      for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
+        print "Running tests for '${TEST_FILE_NAME}'"
+
+        go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
+      done
+  fi
 }
