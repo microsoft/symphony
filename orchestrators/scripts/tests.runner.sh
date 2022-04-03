@@ -66,3 +66,18 @@ if [ -z "$1" ]; then
   usage
 fi
 
+# parse the arguments
+case ${1} in
+  terraform)
+    shift
+    terraform $@
+    ;;
+  bicep)
+    shift
+    bicep $@
+    ;;
+  *)
+    echo "Invalid argument: ${1}"
+    usage
+    ;;
+esac
