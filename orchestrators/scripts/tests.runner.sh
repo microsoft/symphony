@@ -60,3 +60,9 @@ bicep() {
 
 }
 
+# if no arguments are passed, show usage
+if [ -z "$1" ]; then
+  echo "No arguments passed"
+  usage
+fi
+
