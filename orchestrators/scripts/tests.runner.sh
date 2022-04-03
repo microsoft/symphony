@@ -91,6 +91,16 @@ bicep() {
     popd
   }
 
+  shellspec() {
+    # run spec tests
+    pushd ./spec
+
+    shellspec -f d
+
+    # return to the previous directory
+    popd
+  }
+
   # cd to the tests directory
   cd ../../IAC/Bicep/test
 
