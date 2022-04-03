@@ -72,6 +72,25 @@ bicep() {
     popd
   }
 
+  pester() {
+    # run pester tests
+    pushd ./pester
+
+      # if the test file is not specified, run for all files
+      if [ -z "${1}" ]; then
+        pwsh -Command "Invoke-Pester -OutputFile Test.xml -OutputFormat NUnitXML"
+      else
+        TEST_FILE=`find ${1}`
+
+        if [ ! -z "${TEST_FILE}" ]; then
+          pwsh -Command "Invoke-Pester -OutputFile Test.xml -OutputFormat NUnitXML ${TEST_FILE}"
+        fi
+      fi
+
+    # return to the previous directory
+    popd
+  }
+
   # cd to the tests directory
   cd ../../IAC/Bicep/test
 
