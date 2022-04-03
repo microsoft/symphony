@@ -104,6 +104,17 @@ bicep() {
   # cd to the tests directory
   cd ../../IAC/Bicep/test
 
+  if [ -z "${1}" ]; then
+    arm_ttk $@
+    pester $@
+    shellspec $@
+  elif [ "${1}" == "arm-ttk" ]; then
+    arm_ttk ${2}
+  elif [ "${1}" == "pester" ]; then
+    pester ${2}
+  elif [ "${1}" == "shellspec" ]; then
+    shellspec ${2}
+  fi
 }
 
 # if no arguments are passed, show usage
