@@ -52,3 +52,11 @@ terraform() {
       go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
   fi
 }
+
+bicep() {
+
+  # cd to the tests directory
+  cd ../../IAC/Bicep/test
+
+}
+
