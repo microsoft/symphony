@@ -20,12 +20,11 @@ Environment cloud configurations are credentials used to authenticate to the clo
 There are multiple options to cosider when storing the environment cloud configurations. While values can be stored as service connections, and secrets in the orchestrator tool directly, It can also be stored in a central azure key vault and have give the pipelines acccess to it.
 
 
-| **Option**                 | **Azure Key vault**                                                                                                                                           | **Orchestrators Secrects/SVC**                                                              |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| **Implementation details** | Central key vault contains secrets representing each env needed keys, sp, and ids                                                                             | collection of secrets/config per env stored in the orchestrator tool                        |
-| **Pro(s)**                 | - Central storage for all env secrets, easier to maintain, rotate and recover in case of leak or breach.  - No Credentials stored at the orchestrator tools.  | - no added cost.                                                                            |
-| **Con(s)**                 | - Added cost.                                                                                                                                                 | - lists of secrets permanently stored in orchestrators are harder to maintain, and rotate.  |
-
+| **Option**                 | **Azure Key vault**                                                                                                                                                                   | **Orchestrators Secrects/SVC**                                                                               |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| **Implementation details** | Central key vault contains secrets representing each env needed keys, sp, and ids                                                                                                     | collection of secrets/config per env stored in the orchestrator tool                                         |
+| **Pro(s)**                 | <ul><li> Central storage for all env secrets, easier to maintain, rotate and recover in case of leak or breach.</li><li>  No Credentials stored at the orchestrator tools.</li></ul>  | <ul><li> No added cost. </ul></li>                                                                           |
+| **Con(s)**                 | <ul><li> Added cost.</li></ul>                                                                                                                                                        | <ul><li> Lists of secrets permanently stored in orchestrators are harder to maintain, and rotate.</li></ul>  |
 
 ## Adding a new environment
 
