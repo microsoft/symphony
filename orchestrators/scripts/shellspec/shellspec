@@ -1,0 +1,496 @@
+#!/bin/sh
+#shellcheck disable=SC2004,SC2016
+
+[ "$PPID" ] || { echo "Unsupported shell. (Bourne shell?)" >&2; exit 1; }
+
+set -e -u -f
+
+if [ "${1:-}" = "-" ]; then
+  if [ $# -gt 1 ]; then shift; set -- "$0" "$@"; else set -- "$0"; fi
+  for i; do i="$i'" j=''
+    while [ "$i" ]; do j="$j${i%%\'*}'\''" && i=${i#*\'}; done
+    set -- "$@" "'${j%????}'" && shift
+  done
+  echo 'IFS= read -r shebang < "$0"'
+  echo 'case $shebang in \#\!*) shell=${shebang#??};; *) shell="";; esac'
+  echo 'exec $shell' "$@" '"$0" --pattern "*" "$@"'
+  echo 'exit 1'
+  exit 0
+fi
+
+export SHELLSPEC_VERSION='0.28.1'
+export SHELLSPEC_CWD=$PWD
+export SHELLSPEC_PATH=''
+export SHELLSPEC_GRAMMAR_DSLS=''
+export SHELLSPEC_GRAMMAR_DIRECTIVES=''
+export SHELLSPEC_GRAMMAR_BLOCKS=''
+export SHELLSPEC_DEFECT_SANDBOX=''
+export SHELLSPEC_PATH_IS_READONLY=''
+export SHELLSPEC_MSLEEP=''
+export SHELLSPEC_BUILTIN_PRINTF=''
+export SHELLSPEC_BUILTIN_PRINT=''
+export SHELLSPEC_BUILTIN_TYPESETF=''
+export SHELLSPEC_TIME=''
+export SHELLSPEC_LIST=''
+export SHELLSPEC_COUNT_FILE=''
+export SHELLSPEC_DEBUG_TRAP=''
+export SHELLSPEC_INFILE=file
+export SHELLSPEC_COVERAGE_SETUP=''
+export SHELLSPEC_COVERAGE_SHELL_OPTIONS=''
+export SHELLSPEC_KCOV_COMPATIBLE_SHELL=''
+export SHELLSPEC_OUTPUT_FD=9
+export SHELLSPEC_DEFECT_EMPTYPARAMS=''
+export SHELLSPEC_DEFECT_READONLY=''
+export SHELLSPEC_DEFECT_BUILTIN=''
+export SHELLSPEC_DEFECT_REDEFINE=''
+export SHELLSPEC_DEFECT_SHELLFLAG=''
+export SHELLSPEC_DEFECT_ERREXIT=''
+export SHELLSPEC_DEFECT_ZSHEXIT=''
+export SHELLSPEC_DEFECT_SUBSHELL=''
+export SHELLSPEC_DEFECT_SETE=''
+export SHELLSPEC_DEFECT_XTRACE=''
+export SHELLSPEC_DEFECT_EXPORTP=''
+export SHELLSPEC_DEFECT_SIGNAL=''
+export SHELLSPEC_SHEBANG_MULTIARG=''
+export SHELLSPEC_BUSYBOX_W32=''
+export SHELLSPEC_SHOPT_AVAILABLE=''
+export SHELLSPEC_FAILGLOB_AVAILABLE=''
+export SHELLSPEC_NOMATCH_AVAILABLE=''
+export SHELLSPEC_PATHSEP=":"
+export SHELLSPEC_REPAIR=''
+export SHELLSPEC_INFO=''
+export SHELLSPEC_TTY=''
+export SHELLSPEC_DEV_TTY="/dev/null"
+export SHELLSPEC_XTRACE_ON=''
+export SHELLSPEC_XTRACE_OFF=''
+export SHELLSPEC_XTRACEFD=2
+export SHELLSPEC_XTRACEFD_VAR=''
+export SHELLSPEC_CLONE_TYPE=''
+export SHELLSPEC_PROC_VERSION='/proc/version'
+export SHELLSPEC_NOEXEC_TMPDIR=''
+
+export SHELLSPEC_ENV="env"
+export SHELLSPEC_PRINTF="printf"
+export SHELLSPEC_SLEEP="sleep"
+export SHELLSPEC_TRAP="trap"
+export SHELLSPEC_MV="mv"
+export SHELLSPEC_CHMOD="chmod"
+export SHELLSPEC_DATE="date"
+export SHELLSPEC_RM="rm"
+export SHELLSPEC_LS="ls"
+export SHELLSPEC_SORT="sort"
+export SHELLSPEC_FIND="find"
+
+#shellcheck disable=SC2039,SC3028
+export SHELLSPEC_HOSTNAME=${HOSTNAME:-localhost}
+
+export SHELLSPEC_COLOR=''
+if [ ! "${NO_COLOR:-}" ] && { [ -t 1 ] || [ "${FORCE_COLOR:-}" ]; } then
+  SHELLSPEC_COLOR=1
+fi
+
+# Based on https://github.com/ko1nksm/readlinkf
+# Changed the interpretation of symlinks to my preference (Change cd -P to cd)
+readlinkf() {
+  [ ${1:+x} ] || return 1; p=$1; until [ _"${p%/}" = _"$p" ]; do p=${p%/}; done
+  [ -e "$p" ] && p=$1; [ -d "$1" ] && p=$p/; set 10 "$(pwd)" "${OLDPWD:-}"; PWD=
+  CDPATH="" cd "$2" && while [ "$1" -gt 0 ]; do set "$1" "$2" "$3" "${p%/*}"
+    [ _"$p" = _"$4" ] || { CDPATH="" cd "${4:-/}" || break; p=${p##*/}; }
+    [ ! -L "$p" ] && p=${PWD%/}${p:+/}$p && set "$@" "${p:-/}" && break
+    set $(($1-1)) "$2" "$3" "$p"; p=$(ls -dl "$p") || break; p=${p#*" $4 -> "}
+  done 2>/dev/null; cd "$2" && OLDPWD=$3 && [ ${5+x} ] && printf '%s\n' "$5"
+}
+
+self=$0
+[ "${BASH_SOURCE:-}" ] && eval "self=\${BASH_SOURCE[0]}"
+( eval "[ \"\${.sh.file:-}\" ]" ) 2>/dev/null && eval "self=\${.sh.file}"
+if ! self=$(readlinkf "$self"); then
+ echo "Failed to detect shellspec real path." >&2
+ exit 1
+fi
+
+# shellspec path
+export SHELLSPEC_SELF="$self"
+export SHELLSPEC_ROOT="${SHELLSPEC_SELF%/*}"
+export SHELLSPEC_LIB="$SHELLSPEC_ROOT/lib"
+export SHELLSPEC_SUPPORT_BIN="$SHELLSPEC_LIB/support-bin.sh"
+export SHELLSPEC_REPORTERLIB="$SHELLSPEC_LIB/libexec/reporter"
+export SHELLSPEC_LIBEXEC="$SHELLSPEC_ROOT/libexec"
+export SHELLSPEC_INSPECTION="$SHELLSPEC_LIBEXEC/shellspec-inspection.sh"
+export SHELLSPEC_UNREADONLY_PATH="$SHELLSPEC_LIBEXEC/shellspec-unreadonly-path.sh"
+
+# shellcheck source=lib/libexec/shellspec.sh
+. "$SHELLSPEC_LIB/libexec/shellspec.sh"
+# shellcheck source=lib/libexec/optparser/optparser.sh
+. "$SHELLSPEC_LIB/libexec/optparser/optparser.sh"
+
+export SHELLSPEC_UNIXTIME=''
+unixtime SHELLSPEC_UNIXTIME
+if ! check_semver "$SHELLSPEC_VERSION"; then
+  abort "SHELLSPEC_VERSION: Invalid version format" \
+    "(major.minor.patch[-pre][+build]): $SHELLSPEC_VERSION"
+fi
+
+# option parsing for change directory
+{
+  dir='.'
+  while [ $# -gt 0 ]; do
+    case $1 in (-c?*)
+      opts=${1#??}
+      shift
+      case $# in
+        0) set -- -c -"$opts" ;;
+        *) set -- -c -"$opts" "$@" ;;
+      esac
+    esac
+    case $1 in
+      -C?*) dir=${1#??} ;;
+      -c | --chdir) dir='' ;;
+      --directory=*) dir=${1#*=} ;;
+      -C | --directory)
+        [ $# -lt 2 ] && abort "Requires an argument: $1"
+        dir=${2:-.}
+        shift ;;
+      *) break ;;
+    esac
+    shift
+  done
+
+  abort_chdir() { abort "Cannot change to '$1'${2:+: }${2:-}"; }
+  if [ ! "$dir" ]; then
+    [ $# -gt 0 ] || abort "There is no file or directory path"
+    case $1 in ([-+]?*)
+      abort "The file or directory path is required before the option '$1'"
+    esac
+    [ -f "$1" ] && dir=${1%/*} || dir=$1
+  fi
+  [ -e "${dir:-.}" ] || abort_chdir "$dir" 'No such file or directory'
+  [ -d "${dir:-.}" ] || abort_chdir "$dir" 'Not a directory'
+  cd "$dir" 2>/dev/null || {
+    error "$(cd "$dir" 2>&1)"
+    abort_chdir "$dir"
+  }
+}
+
+# project root path
+export SHELLSPEC_PROJECT_ROOT="$PWD"
+until [ -f "$SHELLSPEC_PROJECT_ROOT/.shellspec" ]; do
+  [ "$SHELLSPEC_PROJECT_ROOT" ] || break
+  SHELLSPEC_PROJECT_ROOT=${SHELLSPEC_PROJECT_ROOT%/*}
+done
+cd "${SHELLSPEC_PROJECT_ROOT:-.}"
+
+# option parsing
+{
+  optparser parse_options error_message
+
+  error_message() {
+    error "$1${options_file:+" [$options_file]"}"
+  }
+
+  options_file() {
+    set -- "$1" "$params"
+    options_file=$1
+    read_options_file "$1" parse_options
+    if [ "$params" ]; then
+      abort "Cannot specify a specfile in the options file. [$options_file]"
+    fi
+    unset options_file
+    params=$2
+  }
+  enum_options_file options_file
+  [ $# -gt 0 ] && parse_options "$@"
+  if [ "$SHELLSPEC_OPTIONS" ]; then
+    [ -e "$SHELLSPEC_OPTIONS" ] || abort "Options file not found: $SHELLSPEC_OPTIONS"
+    options_file "$SHELLSPEC_OPTIONS"
+  fi
+
+  # Run inside docker container
+  if [ "${SHELLSPEC_DOCKER_IMAGE#:}" ]; then
+    case $SHELLSPEC_DOCKER_IMAGE in (:*)
+      SHELLSPEC_DOCKER_IMAGE="shellspec/runtime${SHELLSPEC_DOCKER_IMAGE}"
+    esac
+    set -- "$@" --docker :
+    cid=$(docker create --rm -it "$SHELLSPEC_DOCKER_IMAGE" shellspec "$@")
+    set -- --exclude spec --exclude .git
+    tar -C "$SHELLSPEC_ROOT" "$@" -c ./ | docker cp - "$cid:/bin/"
+    tar --exclude .git -c ./ | docker cp - "$cid:./"
+    exec docker start -ai "$cid"
+    exit
+  fi
+  eval "set -- $params"
+}
+
+case $SHELLSPEC_MODE in (init)
+  SHELLSPEC_PROJECT_ROOT=${SHELLSPEC_PROJECT_ROOT:-$SHELLSPEC_CWD}
+  helperdir=$SHELLSPEC_HELPERDIR
+  coveragedir=$SHELLSPEC_COVERAGEDIR
+  reportdir=$SHELLSPEC_REPORTDIR
+esac
+if [ ! "$SHELLSPEC_PROJECT_ROOT" ]; then
+  # DEPRECATED: Not a shellspec project directory (TODO: change from error to abort)
+  SHELLSPEC_PROJECT_ROOT=$SHELLSPEC_CWD
+  error 'Not a shellspec project directory (".shellspec" not found in any of the parent directories).'
+  warn 'IMPORTANT NOTES:'
+  warn '  In future releases, run from outside the project directory will not be allowed.'
+  warn '  Create a ".shellspec" or run shellspec from under the directory where the ".shellspec"'
+  warn '  is located. If you are executing specfile directly, the -c (--chdir) option is useful.'
+  warn '  Fallback to the previous behavior for compatibility.'
+  warn "Current project root directory: $SHELLSPEC_PROJECT_ROOT"
+  case $SHELLSPEC_EXECDIR in (@basedir*)
+    abort '--execdir @basedir is not supported (requires ".shellspec").'
+  esac
+  # abort
+fi
+
+# DEPRECATED: Remove loading the $HOME/.shellspec and remove the code here.
+if [ -e "$HOME/.shellspec" ] && [ ! -e "$HOME/.shellspec-options" ]; then
+  if [ "$SHELLSPEC_PROJECT_ROOT" != "$HOME" ]; then
+    warn '"$HOME/.shellspec" has been deprecated. Use "$HOME/.shellspec-options" instead.'
+  fi
+fi
+
+abspath SHELLSPEC_HELPERDIR "$SHELLSPEC_HELPERDIR" "$SHELLSPEC_PROJECT_ROOT"
+abspath SHELLSPEC_COVERAGEDIR "$SHELLSPEC_COVERAGEDIR" "$SHELLSPEC_PROJECT_ROOT"
+abspath SHELLSPEC_REPORTDIR "$SHELLSPEC_REPORTDIR" "$SHELLSPEC_PROJECT_ROOT"
+
+# project path
+export SHELLSPEC_QUICK_FILE="$SHELLSPEC_PROJECT_ROOT/.shellspec-quick.log"
+export SHELLSPEC_PROJECT_NAME="${SHELLSPEC_PROJECT_ROOT##*/}"
+export SHELLSPEC_SPECDIR="$SHELLSPEC_HELPERDIR" # deprecated
+export SHELLSPEC_BANNER_FILE="$SHELLSPEC_HELPERDIR/banner"
+export SHELLSPEC_SUPPORT_BINDIR="$SHELLSPEC_HELPERDIR/support/bin"
+export SHELLSPEC_PROFILER_REPORT="$SHELLSPEC_REPORTDIR/profiler.log"
+export SHELLSPEC_KCOV_FILENAME="$SHELLSPEC_PROJECT_NAME [specfiles]"
+opts=''
+opts="$opts --include-path=."
+opts="$opts --include-pattern=.sh"
+opts="$opts --exclude-pattern=/.shellspec,/spec/,/coverage/,/report/"
+opts="$opts --path-strip-level=1"
+export SHELLSPEC_KCOV_COMMON_OPTS="${opts# } "
+
+# temporary path
+export SHELLSPEC_TMPDIR="${SHELLSPEC_TMPDIR%/}"
+abspath SHELLSPEC_TMPDIR "$SHELLSPEC_TMPDIR" "$SHELLSPEC_CWD"
+if [ ! -d "$SHELLSPEC_TMPDIR" ]; then
+  abort "Temporary directory '$SHELLSPEC_TMPDIR' does not exist or is not a directory."
+fi
+export SHELLSPEC_TMPBASE="$SHELLSPEC_TMPDIR/shellspec.$SHELLSPEC_UNIXTIME.$$"
+export SHELLSPEC_TIME_LOG="$SHELLSPEC_TMPBASE/.shellspec-time.log"
+export SHELLSPEC_PROFILER_LOG="$SHELLSPEC_TMPBASE/.shellspec-profiler.log"
+export SHELLSPEC_DEPRECATION_LOGFILE="$SHELLSPEC_TMPBASE/.shellspec-deprecation.log"
+export SHELLSPEC_PROFILER_SIGNAL="$SHELLSPEC_TMPBASE/.shellspec-profiler.signal"
+export SHELLSPEC_REPORTER_PID="$SHELLSPEC_TMPBASE/.shellspec-reporter.pid"
+export SHELLSPEC_KCOV_IN_FILE="$SHELLSPEC_TMPBASE/kcov/$SHELLSPEC_KCOV_FILENAME"
+export SHELLSPEC_PRECHECKER_STATUS="$SHELLSPEC_TMPBASE/.shellspec-prechecker.status"
+
+# shell detection
+{
+  if [ "${SHELLSPEC_SHELL:-auto}" = "auto" ]; then
+    # shellcheck disable=SC2039,SC3047
+    if [ "$SHELLSPEC_KCOV" ] && ! (trap '' DEBUG) 2>/dev/null; then
+      for shell in sh bash ksh zsh :; do
+        "$shell" -c "trap '' DEBUG" 2>/dev/null && break
+      done
+      [ "$shell" = : ] && abort "Current shell is not compatible with Kcov."
+      warn "Current shell is not compatible with Kcov. Using '$shell' instead."
+    else
+      shell=$(current_shell "$0" "$$")
+    fi
+    if [ ! "$shell" ] && shell="sh"; then
+      warn "Failed to detect the current shell," \
+           "because the ps command does not exist or not compatible."
+      warn "Using 'sh' instead. You can specify the shell with --shell option."
+    fi
+    SHELLSPEC_SHELL=$shell
+  fi
+
+  if command_path shell "${SHELLSPEC_SHELL%% *}"; then
+    case $SHELLSPEC_SHELL in (*\ *) shell="$shell ${SHELLSPEC_SHELL#* }"; esac
+    SHELLSPEC_SHELL=$shell
+  elif ! $SHELLSPEC_SHELL -c '' >/dev/null 2>&1; then
+    abort "Not found specified shell: $SHELLSPEC_SHELL."
+  fi
+}
+
+# inspection
+{
+  if ! eval "$($SHELLSPEC_SHELL "$SHELLSPEC_INSPECTION" || echo false)" &&:; then
+    abort "Shell inspection failed. This shell is not supported.$SHELLSPEC_LF" \
+      "(It is not a POSIX shell or basic functionality is defective)."
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_BUILTIN" ]; then
+    warn "Unsupported shell (builtin commands can not redefine)."
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_READONLY" ]; then
+    warn "Unsupported shell (readonly malfunction)."
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_SHELLFLAG" ]; then
+    warn "Unsupported shell (shell flag handling broken)."
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_ERREXIT" ]; then
+    warn "Unsupported shell (errexit handling broken)."
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_SIGNAL" ]; then
+    SHELLSPEC_TRAP=":"
+    warn "Unsupported shell (signal handling broken)."
+  fi
+
+  [ "$SHELLSPEC_BUSYBOX_W32" ] && SHELLSPEC_PATHSEP=";"
+  [ "$SHELLSPEC_TTY" ] && SHELLSPEC_DEV_TTY=/dev/tty
+}
+
+setup_load_path
+
+if [ "$SHELLSPEC_DEFECT_SANDBOX" ]; then
+  warn "Some features may fail due to incompatibilities with sandbox features."
+fi
+
+# xtrace
+{
+  # shellcheck disable=SC2153
+  if [ "$SHELLSPEC_XTRACE" ]; then
+    if [ ! "$SHELLSPEC_XTRACE_ONLY" ]; then
+      [ "$SHELLSPEC_XTRACEFD_VAR" ] && SHELLSPEC_XTRACEFD=9
+      if [ "$SHELLSPEC_XTRACEFD" = "2" ] && SHELLSPEC_XTRACE_ONLY=1; then
+        warn "Fall back to trace-only mode. All expectations will be skipped."
+      fi
+    fi
+
+    if [ "$SHELLSPEC_DEFECT_XTRACE" ]; then
+      warn "If xtrace doesn't work, " \
+        'execute `set -x` manually inside the function.'
+    fi
+  fi
+
+  if [ "$SHELLSPEC_DEFECT_XTRACE" = "2" ]; then
+    SHELLSPEC_XTRACE_ON='typeset -ft $(typeset +f); '
+    SHELLSPEC_XTRACE_OFF='typeset +ft $(typeset +f); '
+  else
+    if [ "$SHELLSPEC_XTRACEFD_VAR" ]; then
+      SHELLSPEC_XTRACE_ON="$SHELLSPEC_XTRACEFD_VAR=\$SHELLSPEC_XTRACEFD; "
+    fi
+  fi
+  SHELLSPEC_XTRACE_ON="${SHELLSPEC_XTRACE_ON}set -x"
+  SHELLSPEC_XTRACE_OFF=": @SHELLSPEC_XTRACE_OFF@; ${SHELLSPEC_XTRACE_OFF}set +x"
+}
+
+# resolve basic command path
+{
+  if [ ! "$SHELLSPEC_BUILTIN_PRINTF" ]; then
+    command_path SHELLSPEC_PRINTF "printf" || SHELLSPEC_PRINTF="printf"
+  fi
+  command_path SHELLSPEC_ENV "env" ||:
+  command_path SHELLSPEC_MV "mv" ||:
+  command_path SHELLSPEC_CHMOD "chmod" ||:
+  command_path SHELLSPEC_DATE "date" ||:
+  command_path SHELLSPEC_RM "rm" ||:
+  command_path SHELLSPEC_SLEEP "sleep" ||:
+  command_path SHELLSPEC_LS "ls" ||:
+  command_path SHELLSPEC_SORT "sort" ||:
+  command_path SHELLSPEC_FIND "find" ||:
+
+  if command_path "time" || [ "$SHELLSPEC_BUSYBOX_W32" ]; then
+    SHELLSPEC_TIME="time -p"
+  else
+    SHELLSPEC_TIME="$SHELLSPEC_LIBEXEC/shellspec-time.sh"
+    if command_path bash; then
+      SHELLSPEC_TIME="bash $SHELLSPEC_TIME"
+    elif command_path ksh; then
+      SHELLSPEC_TIME="ksh $SHELLSPEC_TIME"
+    fi
+  fi
+}
+
+if ! signal 0 $$ 2>/dev/null; then
+  # For example posh 0.13.2 does not implement kill as builtin and
+  # debian 10 docker image does not have kill command installed by default.
+  warn "kill not found. You may encounter errors with some features."
+fi
+
+if [ "$SHELLSPEC_KCOV" ]; then
+  kcov_verson=$(kcov_version "$SHELLSPEC_KCOV_PATH") || abort "Kcov not found."
+  if [ "$(kcov_version_number "$kcov_verson")" -lt 35 ]; then
+    kcov_verson=${kcov_verson:-unknown (kcov v30 or below)}
+    abort "Kcov v35 or later required. [current: $kcov_verson]"
+  fi
+  if [ ! "$SHELLSPEC_KCOV_COMPATIBLE_SHELL" ]; then
+    abort "Require to use bash/zsh/ksh to run kcov (e.g: --shell bash)."
+  fi
+  export SHELLSPEC_KCOV_VERSION="$kcov_verson"
+fi
+
+if [ "$SHELLSPEC_PROFILER" ] && [ "$SHELLSPEC_WORKERS" -gt 0 ]; then
+  abort "Cannot be specified profiler and parallel execution at the same time."
+fi
+
+case $SHELLSPEC_MODE in (runner | list | translate | syntax-check)
+  [ $# -eq 0 ] && set -- "$SHELLSPEC_DEFAULT_PATH"
+  if includes_pathstar "$@"; then
+    for p in "$@"; do
+      includes_pathstar "$p" || continue
+      check_pathstar "$p" || abort "The path pattern is invalid: $p."
+    done
+    args=''
+    cd "$SHELLSPEC_CWD"
+    callback() { if [ ! "$2" ] || [ -e "${1%%:*}" ]; then pack args "$1"; fi; }
+    expand_pathstar callback "." "$@"
+    cd "$SHELLSPEC_PROJECT_ROOT"
+    eval "set -- $args"
+    [ $# -eq 0 ] && abort "Did not match the specified path(s)."
+  fi
+  for p in "$@"; do
+    abspath='' range=''
+    abspath abspath "$p" "$SHELLSPEC_CWD"
+    separate_abspath_and_range abspath range "$abspath"
+    [ -e "$abspath" ] || abort "Not found a path: ${p%%:*}."
+    if [ -d "$abspath" ] && [ "$range" ]; then
+      abort "Cannot specify range for the directory: $p"
+    fi
+    check_range "$range" || abort "Invalid range: $p"
+    if is_path_in_project "$abspath"; then
+      relpath=${abspath#"$SHELLSPEC_PROJECT_ROOT"}
+      [ "$relpath" ] && relpath=${relpath#/} || relpath='./'
+      set -- "$@" "${relpath}${range:+:}${range}"
+    else
+      # DEPRECATED: Accept only files in the project
+      # abort "Not a path in the project directory: $p."
+      if [ -e "$SHELLSPEC_PROJECT_ROOT/.shellspec" ]; then
+        error "Not a path in the project directory: $p"
+        warn 'IMPORTANT NOTES:'
+        warn '  You have specified specfile(s) that outside of the current project directory.'
+        warn '  In future releases, run specfile(s) that outside the current project directory'
+        warn '  will not be allowed. Fallback to the previous behavior for compatibility.'
+        warn "Current project root directory: $SHELLSPEC_PROJECT_ROOT"
+      fi
+      set -- "$@" "${abspath}${range:+:}${range}"
+    fi
+    shift
+  done
+esac
+
+case $SHELLSPEC_MODE in (init)
+  SHELLSPEC_PROJECT_ROOT=$SHELLSPEC_CWD
+  SHELLSPEC_PROJECT_NAME=${SHELLSPEC_PROJECT_ROOT##*/}
+  SHELLSPEC_HELPERDIR=$helperdir
+  SHELLSPEC_COVERAGEDIR=$coveragedir
+  SHELLSPEC_REPORTDIR=$reportdir
+  cd "$SHELLSPEC_CWD"
+esac
+
+case $SHELLSPEC_MODE in (runner | list)
+  # shellcheck disable=SC2153
+  if [ "$SHELLSPEC_RANDOM" ] && [ ! "$SHELLSPEC_SEED" ]; then
+    random_seed SHELLSPEC_SEED "$SHELLSPEC_UNIXTIME" "$$"
+    info "Randomized with seed $SHELLSPEC_SEED" >&2
+  fi
+esac
+
+[ "$SHELLSPEC_ENV_FROM" ] && exec="load-env" || exec=$SHELLSPEC_MODE
+exec="$SHELLSPEC_LIBEXEC/shellspec-${exec}.sh"
+eval exec "$SHELLSPEC_SHELL" "\"$exec\"" ${1+'"$@"'}
