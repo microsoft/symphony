@@ -4,7 +4,20 @@
 source _helpers.sh
 
 usage() {
-  _information "Usage: ${0} [terraform or bicep]"
+  cat <<EOF
+
+Usage: ${0} [terraform or bicep]
+
+  terraform         : run \`all\` terraform tests
+    [optional] provide the name of the test file to run, e.g. ${0} terraform 00_dummy_test.go
+
+  bicep             : run \`all\` bicep tests
+    bicep arm_ttk   : run \`arm_ttk\`   bicep tests
+    bicep pester    : run \`pester\`    bicep tests
+      [optional] provide the name of the test file to run, e.g. ${0} bicep pester SqlIntegration.Tests.ps1
+    bicep shellspec : run \`shellspec\` bicep tests
+
+EOF
   exit 1
 }
 
@@ -119,7 +132,6 @@ bicep() {
 
 # if no arguments are passed, show usage
 if [ -z "$1" ]; then
-  echo "No arguments passed"
   usage
 fi
 
