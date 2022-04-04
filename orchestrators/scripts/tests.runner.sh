@@ -18,20 +18,17 @@ Usage: ${0} [terraform or bicep]
     bicep shellspec : run \`shellspec\` bicep tests
 
 EOF
-  exit 1
 }
 
-print() {
-  _success "${1}"
-
-  echo -e "--------------------------------------------------------------------------------\n[$(date)] : ${1}" | tee -a test.out
-}
-
+# @description: run tests for terraform
+# @param ${1}: test file name
+# @usage <to run all the tests>: source ${0} && terraform
+# @usage <to run {FILENAME} tests only>; source ${0} && terraform 00_dummy_test.go
 terraform() {
   TEST_FILE_NAME=${1:-}
 
   # cd into the terraform directory
-  cd ../../IAC/Terraform/
+  pushd ../../IAC/Terraform/
 
   # cleanup any existing state
   rm -rf ./terraform/**/.terraform
@@ -51,7 +48,7 @@ terraform() {
 
       # run all tests
       for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
-        print "Running tests for '${TEST_FILE_NAME}'"
+        echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
 
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
@@ -59,13 +56,23 @@ terraform() {
       # find the go file based on the filename
       TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
 
-      print "Running tests for '${TEST_FILE}'"
+      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE}'" | tee -a test.out
 
       # run a specific test
       go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
   fi
+
+  popd
 }
 
+# @description: run tests for bicep
+# @param ${1}: test type, options; arm-ttk, pester, shellspec
+# @param ${2}: test file name
+# @usage <to run all the tests>: source ${0} && bicep
+# @usage <to run all the tests for arm-ttk>: source ${0} && bicep arm-ttk
+# @usage <to run all the tests for pester>: source ${0} && bicep pester
+# @usage <to run {FILENAME} tests only for pester>; source ${0} && bicep pester SqlIntegration.Tests.ps1
+# @usage <to run all the tests for shellspec>: source ${0} && bicep shellspec
 bicep() {
 
   arm_ttk() {
@@ -115,7 +122,7 @@ bicep() {
   }
 
   # cd to the tests directory
-  cd ../../IAC/Bicep/test
+  pushd ../../IAC/Bicep/test
 
   if [ -z "${1}" ]; then
     arm_ttk $@
@@ -128,25 +135,6 @@ bicep() {
   elif [ "${1}" == "shellspec" ]; then
     shellspec ${2}
   fi
+
+  popd
 }
-
-# if no arguments are passed, show usage
-if [ -z "$1" ]; then
-  usage
-fi
-
-# parse the arguments
-case ${1} in
-  terraform)
-    shift
-    terraform $@
-    ;;
-  bicep)
-    shift
-    bicep $@
-    ;;
-  *)
-    echo "Invalid argument: ${1}"
-    usage
-    ;;
-esac
