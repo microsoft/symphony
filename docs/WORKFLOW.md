@@ -17,7 +17,6 @@ flowchart LR
     A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
     C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
     E -->F(Finalize/Publish reports)
-
 ```
 
 ### Preview
@@ -38,7 +37,6 @@ This stage deploys the IAC code to apply the changes from the planning stage. It
 ```mermaid
 flowchart LR
     A(Init IAC tool) --> B(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
-
 ```
 
 ### Test
