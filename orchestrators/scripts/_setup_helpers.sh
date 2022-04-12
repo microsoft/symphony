@@ -1,10 +1,15 @@
 get_os_architecture() {
+    local arch_amd64="${1:-"amd64"}"
+    local arch_arm64="${2:-"arm64"}"
+    local arch_arm="${3:-"arm"}"
+    local arch_386="${4:-"386"}"
+
     os_architecture="$(uname -m)"
     case ${os_architecture} in
-    x86_64) os_architecture="amd64" ;;
-    aarch64 | armv8*) os_architecture="arm64" ;;
-    aarch32 | armv7* | armvhf*) os_architecture="arm" ;;
-    i?86) os_architecture="386" ;;
+    x86_64) os_architecture="${arch_amd64}" ;;
+    aarch64 | armv8*) os_architecture="${arch_arm64}" ;;
+    aarch32 | armv7* | armvhf*) os_architecture="${arch_arm}" ;;
+    i?86) os_architecture="${arch_386}" ;;
     *)
         _error "Architecture ${os_architecture} unsupported"
         exit 1
@@ -21,6 +26,11 @@ find_version_from_git_tags() {
     local prefix=${3:-"tags/v"}
     local separator=${4:-"."}
     local last_part_optional=${5:-"false"}
+
+    if [ "${separator}" = "none" ]; then
+        separator=""
+    fi
+
     if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
         local escaped_separator=${separator//./\\.}
         local last_part
