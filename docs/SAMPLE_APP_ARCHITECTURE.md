@@ -18,14 +18,14 @@ There are three Symphony layers to deploy the Sample App;
 - [Database layer](./../IAC/Terraform/terraform/02_sql)
 - [Web App layer](./../IAC/Terraform/terraform/03_webapp)
 
-### Layout of the symphony layers and deployments
+### Layout of the symphony layers and deployments (Terraform)
 
 ```mermaid
 graph TD
   A[init layer] --> B[database layer] --> C[webapp layer]
 ```
 
-### Init Layer
+### Init Layer (Terraform)
 
 _01_init_ layer is a _special_ layer, that provisions the symphony infrastructure, for example, an _Azure Storage Account_ to hold remote state of terraform modules.
 
@@ -33,7 +33,7 @@ _01_init_ layer is a _special_ layer, that provisions the symphony infrastructur
   - Storage Container
 - Storage Account for backup
 
-### Database layer
+### Database layer (Terraform)
 
 _02_sql_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app:
 
@@ -42,7 +42,7 @@ _02_sql_ layer has only one deployment: _01_deployment_, that provisions the fol
 - SQL Server database for identities
 - SQL Server firewall rule
 
-### WebApp layer
+### WebApp layer (Terraform)
 
 _03_webapp_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app.
 
@@ -56,14 +56,14 @@ There are two Symphony layers to deploy the Sample App
 - [Database layer](./../IAC/Bicep/bicep/01_sql)
 - [Web App layer](./../IAC/Bicep/bicep/02_webapp)
 
-### Layout of the symphony layers and deployments
+### Layout of the symphony layers and deployments (Bicep)
 
 ```mermaid
 graph TD
   a[database layer] --> b[webapp layer]
 ```
 
-### Database layer
+### Database layer (Bicep)
 
 _01_sql_ layer has two deployments:
 
@@ -74,7 +74,7 @@ _01_sql_ layer has two deployments:
   - SQL Server database for identities
   - SQL Server firewall rule
 
-### WebApp layer
+### WebApp layer (Bicep)
 
 _02_webapp_ layer has two deployments:
 
