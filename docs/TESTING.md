@@ -76,12 +76,12 @@ shellspec -f d
 shellspec -f j > tests.xml
 ```
 
-
 ## Terraform
 
 All below test examples have assumption for working directory - should be [IAC/Terraform/test/terraform](./../IAC/Terraform/test/terraform/)
 
-### Terratest 
+### Terratest
+
 [Terratest](https://github.com/gruntwork-io/terratest)  is a Go library that makes it easier to write automated tests for your infrastructure code. It provides a variety of helper functions and patterns for common infrastructure testing tasks,and offers a good
 support for the most commonly used Azure resources.
 
