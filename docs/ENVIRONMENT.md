@@ -2,8 +2,7 @@
 
 An environment in Symphony is represented by a set of configuration files, each represents the input values for the IAC modules used,  and set of credentials used to authenticate to the cloud related environment subscription at which resources are deployed.
 
-
-![Workflow steps](images/environment.PNG)
+![Workflow steps](./images/environment.PNG)
 
 ## Environment resources configurations
 
