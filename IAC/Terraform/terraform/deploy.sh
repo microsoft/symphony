@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare enviroment="dev"
+declare environment="dev"
 
 # 01_init
 layer_path="01_init"
