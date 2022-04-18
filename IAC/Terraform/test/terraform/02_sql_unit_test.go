@@ -20,7 +20,7 @@ func Test02_SQL(t *testing.T) {
 	rmResourceGroupName := os.Getenv("resource_group_name")
 	rmStorageAccName := os.Getenv("storage_account_name")
 	rmContainerName := os.Getenv("container_name")
-	rmKey := "02_sql/01_deployment.tfstate"
+	rmKey := "02_sql/01_deployment_test.tfstate"
 
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
@@ -52,9 +52,10 @@ func Test02_SQL(t *testing.T) {
 
 	catalogDBName := terraform.Output(t, terraformOptions, "catalog_sql_db_name")
 	identityDBName := terraform.Output(t, terraformOptions, "identity_sql_db_name")
+	expectedSQLDBStatus := "Online"
 
 	// Assert deployed server and databases status
 	assert.Equal(t, sql.ServerStateReady, azure.GetSQLServer(t, resourceGroupName, sqlServerName, "").State, "SQl server Status")
-	assert.Equal(t, "Online", *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, catalogDBName, "").Status, "Catalog SQL DB Status")
-	assert.Equal(t, "Online", *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, identityDBName, "").Status, "Identity SQL DB Status")
+	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, catalogDBName, "").Status, "Catalog SQL DB Status")
+	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, identityDBName, "").Status, "Identity SQL DB Status")
 }

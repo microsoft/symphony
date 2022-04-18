@@ -17,7 +17,7 @@ func Test03_WebAPP(t *testing.T) {
 	rmResourceGroupName := os.Getenv("resource_group_name")
 	rmStorageAccName := os.Getenv("storage_account_name")
 	rmContainerName := os.Getenv("container_name")
-	rmKey := "03_web/01_deployment.tfstate"
+	rmKey := "03_web/01_deployment_test.tfstate"
 
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
