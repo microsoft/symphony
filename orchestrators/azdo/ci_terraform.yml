@@ -58,13 +58,13 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Run TF Validate"
-        variables:
-          deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
+        #variables:
+          #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
-
           - checkout: Symphony 
-          #- checkout: "https://github.com/microsoft/symphony.git@refs/heads/master"
-
-          - template: template.step.tfvalidation.yml
-            parameters:
-              deployments: $(deployments)
+          
+          - task: ShellScript@2
+            inputs: "Install Terraform tools"
+            scriptPath: $(System.DefaultWorkingDirectory)/orchestrators/scripts/setup-terraform.sh
+            condition: 
+          
