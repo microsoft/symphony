@@ -63,6 +63,17 @@ stages:
         steps:
           - checkout: Symphony 
           
+          - task: CmdLine@2
+            inputs:
+              script: |
+                echo  "ls"
+                
+                ls
+                
+                echo "---------------------------"
+                echo  "current_dir"
+                echo $(System.DefaultWorkingDirectory)
+          
           - task: Bash@3
             displayName: "Install Terraform tools"
             inputs:
