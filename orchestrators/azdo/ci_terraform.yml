@@ -4,6 +4,7 @@ resources:
   - repository: Symphony
     type: github
     endpoint: Symphony
+    name: microsoft/symphony
     ref: master
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
