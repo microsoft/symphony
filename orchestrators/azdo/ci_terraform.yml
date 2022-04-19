@@ -83,5 +83,6 @@ stages:
             inputs:
               filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)'
+              bashEnvValue: '~/.profile'
               failOnStderr: true
               
