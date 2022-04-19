@@ -64,7 +64,8 @@ stages:
           - checkout: Symphony 
           
           - task: ShellScript@2
-            inputs: "Install Terraform tools"
+            inputs:
             scriptPath: $(System.DefaultWorkingDirectory)/orchestrators/scripts/setup-terraform.sh
-            condition: 
+            displayName: "Install Terraform tools"
+
           
