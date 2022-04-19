@@ -1,0 +1,69 @@
+
+resources:
+  repositories:
+  - repository: Symphony
+    type: github
+    endpoint: MyGitHubServiceConnection
+    ref: master
+
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: env
+    value: "dev"
+  - name: workDir
+    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
+  - name: runCredScan
+    value: true
+  - name: runTfValidation
+    value: true
+  - name: runTfLint
+    value: true
+  - name: runTfPlan
+    value: true
+  - name: runTfDestroy
+    value: true
+  - name: runTfApply
+    value: true
+  - name: runUnitTest
+    value: true
+  - name: runIntegrationTest
+    value: true
+  - name: TfPlanPipelineFolderPath
+    value: "\\infrastructure\\shared"
+  - name: TfApplyPipelineFolderPath
+    value: "\\infrastructure\\shared"
+  - name: TfPlanPipelineName
+    value: "tfplan"
+  - name: TfApplyPipelineName
+    value: "tfapply"
+
+
+stages:
+ - stage: Validate
+   displayName: "Validate Configuration"
+   jobs:
+      # Validate and Initialize Layers #
+      - job: TfValidation
+        workspace:
+          clean:  resources       
+        displayName: "Run TF Validate"
+        variables:
+          deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
+        steps:
+
+          - checkout: Symphony 
+          #- checkout: "https://github.com/microsoft/symphony.git@refs/heads/master"
+
+          - template: template.step.tfvalidation.yml
+            parameters:
+              deployments: $(deployments)
