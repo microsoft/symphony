@@ -3,7 +3,7 @@ resources:
   repositories:
   - repository: Symphony
     type: github
-    endpoint: MyGitHubServiceConnection
+    endpoint: Symphony
     ref: master
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
