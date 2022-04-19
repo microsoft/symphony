@@ -66,8 +66,8 @@ stages:
           - task: Bash@3
             displayName: "Install Terraform tools"
             inputs:
-              filePath: 'orchestrators/scripts/setup-terraform.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              filePath: 'setup-terraform.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               bashEnvValue: '~/.profile'
               failOnStderr: true
               
