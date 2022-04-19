@@ -3,7 +3,7 @@ resources:
   repositories:
   - repository: Symphony
     type: github
-    endpoint: Symphony
+    endpoint: Symphony2
     name: microsoft/symphony
     ref: master
 
