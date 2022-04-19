@@ -19,6 +19,12 @@ func Test01_Init_Storage(t *testing.T) {
 		TerraformDir: "../../terraform/01_init",
 	}
 
+	// Defer 'terraform Destroy'
+	defer terraform.Destroy(t, terraformOptions)
+
+	// Run `terraform init` to init remote state.
+	terraform.InitAndApply(t, terraformOptions)
+
 	// Run `terraform output` to get the values of output variables from the terraform.tfstate
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
 	storageAccountName := terraform.Output(t, terraformOptions, "storage_account_name")

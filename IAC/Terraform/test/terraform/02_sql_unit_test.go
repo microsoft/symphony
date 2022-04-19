@@ -1,5 +1,4 @@
 // +build 02_sql
-
 package terraform
 
 import (
@@ -15,11 +14,13 @@ import (
 func Test02_SQL(t *testing.T) {
 	t.Parallel()
 
+	location := "westus"
+	env := "dev"
 	//load remote state env vars
 	rmResourceGroupName := os.Getenv("resource_group_name")
 	rmStorageAccName := os.Getenv("storage_account_name")
 	rmContainerName := os.Getenv("container_name")
-	rmKey := os.Getenv("key")
+	rmKey := "02_sql/01_deployment_test.tfstate"
 
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
@@ -32,9 +33,18 @@ func Test02_SQL(t *testing.T) {
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
 			"key":                  rmKey},
+
+		Vars: map[string]interface{}{
+			"location": location,
+			"env":      env,
+		},
 	}
-	//Run `terraform init` to init remote state.
-	terraform.InitE(t, terraformOptions)
+
+	// Defer 'terraform Destroy'
+	defer terraform.Destroy(t, terraformOptions)
+
+	// Run `terraform init` to init remote state.
+	terraform.InitAndApply(t, terraformOptions)
 
 	// Run `terraform output` to get the values of output variables from the terraform.tfstate
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
@@ -44,9 +54,8 @@ func Test02_SQL(t *testing.T) {
 	identityDBName := terraform.Output(t, terraformOptions, "identity_sql_db_name")
 	expectedSQLDBStatus := "Online"
 
-	// assert deployed server and databases status
-	assert.Equal(t, sql.ServerStateReady, azure.GetSQLServer(t, resourceGroupName, sqlServerName, ""), "SQl server Status")
+	// Assert deployed server and databases status
+	assert.Equal(t, sql.ServerStateReady, azure.GetSQLServer(t, resourceGroupName, sqlServerName, "").State, "SQl server Status")
 	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, catalogDBName, "").Status, "Catalog SQL DB Status")
 	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, identityDBName, "").Status, "Identity SQL DB Status")
-
 }
