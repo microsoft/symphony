@@ -63,9 +63,10 @@ stages:
         steps:
           - checkout: Symphony 
           
-          - task: ShellScript@2
-            inputs:
-            scriptPath: $(System.DefaultWorkingDirectory)/orchestrators/scripts/setup-terraform.sh
+          - task: Bash@3
             displayName: "Install Terraform tools"
-
-          
+            inputs:
+              filePath: '/orchestrators/scripts/setup-terraform.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              failOnStderr: true
+              
