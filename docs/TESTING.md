@@ -17,7 +17,7 @@ az bicep build --file ../bicep/01_sql/02_deployment/main.bicep
 2. Install ARM TTK module
 
 ```powershell
-Import-Module .\arm-ttk\arm-ttk.psd
+Import-Module .\arm-ttk\arm-ttk.psd1
 ```
 
 3. Run the test
