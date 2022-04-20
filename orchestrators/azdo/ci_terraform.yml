@@ -104,20 +104,12 @@ stages:
                 ls
                 echo '-------------'
 
-                source ./orchestrators/scripts/scanners.sh
+                source ./scanners.sh
                 run_gitleaks './IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
                 
                 echo 'ls'
                 ls
                 echo '-------------' 
 
-
-          - task: Bash@3
-            displayName: "Run gitleaks"
-            inputs:
-              filePath: 'orchestrators/scripts/scanners.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
 
               
