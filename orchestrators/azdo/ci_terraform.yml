@@ -99,5 +99,22 @@ stages:
                 source ./scanners.sh
                 run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
 
+          - task: Bash@3
+            displayName: "Run Terraform lint"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: | 
+                echo 'Run tflint'
+
+                source ./git.diff.sh
+                
+                # detect each subfolder in terraform to lint:
+                git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
+                echo $return_res_var
+
+                #./iac.tf.sh
+                #lint
+                 
 
               
