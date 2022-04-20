@@ -96,6 +96,20 @@ stages:
                 
                 echo 'ls'
                 ls
+                echo '-------------'
+                mkdir results
+                
+                echo 'ls'
+                ls
+                echo '-------------'
+
+                source ./orchestrators/scripts/scanners.sh
+                run_gitleaks './IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+                
+                echo 'ls'
+                ls
+                echo '-------------' 
+
 
           - task: Bash@3
             displayName: "Run gitleaks"
