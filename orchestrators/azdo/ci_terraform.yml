@@ -51,15 +51,14 @@ stages:
  - stage: Validate
    displayName: "Validate Configuration"
    jobs:
-      # Validate and Initialize Layers #
-      - job: TfValidation
+      - job: prepEnv
         workspace:
           clean:  resources       
-        displayName: "Validate"
+        displayName: "Prep Env"
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
-          - checkout: Symphony 
+          #- checkout: Symphony 
           
           - task: Bash@3
             displayName: "Install Terraform"
@@ -93,6 +92,15 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
+          
+      - job: Validate
+        workspace:
+          clean:  resources       
+        displayName: "Validate"
+        #variables:
+          #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
+        steps:
+          - checkout: Symphony 
           - task: Bash@3
             displayName: "Run gitleaks"
             inputs:
@@ -146,7 +154,7 @@ stages:
                           echo "------------------------"
                         done
                 popd
-                
+
                 
                  
 
