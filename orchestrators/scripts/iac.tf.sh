@@ -113,11 +113,11 @@ lint() {
 
     if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
-        exit 0
+        #exit 0
     else
         echo "tflint failed. lint results in file name ${lint_res_file_name}"
         sed -i 's/\x1b\[[0-9;]*m//g' $filePath
         cat $filePath
-        exit 1
+        #exit 1
     fi
 }
