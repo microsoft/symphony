@@ -79,11 +79,30 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-go.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
+          
           - task: Bash@3
-            displayName: "Install Go"
+            displayName: "Run gitleaks"
             inputs:
-              filePath: 'orchestrators/scripts/setup-go.sh'
+              targetType: 'inline'
+              script: |
+                # Write your commands here
+                
+                echo 'ls'
+                ls
+
+          - task: Bash@3
+            displayName: "Run gitleaks"
+            inputs:
+              filePath: 'orchestrators/scripts/scanners.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               bashEnvValue: '~/.profile'
               failOnStderr: true
+
               
