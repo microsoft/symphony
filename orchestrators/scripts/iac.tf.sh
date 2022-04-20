@@ -111,6 +111,7 @@ lint() {
 
     "tflint" >$filePath 2>&1
 
+    local code=$? 
     if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
         #exit 0
@@ -120,4 +121,5 @@ lint() {
         cat $filePath
         #exit 1
     fi
+    return $code
 }
