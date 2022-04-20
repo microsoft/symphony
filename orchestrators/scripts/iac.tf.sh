@@ -111,7 +111,7 @@ lint() {
 
     "tflint" >$filePath 2>&1
 
-    if [[ -s $filepath ]]; then
+    if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
         exit 0
     else
