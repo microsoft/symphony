@@ -57,7 +57,7 @@ stages:
       - job: TfValidation
         workspace:
           clean:  resources       
-        displayName: "Run TF Validate"
+        displayName: "Validate"
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
