@@ -148,20 +148,7 @@ stages:
                           lint 
                           popd
                           echo "------------------------"
-                          
-                          #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
-                          #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
-                          #  tflint "$(workDir)/$deployment" > "$filePath"
-                          #  echo "##vso[task.addattachment type=Distributedtask.Core.Summary;name=TFLint-$filePath-Results;]$(pwd)/$filePath"
-                          #  echo "##vso[task.logissue type=error]${deployment} failed tflint scan."
-                          #  exitcode=1
-                          #else
-                          #  echo "TFLint passed."
-                          #fi
-                          #echo "END linting ${deployment}"
-
                         done
-
                 popd
                 
                 
