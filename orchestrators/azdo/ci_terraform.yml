@@ -123,7 +123,9 @@ stages:
                 #git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
                 #echo $return_res_var
 
-                #source ./iac.tf.sh
+                source ./iac.tf.sh
+                res=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+                
                 #lint ./../../IAC/Terraform/terraform
                  
 
