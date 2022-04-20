@@ -126,6 +126,10 @@ stages:
                 cd ./../../IAC/Terraform/terraform
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
+                echo "modules"
+                echo "-------------"
+                echo $modules
+                echo "-------------"
 
                 SAVEIFS=$IFS
                 IFS=$'\n'
@@ -138,14 +142,13 @@ stages:
                 for deployment in "${array[@]}"
                         do
                           echo "START linting ${deployment}"
-                          echo "------------curr dir----------"
-                          echo "$PWD"
-                          echo "------------------------"
+                          pushd .
                           cd $deployment
-                          ls
-                          echo "------------------------"
+
                           lint 
-                          cat 01_init_lint_res.xml
+                          popd
+                          echo "------------------------"
+                          
                           #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
                           #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
                           #  tflint "$(workDir)/$deployment" > "$filePath"
