@@ -1,0 +1,120 @@
+
+resources:
+  repositories:
+  - repository: Symphony
+    type: github
+    endpoint: Symphony2
+    name: microsoft/symphony
+    ref: main
+
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: env
+    value: "dev"
+  - name: workDir
+    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
+  - name: runCredScan
+    value: true
+  - name: runTfValidation
+    value: true
+  - name: runTfLint
+    value: true
+  - name: runTfPlan
+    value: true
+  - name: runTfDestroy
+    value: true
+  - name: runTfApply
+    value: true
+  - name: runUnitTest
+    value: true
+  - name: runIntegrationTest
+    value: true
+  - name: TfPlanPipelineFolderPath
+    value: "\\infrastructure\\shared"
+  - name: TfApplyPipelineFolderPath
+    value: "\\infrastructure\\shared"
+  - name: TfPlanPipelineName
+    value: "tfplan"
+  - name: TfApplyPipelineName
+    value: "tfapply"
+
+
+stages:
+ - stage: Validate
+   displayName: "Validate Configuration"
+   jobs:
+      # Validate and Initialize Layers #
+      - job: TfValidation
+        workspace:
+          clean:  resources       
+        displayName: "Validate"
+        #variables:
+          #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
+        steps:
+          - checkout: Symphony 
+          
+          - task: Bash@3
+            displayName: "Install Terraform tools"
+            inputs:
+              filePath: 'orchestrators/scripts/setup-terraform.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
+          
+          - task: Bash@3
+            displayName: "Install gitleaks"
+            inputs:
+              filePath: 'orchestrators/scripts/setup-gitleaks.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
+
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-go.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
+          
+          - task: Bash@3
+            displayName: "Run gitleaks"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: | 
+                echo 'create ./results directory'
+                mkdir results
+
+                source ./scanners.sh
+                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+
+          - task: Bash@3
+            displayName: "Run Terraform lint"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: | 
+                echo 'Run tflint'
+
+                source ./git.diff.sh
+                
+                # detect each subfolder in terraform to lint:
+                git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
+                echo $return_res_var
+
+                #./iac.tf.sh
+                #lint
+                 
+
+              
