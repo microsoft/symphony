@@ -87,8 +87,6 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          # orchestrators\scripts\setup-tflint.sh
-
           #- task: Bash@3
           #  displayName: "Install Go"
           #  inputs:
