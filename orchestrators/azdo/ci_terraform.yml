@@ -140,7 +140,10 @@ stages:
                           pushd .
                           cd $deployment
 
-                          lint 
+                          local code=lint
+                          if [[ code != 0 ]]; then
+                            exit $code
+                          fi
                           popd
                           echo "------------------------"
                         done
