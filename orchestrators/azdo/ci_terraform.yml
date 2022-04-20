@@ -94,6 +94,7 @@ stages:
           
           
       - job: Validate
+        dependsOn: prepEnv
         workspace:
           clean:  resources       
         displayName: "Validate"
