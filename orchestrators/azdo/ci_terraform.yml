@@ -70,4 +70,12 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               bashEnvValue: '~/.profile'
               failOnStderr: true
+          
+          - task: Bash@3
+            displayName: "Install gitleaks"
+            inputs:
+              filePath: 'orchestrators/scripts/setup-gitleaks.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
               
