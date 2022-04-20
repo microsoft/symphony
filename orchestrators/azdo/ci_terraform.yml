@@ -5,7 +5,7 @@ resources:
     type: github
     endpoint: Symphony2
     name: microsoft/symphony
-    ref: main
+    ref: add_azdo_ci_tf #main
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
@@ -64,7 +64,7 @@ stages:
           - checkout: Symphony 
           
           - task: Bash@3
-            displayName: "Install Terraform tools"
+            displayName: "Install Terraform"
             inputs:
               filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
@@ -72,12 +72,22 @@ stages:
               failOnStderr: true
           
           - task: Bash@3
+            displayName: "Install Tflint"
+            inputs:
+              filePath: 'orchestrators/scripts/setup-tflint.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
+
+          - task: Bash@3
             displayName: "Install gitleaks"
             inputs:
               filePath: 'orchestrators/scripts/setup-gitleaks.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               bashEnvValue: '~/.profile'
               failOnStderr: true
+
+          # orchestrators\scripts\setup-tflint.sh
 
           #- task: Bash@3
           #  displayName: "Install Go"
@@ -107,14 +117,14 @@ stages:
               script: | 
                 echo 'Run tflint'
 
-                source ./git.diff.sh
+                #source ./git.diff.sh
                 
                 # detect each subfolder in terraform to lint:
-                git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
-                echo $return_res_var
+                #git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
+                #echo $return_res_var
 
-                #./iac.tf.sh
-                #lint
+                #source ./iac.tf.sh
+                #lint ./../../IAC/Terraform/terraform
                  
 
               
