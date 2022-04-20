@@ -16,8 +16,8 @@ get_os_architecture
 find_version_from_git_tags VERSION 'https://github.com/terraform-linters/tflint'
 
 _information "Downloading Tetflint..."
-filename="terraform_${VERSION}_linux_${os_architecture}.zip"
-curl -sSL -o "${filename}" "htttps://github.com/terraform-linters/tflint/${VERSION}/${filename}"
+filename="tflint_linux_${os_architecture}.zip"
+curl -sSL -o "${filename}" "htttps://github.com/terraform-linters/tflint/releases/download/${VERSION}/${filename}"
 unzip "${filename}"
 rm -f "${filename}"
 mv -f tflint /usr/local/bin/
