@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Syntax: ./setup-terraform.sh [version]
+# Syntax: ./setup-tflint.sh [version]
 
 # Includes
 source _helpers.sh
