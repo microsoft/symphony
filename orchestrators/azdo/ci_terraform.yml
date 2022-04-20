@@ -92,24 +92,12 @@ stages:
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: |
-                # Write your commands here
-                
-                echo 'ls'
-                ls
-                echo '-------------'
+              script: | 
+                echo 'create ./results directory'
                 mkdir results
-                
-                echo 'ls'
-                ls
-                echo '-------------'
 
                 source ./scanners.sh
                 run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
-                
-                echo 'ls'
-                ls
-                echo '-------------' 
 
 
               
