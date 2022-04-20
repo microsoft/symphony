@@ -126,6 +126,10 @@ stages:
                 cd ./../../IAC/Terraform/terraform
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
+                echo "modules"
+                echo "-------------"
+                echo $modules
+                echo "-------------"
 
                 SAVEIFS=$IFS
                 IFS=$'\n'
