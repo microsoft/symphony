@@ -105,7 +105,7 @@ stages:
                 echo '-------------'
 
                 source ./scanners.sh
-                run_gitleaks './IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
                 
                 echo 'ls'
                 ls
