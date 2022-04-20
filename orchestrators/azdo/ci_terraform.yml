@@ -142,6 +142,8 @@ stages:
                           echo "$PWD"
                           echo "------------------------"
                           cd $deployment
+                          ls
+                          echo "------------------------"
                           lint 
                           #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
                           #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
