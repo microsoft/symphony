@@ -139,7 +139,7 @@ stages:
                         do
                           echo "START linting ${deployment}"
                           echo "------------curr dir----------"
-                          $ echo "$PWD"
+                          echo "$PWD"
                           echo "------------------------"
                           cd $deployment
                           lint 
