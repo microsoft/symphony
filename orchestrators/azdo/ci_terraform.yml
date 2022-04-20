@@ -117,14 +117,45 @@ stages:
               script: | 
                 echo 'Run tflint'
 
-                #source ./git.diff.sh
                 
-                # detect each subfolder in terraform to lint:
-                #git_diff "main" "main" "./../../IAC/Terraform/terraform" return_res_var
-                #echo $return_res_var
 
-                #source ./iac.tf.sh
-                #lint ./../../IAC/Terraform/terraform
+                source ./iac.tf.sh
+
+                pushd .
+
+                cd ./../../IAC/Terraform/terraform
+                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+                
+
+                SAVEIFS=$IFS
+                IFS=$'\n'
+
+                array=($modules)
+                IFS=$SAVEIFS
+
+                len=${#array[@]}
+
+                for deployment in "${array[@]}"
+                        do
+                          echo "START linting ${deployment}"
+
+                          lint 
+                          #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
+                          #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
+                          #  tflint "$(workDir)/$deployment" > "$filePath"
+                          #  echo "##vso[task.addattachment type=Distributedtask.Core.Summary;name=TFLint-$filePath-Results;]$(pwd)/$filePath"
+                          #  echo "##vso[task.logissue type=error]${deployment} failed tflint scan."
+                          #  exitcode=1
+                          #else
+                          #  echo "TFLint passed."
+                          #fi
+                          #echo "END linting ${deployment}"
+
+                        done
+
+                popd
+                
+                
                  
 
               
