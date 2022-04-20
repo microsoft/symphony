@@ -138,7 +138,10 @@ stages:
                 for deployment in "${array[@]}"
                         do
                           echo "START linting ${deployment}"
-
+                          echo "------------curr dir----------"
+                          $ echo "$PWD"
+                          echo "------------------------"
+                          cd $deployment
                           lint 
                           #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
                           #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
