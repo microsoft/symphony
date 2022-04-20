@@ -23,8 +23,6 @@ variables:
     value: "dev"
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runCredScan
-    value: true
   - name: runTfValidation
     value: true
   - name: runTfLint
