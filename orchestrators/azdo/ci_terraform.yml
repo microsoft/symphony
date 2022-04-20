@@ -23,8 +23,6 @@ variables:
     value: "dev"
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runCredScan
-    value: true
   - name: runTfValidation
     value: true
   - name: runTfLint
@@ -53,15 +51,14 @@ stages:
  - stage: Validate
    displayName: "Validate Configuration"
    jobs:
-      # Validate and Initialize Layers #
-      - job: TfValidation
+      - job: prepEnv
         workspace:
           clean:  resources       
-        displayName: "Validate"
+        displayName: "Prep Env"
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
-          - checkout: Symphony 
+          #- checkout: Symphony 
           
           - task: Bash@3
             displayName: "Install Terraform"
@@ -87,8 +84,6 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          # orchestrators\scripts\setup-tflint.sh
-
           #- task: Bash@3
           #  displayName: "Install Go"
           #  inputs:
@@ -97,6 +92,16 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
+          
+      - job: Validate
+        dependsOn: prepEnv
+        workspace:
+          clean:  resources       
+        displayName: "Validate"
+        #variables:
+          #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
+        steps:
+          - checkout: Symphony 
           - task: Bash@3
             displayName: "Run gitleaks"
             inputs:
@@ -148,22 +153,9 @@ stages:
                           lint 
                           popd
                           echo "------------------------"
-                          
-                          #if [[ "$(tflint "$(workDir)/${deployment}" | wc -l)" -gt 0 ]]; then
-                          #  filePath=$(echo "${deployment}.xml" | sed -e 's/\//-/g')
-                          #  tflint "$(workDir)/$deployment" > "$filePath"
-                          #  echo "##vso[task.addattachment type=Distributedtask.Core.Summary;name=TFLint-$filePath-Results;]$(pwd)/$filePath"
-                          #  echo "##vso[task.logissue type=error]${deployment} failed tflint scan."
-                          #  exitcode=1
-                          #else
-                          #  echo "TFLint passed."
-                          #fi
-                          #echo "END linting ${deployment}"
-
                         done
-
                 popd
-                
+
                 
                  
 
