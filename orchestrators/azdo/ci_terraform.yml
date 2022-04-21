@@ -76,13 +76,13 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          - task: Bash@3
-            displayName: "Install gitleaks"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-gitleaks.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
+          #- task: Bash@3
+          #  displayName: "Install gitleaks"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-gitleaks.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
 
           #- task: Bash@3
           #  displayName: "Install Go"
@@ -92,17 +92,17 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
-          - task: Bash@3
-            displayName: "Run gitleaks"
-            inputs:
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              targetType: 'inline'
-              script: | 
-                echo 'create ./results directory'
-                mkdir results
+          #- task: Bash@3
+          #  displayName: "Run gitleaks"
+          #  inputs:
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    targetType: 'inline'
+          #    script: | 
+          #      echo 'create ./results directory'
+          #      mkdir results
 
-                source ./scanners.sh
-                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+          #      source ./scanners.sh
+          #      run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
 
           - task: Bash@3
             displayName: "Run Terraform lint"
