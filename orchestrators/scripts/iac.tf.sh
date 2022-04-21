@@ -52,7 +52,7 @@ format() {
 validate() {
     _information "Execute terraform validate"
     terraform validate
-    exit $?
+    return $?
 }
 
 preview() {
