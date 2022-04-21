@@ -142,14 +142,21 @@ stages:
                         done
                 popd
 
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: $(SUBID)
+              KeyVaultName: 'kv-symphony-env'
+              SecretsFilter: '*'
+              RunAsPreJob: true
+
           - task: Bash@3
             displayName: "Run Terraform validate"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: | 
-                echo 'Run tflint'             
+              script: |         
                 source ./iac.tf.sh
+                azlogin "" "" "" "" "" 
                 pushd .
 
                 cd ./../../IAC/Terraform/terraform
