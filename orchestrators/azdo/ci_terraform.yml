@@ -132,7 +132,7 @@ stages:
 
                           code=$(lint)
                           if [[ code != 0 ]]; then
-                            echo "tflint failed" 
+                            echo "tflint failed- returned code ${code}" 
                             exit $code
                           fi
                           echo "tflint succeeded" 
