@@ -126,18 +126,16 @@ stages:
 
                 for deployment in "${array[@]}"
                         do
-                          echo "START linting ${deployment}"
+                          echo "linting ${deployment}"
                           pushd .
                           cd $deployment
 
                           code=$(lint)
-                          echo '=============Code =========='
-                          echo $code
-                          ls
-                          echo '============= =========='
                           if [[ code != 0 ]]; then
+                            echo "tflint failed" 
                             exit $code
                           fi
+                          echo "tflint succeeded" 
                           popd
                           echo "------------------------"
                         done
