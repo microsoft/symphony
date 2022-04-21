@@ -144,7 +144,7 @@ stages:
 
           - task: AzureKeyVault@2
             inputs:
-              azureSubscription: $(SUBID)
+              azureSubscription: 'Symphony-kv'#$(SUBID)
               KeyVaultName: 'kv-symphony-env'
               SecretsFilter: '*'
               RunAsPreJob: true
