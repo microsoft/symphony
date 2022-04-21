@@ -163,7 +163,7 @@ stages:
 
                 for deployment in "${array[@]}"
                         do
-                          if [[ "$deployment" !=~ .*"01_init".*  ]]; then
+                          if [[ "$deployment" !=~ .*"01_init".* ]]; then
                             echo "tf init ${deployment}"
                             pushd .
                             cd $deployment
