@@ -163,7 +163,7 @@ stages:
 
                 for deployment in "${array[@]}"
                         do
-                          if [[ ! grep -q "01_init" <<< "$deployment" ]]; then
+                          if [[ grep -q "01_init" <<< "$deployment" ]]; then
                             echo "tf init ${deployment}"
                             pushd .
                             cd $deployment
