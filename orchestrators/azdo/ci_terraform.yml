@@ -163,19 +163,23 @@ stages:
 
                 for deployment in "${array[@]}"
                         do
-                          echo "linting ${deployment}"
-                          pushd .
-                          cd $deployment
+                          if [[ ! grep -q "01_init" <<< "$deployment" ]]; then
+                            echo "tf init ${deployment}"
+                            pushd .
+                            cd $deployment
 
-                          init
-                          validate
-                          code=$?
-                          if [[ $code != 0 ]]; then
-                            echo "tflint failed- returned code ${code}" 
-                            exit $code
+                            init
+                            echo "tf init ${deployment}"
+                            echo "tf validate ${deployment}"
+                            validate
+                            code=$?
+                            if [[ $code != 0 ]]; then
+                              echo "tflint failed- returned code ${code}" 
+                              exit $code
+                            fi
+                            popd
+                            echo "------------------------"
                           fi
-                          popd
-                          echo "------------------------"
                         done
                 popd
   
