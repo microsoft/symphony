@@ -130,7 +130,8 @@ stages:
                           pushd .
                           cd $deployment
 
-                          code=lint
+                          lint
+                          code=$?
                           if [[ code != 0 ]]; then
                             echo "tflint failed- returned code ${code}" 
                             exit $code
