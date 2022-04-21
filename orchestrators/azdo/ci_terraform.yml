@@ -140,7 +140,10 @@ stages:
                           pushd .
                           cd $deployment
 
-                          local code=lint
+                          code=lint
+                          echo '=============Code =========='
+                          echo $code
+                          echo '============= =========='
                           if [[ code != 0 ]]; then
                             exit $code
                           fi
