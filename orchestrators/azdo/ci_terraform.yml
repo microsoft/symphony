@@ -76,13 +76,13 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          - task: Bash@3
-            displayName: "Install gitleaks"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-gitleaks.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
+          #- task: Bash@3
+          #  displayName: "Install gitleaks"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-gitleaks.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
 
           #- task: Bash@3
           #  displayName: "Install Go"
@@ -92,17 +92,17 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
-          - task: Bash@3
-            displayName: "Run gitleaks"
-            inputs:
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              targetType: 'inline'
-              script: | 
-                echo 'create ./results directory'
-                mkdir results
+          #- task: Bash@3
+          #  displayName: "Run gitleaks"
+          #  inputs:
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    targetType: 'inline'
+          #    script: | 
+          #      echo 'create ./results directory'
+          #      mkdir results
 
-                source ./scanners.sh
-                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+          #      source ./scanners.sh
+          #      run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
 
           - task: Bash@3
             displayName: "Run Terraform lint"
@@ -110,28 +110,18 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
               script: | 
-                echo 'Run tflint'
-
-                
-
+                echo 'Run tflint'             
                 source ./iac.tf.sh
-
                 pushd .
 
                 cd ./../../IAC/Terraform/terraform
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
-                echo "modules"
-                echo "-------------"
-                echo $modules
-                echo "-------------"
-
                 SAVEIFS=$IFS
                 IFS=$'\n'
 
                 array=($modules)
                 IFS=$SAVEIFS
-
                 len=${#array[@]}
 
                 for deployment in "${array[@]}"
@@ -140,7 +130,14 @@ stages:
                           pushd .
                           cd $deployment
 
-                          lint 
+                          code=$(lint)
+                          echo '=============Code =========='
+                          echo $code
+                          ls
+                          echo '============= =========='
+                          if [[ code != 0 ]]; then
+                            exit $code
+                          fi
                           popd
                           echo "------------------------"
                         done
