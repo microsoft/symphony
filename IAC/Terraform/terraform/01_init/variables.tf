@@ -39,6 +39,6 @@ variable "backup_storage_account_name" {
   description = "the name of the AzureRm backend backup storage account"
 }
 
-variable "env_version {
+variable "env_version" {
   description = "The version of the evnironemnt to be deployed"
 }
