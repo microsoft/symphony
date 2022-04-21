@@ -130,7 +130,7 @@ stages:
                           pushd .
                           cd $deployment
 
-                          code=lint
+                          code=$(lint)
                           echo '=============Code =========='
                           echo $code
                           ls
