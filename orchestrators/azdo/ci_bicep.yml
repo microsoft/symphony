@@ -10,3 +10,6 @@ name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
 trigger:
   - none
+
+pr:
+  - none
