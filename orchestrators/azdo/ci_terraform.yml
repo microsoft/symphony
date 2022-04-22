@@ -176,7 +176,7 @@ stages:
                             pushd .
                             cd $deployment
 
-                            init
+                            init "true" $deployment $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET)
                             echo "tf init ${deployment}"
                             echo "tf validate ${deployment}"
                             validate
