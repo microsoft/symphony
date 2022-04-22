@@ -16,3 +16,5 @@ pr:
 
 pool:
   vmImage: "ubuntu-latest"
+
+jobs:
