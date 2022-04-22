@@ -1,8 +1,8 @@
 resources:
   repositories:
-  - name: microsoft/symphony
+  - repository: symphony
+    name: microsoft/symphony
     type: github
-    repository: symphony
     ref: enpolat/azure-devops-ci-bicep
     endpoint: Symphony2
 
