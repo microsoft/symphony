@@ -13,3 +13,6 @@ trigger:
 
 pr:
   - none
+
+pool:
+  vmImage: "ubuntu-latest"
