@@ -190,7 +190,8 @@ stages:
                           fi
                         done
                 popd
-  
+
+      - job: Test
           
 
                 
