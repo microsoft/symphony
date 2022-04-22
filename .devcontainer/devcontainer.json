@@ -93,7 +93,7 @@
 		// 	"terragrunt": "0.36.3"
 		// },
 		"git": "os-provided",
-		"github-cli": "2.5.2",
+		"github-cli": "latest",
 		// "azure-cli": "2.34.1",
 		// "golang": "1.17.8",
 		"powershell": "7.2.1",
