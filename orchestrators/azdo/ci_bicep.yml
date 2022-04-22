@@ -18,3 +18,5 @@ pool:
   vmImage: "ubuntu-latest"
 
 jobs:
+  - job: Validate
+    displayName: "Validate"
