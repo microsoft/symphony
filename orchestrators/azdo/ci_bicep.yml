@@ -5,3 +5,5 @@ resources:
     repository: symphony
     ref: enpolat/azure-devops-ci-bicep
     endpoint: Symphony2
+
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
