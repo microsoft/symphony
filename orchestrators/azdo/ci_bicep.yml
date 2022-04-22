@@ -7,3 +7,6 @@ resources:
     endpoint: Symphony2
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
