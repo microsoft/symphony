@@ -20,3 +20,5 @@ pool:
 jobs:
   - job: Validate
     displayName: "Validate"
+    steps:
+      - checkout: symphony
