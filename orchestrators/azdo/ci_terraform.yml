@@ -100,7 +100,10 @@ stages:
               targetType: "inline"
               script: |
                   ls
-                  sudo $(System.DefaultWorkingDirectory)/orchestrators/scripts/setup-go.sh "1.16.14"
+                  pushd .
+                  cd /orchestrators/scripts
+                  sudo ./setup-go.sh "1.16.14"
+                  popd
 
           #- task: Bash@3
           #  displayName: "Run gitleaks"
