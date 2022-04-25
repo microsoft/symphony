@@ -98,12 +98,13 @@ stages:
             displayName: "Install Go"
             inputs:
               targetType: "inline"
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               script: |
                   ls
-                  pushd .
-                  cd orchestrators/scripts
+                  # pushd .
+                  # cd orchestrators/scripts
                   sudo ./setup-go.sh "1.16.14"
-                  popd
+                  # popd
 
           #- task: Bash@3
           #  displayName: "Run gitleaks"
