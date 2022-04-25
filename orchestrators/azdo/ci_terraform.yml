@@ -170,6 +170,11 @@ stages:
                 len=${#array[@]}
 
                 echo "Az login"
+                az cloud set --name 'AzureCloud'
+                az login --service-principal --username $(CLIENTID) --password $(CLIENTSECRET) --tenant $(TENANTID)
+                az account set --subscription $(SUBID)
+                echo "Az login cmds end----------"
+
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 for deployment in "${array[@]}"
                         do
