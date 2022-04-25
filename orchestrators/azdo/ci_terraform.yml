@@ -101,7 +101,7 @@ stages:
               script: |
                   ls
                   pushd .
-                  cd /orchestrators/scripts
+                  cd ./orchestrators/scripts
                   sudo ./setup-go.sh "1.16.14"
                   popd
 
