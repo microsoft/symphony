@@ -103,7 +103,7 @@ stages:
                   ls
                   # pushd .
                   # cd orchestrators/scripts
-                  sudo ./setup-go.sh "1.16.14"
+                  ./setup-go.sh "1.16.14"
                   # popd
 
           #- task: Bash@3
