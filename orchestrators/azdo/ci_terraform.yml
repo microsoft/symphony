@@ -170,13 +170,6 @@ stages:
                 len=${#array[@]}
 
                 echo "Az login"
-                echo "Set cloud type"
-                az cloud set --name 'AzureCloud'
-                echo "run az login"
-                az login --service-principal --username $(CLIENTID) --password $(CLIENTSECRET) --tenant $(TENANTID)
-                echo "Set account sub"
-                az account set --subscription $(SUBID)
-                echo "Az login cmds end----------"
 
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 for deployment in "${array[@]}"
@@ -186,7 +179,7 @@ stages:
                             pushd .
                             cd $deployment
 
-                            init "true" ${deployment} $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                            init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                             echo "tf init ${deployment}"
                             echo "tf validate ${deployment}"
                             validate
