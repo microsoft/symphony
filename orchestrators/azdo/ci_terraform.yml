@@ -169,6 +169,8 @@ stages:
                 IFS=$SAVEIFS
                 len=${#array[@]}
 
+                echo "Az login "
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) "AzureCloud"
                 for deployment in "${array[@]}"
                         do
                           if [[ ${deployment} != *"01_init"* ]]; then
