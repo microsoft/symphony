@@ -169,7 +169,7 @@ stages:
                 IFS=$SAVEIFS
                 len=${#array[@]}
 
-                echo "Az login sub $(SUBID)"
+                echo "Az login"
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) "AzureCloud"
                 for deployment in "${array[@]}"
                         do
@@ -178,7 +178,7 @@ stages:
                             pushd .
                             cd $deployment
 
-                            init "true" $(deployment) $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                            init "true" ${deployment} $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                             echo "tf init ${deployment}"
                             echo "tf validate ${deployment}"
                             validate
