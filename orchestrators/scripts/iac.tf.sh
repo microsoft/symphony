@@ -30,6 +30,18 @@ init() {
         terraform init
     else
         _information "Execute terraform init with backend-config"
+
+        echo "terraform init \
+            -backend-config=storage_account_name=${storage_account_name} \
+            -backend-config=container_name=${container_name} \
+            -backend-config=key=${key} \
+            -backend-config=resource_group_name=${resource_group_name} \
+            -backend-config=subscription_id=${subscription_id} \
+            -backend-config=tenant_id=${tenant_id} \
+            -backend-config=client_id=${client_id} \
+            -backend-config=client_secret=${client_secret} \
+            -reconfigure"
+            
         terraform init \
             -backend-config=storage_account_name=${storage_account_name} \
             -backend-config=container_name=${container_name} \
