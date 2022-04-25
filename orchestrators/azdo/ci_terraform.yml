@@ -99,6 +99,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
+                  ls
                   sudo $(System.DefaultWorkingDirectory)/orchestrators/scripts/setup-go.sh "1.16.14"
 
           #- task: Bash@3
