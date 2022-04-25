@@ -142,12 +142,12 @@ stages:
                         done
                 popd
 
-          - task: AzureKeyVault@2
-            inputs:
-              azureSubscription: 'Symphony-kv'#$(SUBID)
-              KeyVaultName: 'kv-symphony-env'
-              SecretsFilter: '*'
-              RunAsPreJob: true
+          #- task: AzureKeyVault@2
+          #  inputs:
+          #    azureSubscription: 'Symphony-kv'#$(SUBID)
+          #    KeyVaultName: 'kv-symphony-env'
+          #    SecretsFilter: '*'
+          #    RunAsPreJob: true
 
           - task: Bash@3
             displayName: "Run Terraform validate"
