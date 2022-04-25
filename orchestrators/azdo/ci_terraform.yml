@@ -65,6 +65,7 @@ stages:
             inputs:
               filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              arguments: "1.1.7"
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
@@ -136,13 +137,63 @@ stages:
                             echo "tflint failed- returned code ${code}" 
                             exit $code
                           fi
-                          echo "tflint succeeded" 
                           popd
                           echo "------------------------"
                         done
                 popd
 
-  
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'Symphony-kv'#$(SUBID)
+              KeyVaultName: 'kv-symphony-env'
+              SecretsFilter: '*'
+              RunAsPreJob: true
+
+          - task: Bash@3
+            displayName: "Run Terraform validate"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |         
+                source ./iac.tf.sh
+                azlogin "" "" "" "" "" 
+                pushd .
+
+                cd ./../../IAC/Terraform/terraform
+                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+                
+                SAVEIFS=$IFS
+                IFS=$'\n'
+
+                array=($modules)
+                IFS=$SAVEIFS
+                len=${#array[@]}
+
+                echo "Az login"
+
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+                for deployment in "${array[@]}"
+                        do
+                          if [[ ${deployment} != *"01_init"* ]]; then
+                            echo "tf init ${deployment}"
+                            pushd .
+                            cd $deployment
+
+                            init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                            echo "tf init ${deployment}"
+                            echo "tf validate ${deployment}"
+                            validate
+                            code=$?
+                            if [[ $code != 0 ]]; then
+                              echo "tflint failed- returned code ${code}" 
+                              exit $code
+                            fi
+                            popd
+                            echo "------------------------"
+                          fi
+                        done
+                popd
+
           
 
                 
