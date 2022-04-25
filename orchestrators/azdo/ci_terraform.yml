@@ -169,7 +169,7 @@ stages:
                 IFS=$SAVEIFS
                 len=${#array[@]}
 
-                echo "Az login "
+                echo "Az login sub $(SUBID)"
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) "AzureCloud"
                 for deployment in "${array[@]}"
                         do
