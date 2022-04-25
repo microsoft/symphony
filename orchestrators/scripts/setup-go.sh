@@ -21,10 +21,10 @@ find_version_from_git_tags VERSION "https://go.googlesource.com/go" "tags/go" ".
 
 # Install Go
 umask 0002
-if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
-    groupadd -r golang
-fi
-usermod -a -G golang "${USERNAME}"
+#if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
+#    groupadd -r golang
+#fi
+#usermod -a -G golang "${USERNAME}"
 mkdir -p "${GOROOT}" "${GOPATH}"
 if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     _information "Downloading Go ${VERSION}..."
