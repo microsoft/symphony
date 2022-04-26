@@ -227,7 +227,7 @@ stages:
                 echo " test resource_group_name ${resource_group_name}"
                 echo "-----------------------------------------"
 
-                cd ./../../IAC/Terraform/test
+                cd ./../../IAC/Terraform/test/terraform
                 go test -tags=module_test
                 popd
 
