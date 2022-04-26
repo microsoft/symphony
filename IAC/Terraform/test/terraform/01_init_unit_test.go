@@ -1,4 +1,4 @@
-// +build 01_init
+// +build 01_init, module_test
 
 package terraform
 
@@ -17,6 +17,7 @@ func Test01_Init_Storage(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../terraform/01_init",
+		VarFiles:     []string{"dev.tfvars.json"},
 	}
 
 	// Defer 'terraform Destroy'

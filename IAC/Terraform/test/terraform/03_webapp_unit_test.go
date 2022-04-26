@@ -1,4 +1,4 @@
-// +build 03_web
+// +build 03_web, module_test
 package terraform
 
 import (

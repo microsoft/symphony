@@ -1,4 +1,4 @@
-// +build 02_sql
+// +build 02_sql, module_test
 package terraform
 
 import (
