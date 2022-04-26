@@ -210,48 +210,17 @@ stages:
                 popd
 
           - task: Bash@3
-            displayName: "Run Module test"
+            displayName: "Run Modules tests"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
               script: |         
                 source ./iac.tf.sh
-                azlogin "" "" "" "" "" 
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 pushd .
 
                 cd ./../../IAC/Terraform/test
-                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
-                
-                SAVEIFS=$IFS
-                IFS=$'\n'
-
-                array=($modules)
-                IFS=$SAVEIFS
-                len=${#array[@]}
-
-                echo "Az login"
-
-                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-                for deployment in "${array[@]}"
-                  do
-                    if [[ ${deployment} != *"01_init"* ]]; then
-                      echo "tf init ${deployment}"
-                      pushd .
-                      cd $deployment
-
-                      init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
-                      echo "tf init ${deployment}"
-                      echo "tf validate ${deployment}"
-                      validate
-                      code=$?
-                      if [[ $code != 0 ]]; then
-                        echo "tflint failed- returned code ${code}" 
-                        exit $code
-                      fi
-                      popd
-                      echo "------------------------"
-                    fi
-                  done
+                go test -run ''
                 popd
 
                 
