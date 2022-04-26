@@ -85,15 +85,30 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
 
-          - task: Bash@3
-            displayName: "Install Go"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-go.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              arguments: "1.16.14"
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-go.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    arguments: "1.16.14"
+          #    #bashEnvValue: '~/.profile'
+          #    failOnStderr: true
           
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    targetType: "inline"
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    script: |
+          #        ls
+          #        # pushd .
+          #        # cd orchestrators/scripts
+          #        ./setup-go.sh "1.16.14"
+          #        # popd
+          - task: GoTool@0
+            inputs:
+              version: '1.16.14'
+
           #- task: Bash@3
           #  displayName: "Run gitleaks"
           #  inputs:
@@ -157,7 +172,6 @@ stages:
               targetType: 'inline'
               script: |         
                 source ./iac.tf.sh
-                azlogin "" "" "" "" "" 
                 pushd .
 
                 cd ./../../IAC/Terraform/terraform
@@ -174,28 +188,40 @@ stages:
 
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 for deployment in "${array[@]}"
-                        do
-                          if [[ ${deployment} != *"01_init"* ]]; then
-                            echo "tf init ${deployment}"
-                            pushd .
-                            cd $deployment
+                  do
+                    if [[ ${deployment} != *"01_init"* ]]; then
+                      echo "tf init ${deployment}"
+                      pushd .
+                      cd $deployment
 
-                            init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
-                            echo "tf init ${deployment}"
-                            echo "tf validate ${deployment}"
-                            validate
-                            code=$?
-                            if [[ $code != 0 ]]; then
-                              echo "tflint failed- returned code ${code}" 
-                              exit $code
-                            fi
-                            popd
-                            echo "------------------------"
-                          fi
-                        done
+                      init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      echo "tf init ${deployment}"
+                      echo "tf validate ${deployment}"
+                      validate
+                      code=$?
+                      if [[ $code != 0 ]]; then
+                        echo "tflint failed- returned code ${code}" 
+                        exit $code
+                      fi
+                      popd
+                      echo "------------------------"
+                    fi
+                  done
                 popd
 
-          
+          - task: Bash@3
+            displayName: "Run Modules tests"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |         
+                source ./iac.tf.sh
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+                pushd .
+
+                cd ./../../IAC/Terraform/test
+                go test -run ''
+                popd
 
                 
                  
