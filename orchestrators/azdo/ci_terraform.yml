@@ -220,13 +220,13 @@ stages:
                 pushd .
                 # set test vars
                 export resource_group_name=$(STATERG)
-                export storage_account_name=$(STATESTORAGEACCOUNT 
+                export storage_account_name=$(STATESTORAGEACCOUNT) 
                 export container_name=$(STATECONTAINER)
 
                 echo "-----------------------------------------"
                 echo " test resource_group_name ${resource_group_name}"
                 echo "-----------------------------------------"
-                
+
                 cd ./../../IAC/Terraform/test
                 go test -tags=module_test
                 popd
