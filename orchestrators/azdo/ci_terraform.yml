@@ -220,7 +220,7 @@ stages:
                 pushd .
 
                 cd ./../../IAC/Terraform/test
-                go test -run ''
+                go test -tags=module_test
                 popd
 
                 
