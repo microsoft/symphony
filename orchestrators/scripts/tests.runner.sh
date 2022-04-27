@@ -37,6 +37,9 @@ terraform() {
   rm -rf ./terraform/backend.tfvars
   rm -rf ./terraform/**/terraform.tfstate.backup
 
+  # install go-junit-report
+  go get github.com/jstemmer/go-junit-report
+
   # cd to the test directory
   cd ./test
 
@@ -59,7 +62,9 @@ terraform() {
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE}'" | tee -a test.out
 
       # run a specific test
-      go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
+      #go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
+      go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
+      
   fi
 
   popd
