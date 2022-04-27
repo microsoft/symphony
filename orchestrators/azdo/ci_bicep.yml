@@ -49,7 +49,7 @@ jobs:
             mkdir results
 
             source ./scanners.sh
-            run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info' 
 
       - task: Bash@3
         displayName: "Run linter"
