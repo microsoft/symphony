@@ -105,22 +105,24 @@ jobs:
             IFS=$SAVEIFS
             len=${#array[@]}
             for deployment in "${array[@]}"
-                    do
-                      if [[ ${deployment} != *"01_init"* ]]; then
-                        echo "bicep init ${deployment}"
-                        pushd .
-                        cd $deployment
-                        init "true" $deployment $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET)
-                        echo "bicep init ${deployment}"
-                        echo "bicep validate ${deployment}"
-                        validate
-                        code=$?
-                        if [[ $code != 0 ]]; then
+              do
+                if [[ ${deployment} != *"01_init"* ]]; then
+                  echo "bicep init ${deployment}"
+                  pushd .
+                  cd $deployment
+                  init "true" $deployment $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET)
+                  echo "bicep init ${deployment}"
+                  echo "bicep validate ${deployment}"
+                  validate
+                  code=$?
+                  if [[ $code != 0 ]]; then
+                    echo "biceplint failed- returned code ${code}" 
                           echo "biceplint failed- returned code ${code}" 
-                          exit $code
-                        fi
-                        popd
-                        echo "------------------------"
-                      fi
-                    done
+                    echo "biceplint failed- returned code ${code}" 
+                    exit $code
+                  fi
+                  popd
+                  echo "------------------------"
+                fi
+              done
             popd
