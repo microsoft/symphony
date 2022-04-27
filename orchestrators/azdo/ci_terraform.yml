@@ -200,7 +200,7 @@ stages:
                       validate
                       code=$?
                       if [[ $code != 0 ]]; then
-                        echo "tflint failed- returned code ${code}" 
+                        echo "tflint validate - returned code ${code}" 
                         exit $code
                       fi
                       popd
@@ -218,9 +218,19 @@ stages:
                 source ./iac.tf.sh
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 pushd .
+                # set test vars
+                export resource_group_name=$(STATERG)
+                export storage_account_name=$(STATESTORAGEACCOUNT) 
+                export container_name=$(STATECONTAINER)
 
-                cd ./../../IAC/Terraform/test
-                go test -run ''
+                echo "-----------------------------------------"
+                echo " test resource_group_name ${resource_group_name}"
+                echo "-------------------- list env -----------------"
+                env
+                echo "-----------------------------------------------"
+
+                cd ./../../IAC/Terraform/test/terraform
+                go test -tags=module_test
                 popd
 
                 
