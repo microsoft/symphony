@@ -223,7 +223,7 @@ stages:
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
                 export container_name=$(STATECONTAINER)
 
-                terraform "01_init_unit_test.go"
+                #terraform "01_init_unit_test.go"
                 terraform "02_sql_unit_test.go"
                 #echo "-----------------------------------------"
                 
