@@ -224,6 +224,11 @@ stages:
                 export container_name=$(STATECONTAINER)
 
                 #terraform "01_init_unit_test.go"
+
+                echo ' *************************** '
+                go-junit-report
+
+                echo ' *************************** '
                 terraform "02_sql_unit_test.go"
                 #terraform "03_webapp_unit_test.go"
                 #echo "-----------------------------------------"
