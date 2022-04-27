@@ -15,7 +15,7 @@ lint() {
     az bicep build --file ${bicep_file_path}
 
     _information "Execute Bicep ARM-TTK"
-    Test-AzTemplate.sh ${bicep_file_path}
+    # TODO (enpolat): Test-AzTemplate.sh ${bicep_file_path}
 }
 
 validate() {
