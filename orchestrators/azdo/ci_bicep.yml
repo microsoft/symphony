@@ -38,3 +38,35 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
+
+      - task: Bash@3
+        displayName: "Run linter"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=($modules)
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                echo "linting ${deployment}"
+                pushd .
+                cd $deployment
+                lint
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "bicep linting failed- returned code ${code}"
+                  exit $code
+                fi
+                popd
+                echo "------------------------"
+              done
+            popd
