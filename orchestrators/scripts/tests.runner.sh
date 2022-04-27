@@ -41,7 +41,7 @@ terraform() {
   cd ./test
 
   # install go-junit-report
-  go get -u github.com/jstemmer/go-junit-report
+  go install github.com/jstemmer/go-junit-report@latest
 
   CWD=$(pwd)
 
