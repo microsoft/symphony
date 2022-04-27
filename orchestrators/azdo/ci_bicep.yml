@@ -79,3 +79,41 @@ jobs:
                 echo "------------------------"
               done
             popd
+
+      - task: Bash@3
+        displayName: "Run bicep validate"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
+            azlogin "" "" "" "" ""
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=($modules)
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+                    do
+                      if [[ ${deployment} != *"01_init"* ]]; then
+                        echo "bicep init ${deployment}"
+                        pushd .
+                        cd $deployment
+                        init "true" $deployment $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET)
+                        echo "bicep init ${deployment}"
+                        echo "bicep validate ${deployment}"
+                        validate
+                        code=$?
+                        if [[ $code != 0 ]]; then
+                          echo "biceplint failed- returned code ${code}" 
+                          exit $code
+                        fi
+                        popd
+                        echo "------------------------"
+                      fi
+                    done
+            popd
