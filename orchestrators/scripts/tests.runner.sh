@@ -63,7 +63,7 @@ terraform() {
 
       # run a specific test
       #go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
-      go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
+      go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | ./go-junit-report > ${TEST_FILE/'.go'/'.xml'}
       
   fi
 
