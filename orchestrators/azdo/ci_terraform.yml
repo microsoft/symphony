@@ -230,7 +230,8 @@ stages:
                 echo "-----------------------------------------------"
 
                 cd ./../../IAC/Terraform/test/terraform
-                go test -tags=module_test
+                go test -tags=01_init -run Test01_Init_Storage
+                go test -tags=02_sql -run Test02_SQL
                 popd
 
                 
