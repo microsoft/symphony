@@ -94,7 +94,7 @@ jobs:
           targetType: 'inline'
           script: |
             source ./iac.bicep.sh
-            azlogin "" "" "" "" ""
+            azlogin "${subid}" "${tenantid}" "${clientid}" "${clientsecret}" "AzureCloud"
             pushd .
             cd ./../../IAC/Bicep/bicep
             modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
