@@ -37,11 +37,11 @@ terraform() {
   rm -rf ./terraform/backend.tfvars
   rm -rf ./terraform/**/terraform.tfstate.backup
 
-  # install go-junit-report
-  go get github.com/jstemmer/go-junit-report
-
   # cd to the test directory
   cd ./test
+
+  # install go-junit-report
+  go get github.com/jstemmer/go-junit-report
 
   CWD=$(pwd)
 
