@@ -40,6 +40,18 @@ jobs:
           failOnStderr: true
 
       - task: Bash@3
+        displayName: "Run gitleaks"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: | 
+            echo 'create ./results directory'
+            mkdir results
+
+            source ./scanners.sh
+            run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+
+      - task: Bash@3
         displayName: "Run linter"
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
