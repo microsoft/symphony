@@ -70,9 +70,7 @@ jobs:
             for deployment in "${array[@]}"
               do
                 echo "linting ${deployment}"
-                pushd .
-                cd $deployment
-                lint
+                lint "${deployment}"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "bicep linting failed- returned code ${code}"
