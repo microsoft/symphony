@@ -107,7 +107,7 @@ stages:
           #        # popd
           - task: GoTool@0
             inputs:
-              version: '1.16.14'
+              version: '1.18.0'
 
           #- task: Bash@3
           #  displayName: "Run gitleaks"
