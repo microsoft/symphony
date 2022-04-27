@@ -225,7 +225,7 @@ stages:
 
                 #terraform "01_init_unit_test.go"
                 terraform "02_sql_unit_test.go"
-                terraform "03_webapp_unit_test.go"
+                #terraform "03_webapp_unit_test.go"
                 #echo "-----------------------------------------"
                 
                 #echo " test resource_group_name ${resource_group_name}"
@@ -238,7 +238,14 @@ stages:
                 #go test -tags=02_sql -run Test02_SQL
                 #popd
 
-                
+          - task: PublishTestResults@2
+            displayName: "Publish unit test results for helpers"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "*.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
+              failTaskOnFailedTests: true
+              testRunTitle: "Module testing"    
                  
 
               
