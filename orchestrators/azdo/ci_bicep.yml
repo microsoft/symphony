@@ -76,7 +76,6 @@ jobs:
                   echo "bicep linting failed- returned code ${code}"
                   exit $code
                 fi
-                popd
                 echo "------------------------"
               done
             popd
