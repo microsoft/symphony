@@ -200,7 +200,7 @@ stages:
                       validate
                       code=$?
                       if [[ $code != 0 ]]; then
-                        echo "tflint failed- returned code ${code}" 
+                        echo "tflint validate - returned code ${code}" 
                         exit $code
                       fi
                       popd
