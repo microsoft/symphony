@@ -230,7 +230,7 @@ stages:
                 echo "-----------------------------------------------"
 
                 cd ./../../IAC/Terraform/test/terraform
-                go test -tags=module_test
+                go test -tags=01_init
                 popd
 
                 
