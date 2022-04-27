@@ -215,24 +215,26 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
               script: |         
-                source ./iac.tf.sh
+                source ./tests.runner.sh
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-                pushd .
+                #pushd .
                 # set test vars
                 export resource_group_name=$(STATERG)
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
                 export container_name=$(STATECONTAINER)
 
-                echo "-----------------------------------------"
-                echo " test resource_group_name ${resource_group_name}"
-                echo "-------------------- list env -----------------"
-                env
-                echo "-----------------------------------------------"
+                terraform "01_init_unit_test.go"
+                #echo "-----------------------------------------"
+                
+                #echo " test resource_group_name ${resource_group_name}"
+                #echo "-------------------- list env -----------------"
+                #env
+                #echo "-----------------------------------------------"
 
-                cd ./../../IAC/Terraform/test/terraform
-                go test -tags=01_init -run Test01_Init_Storage
-                go test -tags=02_sql -run Test02_SQL
-                popd
+                #cd ./../../IAC/Terraform/test/terraform
+                #go test -tags=01_init -run Test01_Init_Storage
+                #go test -tags=02_sql -run Test02_SQL
+                #popd
 
                 
                  
