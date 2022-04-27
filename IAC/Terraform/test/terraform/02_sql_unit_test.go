@@ -38,6 +38,7 @@ func Test02_SQL(t *testing.T) {
 			"location": location,
 			"env":      env,
 		},
+		Reconfigure: true,
 	}
 
 	// Defer 'terraform Destroy'
