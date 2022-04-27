@@ -117,8 +117,6 @@ jobs:
                   code=$?
                   if [[ $code != 0 ]]; then
                     echo "biceplint failed- returned code ${code}" 
-                          echo "biceplint failed- returned code ${code}" 
-                    echo "biceplint failed- returned code ${code}" 
                     exit $code
                   fi
                   popd
