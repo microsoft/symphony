@@ -121,3 +121,13 @@ jobs:
                 echo "------------------------"
               done
             popd
+
+      - task: Bash@3
+        displayName: "Run module tests"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./tests.runner.sh
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
