@@ -107,7 +107,7 @@ jobs:
             for deployment in "${array[@]}"
               do
                 pushd .
-                cd $deployment
+                cd $(dirname "${deployment}")
                 echo "bicep validate ${deployment}"
                 validate
                 code=$?
