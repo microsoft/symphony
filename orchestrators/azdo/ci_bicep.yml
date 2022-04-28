@@ -46,6 +46,14 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
+
+      - task: Bash@3
+        displayName: "Install pester"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-pester.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: 'Symphony-kv2'
