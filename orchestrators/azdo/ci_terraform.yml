@@ -216,6 +216,8 @@ stages:
               targetType: 'inline'
               script: |
                 go install gotest.tools/gotestsum@latest
+                echo "------------------"
+                gotestsum --help
 
 
           - task: Bash@3
