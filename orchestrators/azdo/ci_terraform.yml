@@ -91,7 +91,7 @@ stages:
           #    filePath: 'orchestrators/scripts/setup-go.sh'
           #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           #    arguments: "1.16.14"
-          #    #bashEnvValue: '~/.profile'
+          #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
           #- task: Bash@3
@@ -100,14 +100,15 @@ stages:
           #    targetType: "inline"
           #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           #    script: |
-          #        ls
-          #        # pushd .
-          #        # cd orchestrators/scripts
-          #        ./setup-go.sh "1.16.14"
-          #        # popd
+          #      ls
+          #      pushd .
+          #      cd orchestrators/scripts
+          #      ./setup-go.sh "1.16.14"
+          #      popd
+          
           - task: GoTool@0
             inputs:
-              version: '1.16.14'
+              version: '1.18.1'
 
           #- task: Bash@3
           #  displayName: "Run gitleaks"
@@ -142,20 +143,20 @@ stages:
                 len=${#array[@]}
 
                 for deployment in "${array[@]}"
-                        do
-                          echo "linting ${deployment}"
-                          pushd .
-                          cd $deployment
+                  do
+                    echo "linting ${deployment}"
+                    pushd .
+                    cd $deployment
 
-                          lint
-                          code=$?
-                          if [[ $code != 0 ]]; then
-                            echo "tflint failed- returned code ${code}" 
-                            exit $code
-                          fi
-                          popd
-                          echo "------------------------"
-                        done
+                    lint
+                    code=$?
+                    if [[ $code != 0 ]]; then
+                      echo "tflint failed- returned code ${code}" 
+                      exit $code
+                    fi
+                    popd
+                    echo "------------------------"
+                  done
                 popd
 
           - task: AzureKeyVault@2
@@ -225,10 +226,12 @@ stages:
 
                 #terraform "01_init_unit_test.go"
 
-                echo ' *************************** '
-                go-junit-report
+                echo ' ************ install junit ************ '
 
-                echo ' *************************** '
+                go install github.com/jstemmer/go-junit-report@latest
+                go-junit-report -h
+
+                echo ' *************************************** '
                 terraform "02_sql_unit_test.go"
                 #terraform "03_webapp_unit_test.go"
                 #echo "-----------------------------------------"
