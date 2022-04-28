@@ -106,17 +106,12 @@ jobs:
             len=${#array[@]}
             for deployment in "${array[@]}"
               do
-                echo "bicep init ${deployment}"
                 pushd .
                 cd $deployment
-                init "true" $deployment $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET)
-                echo "bicep init ${deployment}"
                 echo "bicep validate ${deployment}"
                 validate
                 code=$?
                 if [[ $code != 0 ]]; then
-                  echo "biceplint failed- returned code ${code}"
-                    echo "biceplint failed- returned code ${code}" 
                   echo "biceplint failed- returned code ${code}"
                   exit $code
                 fi
