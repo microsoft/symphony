@@ -101,7 +101,7 @@ jobs:
 
             SAVEIFS=$IFS
             IFS=$'\n'
-            array=($modules)
+            array=(${modules})
             IFS=$SAVEIFS
             len=${#array[@]}
             for deployment in "${array[@]}"
