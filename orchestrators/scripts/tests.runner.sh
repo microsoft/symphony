@@ -42,9 +42,8 @@ terraform() {
 
   # install go-junit-report
   _information "install go-junit-report"
-  go get -u github.com/jstemmer/go-junit-report
-  go mod tidy
-  go build .
+  go install -u github.com/jstemmer/go-junit-report@latest
+
   go-junit-report -h
   
   CWD=$(pwd)
