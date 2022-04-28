@@ -41,8 +41,10 @@ terraform() {
   cd ./test
 
   # install go-junit-report
+  _information "install go-junit-report"
   go install github.com/jstemmer/go-junit-report@latest
-
+  go-junit-report -h
+  
   CWD=$(pwd)
 
   if [ -z "${TEST_FILE_NAME}" ]; then
