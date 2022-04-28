@@ -30,9 +30,12 @@ validate() {
     targetScope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
     targetScope=${targetScope//\'/}
 
+    echo "targetScope: ${targetScope}"
+
     if [[ "${targetScope}" == "managementGroup" ]]; then
         az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
     elif [[ "${targetScope}" == "subscription" ]]; then
+        echo "az deployment sub validate --name \"${deployment_id}\" --template-file \"${bicep_file_path}\" --parameters \"@${bicep_parameters_file_path}\" --location \"${location}\""
         az deployment sub validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
     elif [[ "${targetScope}" == "tenant" ]]; then
         az deployment tenant validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
