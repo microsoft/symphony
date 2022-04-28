@@ -275,7 +275,7 @@ stages:
          clean:  resources       
         displayName: "Run Module Tests"
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         steps:
           - checkout: Symphony 
 
@@ -292,7 +292,7 @@ stages:
                 go install gotest.tools/gotestsum@latest
                 echo "------------------"
                 gotestsum --help
-                
+
           - task: AzureKeyVault@2
             inputs:
               azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
