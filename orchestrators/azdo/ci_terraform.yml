@@ -143,20 +143,20 @@ stages:
                 len=${#array[@]}
 
                 for deployment in "${array[@]}"
-                        do
-                          echo "linting ${deployment}"
-                          pushd .
-                          cd $deployment
+                  do
+                    echo "linting ${deployment}"
+                    pushd .
+                    cd $deployment
 
-                          lint
-                          code=$?
-                          if [[ $code != 0 ]]; then
-                            echo "tflint failed- returned code ${code}" 
-                            exit $code
-                          fi
-                          popd
-                          echo "------------------------"
-                        done
+                    lint
+                    code=$?
+                    if [[ $code != 0 ]]; then
+                      echo "tflint failed- returned code ${code}" 
+                      exit $code
+                    fi
+                    popd
+                    echo "------------------------"
+                  done
                 popd
 
           - task: AzureKeyVault@2
