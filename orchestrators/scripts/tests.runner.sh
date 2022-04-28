@@ -42,7 +42,7 @@ terraform() {
 
   # install go-junit-report
   _information "install go-junit-report"
-  go install -u github.com/jstemmer/go-junit-report@latest
+  go install github.com/jstemmer/go-junit-report@latest
 
   go-junit-report -h
   
