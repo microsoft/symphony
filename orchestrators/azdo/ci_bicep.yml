@@ -131,3 +131,11 @@ jobs:
             source ./tests.runner.sh
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
+      - task: PublishTestResults@2
+        displayName: "Publish unit test results for helpers"
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
+          failTaskOnFailedTests: true
+          testRunTitle: "Module testing"
