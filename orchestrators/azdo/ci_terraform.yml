@@ -51,7 +51,7 @@ stages:
  - stage: Validate
    displayName: "Validate Configuration"
    jobs:
-      - job: prepEnv
+      - job: validateconfig
         workspace:
           clean:  resources       
         displayName: "Prep Env"
@@ -269,6 +269,13 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test"
               failTaskOnFailedTests: true
               testRunTitle: "Module testing"    
-                 
 
-              
+      - job: RunModuleTest         
+        workspace:
+         clean:  resources       
+        displayName: "Run Module Tests"
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: Symphony 
+          
