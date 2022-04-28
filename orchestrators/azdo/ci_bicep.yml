@@ -39,6 +39,13 @@ jobs:
           bashEnvValue: '~/.profile'
           failOnStderr: true
 
+      - task: Bash@3
+        displayName: "Install powershell"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-powershell.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: 'Symphony-kv2'
