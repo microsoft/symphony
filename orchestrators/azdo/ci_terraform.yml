@@ -231,7 +231,7 @@ stages:
                 go install github.com/jstemmer/go-junit-report@latest
                 go-junit-report -h
 
-                echo ' *************************** '
+                echo ' *************************************** '
                 terraform "02_sql_unit_test.go"
                 #terraform "03_webapp_unit_test.go"
                 #echo "-----------------------------------------"
