@@ -213,6 +213,7 @@ stages:
           - task: Bash@3
             displayName: "install gotestsum"
             inputs:
+              targetType: 'inline'
               script: |
                 go install gotest.tools/gotestsum@latest
 
