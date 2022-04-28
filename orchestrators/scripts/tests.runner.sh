@@ -41,11 +41,9 @@ terraform() {
   cd ./test
 
   # install go-junit-report
-  _information "install go-junit-report"
-  go install github.com/jstemmer/go-junit-report@latest
-
-  go-junit-report -h
-  
+  _information "install gotestsum"
+  go install gotest.tools/gotestsum@latest
+ 
   CWD=$(pwd)
 
   if [ -z "${TEST_FILE_NAME}" ]; then
@@ -67,8 +65,8 @@ terraform() {
       # run a specific test
       #go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
       #go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
-      go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | go-junit-report > ${TEST_FILE/'.go'/'.xml'}
-      
+      #go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | go-junit-report > ${TEST_FILE/'.go'/'.xml'}
+      gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
   fi
 
   popd
