@@ -154,7 +154,7 @@ jobs:
           script: |
             source ./tests.runner.sh
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            bicep
+            bicep pester
 
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
