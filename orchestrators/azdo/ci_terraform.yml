@@ -85,14 +85,14 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
 
-          - task: Bash@3
-            displayName: "Install Go"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-go.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              arguments: "1.16.14"
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-go.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    arguments: "1.16.14"
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
           
           #- task: Bash@3
           #  displayName: "Install Go"
@@ -106,9 +106,9 @@ stages:
           #      ./setup-go.sh "1.16.14"
           #      popd
           
-          #- task: GoTool@0
-          #  inputs:
-          #    version: '1.18.1'
+          - task: GoTool@0
+            inputs:
+              version: '1.18.1'
 
           #- task: Bash@3
           #  displayName: "Run gitleaks"
