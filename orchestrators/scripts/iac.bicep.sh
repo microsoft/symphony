@@ -19,11 +19,10 @@ lint() {
 }
 
 validate() {
-    scope=$1
-    bicep_file_path=$2
-    bicep_parameters_file_path=$3
-    deployment_id=$4
-    optional_parameters=$5 # --management-group-id or --resource-group
+    bicep_file_path=$1
+    bicep_parameters_file_path=$2
+    deployment_id=$3
+    optional_parameters=$4 # --management-group-id or --resource-group
 
     _information "Execute Bicep validate"
 
