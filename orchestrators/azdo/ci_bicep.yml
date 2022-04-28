@@ -111,7 +111,7 @@ jobs:
                 fileName=$(basename "${deployment}")
                 cd "${path}"
                 echo "bicep validating ${path}/${fileName}"
-                validate "${fileName}" "" "1" "westus3" "rg-test"
+                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/dev/" "1" "westus3" "rg-test"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "biceplint failed- returned code ${code}"
