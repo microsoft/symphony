@@ -23,19 +23,18 @@ validate() {
     bicep_file_path=$2
     bicep_parameters_file_path=$3
     deployment_id=$4
-    location=$5
-    optional_parameters=$6 # --management-group-id or --resource-group
+    optional_parameters=$5 # --management-group-id or --resource-group
 
     _information "Execute Bicep validate"
 
     if [[ "${scope}" == "mg" ]]; then
-        az deployment mg validate --management-group-id "${optional_parameters}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${scope}" == "sub" ]]; then
-        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        az deployment sub validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${scope}" == "tenant" ]]; then
-        az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        az deployment tenant validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     else
-        az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     fi
 
     exit $?
