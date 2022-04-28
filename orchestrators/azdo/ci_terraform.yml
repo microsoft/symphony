@@ -227,8 +227,10 @@ stages:
                 #terraform "01_init_unit_test.go"
 
                 echo ' ************ GO vars ************ '
-                echo 'GOPATH = ${GOPATH}'
-                echo 'GOBIN = ${GOBIN}'
+                echo 'GOPATH'
+                echo $GOAPTH
+                echo 'GOBIN'
+                echo $GOBIN
                 #go install github.com/jstemmer/go-junit-report@latest
                 #go-junit-report -h
 
