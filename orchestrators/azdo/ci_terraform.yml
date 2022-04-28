@@ -226,7 +226,9 @@ stages:
 
                 #terraform "01_init_unit_test.go"
 
-                echo ' *************************** '
+                echo ' ************ install junit ************ '
+
+                go install github.com/jstemmer/go-junit-report@latest
                 go-junit-report -h
 
                 echo ' *************************** '
