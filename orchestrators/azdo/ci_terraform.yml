@@ -227,7 +227,7 @@ stages:
                 #terraform "01_init_unit_test.go"
 
                 echo ' *************************** '
-                go-junit-report
+                go-junit-report -h
 
                 echo ' *************************** '
                 terraform "02_sql_unit_test.go"
