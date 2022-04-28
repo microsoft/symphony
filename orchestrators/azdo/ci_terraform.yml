@@ -210,6 +210,12 @@ stages:
                   done
                 popd
 
+          - task: Bash@3
+            displayName: "install gotestsum"
+            inputs:
+              script: |
+                go install gotest.tools/gotestsum@latest
+
 
           - task: Bash@3
             displayName: "Run Modules tests"
