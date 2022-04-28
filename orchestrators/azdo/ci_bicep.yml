@@ -97,7 +97,7 @@ jobs:
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
             pushd .
             cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+            modules=$(find . -type f -name 'main.bicep' | sort -u)
 
             SAVEIFS=$IFS
             IFS=$'\n'
