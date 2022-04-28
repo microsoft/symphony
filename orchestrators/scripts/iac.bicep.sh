@@ -27,11 +27,14 @@ validate() {
 
     _information "Execute Bicep validate"
 
-    if [[ "${scope}" == "mg" ]]; then
+    targetScope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
+    targetScope=${targetScope//\'/}
+
+    if [[ "${targetScope}" == "managementGroup" ]]; then
         az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${scope}" == "sub" ]]; then
+    elif [[ "${targetScope}" == "subscription" ]]; then
         az deployment sub validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${scope}" == "tenant" ]]; then
+    elif [[ "${targetScope}" == "tenant" ]]; then
         az deployment tenant validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     else
         az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
