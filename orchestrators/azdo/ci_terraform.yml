@@ -210,15 +210,15 @@ stages:
                   done
                 popd
 
-          - task: Bash@3
-            displayName: "install gotestsum"
-            inputs:
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              targetType: 'inline'
-              script: |
-                go install gotest.tools/gotestsum@latest
-                echo "------------------"
-                gotestsum --help
+          #- task: Bash@3
+          #  displayName: "install gotestsum"
+          #  inputs:
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    targetType: 'inline'
+          #    script: |
+          #      go install gotest.tools/gotestsum@latest
+          #      echo "------------------"
+          #      gotestsum --help
 
 
           - task: Bash@3
@@ -278,4 +278,26 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - checkout: Symphony 
-          
+
+          - task: GoTool@0
+            inputs:
+              version: '1.18.1' 
+
+          - task: Bash@3
+            displayName: "install gotestsum"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |
+                go install gotest.tools/gotestsum@latest
+                echo "------------------"
+                gotestsum --help
+                
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
+              KeyVaultName: 'kv-symphony-env'
+              SecretsFilter: '*'
+              RunAsPreJob: true
+
+           
