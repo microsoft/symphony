@@ -2,4 +2,4 @@
 
 # Syntax: ./setup-pester.sh [version]
 
-pwsh -Command ./Setup-Perster.ps1
+pwsh -Command ./Setup-Pester.ps1
