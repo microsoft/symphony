@@ -107,9 +107,11 @@ jobs:
             for deployment in "${array[@]}"
               do
                 pushd .
-                cd $(dirname "${deployment}")
-                echo "bicep validate ${deployment}"
-                validate "" "${deployment}" "" "1" "rg-test"
+                path=$(dirname "${deployment}")
+                fileName=$(basename "${deployment}")
+                cd "${path}"
+                echo "bicep validating ${path}/${fileName}"
+                validate "" "${fileName}" "" "1" "rg-test"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "biceplint failed- returned code ${code}"
