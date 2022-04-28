@@ -210,10 +210,6 @@ stages:
                   done
                 popd
 
-          - task: Go@0
-            inputs:
-              command: 'get'
-              arguments: 'github.com/jstemmer/go-junit-report'
 
           - task: Bash@3
             displayName: "Run Modules tests"
