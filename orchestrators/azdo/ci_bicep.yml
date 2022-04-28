@@ -109,7 +109,7 @@ jobs:
                 pushd .
                 cd $(dirname "${deployment}")
                 echo "bicep validate ${deployment}"
-                validate
+                validate "" "${deployment}" "" "1" "westus3" "rg-test"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "biceplint failed- returned code ${code}"
