@@ -210,6 +210,11 @@ stages:
                   done
                 popd
 
+          - task: Go@0
+            inputs:
+              command: 'get'
+              arguments: 'github.com/jstemmer/go-junit-report'
+
           - task: Bash@3
             displayName: "Run Modules tests"
             inputs:
@@ -231,7 +236,8 @@ stages:
                 echo $GOAPTH
                 echo 'GOBIN'
                 echo $GOBIN
-                #go install github.com/jstemmer/go-junit-report@latest
+                #go install 
+            
                 #go-junit-report -h
 
                 echo ' *************************************** '
