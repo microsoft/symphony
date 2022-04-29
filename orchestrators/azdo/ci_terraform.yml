@@ -338,8 +338,8 @@ stages:
                       envfile= ${deployment/'./'/''}
                       envfile= ${envfile/'/'/'_'}
                       echo "env file name"
-                      echo "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
-                      preview terraform.tfplan "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
+                      echo "./../../../env/terraform/$(ENV)/${envfile}"
+                      preview terraform.tfplan "./../../../env/terraform/$(ENV)/${envfile}"
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
