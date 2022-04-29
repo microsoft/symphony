@@ -38,13 +38,13 @@ terraform() {
   rm -rf ./terraform/**/terraform.tfstate.backup
 
   # cd to the test directory
-  cd ./test/terraform
+  cd ./../test/terraform
 
   # install go-junit-report
   #_information "install gotestsum"
   #go install gotest.tools/gotestsum@latest
-  _information "install go-junit-report"
-  go install github.com/jstemmer/go-junit-report@latest
+  #_information "install go-junit-report"
+  #go install github.com/jstemmer/go-junit-report@latest
 
  
   CWD=$(pwd)
