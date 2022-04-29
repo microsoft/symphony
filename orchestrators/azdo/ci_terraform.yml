@@ -223,6 +223,10 @@ stages:
                 source ./tests.runner.sh
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 
+                #install junit 
+                echo "install go-junit-report"
+                go install github.com/jstemmer/go-junit-report@latest
+
                 # set test vars
                 export resource_group_name=$(STATERG)
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
