@@ -45,13 +45,13 @@ variables:
     value: "tfplan"
   - name: TfApplyPipelineName
     value: "tfapply"
-
+  
 
 stages:
  - stage: Validate
    displayName: "Validate Configuration"
    jobs:
-      - job: prepEnv
+      - job: validateconfig
         workspace:
           clean:  resources       
         displayName: "Prep Env"
@@ -109,7 +109,10 @@ stages:
           - task: GoTool@0
             inputs:
               version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
 
+          - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
+          
           #- task: Bash@3
           #  displayName: "Run gitleaks"
           #  inputs:
@@ -211,14 +214,6 @@ stages:
                 popd
 
           - task: Bash@3
-            displayName: "install gotestsum"
-            inputs:
-              targetType: 'inline'
-              script: |
-                go install gotest.tools/gotestsum@latest
-
-
-          - task: Bash@3
             displayName: "Run Modules tests"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
@@ -226,7 +221,7 @@ stages:
               script: |         
                 source ./tests.runner.sh
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-                #pushd .
+                
                 # set test vars
                 export resource_group_name=$(STATERG)
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
@@ -234,29 +229,10 @@ stages:
 
                 #terraform "01_init_unit_test.go"
 
-                echo ' ************ GO vars ************ '
-                echo 'GOPATH'
-                echo $GOAPTH
-                echo 'GOBIN'
-                echo $GOBIN
-                #go install 
-            
-                #go-junit-report -h
-
-                echo ' *************************************** '
+              
                 terraform "02_sql_unit_test.go"
                 #terraform "03_webapp_unit_test.go"
                 #echo "-----------------------------------------"
-                
-                #echo " test resource_group_name ${resource_group_name}"
-                #echo "-------------------- list env -----------------"
-                #env
-                #echo "-----------------------------------------------"
-
-                #cd ./../../IAC/Terraform/test/terraform
-                #go test -tags=01_init -run Test01_Init_Storage
-                #go test -tags=02_sql -run Test02_SQL
-                #popd
 
           - task: PublishTestResults@2
             displayName: "Publish unit test results for helpers"
@@ -266,6 +242,5 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test"
               failTaskOnFailedTests: true
               testRunTitle: "Module testing"    
-                 
 
-              
+     
