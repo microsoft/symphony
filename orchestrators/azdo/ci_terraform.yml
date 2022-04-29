@@ -335,9 +335,11 @@ stages:
                       echo "tf plan ${deployment}"
                       # echo ${deployment/'./'/''}   --> 02_sql/01_deployment
                       # echo ${deployment2/'/'/'_'}  --> 02_sql_01_deployment
-                      envfile= ${deployment/'./'/''}
-                      envfile= ${envfile/'/'/'_'}
-                      preview terraform.tfplan "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
+                      envfile=${deployment/'./'/''}
+                      envfile=${envfile/'/'/'_'}
+                      echo "env file name"
+                      echo "./../../../env/terraform/$(ENV)/${envfile}"
+                      preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
