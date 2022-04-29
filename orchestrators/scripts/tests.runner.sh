@@ -68,8 +68,8 @@ terraform() {
       # run a specific test
       #go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
       #go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
-      echo "go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | go-junit-report > ${TEST_FILE/'.go'/'.xml'}"
-      go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | go-junit-report > ${TEST_FILE/'.go'/'.xml'}
+      echo "go test -v -timeout 6000s ${TEST_FILE_NAME}  . 2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
+      go test -v -timeout 6000s ${TEST_FILE_NAME}  . 2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
       #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
   fi
 
