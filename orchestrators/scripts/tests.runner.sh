@@ -28,7 +28,7 @@ terraform() {
   TEST_FILE_NAME=${1:-}
 
   # cd into the terraform directory
-  pushd ../../IAC/Terraform/
+  pushd ../../terraform/
 
   # cleanup any existing state
   rm -rf ./terraform/**/.terraform
@@ -60,19 +60,12 @@ terraform() {
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
   else
-      # find the go file based on the filename
-      #TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
-
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
       
       # run a specific test
-      #go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
-      #go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
       echo "go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
       go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
 
-      ls 
-      #go test -v -timeout 6000s ${TEST_FILE_NAME}  . 2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
       #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
   fi
 
