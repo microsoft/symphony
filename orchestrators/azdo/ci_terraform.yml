@@ -227,9 +227,32 @@ stages:
                 export resource_group_name=$(STATERG)
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
                 export container_name=$(STATECONTAINER)
+
+                pushd .
+
+                cd ./../../IAC/Terraform/terraform
+                tests=$(find . -type f -name '*unit_test.go'./01_init_unit_test.go)
+                
+                SAVEIFS=$IFS
+                IFS=$'\n'
+
+                array=($tests)
+                IFS=$SAVEIFS
+                len=${#array[@]}
+                
+                for test in "${array[@]}"
+                  do
+                    if [[ ${test} != *"01_init"* ]]; then
+                      echo 'Test = ${test}' 
+                      terraform ${test/'./'/''}
+                    fi
+                  done
+
+                
               
-                terraform "02_sql_unit_test.go"
-                terraform "03_webapp_unit_test.go"
+                #terraform "02_sql_unit_test.go"
+                #terraform "03_webapp_unit_test.go"
+                popd
 
           - task: PublishTestResults@2
             displayName: "Publish unit test results for helpers"
