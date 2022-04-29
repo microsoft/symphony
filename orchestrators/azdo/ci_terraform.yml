@@ -333,7 +333,11 @@ stages:
                       init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       echo "tf init ${deployment}"
                       echo "tf plan ${deployment}"
-                      preview "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)"
+                      # echo ${deployment/'./'/''}   --> 02_sql/01_deployment
+                      # echo ${deployment2/'/'/'_'}  --> 02_sql_01_deployment
+                      envfile= ${deployment/'./'/''}
+                      envfile= ${envfile/'/'/'_'}
+                      preview terraform.tfplan "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
