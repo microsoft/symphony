@@ -19,8 +19,6 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  - name: env
-    value: "dev"
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
   - name: runTfValidation
@@ -37,15 +35,12 @@ variables:
     value: true
   - name: runIntegrationTest
     value: true
-  - name: TfPlanPipelineFolderPath
-    value: "\\infrastructure\\shared"
-  - name: TfApplyPipelineFolderPath
-    value: "\\infrastructure\\shared"
-  - name: TfPlanPipelineName
-    value: "tfplan"
-  - name: TfApplyPipelineName
-    value: "tfapply"
-  
+
+#============================================================
+# The following Variables Should Be Set On the Pipeline
+#============================================================
+  - name: env
+    value: "dev"
 
 stages:
  - stage: Validate
