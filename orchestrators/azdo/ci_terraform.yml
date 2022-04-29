@@ -54,7 +54,7 @@ stages:
       - job: validate
         workspace:
           clean:  resources       
-        displayName: "Prep Env"
+        displayName: "Validate"
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
