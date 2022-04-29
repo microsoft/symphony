@@ -230,7 +230,7 @@ stages:
 
                 pushd .
                 echo 'get tests list'
-                cd ./../../IAC/Terraform/terraform
+                cd ./../../IAC/Terraform/test/terraform
                 tests=$(find . -type f -name '*unit_test.go'./01_init_unit_test.go)
                 echo $tests
 
