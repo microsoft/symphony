@@ -339,7 +339,7 @@ stages:
                       envfile=${envfile/'/'/'_'}
                       echo "env file name"
                       echo "./../../../env/terraform/$(ENV)/${envfile}"
-                      preview "terraform.tfplan" "./../../../env/terraform/$(ENV)/${envfile}"
+                      preview "terraform.tfplan" "./../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
