@@ -39,19 +39,12 @@ terraform() {
 
   # cd to the test directory
   cd ./../test/terraform
-
-  # install go-junit-report
-  #_information "install gotestsum"
-  #go install gotest.tools/gotestsum@latest
-  #_information "install go-junit-report"
-  #go install github.com/jstemmer/go-junit-report@latest
-
  
   CWD=$(pwd)
 
   if [ -z "${TEST_FILE_NAME}" ]; then
       # find all tests
-      TEST_FILE_NAMES=`find ${CWD}/**/*.go`
+      TEST_FILE_NAMES=`find ${CWD}/*.go`
 
       # run all tests
       for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
@@ -64,7 +57,7 @@ terraform() {
       
       # run a specific test
       echo "go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
-      go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
+      go test -v -timeout 8000s ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
 
       #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
   fi
