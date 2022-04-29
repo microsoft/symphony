@@ -247,7 +247,7 @@ stages:
                 for test in "${array[@]}"
                   do
                     if [[ ${test} != *"01_init"* ]]; then
-                      echo 'Test = ${test}' 
+                      echo "Test name  ${test}" 
                       terraform ${test/'./'/''}
                     fi
                   done
