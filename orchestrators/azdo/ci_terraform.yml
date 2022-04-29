@@ -135,7 +135,7 @@ stages:
                 source ./iac.tf.sh
                 pushd .
 
-                cd ./../../IAC/Terraform/terraform
+                cd ./../../IAC/Terraform/terraform/test
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
                 SAVEIFS=$IFS
@@ -233,7 +233,7 @@ stages:
                 cd ./../../IAC/Terraform/terraform
                 tests=$(find . -type f -name '*unit_test.go'./01_init_unit_test.go)
                 echo $tests
-                
+
                 SAVEIFS=$IFS
                 IFS=$'\n'
 
