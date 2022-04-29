@@ -69,7 +69,7 @@ preview() {
         terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}
     fi
 
-    exit $?
+    return $?
 }
 
 deploy() {
@@ -85,7 +85,7 @@ destroy() {
     _information "Execute terraform destroy"
     terraform destroy -input=false -auto-approve
 
-    exit $?
+    return $?
 }
 
 detect_destroy() {
@@ -101,7 +101,7 @@ detect_destroy() {
         _information "Plan file ${plan_file_name} has delete changes"
     fi
 
-    exit $?
+    return $?
 }
 
 lint() {
