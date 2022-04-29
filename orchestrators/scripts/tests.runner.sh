@@ -63,8 +63,8 @@ terraform() {
       # find the go file based on the filename
       TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
 
-      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE}'" | tee -a test.out
-
+      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
+      ls 
       # run a specific test
       #go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
       #go test -v -timeout 6000s ${TEST_FILE}  . 2>&1 | $(System.DefaultWorkingDirectory)/go-junit-report > ${TEST_FILE/'.go'/'.xml'}
