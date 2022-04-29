@@ -38,7 +38,7 @@ terraform() {
   rm -rf ./terraform/**/terraform.tfstate.backup
 
   # cd to the test directory
-  cd ./test
+  cd ./test/terraform
 
   # install go-junit-report
   #_information "install gotestsum"
