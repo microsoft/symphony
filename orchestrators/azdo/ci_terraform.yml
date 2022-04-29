@@ -255,11 +255,6 @@ stages:
                       terraform ${test/'./'/''}
                     fi
                   done
-
-                
-              
-                #terraform "02_sql_unit_test.go"
-                #terraform "03_webapp_unit_test.go"
                 popd
 
           - task: PublishTestResults@2
