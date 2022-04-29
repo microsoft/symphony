@@ -338,7 +338,7 @@ stages:
                       init true "${deployment}" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       echo "tf init ${deployment}"
                       echo "tf plan ${deployment}"
-                      validate
+                      preview
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
