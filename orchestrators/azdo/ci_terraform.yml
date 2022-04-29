@@ -275,18 +275,18 @@ stages:
               failTaskOnFailedTests: true
               testRunTitle: "Module testing"    
 
-      - job: RunModuleTest         
-        workspace:
-         clean:  resources       
-        displayName: "Run Module Tests"
-        pool:
-          vmImage: 'windows-latest'
-        steps:
-          - checkout: Symphony 
+      #- job: RunModuleTest         
+      #  workspace:
+      #   clean:  resources       
+      #  displayName: "Run Module Tests"
+      #  pool:
+      #    vmImage: 'windows-latest'
+      #  steps:
+      #    - checkout: Symphony 
 
-          - task: GoTool@0
-            inputs:
-              version: '1.18.1' 
+      #    - task: GoTool@0
+      #      inputs:
+      #        version: '1.18.1' 
 
           #- task: Bash@3
           #  displayName: "install gotestsum"
@@ -306,11 +306,11 @@ stages:
           #      echo "------------------"
           #      gotestsum --help
 
-          - task: AzureKeyVault@2
-            inputs:
-              azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
-              KeyVaultName: 'kv-symphony-env'
-              SecretsFilter: '*'
-              RunAsPreJob: true
+          #- task: AzureKeyVault@2
+          #  inputs:
+          #    azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
+          #    KeyVaultName: 'kv-symphony-env'
+          #    SecretsFilter: '*'
+          #    RunAsPreJob: true
 
            
