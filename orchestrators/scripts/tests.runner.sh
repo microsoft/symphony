@@ -61,7 +61,7 @@ terraform() {
       done
   else
       # find the go file based on the filename
-      TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
+      #TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
 
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
       ls 
