@@ -205,7 +205,7 @@ stages:
                       validate
                       code=$?
                       if [[ $code != 0 ]]; then
-                        echo "tflint validate - returned code ${code}" 
+                        echo "terraform validate - returned code ${code}" 
                         exit $code
                       fi
                       popd
