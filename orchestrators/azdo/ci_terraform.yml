@@ -124,6 +124,13 @@ stages:
 
           #      source ./scanners.sh
           #      run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+          - task: PublishTestResults@2
+            displayName: "Publish Gitleaks results"
+            inputs:
+              testResultsFiles: "*.json"
+              searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/results"
+              failTaskOnFailedTests: true
+              testRunTitle: "Gitleask report"
 
           - task: Bash@3
             displayName: "Run Terraform lint"
@@ -258,12 +265,13 @@ stages:
                 popd
 
           - task: PublishTestResults@2
-            displayName: "Publish unit test results for helpers"
+            displayName: "Publish modules unit test results"
             inputs:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
               failTaskOnFailedTests: true
-              testRunTitle: "Module testing"    
+              testRunTitle: "Terraform Modules unit tests"    
 
+          
      
