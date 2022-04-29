@@ -337,6 +337,8 @@ stages:
                       # echo ${deployment2/'/'/'_'}  --> 02_sql_01_deployment
                       envfile= ${deployment/'./'/''}
                       envfile= ${envfile/'/'/'_'}
+                      echo "env file name"
+                      echo "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
                       preview terraform.tfplan "$(System.DefaultWorkingDirectory)/env/terraform/$(ENV)/${envfile}"
                       code=$?
                       if [[ $code != 0 ]]; then
