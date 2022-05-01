@@ -3,7 +3,7 @@ resources:
   - repository: symphony
     name: microsoft/symphony
     type: github
-    ref: enpolat/azure-devops-ci-bicep
+    ref: main
     endpoint: Symphony2
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
