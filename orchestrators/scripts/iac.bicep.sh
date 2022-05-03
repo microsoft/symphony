@@ -40,7 +40,7 @@ validate() {
         az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
     fi
 
-    exit $?
+    return $?
 }
 
 preview() {
