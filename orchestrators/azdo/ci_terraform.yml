@@ -273,7 +273,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Preivew"
-        dependsOn: validate
+        #dependsOn: validate
 
         steps:
           - checkout: Symphony 
