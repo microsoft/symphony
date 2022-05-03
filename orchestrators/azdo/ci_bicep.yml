@@ -18,6 +18,4 @@ pool:
   vmImage: "ubuntu-latest"
 
 jobs:
-  - job: Validate
-    displayName: "Validate"
-    template: ./ci_bicep_job0_validate.yml
+  - template: ./ci_bicep_job0_validate.yml

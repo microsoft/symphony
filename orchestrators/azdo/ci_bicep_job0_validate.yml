@@ -1,136 +1,140 @@
-steps:
-  - checkout: symphony
+jobs:
+  - job: Validate
+    displayName: "Validate"
 
-  - task: Bash@3
-    displayName: "Install Azure CLI"
-    inputs:
-      filePath: 'orchestrators/scripts/setup-azcli.sh'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      bashEnvValue: '~/.profile'
-      failOnStderr: true
+    steps:
+      - checkout: symphony
 
-  - task: Bash@3
-    displayName: "Install gitleaks"
-    inputs:
-      filePath: 'orchestrators/scripts/setup-gitleaks.sh'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      bashEnvValue: '~/.profile'
-      failOnStderr: true
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
 
-  - task: Bash@3
-    displayName: "Install pester"
-    inputs:
-      filePath: 'orchestrators/scripts/setup-pester.sh'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      bashEnvValue: '~/.profile'
-      failOnStderr: true
+      - task: Bash@3
+        displayName: "Install gitleaks"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-gitleaks.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
 
-  - task: Bash@3
-    displayName: "Install shellspec"
-    inputs:
-      filePath: 'orchestrators/scripts/setup-shellspec.sh'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      bashEnvValue: '~/.profile'
-      failOnStderr: true
+      - task: Bash@3
+        displayName: "Install pester"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-pester.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
 
-  - task: AzureKeyVault@2
-    inputs:
-      azureSubscription: 'Symphony-kv2'
-      KeyVaultName: 'kv-symphony-env'
-      SecretsFilter: '*'
-      RunAsPreJob: true
+      - task: Bash@3
+        displayName: "Install shellspec"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-shellspec.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
 
-  - task: Bash@3
-    displayName: "Run gitleaks"
-    inputs:
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      targetType: 'inline'
-      script: | 
-        echo 'create ./results directory'
-        mkdir results
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: 'Symphony-kv2'
+          KeyVaultName: 'kv-symphony-env'
+          SecretsFilter: '*'
+          RunAsPreJob: true
 
-        source ./scanners.sh
-        run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info' 
+      - task: Bash@3
+        displayName: "Run gitleaks"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: | 
+            echo 'create ./results directory'
+            mkdir results
 
-  - task: Bash@3
-    displayName: "Run linter"
-    inputs:
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      targetType: 'inline'
-      script: |
-        source ./iac.bicep.sh
-        pushd .
-        cd ./../../IAC/Bicep/bicep
-        modules=$(find . -type f -name '*.bicep' | sort -u)
+            source ./scanners.sh
+            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info' 
 
-        SAVEIFS=$IFS
-        IFS=$'\n'
-        array=($modules)
-        IFS=$SAVEIFS
-        len=${#array[@]}
-        for deployment in "${array[@]}"
-          do
-            echo "linting ${deployment}"
-            lint "${deployment}"
-            code=$?
-            if [[ $code != 0 ]]; then
-              echo "bicep linting failed- returned code ${code}"
-              exit $code
-            fi
-            echo "------------------------"
-          done
-        popd
-
-  - task: Bash@3
-    displayName: "Run bicep validate"
-    inputs:
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      targetType: 'inline'
-      script: |
-        source ./iac.bicep.sh
-        azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-        pushd .
-        cd ./../../IAC/Bicep/bicep
-        modules=$(find . -type f -name 'main.bicep' | sort -u)
-
-        SAVEIFS=$IFS
-        IFS=$'\n'
-        array=(${modules})
-        IFS=$SAVEIFS
-        len=${#array[@]}
-        for deployment in "${array[@]}"
-          do
+      - task: Bash@3
+        displayName: "Run linter"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
             pushd .
-            path=$(dirname "${deployment}")
-            fileName=$(basename "${deployment}")
-            cd "${path}"
-            echo "bicep validating ${path}/${fileName}"
-            validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
-            code=$?
-            if [[ $code != 0 ]]; then
-              echo "biceplint failed- returned code ${code}"
-              exit $code
-            fi
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type f -name '*.bicep' | sort -u)
+
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=($modules)
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                echo "linting ${deployment}"
+                lint "${deployment}"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "bicep linting failed- returned code ${code}"
+                  exit $code
+                fi
+                echo "------------------------"
+              done
             popd
-            echo "------------------------"
-          done
-        popd
 
-  - task: Bash@3
-    displayName: "Run module tests"
-    inputs:
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      targetType: 'inline'
-      script: |
-        source ./tests.runner.sh
-        azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-        bicep pester
+      - task: Bash@3
+        displayName: "Run bicep validate"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type f -name 'main.bicep' | sort -u)
 
-  - task: PublishTestResults@2
-    displayName: "Publish unit test results for helpers"
-    inputs:
-      testResultsFormat: "JUnit"
-      testResultsFiles: "*.xml"
-      searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
-      failTaskOnFailedTests: true
-      testRunTitle: "Module testing"
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=(${modules})
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                pushd .
+                path=$(dirname "${deployment}")
+                fileName=$(basename "${deployment}")
+                cd "${path}"
+                echo "bicep validating ${path}/${fileName}"
+                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "biceplint failed- returned code ${code}"
+                  exit $code
+                fi
+                popd
+                echo "------------------------"
+              done
+            popd
+
+      - task: Bash@3
+        displayName: "Run module tests"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./tests.runner.sh
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            bicep pester
+
+      - task: PublishTestResults@2
+        displayName: "Publish unit test results for helpers"
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
+          failTaskOnFailedTests: true
+          testRunTitle: "Module testing"
