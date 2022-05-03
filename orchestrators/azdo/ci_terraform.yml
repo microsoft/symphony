@@ -50,6 +50,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Validate"
+        condition: eq('false', 'true')
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
@@ -314,7 +315,7 @@ stages:
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
                 SAVEIFS=$IFS
-                IFS=$'\n'
+                IFS=$'\n' sorted=($(sort <<<"${array[*]}")); 
 
                 array=($modules)
                 IFS=$SAVEIFS
