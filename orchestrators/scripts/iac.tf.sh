@@ -41,7 +41,7 @@ init() {
             -backend-config=client_id=${client_id} \
             -backend-config=client_secret=${client_secret} \
             -reconfigure"
-            
+
         terraform init \
             -backend-config=storage_account_name=${storage_account_name} \
             -backend-config=container_name=${container_name} \
@@ -87,9 +87,10 @@ deploy() {
     plan_file_name=$1
 
     _information "Execute terraform apply"
+    echo "terraform apply -input=false -auto-approve ${plan_file_name}"
     terraform apply -input=false -auto-approve ${plan_file_name}
 
-    exit $?
+    return $?
 }
 
 destroy() {
