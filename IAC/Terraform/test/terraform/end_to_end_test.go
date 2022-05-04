@@ -33,6 +33,7 @@ func Test_EndToEnd(t *testing.T) {
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
 			"key":                  "02_sql/01_deployment.tfstate"},
+		Reconfigure: true,
 	}
 	terraformOptions_03 := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -44,6 +45,7 @@ func Test_EndToEnd(t *testing.T) {
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
 			"key":                  "03_webapp/01_deployment.tfstate"},
+		Reconfigure: true,
 	}
 
 	//Run `terraform init` to init remote state.
