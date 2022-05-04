@@ -50,7 +50,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Validate"
-        condition: eq('false', 'true')
+        #condition: eq('false', 'true')
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
@@ -436,7 +436,7 @@ stages:
                 popd
 
           - task: PublishTestResults@2
-            displayName: "Publish modules unit test results"
+            displayName: "Publish end to end test results"
             inputs:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
