@@ -367,3 +367,19 @@ stages:
 
         steps:
           - checkout: Symphony 
+
+          - task: Bash@3
+            displayName: "Install Terraform"
+            inputs:
+              filePath: 'orchestrators/scripts/setup-terraform.sh'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              arguments: "1.1.7"
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
+
+          - task: GoTool@0
+            inputs:
+              version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
+
+          - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
