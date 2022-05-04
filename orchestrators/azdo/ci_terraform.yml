@@ -436,3 +436,10 @@ stages:
                 popd
 
           - task: PublishTestResults@2
+            displayName: "Publish modules unit test results"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "*.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
+              failTaskOnFailedTests: false # TEMP true
+              testRunTitle: "Terraform Modules unit tests"
