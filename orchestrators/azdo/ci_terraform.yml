@@ -391,3 +391,48 @@ stages:
               KeyVaultName: 'kv-symphony-env'
               SecretsFilter: '*'
               RunAsPreJob: true
+          
+          - task: Bash@3
+            displayName: "Run end to end tests"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |         
+                source ./tests.runner.sh
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+                
+                #install junit 
+                echo "install go-junit-report"
+                go install github.com/jstemmer/go-junit-report@latest
+
+                # set test vars
+                export resource_group_name=$(STATERG)
+                export storage_account_name=$(STATESTORAGEACCOUNT) 
+                export container_name=$(STATECONTAINER)
+
+                pushd .
+                echo 'get tests list'
+                cd ./../../IAC/Terraform/test/terraform
+                echo '--------------------'
+                ls
+                echo '---------------------'
+                tests=$(find . -type f -name '*end_test.go' -print)
+                echo $tests
+
+                SAVEIFS=$IFS
+                IFS=$'\n'
+
+                array=($tests)
+                IFS=$SAVEIFS
+                len=${#array[@]}
+                
+                for test in "${array[@]}"
+                  do
+                    if [[ ${test} != *"01_init"* ]]; then
+                      echo "Test name  ${test}" 
+                      terraform ${test/'./'/''}
+                    fi
+                  done
+                popd
+
+          - task: PublishTestResults@2
