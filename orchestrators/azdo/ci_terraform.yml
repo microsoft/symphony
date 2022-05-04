@@ -359,4 +359,11 @@ stages:
                   done
                 popd
 
-     
+      - job: test
+        workspace:
+          clean:  resources       
+        displayName: "End to End Test"
+        #dependsOn: preview
+
+        steps:
+          - checkout: Symphony 
