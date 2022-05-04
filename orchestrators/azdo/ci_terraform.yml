@@ -363,7 +363,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "End to End Test"
-        #dependsOn: preview
+        dependsOn: preview
 
         steps:
           - checkout: Symphony 
@@ -442,4 +442,4 @@ stages:
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
               failTaskOnFailedTests: false # TEMP true
-              testRunTitle: "Terraform Modules unit tests"
+              testRunTitle: "Terraform Modules end to end tests"
