@@ -1,3 +1,5 @@
+// +build e2e_test
+
 package terraform
 
 import (

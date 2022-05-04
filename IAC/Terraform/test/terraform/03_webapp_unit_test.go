@@ -1,4 +1,4 @@
-// +build 03_web
+// +build 03_web, module_test
 package terraform
 
 import (
@@ -31,7 +31,8 @@ func Test03_WebAPP(t *testing.T) {
 			"storage_account_name": rmStorageAccName,
 			"key":                  rmKey},
 
-		VarFiles: []string{"dev.tfvars.json"},
+		VarFiles:    []string{"dev.tfvars.json"},
+		Reconfigure: true,
 	}
 
 	// Defer 'terraform Destroy'
