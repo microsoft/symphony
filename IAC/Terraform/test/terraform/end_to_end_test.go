@@ -43,7 +43,7 @@ func Test_EndToEnd(t *testing.T) {
 			"resource_group_name":  rmResourceGroupName,
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
-			"key":                  "03_web/01_deployment.tfstate"},
+			"key":                  "03_webapp/01_deployment.tfstate"},
 	}
 
 	//Run `terraform init` to init remote state.
