@@ -93,7 +93,7 @@ jobs:
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
 
-              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path}/parameters.json"
+              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               echo "${extraFileParam}"
               if [[ -f "${extraFileParam}" ]]; then
                   echo "${extraFileParam} exists."
