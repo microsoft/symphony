@@ -23,10 +23,10 @@ _information "Downloading Go..."
 
 # Install Go
 umask 0002
-#if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
-#    groupadd -r golang
-#fi
-#usermod -a -G golang "${USERNAME}"
+# if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
+#     groupadd -r golang
+# fi
+# usermod -a -G golang "${USERNAME}"
 mkdir -p "${GOROOT}" "${GOPATH}"
 if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     _information "Downloading Go ${VERSION}..."
@@ -89,7 +89,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     (echo "${GO_TOOLS}" | xargs -n 1 go ${go_install_command} -v) 2>&1 | tee -a /tmp/go.log
 
     # Move Go tools into path and clean up
-    mv  "${GOTOOLS_PATH}/bin/*" ${GOPATH}/bin/
+    mv "${GOTOOLS_PATH}/bin/*" ${GOPATH}/bin/
 
     rm -rf "${GOTOOLS_PATH}"
 fi

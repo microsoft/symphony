@@ -1,5 +1,11 @@
 #!/bin/bash
 
-# Syntax: ./setup-pester.sh [version]
+# Syntax: ./setup-pester.sh
 
-pwsh -Command ./Setup-Perster.ps1
+# Includes
+source _helpers.sh
+source _setup_helpers.sh
+
+_information "Downloading Perster..."
+
+pwsh -Command ./Setup-Pester.ps1

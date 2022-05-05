@@ -1,0 +1,21 @@
+resources:
+  repositories:
+  - repository: symphony
+    name: microsoft/symphony
+    type: github
+    ref: main
+    endpoint: Symphony2
+
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+jobs:
+  - template: ./ci_bicep_job0_validate.yml

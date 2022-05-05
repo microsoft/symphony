@@ -20,4 +20,5 @@ filename="terraform_${VERSION}_linux_${os_architecture}.zip"
 curl -sSL -o "${filename}" "https://releases.hashicorp.com/terraform/${VERSION}/${filename}"
 unzip "${filename}"
 rm -f "${filename}"
+# ln -s "terraform" /usr/local/bin/terraform
 mv -f terraform /usr/local/bin/
