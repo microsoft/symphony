@@ -28,7 +28,7 @@ terraform() {
   TEST_FILE_NAME=${1:-}
 
   # cd into the terraform directory
-  pushd ../../IAC/Terraform/
+  pushd ../../terraform/
 
   # cleanup any existing state
   rm -rf ./terraform/**/.terraform
@@ -38,13 +38,13 @@ terraform() {
   rm -rf ./terraform/**/terraform.tfstate.backup
 
   # cd to the test directory
-  cd ./test
-
+  cd ../test/terraform
+ 
   CWD=$(pwd)
 
   if [ -z "${TEST_FILE_NAME}" ]; then
       # find all tests
-      TEST_FILE_NAMES=`find ${CWD}/**/*.go`
+      TEST_FILE_NAMES=`find ${CWD}/*.go`
 
       # run all tests
       for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
@@ -53,13 +53,13 @@ terraform() {
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
   else
-      # find the go file based on the filename
-      TEST_FILE=`find ${CWD}/**/${TEST_FILE_NAME}`
-
-      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE}'" | tee -a test.out
-
+      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
+      
       # run a specific test
-      go test -v -timeout 6000s ${TEST_FILE} | tee -a test.out
+      echo "go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
+      go test -v -timeout 8000s ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
+
+      #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
   fi
 
   popd
