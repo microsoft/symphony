@@ -61,11 +61,11 @@ jobs:
 
       - name: Test Cred
         run: |
-          echo "${{ inputs.environment }}"
+          echo "${{ inputs.creds }}"
 
       - uses: Azure/login@v1
         with:
-          creds: "${{ inputs.environment }}"
+          creds: "${{ inputs.creds }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         with:

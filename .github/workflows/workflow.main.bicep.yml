@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/_workflow.main.bicep.validate.yml
     with:
       environment: "dev"
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+      creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
   Preview:
     name: "Preview"
