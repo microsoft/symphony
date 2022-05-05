@@ -6,9 +6,9 @@ on:
       environment:
         required: true
         type: string
-      creds:
-        required: true
-        type: string
+      # creds:
+      #   required: true
+      #   type: string
 
 jobs:
   Validate:
@@ -61,11 +61,11 @@ jobs:
 
       - name: Test Cred
         run: |
-          echo "${{ inputs.creds }}"
+          echo "${{ secrets.AZURE_CREDENTIALS }}"
 
       - uses: Azure/login@v1
         with:
-          creds: "${{ inputs.creds }}"
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         with:
