@@ -88,8 +88,11 @@ jobs:
           for deployment in "${array[@]}"
             do
               pushd .
+              ls
               path=$(dirname "${deployment}")
+              echo "path: ${path}"
               fileName=$(basename "${deployment}")
+              echo "fileName: ${fileName}"
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
               validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus3" "rg-test"
