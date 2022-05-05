@@ -127,6 +127,7 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/results"
               failTaskOnFailedTests: true
               testRunTitle: "Gitleask report"
+              mergeTestResults: true 
 
           - task: Bash@3
             displayName: "Run Terraform lint"
