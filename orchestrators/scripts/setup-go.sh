@@ -8,8 +8,8 @@ source _setup_helpers.sh
 
 set -e
 VERSION="${1:-"latest"}"
-GOROOT=${2:-"/usr/local/go"}
-GOPATH=${3:-"/go"}
+GOROOT=${2:-"usr/local/go"}
+GOPATH=${3:-"go"}
 USERNAME=${4:-$(whoami)}
 INSTALL_GO_TOOLS=${5:-"true"}
 
@@ -19,17 +19,19 @@ get_os_architecture "amd64" "arm64" "armv6l" "386"
 # Verify requested version is available, convert latest
 find_version_from_git_tags VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
 
+_information "Downloading Go..."
+
 # Install Go
 umask 0002
-if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
-    groupadd -r golang
-fi
-usermod -a -G golang "${USERNAME}"
+# if ! cat /etc/group | grep -e "^golang:" >/dev/null 2>&1; then
+#     groupadd -r golang
+# fi
+# usermod -a -G golang "${USERNAME}"
 mkdir -p "${GOROOT}" "${GOPATH}"
 if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     _information "Downloading Go ${VERSION}..."
     set +e
-    curl -fsSL -o /tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
+    curl -fsSL -o tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
     exit_code=$?
     set -e
     if [ "$exit_code" != "0" ]; then
@@ -47,11 +49,11 @@ if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
             VERSION="${major}.${minor}.${breakfix}"
         fi
         _information "Trying ${VERSION}..."
-        curl -fsSL -o /tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
+        curl -fsSL -o tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
     fi
     _information "Extracting Go ${VERSION}..."
-    tar -xzf /tmp/go.tar.gz -C "${GOROOT}" --strip-components=1
-    rm -rf /tmp/go.tar.gz
+    tar -xzf tmp/go.tar.gz -C "${GOROOT}" --strip-components=1
+    rm -rf tmp/go.tar.gz
 else
     _warning "Go already installed. Skipping."
 fi
@@ -70,10 +72,11 @@ GO_TOOLS="\
 if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     _information "Installing common Go tools..."
     export PATH=${GOROOT}/bin:${PATH}
-    mkdir -p /tmp/gotools ${GOPATH}/bin
-    cd /tmp/gotools
-    export GOPATH=/tmp/gotools
-    export GOCACHE=/tmp/gotools/cache
+    GOTOOLS_PATH="$(pwd)/tmp/gotools"
+    mkdir -p "${GOTOOLS_PATH}" ${GOPATH}/bin
+    cd "${GOTOOLS_PATH}"
+    export GOPATH="${GOTOOLS_PATH}"
+    export GOCACHE="${GOTOOLS_PATH}/cache"
 
     # Use go get for versions of go under 1.16
     go_install_command=install
@@ -86,9 +89,9 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     (echo "${GO_TOOLS}" | xargs -n 1 go ${go_install_command} -v) 2>&1 | tee -a /tmp/go.log
 
     # Move Go tools into path and clean up
-    mv /tmp/gotools/bin/* ${GOPATH}/bin/
+    mv "${GOTOOLS_PATH}/bin/*" ${GOPATH}/bin/
 
-    rm -rf /tmp/gotools
+    rm -rf "${GOTOOLS_PATH}"
 fi
 
 # Add GOPATH variable and bin directory into PATH in bashrc/zshrc files (unless disabled)
