@@ -266,7 +266,9 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
               failTaskOnFailedTests: true # TEMP true
               testRunTitle: "Terraform Modules unit tests"
-              publishRunAttachments: true    
+              publishRunAttachments: true
+              mergeTestResults: true
+
 
       - job: preview
         workspace:
