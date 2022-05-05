@@ -50,7 +50,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Validate"
-        condition: eq('false', 'true')
+        #condition: eq('false', 'true')
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
