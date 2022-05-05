@@ -19,7 +19,7 @@ jobs:
 
       - name: Setup Toolset
         run: |
-          ./setup-azcli.sh
+          # ./setup-azcli.sh
           # ./setup-gitleaks.sh
           # ./setup-powershell.sh
           # ./setup-pester.sh
@@ -89,7 +89,7 @@ jobs:
               fileName=$(basename "${deployment}")
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
-              validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/${{ inputs.environment }}/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
+              validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus3" "rg-test"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "biceplint failed- returned code ${code}"
