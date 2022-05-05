@@ -264,8 +264,9 @@ stages:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-              failTaskOnFailedTests: false # TEMP true
-              testRunTitle: "Terraform Modules unit tests"    
+              failTaskOnFailedTests: true # TEMP true
+              testRunTitle: "Terraform Modules unit tests"
+              publishRunAttachments: true    
 
       - job: preview
         workspace:
@@ -443,3 +444,5 @@ stages:
               failTaskOnFailedTests: false # TEMP true
               testRunTitle: "Terraform Modules end to end tests"
               publishRunAttachments: true
+
+          
