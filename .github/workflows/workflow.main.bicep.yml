@@ -9,6 +9,20 @@ on:
   workflow_dispatch:
 
 jobs:
+  Aaa:
+    name: "aaa"
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+
+      - name: Test Cred
+        run: |
+          echo "${{ secrets.AZURE_CREDENTIALS }}"
+
+      - uses: Azure/login@v1
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+
   Validate:
     uses: ./.github/workflows/_workflow.main.bicep.validate.yml
     with:
