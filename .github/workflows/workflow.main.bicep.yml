@@ -10,7 +10,6 @@ on:
 
 jobs:
   Validate:
-    name: "Validate"
     uses: ./.github/workflows/_validate.yml
 
   Preview:
