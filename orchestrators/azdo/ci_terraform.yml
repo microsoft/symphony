@@ -272,8 +272,8 @@ stages:
       - job: preview
         workspace:
           clean:  resources       
-        displayName: "Preivew"
-        #dependsOn: validate
+        displayName: "Preivew & Deploy"
+        dependsOn: validate
 
         steps:
           - checkout: Symphony 
