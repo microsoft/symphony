@@ -75,23 +75,6 @@ terraform() {
 # @usage <to run all the tests for shellspec>: source ${0} && bicep shellspec
 bicep() {
 
-  arm_ttk() {
-    # run arm-ttk tests
-    pushd ./arm-ttk
-
-      az bicep build --file ../../bicep/01_sql/02_deployment/main.bicep
-
-      pwsh -Command \
-      "
-        Import-Module ./arm-ttk.psd1
-        Test-AzTemplate -TemplatePath ../../bicep/01_sql/02_deployment/main.json
-        Remove-Item -Force -Path ../../bicep/01_sql/02_deployment/main.json
-      "
-
-    # return to the previous directory
-    popd
-  }
-
   pester() {
     # run pester tests
     pushd ./pester
@@ -125,11 +108,8 @@ bicep() {
   pushd ../../IAC/Bicep/test
 
   if [ -z "${1}" ]; then
-    arm_ttk $@
     pester $@
     shellspec $@
-  elif [ "${1}" == "arm-ttk" ]; then
-    arm_ttk ${2}
   elif [ "${1}" == "pester" ]; then
     pester ${2}
   elif [ "${1}" == "shellspec" ]; then
