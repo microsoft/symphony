@@ -88,14 +88,18 @@ jobs:
           for deployment in "${array[@]}"
             do
               pushd .
-              ls
               path=$(dirname "${deployment}")
-              echo "path: ${path}"
               fileName=$(basename "${deployment}")
-              echo "fileName: ${fileName}"
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
-              validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus3" "rg-test"
+
+              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path}/parameters.json"
+              echo "${extraFileParam}"
+              if [[ -f "${extraFileParam}" ]]; then
+                  echo "${extraFileParam} exists."
+              fi
+
+              validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "biceplint failed- returned code ${code}"

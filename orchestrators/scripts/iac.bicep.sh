@@ -8,6 +8,15 @@ usage() {
     exit 1
 }
 
+_target_scope() {
+    bicep_file_path=$1
+
+    targetScope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
+    targetScope=${targetScope//\'/}
+
+    echo "${targetScope}"
+}
+
 lint() {
     bicep_file_path=$1
 
@@ -27,8 +36,7 @@ validate() {
 
     _information "Execute Bicep validate"
 
-    targetScope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
-    targetScope=${targetScope//\'/}
+    targetScope=$(_target_scope "${bicep_file_path}")
 
     if [[ "${targetScope}" == "managementGroup" ]]; then
         az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
@@ -53,9 +61,11 @@ preview() {
 
     _information "Execute Bicep preview"
 
-    if [[ "${scope}" == "mg" ]]; then
+    targetScope=$(_target_scope "${bicep_file_path}")
+
+    if [[ "${scope}" == "managementGroup" ]]; then
         az deployment mg what-if --management-group-id "${optional_parameters}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${scope}" == "sub" ]]; then
+    elif [[ "${scope}" == "subscription" ]]; then
         az deployment sub what-if --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${scope}" == "tenant" ]]; then
         az deployment tenant what-if --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
@@ -63,7 +73,7 @@ preview() {
         az deployment group what-if --name "${deployment_id}" --resource-group "${optional_parameters}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     fi
 
-    exit $?
+    return $?
 }
 
 deploy() {
@@ -76,9 +86,11 @@ deploy() {
 
     _information "Execute Bicep deploy"
 
-    if [[ "${scope}" == "mg" ]]; then
+    targetScope=$(_target_scope "${bicep_file_path}")
+
+    if [[ "${scope}" == "managementGroup" ]]; then
         az deployment mg create --management-group-id "${optional_parameters}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${scope}" == "sub" ]]; then
+    elif [[ "${scope}" == "subscription" ]]; then
         az deployment sub create --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${scope}" == "tenant" ]]; then
         az deployment tenant create --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
@@ -86,5 +98,5 @@ deploy() {
         az deployment group create --name "${deployment_id}" --resource-group "${optional_parameters}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     fi
 
-    exit $?
+    return $?
 }
