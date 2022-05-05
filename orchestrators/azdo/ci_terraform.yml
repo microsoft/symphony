@@ -238,9 +238,7 @@ stages:
                 pushd .
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
-                echo '--------------------'
-                ls
-                echo '---------------------'
+          
                 tests=$(find . -type f -name '*unit_test.go' -print)
                 echo $tests
 
