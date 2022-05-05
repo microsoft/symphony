@@ -17,3 +17,5 @@ filename="arm-ttk.zip"
 curl -sSL -o "${filename}" "https://github.com/Azure/arm-ttk/releases/download/${VERSION}/${filename}"
 unzip "${filename}"
 rm -f "${filename}"
+
+pwsh -Command ./Setup-ARMTTK.ps1

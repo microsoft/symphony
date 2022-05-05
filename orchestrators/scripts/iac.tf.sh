@@ -21,15 +21,27 @@ init() {
     tenant_id=$4
     client_id=$5
     client_secret=$6
-    storage_account_name=${TF_VAR_BACKEND_STORAGE_ACCOUNT_NAME}
-    container_name=${TF_VAR_BACKEND_CONTAINER_NAME}
-    resource_group_name=${TF_VAR_BACKEND_RESOURCE_GROUP_NAME}
+    storage_account_name=$7
+    container_name=$8
+    resource_group_name=$9
 
     if [ "${backend_config}" == "false" ]; then
         _information "Execute terraform init"
         terraform init
     else
         _information "Execute terraform init with backend-config"
+        
+        echo "terraform init \
+            -backend-config=storage_account_name=${storage_account_name} \
+            -backend-config=container_name=${container_name} \
+            -backend-config=key=${key} \
+            -backend-config=resource_group_name=${resource_group_name} \
+            -backend-config=subscription_id=${subscription_id} \
+            -backend-config=tenant_id=${tenant_id} \
+            -backend-config=client_id=${client_id} \
+            -backend-config=client_secret=${client_secret} \
+            -reconfigure"
+
         terraform init \
             -backend-config=storage_account_name=${storage_account_name} \
             -backend-config=container_name=${container_name} \
@@ -52,7 +64,7 @@ format() {
 validate() {
     _information "Execute terraform validate"
     terraform validate
-    exit $?
+    return $?
 }
 
 preview() {
@@ -68,23 +80,24 @@ preview() {
         terraform plan -input=false -out=${plan_file_name} -var-file=${var_file}
     fi
 
-    exit $?
+    return $?
 }
 
 deploy() {
     plan_file_name=$1
 
     _information "Execute terraform apply"
+    echo "terraform apply -input=false -auto-approve ${plan_file_name}"
     terraform apply -input=false -auto-approve ${plan_file_name}
 
-    exit $?
+    return $?
 }
 
 destroy() {
     _information "Execute terraform destroy"
     terraform destroy -input=false -auto-approve
 
-    exit $?
+    return $?
 }
 
 detect_destroy() {
@@ -100,7 +113,7 @@ detect_destroy() {
         _information "Plan file ${plan_file_name} has delete changes"
     fi
 
-    exit $?
+    return $?
 }
 
 lint() {
@@ -111,13 +124,15 @@ lint() {
 
     "tflint" >$filePath 2>&1
 
-    if [[ -s $filepath ]]; then
+    local code=$? 
+    if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
-        exit 0
+        #exit 0
     else
         echo "tflint failed. lint results in file name ${lint_res_file_name}"
         sed -i 's/\x1b\[[0-9;]*m//g' $filePath
         cat $filePath
-        exit 1
+        #exit 1
     fi
+    return $code
 }

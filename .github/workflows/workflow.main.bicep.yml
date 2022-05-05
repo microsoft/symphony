@@ -1,0 +1,70 @@
+name: "Main Bicep"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  Validate:
+    name: "Validate"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Toolset
+        run: |
+          ./setup-gitleaks.sh
+          ./setup-powershell.sh
+          ./setup-pester.sh
+          ./setup-armttk.sh
+          ./setup-shellspec.sh
+        working-directory: orchestrators/scripts
+
+  Preview:
+    name: "Preview"
+    needs: Validate
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+
+      - name: Run script
+        run: |
+          echo Hello world!
+
+  Deploy:
+    name: "Deploy"
+    needs: Preview
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+
+      - name: Run script
+        run: |
+          echo Hello world!
+
+  Test:
+    name: "Test"
+    needs: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+
+      - name: Run script
+        run: |
+          echo Hello world!
+
+  Report:
+    name: "Report"
+    needs: Test
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+
+      - name: Run script
+        run: |
+          echo Hello world!
