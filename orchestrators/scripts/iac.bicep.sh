@@ -39,13 +39,13 @@ validate() {
     targetScope=$(_target_scope "${bicep_file_path}")
 
     if [[ "${targetScope}" == "managementGroup" ]]; then
-        az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
+        az deployment mg validate --management-group-id "${optional_parameters}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${targetScope}" == "subscription" ]]; then
-        az deployment sub validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
+        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${targetScope}" == "tenant" ]]; then
-        az deployment tenant validate --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
+        az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     else
-        az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}" --location "${location}"
+        az deployment group validate --resource-group "${optional_parameters}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     fi
 
     return $?
