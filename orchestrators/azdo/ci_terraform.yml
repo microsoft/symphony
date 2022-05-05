@@ -239,23 +239,26 @@ stages:
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
           
-                tests=$(find . -type f -name '*unit_test.go' -print)
-                echo $tests
+                go test -v end_to_end_test.go
 
-                SAVEIFS=$IFS
-                IFS=$'\n'
 
-                array=($tests)
-                IFS=$SAVEIFS
-                len=${#array[@]}
+                #tests=$(find . -type f -name '*unit_test.go' -print)
+                #echo $tests
+
+                #SAVEIFS=$IFS
+                #IFS=$'\n'
+
+                #array=($tests)
+                #IFS=$SAVEIFS
+                #len=${#array[@]}
                 
-                for test in "${array[@]}"
-                  do
-                    if [[ ${test} != *"01_init"* ]]; then
-                      echo "Test name  ${test}" 
-                      terraform ${test/'./'/''}
-                    fi
-                  done
+                #for test in "${array[@]}"
+                #  do
+                #    if [[ ${test} != *"01_init"* ]]; then
+                #      echo "Test name  ${test}" 
+                #      terraform ${test/'./'/''}
+                #    fi
+                #  done
                 popd
 
           - task: PublishTestResults@2
