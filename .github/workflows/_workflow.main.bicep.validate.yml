@@ -59,10 +59,6 @@ jobs:
       #       popd
       #   working-directory: orchestrators/scripts
 
-      - name: Test Cred
-        run: |
-          echo "${{ secrets.AZURE_CREDENTIALS }}"
-
       - uses: Azure/login@v1
         with:
           creds: "${{ secrets.AZURE_CREDENTIALS }}"
