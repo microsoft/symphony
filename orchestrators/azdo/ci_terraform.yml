@@ -447,5 +447,6 @@ stages:
               failTaskOnFailedTests: true # TEMP true
               testRunTitle: "Terraform Modules end to end tests"
               publishRunAttachments: true
+              mergeTestResults: true
 
           
