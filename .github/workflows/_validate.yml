@@ -27,7 +27,7 @@ jobs:
       # - name: Run Gitleaks
       #   run: |
       #       source ./scanners.sh
-      #       run_gitleaks './../../IAC/Bicep' './' 'json' 'info' 
+      #       run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
       #   working-directory: orchestrators/scripts
 
       # - name: Run Bicep Lint
@@ -58,42 +58,42 @@ jobs:
 
       - uses: Azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
       - uses: Azure/get-keyvault-secrets@v1
-        with: 
+        with:
           keyvault: "kv-symphony-env"
-          secrets: 'clientid, clientsecret, subid, tenantid'
+          secrets: "clientid, clientsecret, subid, tenantid"
         id: KvSecrets
 
       - name: Run Bicep Validate
         run: |
-            source ./iac.bicep.sh
-            azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name 'main.bicep' | sort -u)
+          source ./iac.bicep.sh
+          azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
+          pushd .
+          cd ./../../IAC/Bicep/bicep
+          modules=$(find . -type f -name 'main.bicep' | sort -u)
 
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=(${modules})
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                pushd .
-                path=$(dirname "${deployment}")
-                fileName=$(basename "${deployment}")
-                cd "${path}"
-                echo "bicep validating ${path}/${fileName}"
-                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/${{ inputs.environment }}/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "biceplint failed- returned code ${code}"
-                  exit $code
-                fi
-                popd
-                echo "------------------------"
-              done
-            popd
+          SAVEIFS=$IFS
+          IFS=$'\n'
+          array=(${modules})
+          IFS=$SAVEIFS
+          len=${#array[@]}
+          for deployment in "${array[@]}"
+            do
+              pushd .
+              path=$(dirname "${deployment}")
+              fileName=$(basename "${deployment}")
+              cd "${path}"
+              echo "bicep validating ${path}/${fileName}"
+              validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/${{ inputs.environment }}/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
+              code=$?
+              if [[ $code != 0 ]]; then
+                echo "biceplint failed- returned code ${code}"
+                exit $code
+              fi
+              popd
+              echo "------------------------"
+            done
+          popd
         working-directory: orchestrators/scripts
