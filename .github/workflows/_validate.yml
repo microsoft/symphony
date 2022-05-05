@@ -14,15 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Setup Toolset
-      #   run: |
-      #     ./setup-azcli.sh
-      #     ./setup-gitleaks.sh
-      #     ./setup-powershell.sh
-      #     ./setup-pester.sh
-      #     ./setup-armttk.sh
-      #     ./setup-shellspec.sh
-      #   working-directory: orchestrators/scripts
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          # ./setup-gitleaks.sh
+          # ./setup-powershell.sh
+          # ./setup-pester.sh
+          # ./setup-armttk.sh
+          # ./setup-shellspec.sh
+        working-directory: orchestrators/scripts
 
       # - name: Run Gitleaks
       #   run: |
