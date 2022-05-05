@@ -105,7 +105,7 @@ jobs:
                   paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               fi
 
-              validate "${fileName}" "${paramFiles}" 'sqlServerAdministratorPassword="abc123!XYZaaa"' "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"
