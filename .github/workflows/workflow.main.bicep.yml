@@ -96,7 +96,7 @@ jobs:
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               echo "${extraFileParam}"
               if [[ -f "${extraFileParam}" ]]; then
-                  paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @{extraFileParam}"
+                  paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
               else
                   paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               fi
