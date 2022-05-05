@@ -56,10 +56,20 @@ jobs:
             popd
         working-directory: orchestrators/scripts
 
+      - uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: "kv-symphony-env"
+          secrets: 'clientid, clientsecret, subid, tenantid'
+        id: KvSecrets
+
       - name: Run Bicep Validate
         run: |
             source ./iac.bicep.sh
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
             pushd .
             cd ./../../IAC/Bicep/bicep
             modules=$(find . -type f -name 'main.bicep' | sort -u)
