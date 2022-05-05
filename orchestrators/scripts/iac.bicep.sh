@@ -27,6 +27,9 @@ validate() {
 
     _information "Execute Bicep validate"
 
+    targetScope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
+    targetScope=${targetScope//\'/}
+
     if [[ "${scope}" == "mg" ]]; then
         az deployment mg validate --management-group-id "${optional_parameters}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${scope}" == "sub" ]]; then
