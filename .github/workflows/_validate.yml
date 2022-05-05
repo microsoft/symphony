@@ -5,7 +5,6 @@ on:
 
 jobs:
   Validate:
-    name: "Validate"
     runs-on: ubuntu-latest
 
     steps:
@@ -13,9 +12,16 @@ jobs:
 
       - name: Setup Toolset
         run: |
+          ./setup-azcli.sh
           ./setup-gitleaks.sh
           ./setup-powershell.sh
           ./setup-pester.sh
           ./setup-armttk.sh
           ./setup-shellspec.sh
+        working-directory: orchestrators/scripts
+
+      - name: Run Gitleaks
+        run: |
+            source ./scanners.sh
+            run_gitleaks './../../IAC/Bicep' './' 'json' 'info' 
         working-directory: orchestrators/scripts
