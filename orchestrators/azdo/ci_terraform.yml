@@ -272,8 +272,8 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Preivew & Deploy"
-        #dependsOn: validate
-        condition: eq('false', 'true')
+        dependsOn: validate
+        #condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
