@@ -11,6 +11,8 @@ on:
 jobs:
   Validate:
     uses: ./.github/workflows/_validate.yml
+    with:
+      environment: "dev"
 
   Preview:
     name: "Preview"

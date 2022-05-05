@@ -2,6 +2,10 @@ name: Validate
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   Validate:
@@ -24,4 +28,62 @@ jobs:
         run: |
             source ./scanners.sh
             run_gitleaks './../../IAC/Bicep' './' 'json' 'info' 
+        working-directory: orchestrators/scripts
+
+      - name: Run Bicep Lint
+        run: |
+            source ./iac.bicep.sh
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type f -name '*.bicep' | sort -u)
+
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=($modules)
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                echo "linting ${deployment}"
+                lint "${deployment}"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "bicep linting failed- returned code ${code}"
+                  exit $code
+                fi
+                echo "------------------------"
+              done
+            popd
+        working-directory: orchestrators/scripts
+
+      - name: Run Bicep Validate
+        run: |
+            source ./iac.bicep.sh
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type f -name 'main.bicep' | sort -u)
+
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=(${modules})
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                pushd .
+                path=$(dirname "${deployment}")
+                fileName=$(basename "${deployment}")
+                cd "${path}"
+                echo "bicep validating ${path}/${fileName}"
+                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/${{ inputs.environment }}/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "biceplint failed- returned code ${code}"
+                  exit $code
+                fi
+                popd
+                echo "------------------------"
+              done
+            popd
         working-directory: orchestrators/scripts
