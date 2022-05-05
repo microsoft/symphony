@@ -50,7 +50,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Validate"
-        #condition: eq('false', 'true')
+        condition: eq('false', 'true')
         #variables:
           #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
@@ -274,7 +274,8 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Preivew & Deploy"
-        dependsOn: validate
+        #dependsOn: validate
+        condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
@@ -364,7 +365,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "End to End Test"
-        dependsOn: preview
+        #dependsOn: preview
 
         steps:
           - checkout: Symphony 
