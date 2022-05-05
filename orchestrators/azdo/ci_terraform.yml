@@ -238,9 +238,7 @@ stages:
                 pushd .
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
-                echo '--------------------'
-                ls
-                echo '---------------------'
+          
                 tests=$(find . -type f -name '*unit_test.go' -print)
                 echo $tests
 
@@ -266,14 +264,16 @@ stages:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-              failTaskOnFailedTests: false # TEMP true
-              testRunTitle: "Terraform Modules unit tests"    
+              failTaskOnFailedTests: true # TEMP true
+              testRunTitle: "Terraform Modules unit tests"
+              publishRunAttachments: true    
 
       - job: preview
         workspace:
           clean:  resources       
-        displayName: "Preivew"
-        #dependsOn: validate
+        displayName: "Preivew & Deploy"
+        dependsOn: validate
+        #condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
@@ -363,7 +363,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "End to End Test"
-        dependsOn: preview
+        #dependsOn: preview
 
         steps:
           - checkout: Symphony 
@@ -413,9 +413,9 @@ stages:
                 pushd .
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
-                echo '--------------------'
-                ls
-                echo '---------------------'
+
+                #go test -v end_to_end_test.go
+
                 tests=$(find . -type f -name '*end_test.go' -print)
                 echo $tests
 
@@ -441,5 +441,8 @@ stages:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-              failTaskOnFailedTests: false # TEMP true
+              failTaskOnFailedTests: true # TEMP true
               testRunTitle: "Terraform Modules end to end tests"
+              publishRunAttachments: true
+
+          
