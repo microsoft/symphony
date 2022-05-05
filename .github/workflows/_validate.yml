@@ -1,0 +1,21 @@
+name: Validate
+
+on:
+  workflow_call:
+
+jobs:
+  Validate:
+    name: "Validate"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Toolset
+        run: |
+          ./setup-gitleaks.sh
+          ./setup-powershell.sh
+          ./setup-pester.sh
+          ./setup-armttk.sh
+          ./setup-shellspec.sh
+        working-directory: orchestrators/scripts
