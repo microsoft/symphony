@@ -108,7 +108,7 @@ jobs:
               validate "${fileName}" "${paramFiles}" 'sqlServerAdministratorPassword="abc123!XYZaaa"' "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
-                echo "biceplint failed - returned code ${code}"
+                echo "bicep lint failed - returned code ${code}"
                 exit $code
               fi
               popd
@@ -139,7 +139,7 @@ jobs:
           secrets: "clientid, clientsecret, subid, tenantid"
         id: KvSecrets
 
-      - name: Run Bicep Validate
+      - name: Run Bicep Preview
         run: |
           source ./iac.bicep.sh
           azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'

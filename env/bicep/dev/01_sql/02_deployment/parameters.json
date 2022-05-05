@@ -4,6 +4,9 @@
   "parameters": {
     "sqlServerAdministratorLogin": {
       "value": "sqladmin"
+    },
+    "sqlServerAdministratorPassword": {
+      "value": "PLACEHOLDER"
     }
   }
 }
