@@ -98,17 +98,17 @@ jobs:
               echo "bicep validating ${path}/${fileName}"
 
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
-              echo "${extraFileParam}"
+
               if [[ -f "${extraFileParam}" ]]; then
                   paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
               else
                   paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               fi
 
-              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
+              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
-                echo "biceplint failed- returned code ${code}"
+                echo "biceplint failed - returned code ${code}"
                 exit $code
               fi
               popd
@@ -158,20 +158,19 @@ jobs:
               path=$(dirname "${deployment}")
               fileName=$(basename "${deployment}")
               cd "${path}"
-              echo "bicep validating ${path}/${fileName}"
+              echo "bicep preview ${path}/${fileName}"
 
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
-              echo "${extraFileParam}"
               if [[ -f "${extraFileParam}" ]]; then
                   paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
               else
                   paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               fi
 
-              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
+              preview "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
               code=$?
               if [[ $code != 0 ]]; then
-                echo "biceplint failed- returned code ${code}"
+                echo "biceplint failed - returned code ${code}"
                 exit $code
               fi
               popd
