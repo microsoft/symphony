@@ -92,7 +92,7 @@ jobs:
               fileName=$(basename "${deployment}")
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
-              validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus3" "rg-test"
+              validate "${fileName}" "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json" "${{ github.run_id }}" "westus3" "rg-test"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "biceplint failed- returned code ${code}"
