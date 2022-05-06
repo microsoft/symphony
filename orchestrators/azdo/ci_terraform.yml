@@ -90,17 +90,17 @@ stages:
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
-          - task: Bash@3
-            displayName: "Install Go"
-            inputs:
-              targetType: "inline"
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              script: |
-                ls
-                pushd .
-                cd orchestrators/scripts
-                ./setup-go.sh "1.18.1"
-                popd
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    targetType: "inline"
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    script: |
+          #      ls
+          #      pushd .
+          #      cd orchestrators/scripts
+          #      ./setup-go.sh "1.18.1"
+          #      popd
           
           #- task: GoTool@0
           #  inputs:
