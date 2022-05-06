@@ -102,10 +102,10 @@ stages:
           #      ./setup-go.sh "1.18.1"
           #      popd
           
-          #- task: GoTool@0
-          #  inputs:
-          #    version: '1.18.1'
-          #    goBin: "$(System.DefaultWorkingDirectory)"
+          - task: GoTool@0
+            inputs:
+              version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
