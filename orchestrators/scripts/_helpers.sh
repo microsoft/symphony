@@ -86,9 +86,9 @@ parse_bicep_parameters() {
     done
 
     # TODO
-    # Load printenv to array
+    # Load printenv to array - tricky part?
     # compare parameters_to_parse with printenv array
-    # if not found, replace PLACEHOLDER with ENV value
+    # if found, replace PLACEHOLDER with ENV value
     # save temp paramaters.json
 }
 
