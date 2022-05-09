@@ -12,9 +12,12 @@ jobs:
   Spike:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v3
-
-      - name: Run script
+      - name: Set the value
+        id: step_one
         run: |
           echo "foo=bar" >> $GITHUB_ENV
+      - name: Use the value
+        id: step_two
+        run: |
+          echo "${{ env.foo }}"
           printenv
