@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sqlServerAdministratorLogin": {
-      "value": "sqladmin"
+      "value": "PLACEHOLDER"
     },
     "sqlServerAdministratorPassword": {
       "value": "PLACEHOLDER"

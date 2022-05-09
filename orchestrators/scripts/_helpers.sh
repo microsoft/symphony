@@ -50,18 +50,18 @@ azlogin() {
     export ARM_TENANT_ID="${tenant_id}"
 
     # https://www.terraform.io/docs/providers/azurerm/index.html#environment
-    # environment - (Optional) The Cloud Environment which should be used. 
-    # Possible values are public, usgovernment, german, and china. Defaults to public. 
+    # environment - (Optional) The Cloud Environment which should be used.
+    # Possible values are public, usgovernment, german, and china. Defaults to public.
     # This can also be sourced from the ARM_ENVIRONMENT environment variable.
 
     if [ "${cloud_name}" == 'AzureCloud' ]; then
         export ARM_ENVIRONMENT="public"
     elif [ "${cloud_name}" == 'AzureUSGovernment' ]; then
         export ARM_ENVIRONMENT="usgovernment"
-    elif [ "${cloud_name}" == 'AzureChinaCloud' ]; then 
-        export ARM_ENVIRONMENT="usgovernment" 
+    elif [ "${cloud_name}" == 'AzureChinaCloud' ]; then
+        export ARM_ENVIRONMENT="usgovernment"
     elif [ "${cloud_name}" == 'AzureGermanCloud' ]; then
-        export ARM_ENVIRONMENT="german" 
+        export ARM_ENVIRONMENT="german"
     else
         _error "Unknown cloud. Check documentation https://www.terraform.io/docs/providers/azurerm/index.html#environment"
         return 1
@@ -71,4 +71,26 @@ azlogin() {
 parse_bicep_parameters() {
     bicep_parameters_file_path=$1
     parameter_key=$1
+
+    parameters_file=$(cat ${bicep_parameters_file_path})
+    parameters_to_parse=$(echo ${parameters_file} | jq -r '.parameters | to_entries[] | select (.value.value == "PLACEHOLDER") | .key')
+
+    SAVEIFS=$IFS
+    IFS=$'\n'
+    parameters_to_parse=($parameters_to_parse)
+    IFS=$SAVEIFS
+
+    # test
+    for ((i = 0; i < ${#parameters_to_parse[@]}; i++)); do
+        echo "$i: ${parameters_to_parse[$i]}"
+    done
+
+    # TODO
+    # Load printenv to array
+    # compare parameters_to_parse with printenv array
+    # if not found, replace PLACEHOLDER with ENV value
+    # save temp paramaters.json
 }
+
+# test
+parse_bicep_parameters env/bicep/dev/01_sql/02_deployment/parameters.json
