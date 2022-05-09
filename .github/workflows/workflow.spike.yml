@@ -16,8 +16,10 @@ jobs:
         id: step_one
         run: |
           echo "foo=bar" >> $GITHUB_ENV
+
       - name: Use the value
         id: step_two
         run: |
           echo "${{ env.foo }}"
+          echo "${{ env }}"
           printenv
