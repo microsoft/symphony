@@ -1,10 +1,10 @@
 name: "Spike"
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
 
   workflow_dispatch:
 
@@ -16,4 +16,5 @@ jobs:
 
       - name: Run script
         run: |
+          echo "foo=bar" >> $GITHUB_ENV
           printenv
