@@ -67,3 +67,8 @@ azlogin() {
         return 1
     fi
 }
+
+parse_bicep_parameters() {
+    bicep_parameters_file_path=$1
+    parameter_key=$1
+}
