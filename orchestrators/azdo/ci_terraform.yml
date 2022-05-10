@@ -338,6 +338,9 @@ stages:
                       fi
                       popd
 
+                      echo "00000000000000000000000000"
+                      ls
+                      echo "00000000000000000000000000"
                       #check for resources destruction 
                       detect_destroy "terraform.tfplan"
 
