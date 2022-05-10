@@ -317,29 +317,17 @@ stages:
                 for deployment in "${array[@]}"
                   do
                     if [[ ${deployment} != *"01_init"* ]]; then
-                      echo "tf init ${deployment}"
                       pushd .
                       cd $deployment
 
+                      # Init deployment
                       init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
-                      echo "tf init ${deployment}"
-                      echo "tf plan ${deployment}"
-                     
+                      
+
+                      # Preview deployment
                       envfile=${deployment/'./'/''}
-                      envfile=${envfile/'/'/'_'}
-                      echo "env file name"
-                      echo "./../../../env/terraform/$(ENV)/${envfile}"
-
-                      echo "000000000000 before plan 0000000000"
-                      ls
-                      echo "00000000000000000000000000"
-
-
+                      envfile=${envfile/'/'/'_'}                      
                       preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
-
-                      echo "000000000000 after plan 0000000000"
-                      ls
-                      echo "00000000000000000000000000"
 
                       code=$?
                       if [[ $code != 0 ]]; then
@@ -347,14 +335,10 @@ stages:
                         exit $code
                       fi
                       
-
-                      echo "00000000000000000000000000"
-                      ls
-                      echo "00000000000000000000000000"
-                      #check for resources destruction 
+                      # Check for resources destruction 
                       detect_destroy "terraform.tfplan"
 
-                      # Run terraform apply
+                      # Apply deployment
                       deploy "terraform.tfplan"
 
                       code=$?
