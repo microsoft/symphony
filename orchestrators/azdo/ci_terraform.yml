@@ -331,16 +331,22 @@ stages:
                       echo "./../../../env/terraform/$(ENV)/${envfile}"
                       preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
 
+                      code=$?
+                      if [[ $code != 0 ]]; then
+                        echo "terraform plan - returned code ${code}" 
+                        exit $code
+                      fi
+                      popd
+
                       #check for resources destruction 
                       detect_destroy  "terraform.tfplan"
 
-                      # Run terraform deploy
-
+                      # Run terraform apply
                       deploy "terraform.tfplan"
 
                       code=$?
                       if [[ $code != 0 ]]; then
-                        echo "terraform plan - returned code ${code}" 
+                        echo "terraform apply - returned code ${code}" 
                         exit $code
                       fi
                       popd
