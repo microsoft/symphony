@@ -252,7 +252,7 @@ stages:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-              failTaskOnFailedTests: true # TEMP true
+              failTaskOnFailedTests: true
               testRunTitle: "Terraform Modules unit tests"
               publishRunAttachments: true
               mergeTestResults: true
