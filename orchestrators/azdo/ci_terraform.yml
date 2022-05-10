@@ -237,29 +237,13 @@ stages:
                 export container_name=$(STATECONTAINER)
 
                 pushd .
-                echo 'get tests list'
+                
                 cd ./../../IAC/Terraform/test/terraform
           
 
-                echo "Tr run in paralel using tags"
+                echo "Run tests with tag = module_tests"
                 terraform module_test true
-                #tests=$(find . -type f -name '*unit_test.go' -print)
-                #echo $tests
-
-                #SAVEIFS=$IFS
-                #IFS=$'\n'
-
-                #array=($tests)
-                #IFS=$SAVEIFS
-                #len=${#array[@]}
-                
-                #for test in "${array[@]}"
-                #  do
-                #    if [[ ${test} != *"01_init"* ]]; then
-                #      echo "Test name  ${test}" 
-                #      terraform ${test/'./'/''}
-                #    fi
-                #  done
+              
                 popd
 
           - task: PublishTestResults@2
