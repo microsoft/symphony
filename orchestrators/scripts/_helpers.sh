@@ -70,27 +70,29 @@ azlogin() {
 
 parse_bicep_parameters() {
     bicep_parameters_file_path=$1
-    parameter_key=$1
 
     parameters_file=$(cat ${bicep_parameters_file_path})
-    parameters_to_parse=$(echo ${parameters_file} | jq -r '.parameters | to_entries[] | select (.value.value == "PLACEHOLDER") | .key')
+    # parameters_to_parse=$(echo ${parameters_file} | jq -r '.parameters | to_entries[] | select (.value.value == "PLACEHOLDER") | .key')
 
-    SAVEIFS=$IFS
-    IFS=$'\n'
-    parameters_to_parse=($parameters_to_parse)
-    IFS=$SAVEIFS
+    #test
+    # export sqlServerAdministratorLogin="sa"
+    # export sqlServerAdministratorPassword="sa"
 
-    # test
-    for ((i = 0; i < ${#parameters_to_parse[@]}; i++)); do
-        echo "$i: ${parameters_to_parse[$i]}"
-    done
+    # SAVEIFS=$IFS
+    # IFS=$'\n'
+    # parameters_to_parse=($parameters_to_parse)
+    # IFS=$SAVEIFS
 
-    # TODO
-    # Load printenv to array - tricky part?
-    # compare parameters_to_parse with printenv array
-    # if found, replace PLACEHOLDER with ENV value
-    # save temp paramaters.json
+    # for ((i = 0; i < ${#parameters_to_parse[@]}; i++)); do
+    #     if [[ ! -z "${!parameters_to_parse[$i]}" ]]; then
+
+    #     fi
+    # done
+
+    echo "${parameters_file}" | jq '.parameters 
+    |= map_values(if .value | (startswith("$") and env[.[1:]]) 
+                  then .value |= env[.[1:]] else . end)' >${bicep_parameters_file_path}
 }
 
 # test
-parse_bicep_parameters env/bicep/dev/01_sql/02_deployment/parameters.json
+#parse_bicep_parameters env/bicep/dev/01_sql/02_deployment/parameters.json
