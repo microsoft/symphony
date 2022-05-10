@@ -240,23 +240,26 @@ stages:
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
           
-                tests=$(find . -type f -name '*unit_test.go' -print)
-                echo $tests
 
-                SAVEIFS=$IFS
-                IFS=$'\n'
+                echo "Tr run in paralel using tags"
+                terraform "module_test" "true"
+                #tests=$(find . -type f -name '*unit_test.go' -print)
+                #echo $tests
 
-                array=($tests)
-                IFS=$SAVEIFS
-                len=${#array[@]}
+                #SAVEIFS=$IFS
+                #IFS=$'\n'
+
+                #array=($tests)
+                #IFS=$SAVEIFS
+                #len=${#array[@]}
                 
-                for test in "${array[@]}"
-                  do
-                    if [[ ${test} != *"01_init"* ]]; then
-                      echo "Test name  ${test}" 
-                      terraform ${test/'./'/''}
-                    fi
-                  done
+                #for test in "${array[@]}"
+                #  do
+                #    if [[ ${test} != *"01_init"* ]]; then
+                #      echo "Test name  ${test}" 
+                #      terraform ${test/'./'/''}
+                #    fi
+                #  done
                 popd
 
           - task: PublishTestResults@2
