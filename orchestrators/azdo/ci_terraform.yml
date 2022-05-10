@@ -293,7 +293,7 @@ stages:
               RunAsPreJob: true
 
           - task: Bash@3
-            displayName: "Run Terraform plan"
+            displayName: "Run Terraform plan & Apply"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
