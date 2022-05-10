@@ -410,11 +410,8 @@ stages:
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
 
-                #go test -v end_to_end_test.go
-
                 tests=$(find . -type f -name '*end_test.go' -print)
-                echo $tests
-
+               
                 SAVEIFS=$IFS
                 IFS=$'\n'
 
@@ -424,10 +421,10 @@ stages:
                 
                 for test in "${array[@]}"
                   do
-                    if [[ ${test} != *"01_init"* ]]; then
-                      echo "Test name  ${test}" 
+                    #if [[ ${test} != *"01_init"* ]]; then
+                      #echo "Test name  ${test}" 
                       terraform ${test/'./'/''}
-                    fi
+                    #fi
                   done
                 popd
 
