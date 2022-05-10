@@ -67,8 +67,8 @@ terraform() {
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for tag '${TEST_FILE_NAME}'" | tee -a test.out
       
       # run tests of certain tag
-      echo "go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
-      go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
+      echo "go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME}.xml"
+      go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > "${TEST_FILE_NAME}.xml"
 
   fi
 
