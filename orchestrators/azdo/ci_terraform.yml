@@ -242,7 +242,7 @@ stages:
           
 
                 echo "Tr run in paralel using tags"
-                terraform 'module_test' 'true'
+                terraform module_test true
                 #tests=$(find . -type f -name '*unit_test.go' -print)
                 #echo $tests
 
