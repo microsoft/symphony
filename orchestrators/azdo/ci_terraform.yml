@@ -99,7 +99,7 @@ stages:
           #      ls
           #      pushd .
           #      cd orchestrators/scripts
-          #      ./setup-go.sh "1.16.14"
+          #      ./setup-go.sh "1.18.1"
           #      popd
           
           - task: GoTool@0
@@ -127,6 +127,7 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/results"
               failTaskOnFailedTests: true
               testRunTitle: "Gitleask report"
+              mergeTestResults: true
 
           - task: Bash@3
             displayName: "Run Terraform lint"
@@ -138,7 +139,7 @@ stages:
                 source ./iac.tf.sh
                 pushd .
 
-                cd ./../../IAC/Terraform/terraform/test
+                cd ./../../IAC/Terraform/terraform
                 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
                 
                 SAVEIFS=$IFS
@@ -266,7 +267,9 @@ stages:
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
               failTaskOnFailedTests: true # TEMP true
               testRunTitle: "Terraform Modules unit tests"
-              publishRunAttachments: true    
+              publishRunAttachments: true
+              mergeTestResults: true
+
 
       - job: preview
         workspace:
@@ -363,7 +366,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "End to End Test"
-        #dependsOn: preview
+        dependsOn: preview
 
         steps:
           - checkout: Symphony 
@@ -444,5 +447,6 @@ stages:
               failTaskOnFailedTests: true # TEMP true
               testRunTitle: "Terraform Modules end to end tests"
               publishRunAttachments: true
+              mergeTestResults: true
 
           
