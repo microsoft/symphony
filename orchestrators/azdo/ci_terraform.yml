@@ -346,7 +346,7 @@ stages:
                         echo "terraform plan - returned code ${code}" 
                         exit $code
                       fi
-                      popd
+                      
 
                       echo "00000000000000000000000000"
                       ls
