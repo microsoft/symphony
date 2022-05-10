@@ -22,6 +22,7 @@ EOF
 
 # @description: run tests for terraform
 # @param ${1}: test file name
+# @param ${2}: is a tag
 # @usage <to run all the tests>: source ${0} && terraform
 # @usage <to run {FILENAME} tests only>; source ${0} && terraform 00_dummy_test.go
 terraform() {
@@ -53,7 +54,7 @@ terraform() {
 
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
-  else if [ ! -z "${TEST_FILE_NAME}" ] && [ -z "${IS_TAG}" ]; then
+  elif [ ! -z "${TEST_FILE_NAME}" ] && [ -z "${IS_TAG}" ]; then
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
       
       # run a specific test
@@ -71,7 +72,7 @@ terraform() {
 
   fi
 
-  popd
+  popd 
 }
 
 # @description: run tests for bicep
