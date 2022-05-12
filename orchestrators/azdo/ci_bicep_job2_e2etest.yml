@@ -3,3 +3,7 @@ jobs:
     displayName: "e2e Test"
     workspace:
       clean:  resources
+
+    steps:
+      - checkout: symphony
+
