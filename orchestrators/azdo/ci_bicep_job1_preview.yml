@@ -3,3 +3,4 @@ jobs:
     displayName: "Preview"
 
     steps:
+      - checkout: symphony
