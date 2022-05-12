@@ -36,3 +36,14 @@ jobs:
             export container_name=$(STATECONTAINER)
 
             bicep
+
+      - task: PublishTestResults@2
+        displayName: "Publish end to end test results"
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/bicep"
+          failTaskOnFailedTests: true
+          testRunTitle: "Bicep Modules end to end tests"
+          publishRunAttachments: true
+          mergeTestResults: true
