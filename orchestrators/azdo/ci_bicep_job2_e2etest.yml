@@ -1,0 +1,5 @@
+jobs:
+  - job: e2etest
+    displayName: "e2e Test"
+    workspace:
+      clean:  resources
