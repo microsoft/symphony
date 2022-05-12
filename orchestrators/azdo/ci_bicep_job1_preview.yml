@@ -12,3 +12,10 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: 'Symphony-kv2'
+          KeyVaultName: 'kv-symphony-env'
+          SecretsFilter: '*'
+          RunAsPreJob: true
