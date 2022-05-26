@@ -75,7 +75,7 @@ parse_bicep_parameters() {
 
     echo $(cat "${bicep_parameters_file_path}") | jq '.parameters 
     |= map_values(if .value | (startswith("$") and env[.[1:]]) 
-                  then .value |= env[.[1:]] else . end)' >${bicep_parameters_file_path}
+                  then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
 }
 
 bicep_output_to_env() {
