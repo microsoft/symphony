@@ -72,27 +72,8 @@ parse_bicep_parameters() {
     bicep_parameters_file_path=$1
 
     parameters_file=$(cat ${bicep_parameters_file_path})
-    # parameters_to_parse=$(echo ${parameters_file} | jq -r '.parameters | to_entries[] | select (.value.value == "PLACEHOLDER") | .key')
-
-    #test
-    # export sqlServerAdministratorLogin="sa"
-    # export sqlServerAdministratorPassword="sa"
-
-    # SAVEIFS=$IFS
-    # IFS=$'\n'
-    # parameters_to_parse=($parameters_to_parse)
-    # IFS=$SAVEIFS
-
-    # for ((i = 0; i < ${#parameters_to_parse[@]}; i++)); do
-    #     if [[ ! -z "${!parameters_to_parse[$i]}" ]]; then
-
-    #     fi
-    # done
 
     echo "${parameters_file}" | jq '.parameters 
     |= map_values(if .value | (startswith("$") and env[.[1:]]) 
                   then .value |= env[.[1:]] else . end)' >${bicep_parameters_file_path}
 }
-
-# test
-#parse_bicep_parameters env/bicep/dev/01_sql/02_deployment/parameters.json
