@@ -71,7 +71,7 @@ azlogin() {
 parse_bicep_parameters() {
     local bicep_parameters_file_path=$1
 
-    _information "Parsing parameters with Envs: ${bicep_parameters_file_path}"
+    _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
 
     echo $(cat "${bicep_parameters_file_path}") | jq '.parameters 
     |= map_values(if .value | (startswith("$") and env[.[1:]]) 
