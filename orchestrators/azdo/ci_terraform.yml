@@ -99,7 +99,7 @@ stages:
                 pushd .
                 cd orchestrators/scripts
                 ./setup-go.sh "1.18.1"
-                export GOBIN="$(System.DefaultWorkingDirectory)/bin"
+                # export GOBIN="$(System.DefaultWorkingDirectory)/bin"
                 popd
           
           #- task: GoTool@0
