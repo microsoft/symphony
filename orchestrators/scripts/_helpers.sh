@@ -74,8 +74,23 @@ parse_bicep_parameters() {
     _information "Parsing parameters with Envs: ${bicep_parameters_file_path}"
 
     parameters_file=$(cat ${bicep_parameters_file_path})
-
     echo "${parameters_file}" | jq '.parameters 
     |= map_values(if .value | (startswith("$") and env[.[1:]]) 
                   then .value |= env[.[1:]] else . end)' >${bicep_parameters_file_path}
+}
+
+bicep_output_to_env() {
+    local bicep_output_json=$1
+
+    echo "${bicep_output_json}" | jq -c '.properties.outputs | to_entries[] | [.key, .value.value]' |
+        while IFS=$"\n" read -r c; do
+            outputname=$(echo "$c" | jq -r '.[0]')
+            outputvalue=$(echo "$c" | jq -r '.[1]')
+
+            # Azure DevOps
+            # echo "##vso[task.setvariable variable=${outputname};isOutput=true]${outputvalue}"
+
+            # GitHub
+            echo "{${outputname}}={${outputvalue}}" >>$GITHUB_ENV
+        done
 }
