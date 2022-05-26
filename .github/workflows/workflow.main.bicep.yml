@@ -26,12 +26,12 @@ jobs:
 
       - name: Setup Toolset
         run: |
-          ./setup-azcli.sh
+          # ./setup-azcli.sh
           ./setup-gitleaks.sh
-          ./setup-powershell.sh
-          ./setup-pester.sh
-          ./setup-armttk.sh
-          ./setup-shellspec.sh
+          # ./setup-powershell.sh
+          # ./setup-pester.sh
+          # ./setup-armttk.sh
+          # ./setup-shellspec.sh
         working-directory: orchestrators/scripts
 
       - name: Run Gitleaks
@@ -99,7 +99,7 @@ jobs:
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
 
-              paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
+              paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               parse_bicep_parameters "${paramFiles}"
 
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
