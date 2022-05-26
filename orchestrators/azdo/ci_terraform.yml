@@ -96,10 +96,9 @@ stages:
               targetType: "inline"
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               script: |
-                ls
                 pushd .
                 cd orchestrators/scripts
-                ./setup-go.sh "1.18.1"
+                ./setup-go.sh "1.18.1" "$(System.DefaultWorkingDirectory)"
                 popd
           
           #- task: GoTool@0
@@ -277,11 +276,22 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
-          - task: GoTool@0
-            inputs:
-              version: '1.18.1'
-              goBin: "$(System.DefaultWorkingDirectory)"
+          #- task: GoTool@0
+          #  inputs:
+          #    version: '1.18.1'
+          #    goBin: "$(System.DefaultWorkingDirectory)"
 
+          - task: Bash@3
+            displayName: "Install Go"
+            inputs:
+              targetType: "inline"
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              script: |
+                pushd .
+                cd orchestrators/scripts
+                ./setup-go.sh "1.18.1" "$(System.DefaultWorkingDirectory)"
+                popd
+                
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
           - task: AzureKeyVault@2
