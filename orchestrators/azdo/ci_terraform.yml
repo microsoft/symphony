@@ -105,6 +105,7 @@ stages:
           - task: GoTool@0
             inputs:
               version: '1.18.1'
+              goPath: "$(System.DefaultWorkingDirectory)"
               #goBin: "$(System.DefaultWorkingDirectory)"
 
           - task: Bash@3
