@@ -33,11 +33,11 @@ _success() {
 }
 
 azlogin() {
-    subscription_id=$1
-    tenant_id=$2
-    client_id=$3
-    client_secret=$4
-    cloud_name=$5
+    local subscription_id=$1
+    local tenant_id=$2
+    local client_id=$3
+    local client_secret=$4
+    local cloud_name=$5
 
     # AzureCloud AzureChinaCloud AzureUSGovernment AzureGermanCloud
     az cloud set --name ${cloud_name}
@@ -69,7 +69,9 @@ azlogin() {
 }
 
 parse_bicep_parameters() {
-    bicep_parameters_file_path=$1
+    local bicep_parameters_file_path=$1
+
+    _information "Parsing parameters with Envs: ${bicep_parameters_file_path}"
 
     parameters_file=$(cat ${bicep_parameters_file_path})
 
