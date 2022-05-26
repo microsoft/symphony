@@ -98,7 +98,7 @@ stages:
               script: |
                 pushd .
                 cd orchestrators/scripts
-                ./setup-go.sh "1.18.1" "$(System.DefaultWorkingDirectory)"
+                ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
                 popd
           
           #- task: GoTool@0
@@ -289,9 +289,9 @@ stages:
               script: |
                 pushd .
                 cd orchestrators/scripts
-                ./setup-go.sh "1.18.1" "$(System.DefaultWorkingDirectory)"
+                ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
                 popd
-                
+
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
           - task: AzureKeyVault@2
