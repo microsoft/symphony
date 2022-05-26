@@ -94,17 +94,18 @@ stages:
             displayName: "Install Go"
             inputs:
               targetType: "inline"
+              bashEnvValue: '~/.profile'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               script: |
                 pushd .
-                cd orchestrators/scripts
+                
                 ./setup-go.sh "1.18.1"
                 export GOBIN="$(System.DefaultWorkingDirectory)/bin"
 
                 echo "--------------------" 
                 echo "GOBIN"
                 echo $GOBIN  
-                
+
                 popd
           
           #- task: GoTool@0
