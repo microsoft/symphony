@@ -26,45 +26,45 @@ jobs:
 
       - name: Setup Toolset
         run: |
-          # ./setup-azcli.sh
-          # ./setup-gitleaks.sh
-          # ./setup-powershell.sh
-          # ./setup-pester.sh
-          # ./setup-armttk.sh
-          # ./setup-shellspec.sh
+          ./setup-azcli.sh
+          ./setup-gitleaks.sh
+          ./setup-powershell.sh
+          ./setup-pester.sh
+          ./setup-armttk.sh
+          ./setup-shellspec.sh
         working-directory: orchestrators/scripts
 
-      # - name: Run Gitleaks
-      #   run: |
-      #       source ./scanners.sh
-      #       run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
-      #   working-directory: orchestrators/scripts
+      - name: Run Gitleaks
+        run: |
+            source ./scanners.sh
+            run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
+        working-directory: orchestrators/scripts
 
-      # - name: Run Bicep Lint
-      #   run: |
-      #       source ./iac.bicep.sh
-      #       pushd .
-      #       cd ./../../IAC/Bicep/bicep
-      #       modules=$(find . -type f -name '*.bicep' | sort -u)
+      - name: Run Bicep Lint
+        run: |
+            source ./iac.bicep.sh
+            pushd .
+            cd ./../../IAC/Bicep/bicep
+            modules=$(find . -type f -name '*.bicep' | sort -u)
 
-      #       SAVEIFS=$IFS
-      #       IFS=$'\n'
-      #       array=($modules)
-      #       IFS=$SAVEIFS
-      #       len=${#array[@]}
-      #       for deployment in "${array[@]}"
-      #         do
-      #           echo "linting ${deployment}"
-      #           lint "${deployment}"
-      #           code=$?
-      #           if [[ $code != 0 ]]; then
-      #             echo "bicep linting failed- returned code ${code}"
-      #             exit $code
-      #           fi
-      #           echo "------------------------"
-      #         done
-      #       popd
-      #   working-directory: orchestrators/scripts
+            SAVEIFS=$IFS
+            IFS=$'\n'
+            array=($modules)
+            IFS=$SAVEIFS
+            len=${#array[@]}
+            for deployment in "${array[@]}"
+              do
+                echo "linting ${deployment}"
+                lint "${deployment}"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "bicep linting failed - returned code ${code}"
+                  exit $code
+                fi
+                echo "------------------------"
+              done
+            popd
+        working-directory: orchestrators/scripts
 
       - uses: Azure/login@v1
         with:
@@ -97,12 +97,13 @@ jobs:
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
 
-              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
+              paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
+              parse_bicep_parameters "${paramFiles}"
 
+              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               if [[ -f "${extraFileParam}" ]]; then
-                  paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
-              else
-                  paramFiles="@${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
+                  parse_bicep_parameters "${extraFileParam}"
+                  paramFiles="@${paramFiles} @${extraFileParam}"
               fi
 
               validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
