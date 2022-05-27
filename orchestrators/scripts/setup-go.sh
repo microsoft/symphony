@@ -82,8 +82,11 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     mkdir -p "${GOTOOLS_PATH}" ${GOPATH}/bin
 
     ls "${GOTOOLS_PATH}"
-    _information "----------------------"
+    _information "------ GOPATH------------"
+    echo ${GOPATH}
+    ls "${GOPATH}"
 
+    _information "------ ------------"
     cd "${GOTOOLS_PATH}"
     export GOPATH="${GOTOOLS_PATH}"
     export GOCACHE="${GOTOOLS_PATH}/cache"
