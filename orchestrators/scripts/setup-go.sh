@@ -75,7 +75,13 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     _information "Installing common Go tools..."
     export PATH=${GOROOT}/bin:${PATH}
     GOTOOLS_PATH="$(pwd)/tmp/gotools"
+    _information " create bin directory"
+    ls "${GOTOOLS_PATH}"
     mkdir -p "${GOTOOLS_PATH}" ${GOPATH}/bin
+
+    ls "${GOTOOLS_PATH}"
+    _information "----------------------"
+    
     cd "${GOTOOLS_PATH}"
     export GOPATH="${GOTOOLS_PATH}"
     export GOCACHE="${GOTOOLS_PATH}/cache"
