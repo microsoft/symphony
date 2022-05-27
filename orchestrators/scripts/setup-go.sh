@@ -106,12 +106,12 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
 
     _information "------ post tool installation ------------"
     _information "------ ls GOPATH/bin------------"
-    echo "${GOPATH}/bin"
-    ls ${GOPATH}
+    echo "${GOPATH}"
+    ls "${GOPATH}"
 
     _information "------ ls GOTOOLS_PATH/bin------------"
     echo "${GOTOOLS_PATH}/bin"
-    ls ${GOTOOLS_PATH}
+    ls "${GOTOOLS_PATH}"
     
     mv ${GOTOOLS_PATH}/bin/* ${GOPATH}/bin
 
