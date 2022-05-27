@@ -88,8 +88,8 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
 
     _information "------ ------------"
     cd "${GOTOOLS_PATH}"
-    export GOPATH="${GOTOOLS_PATH}"
-    export GOCACHE="${GOTOOLS_PATH}/cache"
+    # export GOPATH="${GOTOOLS_PATH}"
+    # export GOCACHE="${GOTOOLS_PATH}/cache"
 
     # Use go get for versions of go under 1.16
     go_install_command=install
