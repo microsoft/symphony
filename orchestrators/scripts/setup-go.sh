@@ -79,6 +79,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     mkdir -p "${GOTOOLS_PATH}/bin"
     echo ${GOTOOLS_PATH}
     ls ${GOTOOLS_PATH}
+    mkdir -p  "${GOPATH}/bin"
     mkdir -p "${GOTOOLS_PATH}" ${GOPATH}/bin
 
     ls "${GOTOOLS_PATH}"
