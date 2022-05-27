@@ -76,7 +76,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     export PATH=${GOROOT}/bin:${PATH}
     GOTOOLS_PATH="$(pwd)/tmp/gotools"
     _information " create bin directory"
-    mkdir -p "${GOTOOLS_PATH}"
+    mkdir -p "${GOTOOLS_PATH}/bin"
     echo ${GOTOOLS_PATH}
     ls ${GOTOOLS_PATH}
     mkdir -p "${GOTOOLS_PATH}" ${GOPATH}/bin
