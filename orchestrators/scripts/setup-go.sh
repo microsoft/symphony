@@ -143,7 +143,7 @@ if [[ "\${PATH}" != *"\${GOROOT}/bin"* ]]; then export PATH="\${PATH}:\${GOROOT}
 EOF
 )"
 
-chown -R :golang "${GOROOT}" "${GOPATH}"
+# chown -R :golang "${GOROOT}" "${GOPATH}"
 chmod -R g+r+w "${GOROOT}" "${GOPATH}"
 find "${GOROOT}" -type d | xargs -n 1 chmod g+s
 find "${GOPATH}" -type d | xargs -n 1 chmod g+s
