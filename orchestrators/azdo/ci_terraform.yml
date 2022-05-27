@@ -86,26 +86,53 @@ stages:
           #  inputs:
           #    filePath: 'orchestrators/scripts/setup-go.sh'
           #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          #    arguments: "1.16.14"
+          #    arguments: "1.18.1"
           #    bashEnvValue: '~/.profile'
           #    failOnStderr: true
           
-          #- task: Bash@3
-          #  displayName: "Install Go"
-          #  inputs:
-          #    targetType: "inline"
-          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          #    script: |
-          #      ls
-          #      pushd .
-          #      cd orchestrators/scripts
-          #      ./setup-go.sh "1.18.1"
-          #      popd
-          
-          - task: GoTool@0
+          - task: Bash@3
+            displayName: "Install Go"
             inputs:
-              version: '1.18.1'
-              goBin: "$(System.DefaultWorkingDirectory)"
+              targetType: "inline"
+              bashEnvValue: '~/.profile'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              script: |
+                pushd .
+                
+                ./setup-go.sh "1.18.1"
+                export GOBIN="$(System.DefaultWorkingDirectory)/bin"
+
+                echo "--------------------" 
+                echo "GOBIN"
+                echo $GOBIN  
+
+                popd
+          
+          #- task: GoTool@0
+          #  inputs:
+          #    version: '1.18.1'
+          #    goBin: "$(System.DefaultWorkingDirectory)"
+
+          - task: Bash@3
+            displayName: "echo GOBin, GoPATH, GOROOT"
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              targetType: 'inline'
+              script: |  
+                echo "--------------------" 
+                echo "GOBIN"
+                echo $GOBIN  
+                echo "--------------------" 
+                echo "GOPATH"
+                echo $GOPATH  
+                 echo "--------------------" 
+                echo "GOBROOT"
+                echo $GOROOT  
+
+          #- task: GoTool@0
+          #  inputs:
+          #    version: '1.18.1'
+          #    goBin: "$(System.DefaultWorkingDirectory)"
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
@@ -237,29 +264,13 @@ stages:
                 export container_name=$(STATECONTAINER)
 
                 pushd .
-                echo 'get tests list'
+                
                 cd ./../../IAC/Terraform/test/terraform
           
 
-                echo "Tr run in paralel using tags"
+                echo "Run tests with tag = module_tests"
                 terraform module_test true
-                #tests=$(find . -type f -name '*unit_test.go' -print)
-                #echo $tests
-
-                #SAVEIFS=$IFS
-                #IFS=$'\n'
-
-                #array=($tests)
-                #IFS=$SAVEIFS
-                #len=${#array[@]}
-                
-                #for test in "${array[@]}"
-                #  do
-                #    if [[ ${test} != *"01_init"* ]]; then
-                #      echo "Test name  ${test}" 
-                #      terraform ${test/'./'/''}
-                #    fi
-                #  done
+              
                 popd
 
           - task: PublishTestResults@2
@@ -268,7 +279,7 @@ stages:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-              failTaskOnFailedTests: true # TEMP true
+              failTaskOnFailedTests: true
               testRunTitle: "Terraform Modules unit tests"
               publishRunAttachments: true
               mergeTestResults: true
@@ -279,7 +290,7 @@ stages:
           clean:  resources       
         displayName: "Preivew & Deploy"
         dependsOn: validate
-        #condition: eq('false', 'true')
+        condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
@@ -293,10 +304,21 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
-          - task: GoTool@0
+          #- task: GoTool@0
+          #  inputs:
+          #    version: '1.18.1'
+          #    goBin: "$(System.DefaultWorkingDirectory)"
+
+          - task: Bash@3
+            displayName: "Install Go"
             inputs:
-              version: '1.18.1'
-              goBin: "$(System.DefaultWorkingDirectory)"
+              targetType: "inline"
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              script: |
+                pushd .
+                cd orchestrators/scripts
+                ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
+                popd
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
@@ -309,7 +331,7 @@ stages:
               RunAsPreJob: true
 
           - task: Bash@3
-            displayName: "Run Terraform plan"
+            displayName: "Run Terraform plan & Apply"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
@@ -333,30 +355,33 @@ stages:
                 for deployment in "${array[@]}"
                   do
                     if [[ ${deployment} != *"01_init"* ]]; then
-                      echo "tf init ${deployment}"
                       pushd .
                       cd $deployment
 
+                      # Init deployment
                       init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
-                      echo "tf init ${deployment}"
-                      echo "tf plan ${deployment}"
-                     
+                      
+
+                      # Preview deployment
                       envfile=${deployment/'./'/''}
-                      envfile=${envfile/'/'/'_'}
-                      echo "env file name"
-                      echo "./../../../env/terraform/$(ENV)/${envfile}"
+                      envfile=${envfile/'/'/'_'}                      
                       preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
-
-                      #check for resources destruction 
-                      detect_destroy  "terraform.tfplan"
-
-                      # Run terraform deploy
-
-                      deploy "terraform.tfplan"
 
                       code=$?
                       if [[ $code != 0 ]]; then
                         echo "terraform plan - returned code ${code}" 
+                        exit $code
+                      fi
+                      
+                      # Check for resources destruction 
+                      detect_destroy "terraform.tfplan"
+
+                      # Apply deployment
+                      deploy "terraform.tfplan"
+
+                      code=$?
+                      if [[ $code != 0 ]]; then
+                        echo "terraform apply - returned code ${code}" 
                         exit $code
                       fi
                       popd
@@ -368,7 +393,7 @@ stages:
       - job: test
         workspace:
           clean:  resources       
-        displayName: "End to End Test"
+        displayName: "Execute End to End Test"
         dependsOn: preview
 
         steps:
@@ -420,11 +445,8 @@ stages:
                 echo 'get tests list'
                 cd ./../../IAC/Terraform/test/terraform
 
-                #go test -v end_to_end_test.go
-
                 tests=$(find . -type f -name '*end_test.go' -print)
-                echo $tests
-
+               
                 SAVEIFS=$IFS
                 IFS=$'\n'
 
@@ -434,10 +456,10 @@ stages:
                 
                 for test in "${array[@]}"
                   do
-                    if [[ ${test} != *"01_init"* ]]; then
-                      echo "Test name  ${test}" 
+                    #if [[ ${test} != *"01_init"* ]]; then
+                      #echo "Test name  ${test}" 
                       terraform ${test/'./'/''}
-                    fi
+                    #fi
                   done
                 popd
 
