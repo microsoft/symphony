@@ -102,6 +102,16 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     (echo "${GO_TOOLS}" | xargs -n 1 go ${go_install_command} -v) 2>&1 | tee -a /tmp/go.log
 
     # Move Go tools into path and clean up
+
+    _information "------ post tool installation ------------"
+    _information "------ ls GOPATH/bin------------"
+    echo "${GOPATH}/bin"
+    ls "${GOPATH}/bin"
+
+    _information "------ ls GOTOOLS_PATH/bin------------"
+     echo "${GOTOOLS_PATH}/bin"
+    ls "${GOTOOLS_PATH}/bin"
+    
     mv "${GOTOOLS_PATH}/bin/*" ${GOPATH}/bin/
 
     rm -rf "${GOTOOLS_PATH}"
