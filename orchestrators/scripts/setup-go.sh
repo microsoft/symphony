@@ -113,9 +113,9 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     echo "${GOTOOLS_PATH}/bin"
     ls "${GOTOOLS_PATH}/bin"
     
-    mv ${GOTOOLS_PATH}/bin/* ${GOPATH}/bin
+    #mv ${GOTOOLS_PATH}/bin/* ${GOPATH}/bin
 
-    rm -rf "${GOTOOLS_PATH}"
+    #rm -rf "${GOTOOLS_PATH}"
 fi
 
 # Add GOPATH variable and bin directory into PATH in bashrc/zshrc files (unless disabled)
