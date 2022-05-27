@@ -81,32 +81,32 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          #- task: Bash@3
-          #  displayName: "Install Go"
-          #  inputs:
-          #    filePath: 'orchestrators/scripts/setup-go.sh'
-          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          #    arguments: "1.18.1"
-          #    bashEnvValue: '~/.profile'
-          #    failOnStderr: true
-          
           - task: Bash@3
             displayName: "Install Go"
             inputs:
-              targetType: "inline"
-              bashEnvValue: '~/.profile'
+              filePath: 'orchestrators/scripts/setup-go.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              script: |
-                pushd .
-                
-                ./setup-go.sh "1.18.1"
-                export GOBIN="$(System.DefaultWorkingDirectory)/bin"
+              arguments: "1.18.1"
+              bashEnvValue: '~/.profile'
+              failOnStderr: true
+          
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    targetType: "inline"
+          #    bashEnvValue: '~/.profile'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    script: |
+          #      pushd .
+          #      
+          #      ./setup-go.sh "1.18.1"
+          #      export GOBIN="$(System.DefaultWorkingDirectory)/bin"
 
-                echo "--------------------" 
-                echo "GOBIN"
-                echo $GOBIN  
+          #      echo "--------------------" 
+          #      echo "GOBIN"
+          #      echo $GOBIN  
 
-                popd
+          #      popd
           
           #- task: GoTool@0
           #  inputs:
