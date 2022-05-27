@@ -14,9 +14,11 @@ USERNAME=${4:-$(whoami)}
 INSTALL_GO_TOOLS=${5:-"true"}
 
 # Get OS architecture
+_information "get_os_architecture"
 get_os_architecture "amd64" "arm64" "armv6l" "386"
 
 # Verify requested version is available, convert latest
+_information "find_version_from_git_tags"
 find_version_from_git_tags VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
 
 _information "Downloading Go..."
