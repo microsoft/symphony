@@ -109,7 +109,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     ls "${GOPATH}/bin"
 
     _information "------ ls GOTOOLS_PATH/bin------------"
-     echo "${GOTOOLS_PATH}/bin"
+    echo "${GOTOOLS_PATH}/bin"
     ls "${GOTOOLS_PATH}/bin"
     
     mv "${GOTOOLS_PATH}/bin/*" ${GOPATH}/bin/
