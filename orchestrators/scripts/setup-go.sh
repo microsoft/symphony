@@ -13,6 +13,19 @@ GOPATH=${3:-"$HOME/go"} #"go"}
 USERNAME=${4:-$(whoami)}
 INSTALL_GO_TOOLS=${5:-"true"}
 
+
+updaterc() {
+    if [ "${UPDATE_RC}" = "true" ]; then
+        echo "Updating /etc/bash.bashrc and /etc/zsh/zshrc..."
+        if [[ "$(cat /etc/bash.bashrc)" != *"$1"* ]]; then
+            echo -e "$1" >> /etc/bash.bashrc
+        fi
+        if [ -f "/etc/zsh/zshrc" ] && [[ "$(cat /etc/zsh/zshrc)" != *"$1"* ]]; then
+            echo -e "$1" >> /etc/zsh/zshrc
+        fi
+    fi
+}
+
 # Get OS architecture
 _information "get_os_architecture"
 get_os_architecture "amd64" "arm64" "armv6l" "386"
@@ -20,6 +33,8 @@ get_os_architecture "amd64" "arm64" "armv6l" "386"
 # Verify requested version is available, convert latest
 _information "find_version_from_git_tags"
 find_version_from_git_tags VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
+
+
 
 _information "Downloading Go..."
 
@@ -135,14 +150,3 @@ find "${GOPATH}" -type d | xargs -n 1 chmod g+s
 
 _information "Done!"
 
-updaterc() {
-    if [ "${UPDATE_RC}" = "true" ]; then
-        echo "Updating /etc/bash.bashrc and /etc/zsh/zshrc..."
-        if [[ "$(cat /etc/bash.bashrc)" != *"$1"* ]]; then
-            echo -e "$1" >> /etc/bash.bashrc
-        fi
-        if [ -f "/etc/zsh/zshrc" ] && [[ "$(cat /etc/zsh/zshrc)" != *"$1"* ]]; then
-            echo -e "$1" >> /etc/zsh/zshrc
-        fi
-    fi
-}
