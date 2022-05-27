@@ -9,7 +9,7 @@ source _setup_helpers.sh
 set -e
 VERSION="${1:-"latest"}"
 GOROOT=${2:-"usr/local/go"}
-GOPATH=${3:-"go"}
+GOPATH=${3:-"$HOME/go"} #"go"}
 USERNAME=${4:-$(whoami)}
 INSTALL_GO_TOOLS=${5:-"true"}
 
