@@ -299,10 +299,10 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
-          #- task: GoTool@0
-          #  inputs:
-          #    version: '1.18.1'
-          #    goBin: "$(System.DefaultWorkingDirectory)"
+          - task: GoTool@0
+            inputs:
+              version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
 
           #- task: Bash@3
           #  displayName: "Install Go"
