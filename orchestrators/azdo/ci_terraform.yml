@@ -225,7 +225,7 @@ stages:
                       pushd .
                       cd $deployment
 
-                      init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      init true "$(ENV)_${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       echo "tf init ${deployment}"
                       echo "tf validate ${deployment}"
                       validate
@@ -354,7 +354,7 @@ stages:
                       cd $deployment
 
                       # Init deployment
-                      init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      init true "$(ENV)_${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       
 
                       # Preview deployment
