@@ -21,20 +21,11 @@ pool:
 variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runTfValidation
+  - name: runModuleTest
     value: true
-  - name: runTfLint
+  - name: runBackupState
     value: true
-  - name: runTfPlan
-    value: true
-  - name: runTfDestroy
-    value: true
-  - name: runTfApply
-    value: true
-  - name: runUnitTest
-    value: true
-  - name: runIntegrationTest
-    value: true
+
 
 #============================================================
 # The following Variables Should Be Set On the Pipeline
@@ -477,3 +468,32 @@ stages:
 
         steps:
           - checkout: Symphony 
+
+          - task: AzureCLI@2
+            name: backupRemoteState
+            displayName: "$(ENV) - Backup Remote State."
+            inputs:
+              azureSubscription: "$(azureSubscription)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
+
+                # Create backup container name and convert to lower case
+                backupContainerName=`echo $(Build.BuildId)-$(Build.SourceVersion) | tr '[:upper:]' '[:lower:]'`
+                backupStorageAccountName=$(TF_VAR_BACKUP_STORAGE_ACCOUNT_NAME)
+                backupResourceGroup=`az storage account list --query "[?name=='${backupStorageAccountName}'].resourceGroup" -o tsv`
+
+                sourceEndPoint=`az storage account list -g $(TF_VAR_BACKEND_RESOURCE_GROUP_NAME) --query "[?name=='$(TF_VAR_BACKEND_STORAGE_ACCOUNT_NAME)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+                backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='${backupStorageAccountName}'].{endpointName:primaryEndpoints.blob}" -o tsv`
+
+                if [[ -n "${SYSTEM_DEBUG}" && "${SYSTEM_DEBUG}" == 'true' ]]; then
+                  echo "backupContainerName: "$backupContainerName
+                  echo "backupStorageAccountName: "$backupStorageAccountName
+                  echo "backupResourceGroup: "$backupResourceGroup
+                  echo "sourceEndPoint: "$sourceEndPoint
+                  echo "backupEndpoint: "$backupEndpoint
+                fi
+
+                echo "Copying remote state to container ${backupContainerName} in storage account ${backupStorageAccountName} located in resource group ${backupResourceGroup}"
+                az storage copy -s ${sourceEndPoint}$(TF_VAR_BACKEND_CONTAINER_NAME) -d ${backupEndpoint}${backupContainerName} --recursive
