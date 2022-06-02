@@ -44,7 +44,7 @@ terraform() {
  
   CWD=$(pwd)
 
-  if [ -z "${TEST_FILE_NAME}" && -z "${IS_TAG}" ]; then
+  if [[ -z "${TEST_FILE_NAME}" && -z "${IS_TAG}" ]]; then
       # find all tests
       TEST_FILE_NAMES=`find ${CWD}/*.go`
 
