@@ -81,14 +81,14 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
 
-          - task: Bash@3
-            displayName: "Install Go"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-go.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              arguments: "1.18.1"
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    filePath: 'orchestrators/scripts/setup-go.sh'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    arguments: "1.18.1"
+          #    bashEnvValue: '~/.profile'
+          #    failOnStderr: true
           
           #- task: Bash@3
           #  displayName: "Install Go"
@@ -107,32 +107,27 @@ stages:
           #      echo $GOBIN  
 
           #      popd
-          
-          #- task: GoTool@0
+        
+          #- task: Bash@3
+          #  displayName: "echo GOBin, GoPATH, GOROOT"
           #  inputs:
-          #    version: '1.18.1'
-          #    goBin: "$(System.DefaultWorkingDirectory)"
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)'
+          #    targetType: 'inline'
+          #    script: |  
+          #      echo "--------------------" 
+          #      echo "GOBIN"
+          #      echo $GOBIN  
+          #      echo "--------------------" 
+          #      echo "GOPATH"
+          #      echo $GOPATH  
+          #       echo "--------------------" 
+          #      echo "GOBROOT"
+          #      echo $GOROOT  
 
-          - task: Bash@3
-            displayName: "echo GOBin, GoPATH, GOROOT"
+          - task: GoTool@0
             inputs:
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
-              targetType: 'inline'
-              script: |  
-                echo "--------------------" 
-                echo "GOBIN"
-                echo $GOBIN  
-                echo "--------------------" 
-                echo "GOPATH"
-                echo $GOPATH  
-                 echo "--------------------" 
-                echo "GOBROOT"
-                echo $GOROOT  
-
-          #- task: GoTool@0
-          #  inputs:
-          #    version: '1.18.1'
-          #    goBin: "$(System.DefaultWorkingDirectory)"
+              version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
@@ -230,7 +225,7 @@ stages:
                       pushd .
                       cd $deployment
 
-                      init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       echo "tf init ${deployment}"
                       echo "tf validate ${deployment}"
                       validate
@@ -290,7 +285,7 @@ stages:
           clean:  resources       
         displayName: "Preivew & Deploy"
         dependsOn: validate
-        condition: eq('false', 'true')
+        #condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
@@ -304,21 +299,21 @@ stages:
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
-          #- task: GoTool@0
-          #  inputs:
-          #    version: '1.18.1'
-          #    goBin: "$(System.DefaultWorkingDirectory)"
-
-          - task: Bash@3
-            displayName: "Install Go"
+          - task: GoTool@0
             inputs:
-              targetType: "inline"
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              script: |
-                pushd .
-                cd orchestrators/scripts
-                ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
-                popd
+              version: '1.18.1'
+              goBin: "$(System.DefaultWorkingDirectory)"
+
+          #- task: Bash@3
+          #  displayName: "Install Go"
+          #  inputs:
+          #    targetType: "inline"
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          #    script: |
+          #      pushd .
+          #      cd orchestrators/scripts
+          #      ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
+          #      popd
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
@@ -359,7 +354,7 @@ stages:
                       cd $deployment
 
                       # Init deployment
-                      init true "${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                       
 
                       # Preview deployment
