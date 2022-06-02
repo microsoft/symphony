@@ -481,13 +481,13 @@ stages:
                 echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
 
                 # Create backup container name and convert to lower case
-                # backupContainerName=`echo $(Build.BuildId)-$(Build.SourceVersion) | tr '[:upper:]' '[:lower:]'`
+                backupContainerName=`echo $(Build.BuildId)-$(Build.SourceVersion) | tr '[:upper:]' '[:lower:]'`
                 
                 backupResourceGroup=`az storage account list --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].resourceGroup" -o tsv`
 
-                sourceEndPoint=`az storage account list -g $(STATERG) --query "[?name=='$(TF_VAR_BACKEND_STORAGEACCOUNT_NAME)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+                sourceEndPoint=`az storage account list -g $(STATERG) --query "[?name=='$(STATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
                 backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
 
                 # backupstatestorageaccount   $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                 echo "Copying remote state to container ${backupContainerName} in storage account $(BACKUPSTATESTORAGEACCOUNT) located in resource group ${backupResourceGroup}"
-                az storage copy -s ${sourceEndPoint}$(TF_VAR_BACKEND_CONTAINER_NAME) -d ${backupEndpoint}${backupContainerName} --recursive
+                az storage copy -s ${sourceEndPoint}$(STATECONTAINER)/$(ENV) -d ${backupEndpoint}$(STATECONTAINER)/$(ENV)/${backupContainerName} --recursive
