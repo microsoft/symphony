@@ -485,9 +485,9 @@ stages:
                 
                 backupResourceGroup=`az storage account list --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].resourceGroup" -o tsv`
 
-                sourceEndPoint=`az storage account list -g $(TF_VAR_BACKEND_RESOURCE_GROUP_NAME) --query "[?name=='$(TF_VAR_BACKEND_STORAGEACCOUNT_NAME)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+                sourceEndPoint=`az storage account list -g $(STATERG) --query "[?name=='$(TF_VAR_BACKEND_STORAGEACCOUNT_NAME)'].{endpointName:primaryEndpoints.blob}" -o tsv`
                 backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
 
-                # backupstatestorageaccount   
+                # backupstatestorageaccount   $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                 echo "Copying remote state to container ${backupContainerName} in storage account $(BACKUPSTATESTORAGEACCOUNT) located in resource group ${backupResourceGroup}"
                 az storage copy -s ${sourceEndPoint}$(TF_VAR_BACKEND_CONTAINER_NAME) -d ${backupEndpoint}${backupContainerName} --recursive
