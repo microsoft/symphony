@@ -465,7 +465,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Report"
-        dependsOn: test
+        dependsOn: preview
 
         steps:
           - checkout: Symphony 
