@@ -233,6 +233,7 @@ stages:
 
           - task: Bash@3
             displayName: "Run Modules tests"
+            condition:  eq(variables.runModuleTest, true)
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
