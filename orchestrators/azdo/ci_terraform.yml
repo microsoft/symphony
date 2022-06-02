@@ -469,4 +469,11 @@ stages:
               publishRunAttachments: true
               mergeTestResults: true
 
-          
+      - job: Report
+        workspace:
+          clean:  resources       
+        displayName: "Report"
+        dependsOn: test
+
+        steps:
+          - checkout: Symphony 
