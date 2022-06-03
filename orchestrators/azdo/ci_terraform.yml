@@ -471,16 +471,19 @@ stages:
         steps:
           - checkout: Symphony 
 
-          - task: AzureCLI@2
-            name: backupRemoteState
-            displayName: "$(ENV) - Backup Remote State."
+          - task: Bash@3
+            displayName: "backup $(ENV) state files"
             inputs:
-              azureSubscription: "Symphony-kv2"
-              scriptType: "bash"
-              scriptLocation: "inlineScript"
-              inlineScript: |
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |         
+                source ./iac.tf.sh
+
+                echo "Az login"
+
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
-                echo "List all env"
+                echo "---------------List all env-----------------------"
                 env
                 echo "------------------------"
                 # Create backup container name and convert to lower case
