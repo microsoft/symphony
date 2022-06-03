@@ -73,7 +73,7 @@ parse_bicep_parameters() {
 
     _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
 
-    echo $(cat "${bicep_parameters_file_path}") | jq '.parameters 
+    echo -n $(cat "${bicep_parameters_file_path}") | jq '.parameters 
     |= map_values(if .value | (startswith("$") and env[.[1:]]) 
                   then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
 }
@@ -93,3 +93,5 @@ bicep_output_to_env() {
             echo "{${outputname}}={${outputvalue}}" >>$GITHUB_ENV
         done
 }
+
+parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
