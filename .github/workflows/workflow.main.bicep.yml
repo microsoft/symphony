@@ -111,7 +111,7 @@ jobs:
 
               # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
 
-              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" "@/home/runner/work/symphony-1/symphony-1/env/bicep/dev/parameters.json" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"
