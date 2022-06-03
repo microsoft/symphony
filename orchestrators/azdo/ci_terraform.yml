@@ -504,4 +504,4 @@ stages:
 
                 # backupstatestorageaccount   $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                 echo "Copying remote state to container ${backupContainerName} in storage account $(BACKUPSTATESTORAGEACCOUNT) located in resource group ${backupResourceGroup}"
-                az storage copy -s ${sourceEndPoint}$(STATECONTAINER)/$(ENV) -d ${backupEndpoint}$(STATECONTAINER)/$(ENV)/${backupContainerName} --recursive
+                az storage copy -s ${sourceEndPoint}$(STATECONTAINER)/$(ENV)/* -d ${backupEndpoint}$(STATECONTAINER)/$(ENV)/${backupContainerName} --recursive
