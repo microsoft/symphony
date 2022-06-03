@@ -474,7 +474,7 @@ stages:
             name: backupRemoteState
             displayName: "$(ENV) - Backup Remote State."
             inputs:
-              azureSubscription: "$(azureSubscription)"
+              azureSubscription: "Symphony-kv2"
               scriptType: "bash"
               scriptLocation: "inlineScript"
               inlineScript: |
