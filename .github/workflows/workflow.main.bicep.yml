@@ -107,7 +107,7 @@ jobs:
                   parse_bicep_parameters "${extraFileParam}"
                   paramFiles="${paramFiles} --parameters @${extraFileParam}"
               fi
-              paramFiles="@{paramFiles}"
+              paramFiles="@${paramFiles}"
 
               # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
 
