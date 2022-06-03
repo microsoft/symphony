@@ -74,13 +74,19 @@ parse_bicep_parameters() {
     _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
 
     fileContent=$(cat "${bicep_parameters_file_path}" | jq '.parameters')
-    echo $fileContent
-    if grep -q "\$" <<<"${fileContent}"; then
-        echo "AAA"
-        # echo $(cat "${bicep_parameters_file_path}") | jq '.parameters
-        # |= map_values(if .value | (startswith("$") and env[.[1:]])
-        #             then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
-        # echo "BBB"
+   
+    #res=$(grep -q "\$" <<<"${fileContent}")
+     
+    res=$(echo "${fileContent}" | grep "\\$")
+
+    if [ ! -z "$res" ]; then
+        echo "Found!----------"
+         echo $(cat "${bicep_parameters_file_path}") | jq '.parameters
+         |= map_values(if .value | (startswith("$") and env[.[1:]])
+                     then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
+         echo "REPALCED-----------------------"
+    else
+        echo "NOT FOUND"
     fi
 }
 
