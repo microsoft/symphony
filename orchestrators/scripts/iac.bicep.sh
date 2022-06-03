@@ -41,14 +41,14 @@ validate() {
     if [[ "${targetScope}" == "managementGroup" ]]; then
         az deployment mg validate --management-group-id "${optional_args}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters_file_path}"
     elif [[ "${targetScope}" == "subscription" ]]; then
-        _information "az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters @${bicep_parameters_file_path}"
-        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters @"${bicep_parameters_file_path}"
+        _information "az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters_file_path}"
+        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters_file_path}"
     elif [[ "${targetScope}" == "tenant" ]]; then
         az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters_file_path}"
     else
-        _information "az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters @${bicep_parameters_file_path}"
+        _information "az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters_file_path}"
         az group create --resource-group "${optional_args}" --location "${location}"
-        az deployment group validate --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters @"${bicep_parameters_file_path}"
+        az deployment group validate --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters_file_path}"
         az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
 

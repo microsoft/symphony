@@ -108,7 +108,7 @@ jobs:
                   paramFiles="${paramFiles} --parameters @${extraFileParam}"
               fi
 
-              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" "@${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"
