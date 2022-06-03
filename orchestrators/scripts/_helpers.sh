@@ -106,5 +106,5 @@ bicep_output_to_env() {
         done
 }
 
-parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
+#parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
 #parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
