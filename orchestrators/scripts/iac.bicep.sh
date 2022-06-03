@@ -87,6 +87,8 @@ deploy() {
 
     targetScope=$(_target_scope "${bicep_file_path}")
 
+    _information "--name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters @${bicep_parameters_file_path}"
+
     if [[ "${targetScope}" == "managementGroup" ]]; then
         az deployment mg create --management-group-id "${optional_args}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
     elif [[ "${targetScope}" == "subscription" ]]; then
