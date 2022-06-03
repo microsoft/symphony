@@ -100,7 +100,8 @@ jobs:
               echo "bicep validating ${path}/${fileName}"
 
               paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
-              # parse_bicep_parameters "${paramFiles}"
+              parse_bicep_parameters "${paramFiles}"
+              cat "${paramFiles}"
 
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               if [[ -f "${extraFileParam}" ]]; then
