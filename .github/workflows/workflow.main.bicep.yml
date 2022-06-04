@@ -101,20 +101,17 @@ jobs:
 
               paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               parse_bicep_parameters "${paramFiles}"
-              echo "AAAAAAAAAAAAA"
-              cat "${paramFiles}"
-              echo "BBBBBBBBBBBBB"
 
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               if [[ -f "${extraFileParam}" ]]; then
-                  # parse_bicep_parameters "${extraFileParam}"
+                  parse_bicep_parameters "${extraFileParam}"
                   paramFiles="${paramFiles} --parameters @${extraFileParam}"
               fi
               paramFiles="@${paramFiles}"
 
               # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
 
-              validate "${fileName}" "@/home/runner/work/symphony-1/symphony-1/env/bicep/dev/parameters.json" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"

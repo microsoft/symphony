@@ -73,20 +73,9 @@ parse_bicep_parameters() {
 
     _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
 
-    fileContent=$(cat "${bicep_parameters_file_path}" | jq '.parameters')
-   
-    #res=$(grep -q "\$" <<<"${fileContent}")
-     
-    res=$(echo "${fileContent}" | grep "\\$")
-
-    if [ ! -z "$res" ]; then
-        echo "Found!----------"
-         echo $(cat "${bicep_parameters_file_path}") | jq '.parameters
-         |= map_values(if .value | (startswith("$") and env[.[1:]])
-                     then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
-         echo "REPALCED-----------------------"
-    else
-        echo "NOT FOUND"
+    fileContentCheck=$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")
+    if [ ! -z "${fileContentCheck}" ]; then
+        echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
     fi
 }
 
@@ -95,16 +84,13 @@ bicep_output_to_env() {
 
     echo "${bicep_output_json}" | jq -c '.properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
-            outputname=$(echo "$c" | jq -r '.[0]')
-            outputvalue=$(echo "$c" | jq -r '.[1]')
+            outputName=$(echo "$c" | jq -r '.[0]')
+            outputValue=$(echo "$c" | jq -r '.[1]')
 
             # Azure DevOps
-            # echo "##vso[task.setvariable variable=${outputname};isOutput=true]${outputvalue}"
+            # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
 
             # GitHub
-            echo "{${outputname}}={${outputvalue}}" >>$GITHUB_ENV
+            echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
         done
 }
-
-#parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
-#parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
