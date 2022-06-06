@@ -109,7 +109,7 @@ jobs:
               # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
 
               echo "---------------"
-              echo $(cat "${paramFiles")
+              echo $(cat "${paramFiles}")
               echo "---------------"
               echo $(cat "${extraFileParam}")
               echo "---------------"
