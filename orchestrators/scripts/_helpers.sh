@@ -85,7 +85,7 @@ parse_bicep_parameters() {
     fi
 }
 
-parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
+# parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
 
 bicep_output_to_env() {
     local bicep_output_json=$1

@@ -98,7 +98,7 @@ jobs:
               fileName=$(basename "${deployment}")
               cd "${path}"
               echo "bicep validating ${path}/${fileName}"
-
+              echo 0
               paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               parse_bicep_parameters "${paramFiles}"
               echo 1
