@@ -481,7 +481,7 @@ stages:
 
           - task: Bash@3
             displayName: "backup $(ENV) state files"
-            condition: eq(variables.runBackupState, 'false')
+            condition: eq(variables.runBackupState, 'true')
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
