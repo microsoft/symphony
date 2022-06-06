@@ -78,6 +78,7 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
+        echo "AAA"
         fileContentCheck=$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")
         echo "AAA"
         echo $?
