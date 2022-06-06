@@ -28,7 +28,7 @@ _warning() {
 _information() {
     _color="\e[36m" # cyan
     # echo -e "${_color}##[command] $@\n\e[0m" 2>&1
-    echo -e "${_color}::notice::$@\n\e[0m" 2>&1
+    echo -e "::notice::$@"
 }
 
 _success() {

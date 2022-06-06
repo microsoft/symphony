@@ -101,14 +101,16 @@ jobs:
 
               paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
               parse_bicep_parameters "${paramFiles}"
-
+              echo 1
               extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
               if [[ -f "${extraFileParam}" ]]; then
+                  echo 2
                   parse_bicep_parameters "${extraFileParam}"
+                  echo 3
                   paramFiles="${paramFiles} --parameters @${extraFileParam}"
               fi
               paramFiles="@${paramFiles}"
-
+              echo 4
               # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
 
               validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
