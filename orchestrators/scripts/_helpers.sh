@@ -73,18 +73,35 @@ azlogin() {
     fi
 }
 
+# parse_bicep_parameters() {
+#     local bicep_parameters_file_path=$1
+
+#     if [[ -f "${bicep_parameters_file_path}" ]]; then
+#         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
+#         if [ ! -z $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$") ]; then
+#             echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
+#         fi
+#     fi
+# }
+
 parse_bicep_parameters() {
     local bicep_parameters_file_path=$1
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-        if [ ! -z $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$") ]; then
+        if [ ! -z "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
         fi
     fi
 }
+# export sqlServerAdministratorLogin="aaa"
+# export sqlServerAdministratorPassword="bbb"
+# bicep_parameters_file_path="/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
+# echo $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")
+# echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"aaaa.json"
 
 # parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
+# parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
 
 bicep_output_to_env() {
     local bicep_output_json=$1
