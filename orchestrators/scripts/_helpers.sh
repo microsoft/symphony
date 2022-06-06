@@ -80,16 +80,16 @@ parse_bicep_parameters() {
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
         echo "AAA"
         fileContentCheck=$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")
-        echo "AAA"
+        echo "BBB"
         echo $?
         if [ ! -z "${fileContentCheck}" ]; then
-            echo "BBB"
-            echo $?
-            echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
             echo "CCC"
             echo $?
+            echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
+            echo "DDD"
+            echo $?
         fi
-        echo "DDD"
+        echo "EEE"
         echo $?
     fi
     echo $?
