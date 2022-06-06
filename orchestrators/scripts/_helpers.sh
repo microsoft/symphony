@@ -78,21 +78,10 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-        # echo "AAA"
-        # fileContentCheck=
-        echo $?
-        echo "BBB"
         if [ ! -z $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$") ]; then
-            echo $?
-            echo "CCC"
             echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
-            echo $?
-            echo "DDD"
         fi
-        echo $?
-        echo "EEE"
     fi
-    # echo $?
 }
 
 # parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
