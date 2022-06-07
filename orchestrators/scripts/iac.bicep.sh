@@ -19,7 +19,7 @@ _target_scope() {
 
 _bicep_parameters() {
     local bicep_file_path_array=$1
-    printf -v var -- '--parameters @%s ' "${bicep_file_path_array[@]}"
+    printf -v var '@%s ' "${bicep_file_path_array[@]}"
     echo ${var%?}
 }
 
@@ -46,16 +46,16 @@ validate() {
     bicep_parameters=$(_bicep_parameters ${bicep_parameters_file_path_array})
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
-        az deployment mg validate --management-group-id "${optional_args}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" "${bicep_parameters}"
+        az deployment mg validate --management-group-id "${optional_args}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
-        _information "az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" "${bicep_parameters}"
+        _information "az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        az deployment sub validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
     elif [[ "${target_scope}" == "tenant" ]]; then
-        az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" "${bicep_parameters}"
+        az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
     else
-        _information "az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
+        _information "az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
-        az deployment group validate --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" "${bicep_parameters}"
+        az deployment group validate --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
         az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
 
