@@ -18,10 +18,12 @@ _target_scope() {
 }
 
 _bicep_parameters() {
-    local bicep_file_path_array=$1
+    local bicep_file_path_array_tmp=$1[@]
+    local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
+
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     echo ${var%?}
-}
+}1
 
 lint() {
     local bicep_file_path=$1
@@ -35,7 +37,8 @@ lint() {
 
 validate() {
     local bicep_file_path=$1
-    local bicep_parameters_file_path_array=${2[@]}
+    local bicep_parameters_file_path_array_tmp=$2[@]
+    local bicep_parameters_file_path_array=("${!bicep_parameters_file_path_array_tmp}")
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
@@ -43,7 +46,7 @@ validate() {
     _information "Execute Bicep validate"
 
     target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters ${bicep_parameters_file_path_array[@]})
+    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         az deployment mg validate --management-group-id "${optional_args}" --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"

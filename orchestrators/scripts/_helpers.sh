@@ -95,6 +95,21 @@ parse_bicep_parameters() {
     fi
 }
 
+# bicep_file_path_array=()
+# bicep_file_path_array+=("/aaa/")
+# bicep_file_path_array+=("/bbb")
+
+# f() {
+#     name=$1[@]
+#     a=("${!name}")
+#     echo "${a[@]}"
+# }
+
+# f bicep_file_path_array
+
+# printf -v var -- '--parameters @%s ' "${bicep_file_path_array[@]}"
+# echo ${var%?}
+
 bicep_output_to_env() {
     local bicep_output_json=$1
 
