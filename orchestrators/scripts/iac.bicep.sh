@@ -23,7 +23,7 @@ _bicep_parameters() {
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     echo ${var%?}
-}1
+}
 
 lint() {
     local bicep_file_path=$1
