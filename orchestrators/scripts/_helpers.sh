@@ -95,13 +95,6 @@ parse_bicep_parameters() {
     fi
 }
 
-bicep_file_path_array=()
-bicep_file_path_array+=("/aaa/")
-bicep_file_path_array+=("/bbb")
-
-printf -v var '\055-parameters @%s ' "${bicep_file_path_array[@]}"
-echo ${var%?}
-
 bicep_output_to_env() {
     local bicep_output_json=$1
 
