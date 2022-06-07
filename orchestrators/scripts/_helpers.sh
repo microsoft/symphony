@@ -90,7 +90,15 @@ parse_bicep_parameters() {
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
         if [ ! -z "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
-            echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
+            echo "1111111111111"
+            echo $(cat "${bicep_parameters_file_path}")
+            echo "11111111"
+            new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
+            echo "2222222222222"
+            echo "${new_content}"
+            echo "2222222222222"
+
+            echo "${new_content}" >"${bicep_parameters_file_path}"
         fi
     fi
 }
