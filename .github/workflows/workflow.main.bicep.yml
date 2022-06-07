@@ -115,7 +115,7 @@ jobs:
                 fi
               done
 
-              validate "${fileName}" ${param_path_array} "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" ${param_path_array[@]} "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"
