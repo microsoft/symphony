@@ -95,28 +95,12 @@ parse_bicep_parameters() {
     fi
 }
 
+bicep_file_path_array=()
+bicep_file_path_array+=("/aaa/")
+bicep_file_path_array+=("/bbb")
 
-
-# echo ${arrVar[@]}
-
-# echo ${arrVar[@]// /|}
-
-# echo ${arrVar[*]// /|}
-
-# echo ${arrVar[@]}
-
-# printf '--parameters @%s' "${arrVar[@]}"
-# printf -v myVar "@%ss" "${arrVar[@]}"
-# myVar="${myVar%myDelim}"
-
-# export sqlServerAdministratorLogin="aaa"
-# export sqlServerAdministratorPassword="bbb"
-# bicep_parameters_file_path="/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
-# echo $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")
-# echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"aaaa.json"
-
-# parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json"
-# parse_bicep_parameters "/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
+printf -v var '\055-parameters @%s ' "${bicep_file_path_array[@]}"
+echo ${var%?}
 
 bicep_output_to_env() {
     local bicep_output_json=$1
