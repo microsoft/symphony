@@ -115,6 +115,15 @@ jobs:
                 fi
               done
 
+              for param_path in "${param_path_array[@]}"
+              do
+                echo "-----------------"
+                echo "${param_path}"
+                echo "-----------------"
+                echo $(cat ${param_path})
+                echo "-----------------"
+              done
+
               validate "${fileName}" param_path_array "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
