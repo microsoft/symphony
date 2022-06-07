@@ -19,7 +19,7 @@ _target_scope() {
 
 _bicep_parameters() {
     local bicep_file_path_array=$1
-    printf -v var '\055-parameters @%s ' "${bicep_file_path_array[@]}"
+    printf -v var -- '--parameters @%s ' "${bicep_file_path_array[@]}"
     echo ${var%?}
 }
 
