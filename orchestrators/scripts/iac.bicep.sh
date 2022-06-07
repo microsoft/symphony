@@ -56,9 +56,9 @@ validate() {
     elif [[ "${target_scope}" == "tenant" ]]; then
         az deployment tenant validate --name "${deployment_id}" --location "${location}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
     else
-        _information "az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        _information "az deployment group validate --debug --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
-        az deployment group validate --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
+        az deployment group validate --debug --resource-group "${optional_args}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "${bicep_parameters}"
         az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
 
