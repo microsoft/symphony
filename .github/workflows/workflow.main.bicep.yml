@@ -98,26 +98,21 @@ jobs:
               fileName=$(basename "${deployment}")
               cd "${path}"
               _information "bicep validating ${path}/${fileName}"
-              paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
-              parse_bicep_parameters "${paramFiles}"
-              extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
-              if [[ -f "${extraFileParam}" ]]; then
-                  parse_bicep_parameters "${extraFileParam}"
-                  paramFiles="${paramFiles} --parameters @${extraFileParam}"
 
-                echo "------- extraFileParam --------"
-                echo $(cat "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json")
-                echo "------- extraFileParam --------"
-              fi
-              paramFiles="@${paramFiles}"
-              # @/mnt/c/gh/symphony-1/env/bicep/dev/parameters.json --parameters @/mnt/c/gh/symphony-1/env/bicep/dev/sadijhglihsdilg-parameters.json
+              param_path_array_tmp=()
+              param_path_array_tmp+=("${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json")
+              param_path_array_tmp+=("${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json")
 
-              echo "------- paramFiles --------"
-              echo $(cat "${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json")
-              echo "------- paramFiles --------"
+              param_path_array=()
+              for param_path_tmp in "${param_path_array_tmp[@]}"
+              do
+                if [[ -f "${param_path_tmp}" ]]; then
+                    parse_bicep_parameters "${param_path_tmp}"
+                    param_path_array+=("${param_path_tmp}")
+                fi
+              done
 
-
-              validate "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" ${param_path_array} "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"

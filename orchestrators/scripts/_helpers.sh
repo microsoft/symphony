@@ -94,6 +94,21 @@ parse_bicep_parameters() {
         fi
     fi
 }
+
+
+
+# echo ${arrVar[@]}
+
+# echo ${arrVar[@]// /|}
+
+# echo ${arrVar[*]// /|}
+
+# echo ${arrVar[@]}
+
+# printf '--parameters @%s' "${arrVar[@]}"
+# printf -v myVar "@%ss" "${arrVar[@]}"
+# myVar="${myVar%myDelim}"
+
 # export sqlServerAdministratorLogin="aaa"
 # export sqlServerAdministratorPassword="bbb"
 # bicep_parameters_file_path="/mnt/c/gh/symphony-1/env/bicep/dev/01_sql/02_deployment/parameters.json"
