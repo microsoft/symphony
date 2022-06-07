@@ -80,8 +80,8 @@ jobs:
 
       - name: Run Bicep Validate
         run: |
-          export sqlServerAdministratorLogin="aaa"
-          export sqlServerAdministratorPassword="bbb"
+          # export sqlServerAdministratorLogin="aaa"
+          # export sqlServerAdministratorPassword="bbb"
 
           source ./iac.bicep.sh
           azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
