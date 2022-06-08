@@ -97,9 +97,9 @@ parse_bicep_parameters() {
 }
 
 bicep_output_to_env() {
-    local bicep_output_json=$1
+    local bicep_output_json="${1}"
 
-    echo "${bicep_output_json}" | jq -c '.properties.outputs | to_entries[] | [.key, .value.value]' |
+    echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
