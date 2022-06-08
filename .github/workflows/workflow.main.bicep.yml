@@ -110,11 +110,12 @@ jobs:
               param_tmp=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
               param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
               if [[ -d "${param_tmp_deployment}" ]]; then
+                param_tmp+="\n"
                 param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
 
-                echo "111111"
-                find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
-                echo "111111"
+                # echo "111111"
+                # find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
+                # echo "111111"
               fi
 
               params=()
@@ -132,14 +133,14 @@ jobs:
               do
                 if [[ -f "${param_path_tmp}" ]]; then
                     parse_bicep_parameters "${param_path_tmp}"
-                    echo $(cat "${param_path_tmp}")
+                    # echo $(cat "${param_path_tmp}")
                     params_path+=("${param_path_tmp}")
                 fi
               done
 
-              echo "BBBBB"
-              echo "${params_path[@]}"
-              echo "BBBBB"
+              # echo "BBBBB"
+              # echo "${params_path[@]}"
+              # echo "BBBBB"
 
               validate "${fileName}" params_path "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
