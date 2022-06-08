@@ -85,7 +85,6 @@ jobs:
 
       - name: Run Bicep Validate
         run: |
-          printenv
           source ./iac.bicep.sh
           azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
           pushd .

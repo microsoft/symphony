@@ -24,7 +24,7 @@ _bicep_parameters() {
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     params="${var%?}"
 
-    if [ -n ${params} ]; then
+    if [ -n "${params}" ]; then
         echo "--parameters ${params}"
     fi
 }
