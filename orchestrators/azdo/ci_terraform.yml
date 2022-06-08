@@ -377,12 +377,12 @@ stages:
                   done
                 popd
 
-      - job: preview
+      - job: deploy
         workspace:
           clean:  resources       
-        displayName: "Preivew & Deploy"
-        dependsOn: validate
-        condition: eq('false', 'true')
+        displayName: "Deploy"
+        dependsOn: preview
+        #condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
