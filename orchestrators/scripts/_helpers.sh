@@ -33,7 +33,7 @@ _information() {
     # echo -e "${_color}##[command] $@\n\e[0m" 2>&1
 
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo -e "::notice::$@"
+        echo "::notice::$@"
     else
         echo "NOTICE: $@"
     fi

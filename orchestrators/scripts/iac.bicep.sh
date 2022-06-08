@@ -32,10 +32,17 @@ _bicep_parameters() {
 lint() {
     local bicep_file_path=$1
 
-    _information "Execute Bicep lint"
-    az bicep build --file ${bicep_file_path}
+    output=$(az bicep build --file "${bicep_file_path}")
+    exit_code=$?
 
-    _information "Execute Bicep ARM-TTK"
+    echo "${output}"
+
+    return $exit_code
+}
+
+run_armttk() {
+
+    # _information "Execute Bicep ARM-TTK"
     # TODO (enpolat): Test-AzTemplate.sh ${bicep_file_path}
 }
 
@@ -52,23 +59,25 @@ validate() {
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        COMMAND_OUTPUT=$(eval "${command}")
+        output=$(eval "${command}")
         exit_code=$?
     elif [[ "${target_scope}" == "subscription" ]]; then
         command="az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        COMMAND_OUTPUT=$(eval "${command}")
+        output=$(eval "${command}")
         exit_code=$?
     elif [[ "${target_scope}" == "tenant" ]]; then
         command="az deployment tenant validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        COMMAND_OUTPUT=$(eval "${command}")
+        output=$(eval "${command}")
         exit_code=$?
     else
         command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
-        COMMAND_OUTPUT=$(eval "${command}")
+        output=$(eval "${command}")
         exit_code=$?
         az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
+
+    echo "${output}"
 
     return $exit_code
 }

@@ -40,31 +40,10 @@ jobs:
       #     run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
       #   working-directory: orchestrators/scripts
 
-      # - name: Run Bicep Lint
-      #   run: |
-      #     source ./iac.bicep.sh
-      #     pushd .
-      #     cd ./../../IAC/Bicep/bicep
-      #     modules=$(find . -type f -name '*.bicep' | sort -u)
-
-      #     SAVEIFS=$IFS
-      #     IFS=$'\n'
-      #     array=($modules)
-      #     IFS=$SAVEIFS
-      #     len=${#array[@]}
-      #     for deployment in "${array[@]}"
-      #       do
-      #         echo "linting ${deployment}"
-      #         lint "${deployment}"
-      #         code=$?
-      #         if [[ $code != 0 ]]; then
-      #           echo "bicep linting failed - returned code ${code}"
-      #           exit $code
-      #         fi
-      #         echo "------------------------"
-      #       done
-      #     popd
-      #   working-directory: orchestrators/scripts
+      - name: Run Bicep Lint
+        run: |
+          ./iac.bicep.lint.gh.sh
+        working-directory: orchestrators/scripts
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -94,11 +73,6 @@ jobs:
         run: |
           ./iac.bicep.validate.gh.sh
         working-directory: orchestrators/scripts
-
-  # Validate:
-  #   uses: ./.github/workflows/_workflow.main.bicep.validate.yml
-  #   with:
-  #     environment: "dev"
 
   # Preview:
   #   name: "Preview"

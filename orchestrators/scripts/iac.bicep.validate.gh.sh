@@ -39,7 +39,7 @@ for deployment in "${modules[@]}"; do
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
-        _error "Bicep validate failed - returned code ${code}"
+        _error "Bicep validate failed - returned code ${exit_code}"
         exit $exit_code
     fi
 
