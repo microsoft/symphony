@@ -57,7 +57,7 @@ jobs:
           secrets: "clientid, clientsecret, subid, tenantid"
         id: KvSecrets
 
-      - name: Execute Pre Scripts
+      - name: Run global pre-deploy
         run: |
           ./pre.sh
         working-directory: IAC/Bicep/scripts

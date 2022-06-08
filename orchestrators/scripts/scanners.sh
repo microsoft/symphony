@@ -37,3 +37,11 @@ run_gitleaks() {
     gitleaks detect ${cmd_options}
     exit $?
 }
+export -f run_gitleaks
+
+run_armttk() {
+    echo 1
+    # _information "Execute Bicep ARM-TTK"
+    # TODO (enpolat): Test-AzTemplate.sh ${bicep_file_path}
+}
+export -f run_armttk
