@@ -18,7 +18,9 @@ for deployment in "${modules[@]}"; do
     IFS=$'\n'
     params=($(find "${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
+    echo $param_tmp_deployment
     if [[ -d "${param_tmp_deployment}" ]]; then
+        find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
     IFS=$SAVEIFS
