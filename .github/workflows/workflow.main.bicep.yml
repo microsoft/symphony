@@ -107,22 +107,33 @@ jobs:
               cd "${path}"
               _information "bicep validating ${path}/${fileName}"
 
-              param_tmp=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
-              param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
-              if [[ -d "${param_tmp_deployment}" ]]; then
-                param_tmp+="\n"
-                param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
-
-                # echo "111111"
-                # find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
-                # echo "111111"
-              fi
 
               params=()
               SAVEIFS=$IFS
               IFS=$'\n'
-              params+=(${param_tmp})
+              params=($(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json'))
+              param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
+              if [[ -d "${param_tmp_deployment}" ]]; then
+                params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
+              fi
               IFS=$SAVEIFS
+
+              # param_tmp=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
+              # param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
+              # if [[ -d "${param_tmp_deployment}" ]]; then
+              #   param_tmp+="\n"
+              #   param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
+
+              #   # echo "111111"
+              #   # find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
+              #   # echo "111111"
+              # fi
+
+              # params=()
+              # SAVEIFS=$IFS
+              # IFS=$'\n'
+              # params+=(${param_tmp})
+              # IFS=$SAVEIFS
 
               echo "AAAAAA"
               echo "${params[@]}"
