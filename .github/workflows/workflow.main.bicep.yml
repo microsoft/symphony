@@ -119,6 +119,10 @@ jobs:
               params+=(${param_tmp})
               IFS=$SAVEIFS
 
+              echo "AAAAAA"
+              echo "${params[@]}"
+              echo "AAAAAA"
+
               params_path=()
               for param_path_tmp in "${params[@]}"
               do
@@ -128,6 +132,10 @@ jobs:
                     params_path+=("${param_path_tmp}")
                 fi
               done
+
+              echo "BBBBB"
+              echo "${params_path[@]}"
+              echo "BBBBB"
 
               validate "${fileName}" params_path "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
               code=$?
