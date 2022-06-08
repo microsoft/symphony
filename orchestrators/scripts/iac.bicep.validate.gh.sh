@@ -35,7 +35,7 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate")
+    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" 'rg-validate')
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
