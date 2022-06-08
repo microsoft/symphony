@@ -51,23 +51,27 @@ validate() {
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
+        exit_code=$?
     elif [[ "${target_scope}" == "subscription" ]]; then
         command="az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
+        exit_code=$?
     elif [[ "${target_scope}" == "tenant" ]]; then
         command="az deployment tenant validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
+        exit_code=$?
     else
         command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
         COMMAND_OUTPUT=$(eval "${command}")
+        exit_code=$?
         az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
 
     _information "${command}"
     bicep_output_to_env "${COMMAND_OUTPUT}"
 
-    return $?
+    return $exit_code
 }
 
 preview() {
