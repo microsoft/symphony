@@ -27,8 +27,14 @@ _warning() {
 
 _information() {
     _color="\e[36m" # cyan
+    # $AGENT_NAME ADO?
     # echo -e "${_color}##[command] $@\n\e[0m" 2>&1
-    echo -e "::notice::$@"
+
+    if [ -n "${GITHUB_ACTION}" ]; then
+        echo -e "::notice::$@"
+    else
+        echo "NOTICE: $@"
+    fi
 }
 
 _success() {
