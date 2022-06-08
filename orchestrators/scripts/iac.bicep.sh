@@ -22,7 +22,11 @@ _bicep_parameters() {
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
-    echo ${var%?}
+    params="${var%?}"
+
+    if [ -n ${params} ]; then
+        echo "--parameters ${params}"
+    fi
 }
 
 lint() {
@@ -49,19 +53,19 @@ validate() {
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
         exit_code=$?
     elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        command="az deployment sub validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
         exit_code=$?
     elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        command="az deployment tenant validate --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
         COMMAND_OUTPUT=$(eval "${command}")
         exit_code=$?
     else
-        command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
+        command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
         COMMAND_OUTPUT=$(eval "${command}")
         exit_code=$?
