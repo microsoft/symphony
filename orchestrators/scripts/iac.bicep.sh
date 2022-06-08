@@ -69,7 +69,7 @@ lint() {
 }
 
 run_armttk() {
-
+    echo 1
     # _information "Execute Bicep ARM-TTK"
     # TODO (enpolat): Test-AzTemplate.sh ${bicep_file_path}
 }
@@ -109,6 +109,7 @@ validate() {
 
     return $exit_code
 }
+export -f validate
 
 preview() {
     local bicep_file_path=$1
