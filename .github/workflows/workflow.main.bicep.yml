@@ -109,15 +109,13 @@ jobs:
 
               param_tmp=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
               param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
-              if [[ -f "${param_tmp_deployment}" ]]; then
+              if [[ -d "${param_tmp_deployment}" ]]; then
                 param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
-              fi
 
-              echo "111111"
-              find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json'
-              echo "111111"
-              find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
-              echo "111111"
+                echo "111111"
+                find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
+                echo "111111"
+              fi
 
               params=()
               SAVEIFS=$IFS
