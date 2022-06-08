@@ -109,7 +109,6 @@ validate() {
 
     return $exit_code
 }
-export -f validate
 
 preview() {
     local bicep_file_path=$1

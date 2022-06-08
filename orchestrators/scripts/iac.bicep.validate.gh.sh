@@ -35,6 +35,7 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
+    export -f validate
     output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" 'rg-validate')
     exit_code=$?
 
