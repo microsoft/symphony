@@ -2,7 +2,7 @@
 
 source "${GITHUB_WORKSPACE}/orchestrators/scripts/iac.bicep.sh"
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-pushd .
+# pushd .
 cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
 
 SAVEIFS=$IFS
@@ -11,12 +11,12 @@ modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
-    pushd .
+    # pushd .
     path=$(dirname "${deployment}")
     fileName=$(basename "${deployment}")
     _information "bicep validate: ${deployment}"
 
-    cd "${path}"
+    # cd "${path}"
 
     params=()
     SAVEIFS=$IFS
@@ -36,13 +36,13 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    validate "${fileName}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate"
+    validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate"
     code=$?
     if [[ $code != 0 ]]; then
         echo "bicep lint failed - returned code ${code}"
         exit $code
     fi
-    popd
+    # popd
     echo "------------------------"
 done
-popd
+# popd
