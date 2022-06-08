@@ -3,9 +3,13 @@
 source ./iac.bicep.sh
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
+pushd .
+
+cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+
 SAVEIFS=$IFS
 IFS=$'\n'
-modules=($(find "${GITHUB_WORKSPACE}/IAC/Bicep/bicep" -type f -name 'main.bicep' | sort -u))
+modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
@@ -18,9 +22,7 @@ for deployment in "${modules[@]}"; do
     IFS=$'\n'
     params=($(find "${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
-    echo $param_tmp_deployment
     if [[ -d "${param_tmp_deployment}" ]]; then
-        find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
     IFS=$SAVEIFS
@@ -45,3 +47,5 @@ for deployment in "${modules[@]}"; do
 
     echo "------------------------"
 done
+
+popd
