@@ -275,7 +275,7 @@ stages:
       - job: preview
         workspace:
           clean:  resources       
-        displayName: "Preivew & Deploy"
+        displayName: "Preivew"
         dependsOn: validate
         condition: eq('false', 'true')
 
