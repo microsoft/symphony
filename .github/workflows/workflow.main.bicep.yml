@@ -113,6 +113,12 @@ jobs:
                 param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
               fi
 
+              echo "111111"
+              find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json'
+              echo "111111"
+              find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'
+              echo "111111"
+
               params=()
               SAVEIFS=$IFS
               IFS=$'\n'
