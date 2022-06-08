@@ -381,7 +381,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Execute End to End Test"
-        condition: eq('false', 'true')
+        #condition: eq('false', 'true')
         dependsOn: preview
 
         steps:
