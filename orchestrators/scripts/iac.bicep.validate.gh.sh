@@ -35,7 +35,8 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" 'rg-validate')
+    uniquer=$(echo RANDOM | md5sum | head -c 6)
+    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
