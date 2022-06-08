@@ -1,9 +1,7 @@
 #!/bin/bash
 
-source "${GITHUB_WORKSPACE}/orchestrators/scripts/iac.bicep.sh"
+source ./iac.bicep.sh
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
-# pushd .
 
 SAVEIFS=$IFS
 IFS=$'\n'

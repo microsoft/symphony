@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Includes
-source _helpers.sh
+source ./_helpers.sh
 
 usage() {
     _information "Usage: IAC Bicep commands helper"

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 _debug_json() {
     if [ ${DEBUG_FLAG} == true ]; then
         echo "${@}" | jq
