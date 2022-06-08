@@ -84,9 +84,16 @@ jobs:
         working-directory: IAC/Bicep/scripts
 
       - name: Run Bicep Validate
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
+          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
+          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          LOCATION: ${{ github.event.inputs.location }}
         run: |
           source ./iac.bicep.sh
-          azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
+          azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
           pushd .
           cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
           modules=$(find . -type f -name 'main.bicep' | sort -u)
@@ -108,8 +115,8 @@ jobs:
               params=()
               SAVEIFS=$IFS
               IFS=$'\n'
-              params=($(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json'))
-              param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
+              params=($(find "${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
+              param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
               if [[ -d "${param_tmp_deployment}" ]]; then
                 params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
               fi
@@ -124,7 +131,7 @@ jobs:
                 fi
               done
 
-              validate "${fileName}" params_path "${{ github.run_id }}" "${{ github.event.inputs.location }}" "rg-validate"
+              validate "${fileName}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate"
               code=$?
               if [[ $code != 0 ]]; then
                 echo "bicep lint failed - returned code ${code}"
