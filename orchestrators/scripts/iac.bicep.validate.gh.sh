@@ -3,23 +3,17 @@
 source "${GITHUB_WORKSPACE}/orchestrators/scripts/iac.bicep.sh"
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
-pushd .
-
-cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+# pushd .
 
 SAVEIFS=$IFS
 IFS=$'\n'
-modules=($(find . -type f -name 'main.bicep' | sort -u))
+modules=($(find "${GITHUB_WORKSPACE}/IAC/Bicep/bicep" -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
+    _information "Executing Bicep validate: ${deployment}"
 
-    _information "bicep validate: ${deployment}"
-    # pushd .
     path=$(dirname "${deployment}")
-    # fileName=$(basename "${deployment}")
-
-    # cd "${path}"
 
     params=()
     SAVEIFS=$IFS
@@ -39,14 +33,15 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate"
-    code=$?
-    if [[ $code != 0 ]]; then
-        echo "bicep lint failed - returned code ${code}"
-        exit $code
+    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg-validate")
+    exit_code=$?
+
+    if [[ $exit_code != 0 ]]; then
+        _error "Bicep validate failed - returned code ${code}"
+        exit $exit_code
     fi
-    # popd
+
+    bicep_output_to_env "${output}"
+
     echo "------------------------"
 done
-
-popd
