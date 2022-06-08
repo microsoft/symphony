@@ -124,6 +124,7 @@ jobs:
               do
                 if [[ -f "${param_path_tmp}" ]]; then
                     parse_bicep_parameters "${param_path_tmp}"
+                    echo $(cat "${param_path_tmp}")
                     params_path+=("${param_path_tmp}")
                 fi
               done
