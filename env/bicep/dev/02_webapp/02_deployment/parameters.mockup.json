@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "catalogDbConnectionString": {
-      "value": "Server=DBSERVER.database.windows.net;Database=Microsoft.eShopOnWeb.CatalogDb;User Id=ServerAdmin;Password=FAKEPASS;Encrypt=true;Connection Timeout=30;"
+      "value": "MOCKUPVALUE"
     },
     "identityDbConnectionString": {
-      "value": "Server=DBSERVER.database.windows.net;Database=Microsoft.eShopOnWeb.CatalogDb;User Id=ServerAdmin;Password=FAKEPASS;Encrypt=true;Connection Timeout=30;"
+      "value": "MOCKUPVALUE"
     }
   }
 }
