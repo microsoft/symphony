@@ -18,7 +18,13 @@ _debug() {
 _error() {
     _color="\e[31m" # red
     # echo -e "${_color}##[error] $@\n\e[0m" 2>&1
-    echo -e "${_color}::error::$@\n\e[0m" 2>&1
+    # echo -e "${_color}::error::$@\n\e[0m" 2>&1
+
+    if [ -n "${GITHUB_ACTION}" ]; then
+        echo "::error::$@"
+    else
+        echo "ERROR: $@"
+    fi
 }
 
 _warning() {
