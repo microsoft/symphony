@@ -102,14 +102,16 @@ jobs:
               cd "${path}"
               _information "bicep validating ${path}/${fileName}"
 
-              param_global=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
-              param_deployment=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/" -maxdepth 1 -type f -name '*parameters*.json')
+              param_tmp=$(find "${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}" -maxdepth 1 -type f -name '*parameters*.json')
+              param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/"
+              if [[ -f "${param_tmp_deployment}" ]]; then
+                param_tmp+=$(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json')
+              fi
 
               params=()
               SAVEIFS=$IFS
               IFS=$'\n'
-              params+=(${param_global})
-              params+=(${param_deployment})
+              params+=(${param_tmp})
               IFS=$SAVEIFS
 
               params_path=()
