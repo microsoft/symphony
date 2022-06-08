@@ -91,31 +91,3 @@ azlogin() {
 #         fi
 #     fi
 # }
-
-parse_bicep_parameters() {
-    local bicep_parameters_file_path=$1
-
-    if [[ -f "${bicep_parameters_file_path}" ]]; then
-        _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-        if [ ! -z "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
-            new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
-            echo -e "${new_content}" >|"${bicep_parameters_file_path}"
-        fi
-    fi
-}
-
-bicep_output_to_env() {
-    local bicep_output_json="${1}"
-
-    echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
-        while IFS=$"\n" read -r c; do
-            outputName=$(echo "$c" | jq -r '.[0]')
-            outputValue=$(echo "$c" | jq -r '.[1]')
-
-            # Azure DevOps
-            # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
-
-            # GitHub
-            echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
-        done
-}
