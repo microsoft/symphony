@@ -2,7 +2,9 @@
 
 source "${GITHUB_WORKSPACE}/orchestrators/scripts/iac.bicep.sh"
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-# pushd .
+
+pushd .
+
 cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
 
 SAVEIFS=$IFS
@@ -11,10 +13,11 @@ modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
+
+    _information "bicep validate: ${deployment}"
     # pushd .
     path=$(dirname "${deployment}")
-    fileName=$(basename "${deployment}")
-    _information "bicep validate: ${deployment}"
+    # fileName=$(basename "${deployment}")
 
     # cd "${path}"
 
@@ -45,4 +48,5 @@ for deployment in "${modules[@]}"; do
     # popd
     echo "------------------------"
 done
-# popd
+
+popd
