@@ -75,7 +75,7 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
+          secrets: "clientid, clientsecret, subid, tenantid, sqlServerAdministratorLogin, sqlServerAdministratorPassword"
         id: KvSecrets
 
       - name: Run Bicep Validate
