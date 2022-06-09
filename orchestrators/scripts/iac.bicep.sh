@@ -47,7 +47,8 @@ bicep_output_to_env() {
 
     echo "${bicep_output_json}"
 
-    echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
+    # select(.properties.outputs | length > 0)
+    echo "${bicep_output_json}" | jq -c '.properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
@@ -57,6 +58,8 @@ bicep_output_to_env() {
 
             # GitHub
             echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
+
+            export ${outputName}="${outputValue}"
         done
 }
 export -f bicep_output_to_env
