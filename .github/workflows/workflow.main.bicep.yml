@@ -57,7 +57,7 @@ jobs:
           secrets: "clientid, clientsecret, subid, tenantid"
         id: KvSecrets
 
-      - name: Run global pre-deploy
+      - name: Run global pre-deploy script
         run: |
           ./pre.sh
         working-directory: IAC/Bicep/scripts
@@ -74,22 +74,34 @@ jobs:
           ./iac.bicep.validate.gh.sh
         working-directory: orchestrators/scripts
 
-  # Preview:
-  #   name: "Preview"
-  #   needs: Validate
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  Preview:
+    name: "Preview"
+    needs: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - uses: Azure/login@v1
-  #       with:
-  #         creds: "${{ secrets.AZURE_CREDENTIALS }}"
+      - uses: Azure/login@v1
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
-  #     - uses: Azure/get-keyvault-secrets@v1
-  #       with:
-  #         keyvault: "kv-symphony-env"
-  #         secrets: "clientid, clientsecret, subid, tenantid"
-  #       id: KvSecrets
+      - uses: Azure/get-keyvault-secrets@v1
+        with:
+          keyvault: "kv-symphony-env"
+          secrets: "clientid, clientsecret, subid, tenantid"
+        id: KvSecrets
+
+      - name: Run Bicep Preview
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
+          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
+          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          LOCATION: ${{ github.event.inputs.location }}
+        run: |
+          ./iac.bicep.preview.gh.sh
+        working-directory: orchestrators/scripts
 
   #     - name: Run Bicep Preview
   #       run: |
