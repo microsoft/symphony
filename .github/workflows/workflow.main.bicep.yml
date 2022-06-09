@@ -74,9 +74,38 @@ jobs:
   #         ./iac.bicep.validate.gh.sh
   #       working-directory: orchestrators/scripts
 
-  Preview:
-    name: "Preview"
-    # needs: Validate
+  # Preview:
+  #   name: "Preview"
+  #   # needs: Validate
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - uses: Azure/login@v1
+  #       with:
+  #         creds: "${{ secrets.AZURE_CREDENTIALS }}"
+
+  #     - uses: Azure/get-keyvault-secrets@v1
+  #       with:
+  #         keyvault: "kv-symphony-env"
+  #         secrets: "clientid, clientsecret, subid, tenantid"
+  #       id: KvSecrets
+
+  #     - name: Run Bicep Preview
+  #       env:
+  #         ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+  #         ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
+  #         ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
+  #         ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+  #         ENVIRONMENT: ${{ github.event.inputs.environment }}
+  #         LOCATION: ${{ github.event.inputs.location }}
+  #       run: |
+  #         ./iac.bicep.preview.gh.sh
+  #       working-directory: orchestrators/scripts
+
+  Deploy:
+    name: "Deploy"
+    # needs: Preview
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -91,7 +120,7 @@ jobs:
           secrets: "clientid, clientsecret, subid, tenantid"
         id: KvSecrets
 
-      - name: Run Bicep Preview
+      - name: Run Bicep Deploy
         env:
           ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
           ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
@@ -100,59 +129,8 @@ jobs:
           ENVIRONMENT: ${{ github.event.inputs.environment }}
           LOCATION: ${{ github.event.inputs.location }}
         run: |
-          ./iac.bicep.preview.gh.sh
+          ./iac.bicep.deploy.gh.sh
         working-directory: orchestrators/scripts
-
-  #     - name: Run Bicep Preview
-  #       run: |
-  #         source ./iac.bicep.sh
-  #         azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
-  #         pushd .
-  #         cd ./../../IAC/Bicep/bicep
-  #         modules=$(find . -type f -name 'main.bicep' | sort -u)
-
-  #         SAVEIFS=$IFS
-  #         IFS=$'\n'
-  #         array=(${modules})
-  #         IFS=$SAVEIFS
-  #         len=${#array[@]}
-  #         for deployment in "${array[@]}"
-  #           do
-  #             pushd .
-  #             path=$(dirname "${deployment}")
-  #             fileName=$(basename "${deployment}")
-  #             cd "${path}"
-  #             echo "bicep preview ${path}/${fileName}"
-
-  #             extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
-  #             if [[ -f "${extraFileParam}" ]]; then
-  #                 paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
-  #             else
-  #                 paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
-  #             fi
-
-  #             preview "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
-  #             code=$?
-  #             if [[ $code != 0 ]]; then
-  #               echo "biceplint failed - returned code ${code}"
-  #               exit $code
-  #             fi
-  #             popd
-  #             echo "------------------------"
-  #           done
-  #         popd
-  #       working-directory: orchestrators/scripts
-
-  # Deploy:
-  #   name: "Deploy"
-  #   needs: Preview
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # - uses: actions/checkout@v3
-
-  #     - name: Run script
-  #       run: |
-  #         echo Hello world!
 
   # Test:
   #   name: "Test"

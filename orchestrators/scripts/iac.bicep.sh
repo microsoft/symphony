@@ -44,7 +44,7 @@ export -f parse_bicep_parameters
 
 bicep_output_to_env() {
     local bicep_output_json="${1}"
-    
+
     echo "${bicep_output_json}"
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
@@ -122,25 +122,18 @@ preview() {
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg what-if --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
+        command="az deployment mg what-if --no-pretty-print --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub what-if --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
+        command="az deployment sub what-if --no-pretty-print --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant what-if --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
+        command="az deployment tenant what-if --no-pretty-print --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     else
-        command="az deployment group what-if --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
-        # az group create --resource-group "${optional_args}" --location "${location}"
-        output=$(eval "${command}")
-        exit_code=$?
-        # az group delete --resource-group "${optional_args}" --yes --no-wait
+        command="az deployment group what-if --no-pretty-print --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
     fi
-    echo "${command}"
+
+    output=$(eval "${command}")
+    exit_code=$?
+
     echo "${output}"
 
     return $exit_code
@@ -149,24 +142,30 @@ export -f preview
 
 deploy() {
     local bicep_file_path=$1
-    local bicep_parameters_file_path=$2
+    local bicep_parameters_file_path_array_tmp=$2[@]
+    local bicep_parameters_file_path_array=("${!bicep_parameters_file_path_array_tmp}")
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
 
-    _information "Execute Bicep deploy"
-
     target_scope=$(_target_scope "${bicep_file_path}")
+    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
-        az deployment mg create --management-group-id "${optional_args}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        command="az deployment mg create --management-group-id ${optional_args} --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
-        az deployment sub create --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        command="az deployment sub create --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "tenant" ]]; then
-        az deployment tenant create --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        command="az deployment tenant create --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
     else
-        az deployment group create --name "${deployment_id}" --resource-group "${optional_args}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
+        command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} {bicep_parameters}"
     fi
 
-    return $?
+    output=$(eval "${command}")
+    exit_code=$?
+
+    echo "${output}"
+
+    return $exit_code
 }
+export -f deploy
