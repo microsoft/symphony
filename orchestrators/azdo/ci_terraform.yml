@@ -74,19 +74,19 @@ stages:
           #      ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
           #      popd
 
-          - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
+           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
           
-          - task: AzureKeyVault@2
-            displayName: "Pull env cred from Azure Key valut"
-            inputs:
+           - task: AzureKeyVault@2
+             displayName: "Pull env cred from Azure Key valut"
+             inputs:
               azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
               KeyVaultName: 'kv-symphony-env'
               SecretsFilter: '*'
               RunAsPreJob: true
 
-          - task: Bash@3
-            displayName: "Run Terraform plan & Apply"
-            inputs:
+           - task: Bash@3
+             displayName: "Run Terraform plan & Apply"
+             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
               script: |         
@@ -144,14 +144,14 @@ stages:
                   done
                 popd
 
-      - job: test
-        workspace:
+     - job: test
+       workspace:
           clean:  resources       
-        displayName: "Execute End to End Test"
+       displayName: "Execute End to End Test"
         #condition: eq('false', 'true')
-        dependsOn: preview
+       dependsOn: preview
 
-        steps:
+       steps:
           - checkout: Symphony 
 
           - task: Bash@3
@@ -229,13 +229,13 @@ stages:
               publishRunAttachments: true
               mergeTestResults: true
 
-      - job: Report
-        workspace:
+     - job: Report
+       workspace:
           clean:  resources       
-        displayName: "Report"
-        dependsOn: preview
+       displayName: "Report"
+       dependsOn: preview
 
-        steps:
+       steps:
           - checkout: Symphony 
 
           - task: AzureKeyVault@2
