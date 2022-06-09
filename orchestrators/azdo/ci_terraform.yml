@@ -272,29 +272,29 @@ stages:
      #         mergeTestResults: true
 
 
-      - job: preview
-        workspace:
+     - job: preview
+       workspace:
           clean:  resources       
-        displayName: "Preivew & Deploy"
-        dependsOn: validate
-        condition: eq('false', 'true')
+       displayName: "Preivew & Deploy"
+       dependsOn: validate
+       condition: eq('false', 'true')
 
-        steps:
-          - checkout: Symphony 
+         steps:
+           - checkout: Symphony 
           
-          - task: Bash@3
-            displayName: "Install Terraform"
-            inputs:
+           - task: Bash@3
+             displayName: "Install Terraform"
+             inputs:
               filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               arguments: "1.1.7"
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
-          - task: GoTool@0
-            inputs:
-              version: '1.18.1'
-              goBin: "$(System.DefaultWorkingDirectory)"
+           - task: GoTool@0
+             inputs:
+               version: '1.18.1'
+               goBin: "$(System.DefaultWorkingDirectory)"
 
           #- task: Bash@3
           #  displayName: "Install Go"
