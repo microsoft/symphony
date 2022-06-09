@@ -21,20 +21,11 @@ pool:
 variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runTfValidation
+  - name: runModuleTest
     value: true
-  - name: runTfLint
+  - name: runBackupState
     value: true
-  - name: runTfPlan
-    value: true
-  - name: runTfDestroy
-    value: true
-  - name: runTfApply
-    value: true
-  - name: runUnitTest
-    value: true
-  - name: runIntegrationTest
-    value: true
+
 
 #============================================================
 # The following Variables Should Be Set On the Pipeline
@@ -286,7 +277,7 @@ stages:
           clean:  resources       
         displayName: "Preivew & Deploy"
         dependsOn: validate
-        #condition: eq('false', 'true')
+        condition: eq('false', 'true')
 
         steps:
           - checkout: Symphony 
@@ -390,6 +381,7 @@ stages:
         workspace:
           clean:  resources       
         displayName: "Execute End to End Test"
+        #condition: eq('false', 'true')
         dependsOn: preview
 
         steps:
@@ -470,4 +462,45 @@ stages:
               publishRunAttachments: true
               mergeTestResults: true
 
-          
+      - job: Report
+        workspace:
+          clean:  resources       
+        displayName: "Report"
+        dependsOn: preview
+
+        steps:
+          - checkout: Symphony 
+
+          - task: AzureKeyVault@2
+            displayName: "Pull env cred from Azure Key valut"
+            inputs:
+              azureSubscription: 'Symphony-kv2' #'Symphony-kv'#$(SUBID)
+              KeyVaultName: 'kv-symphony-env'
+              SecretsFilter: '*'
+              RunAsPreJob: true
+
+          - task: Bash@3
+            displayName: "backup $(ENV) state files"
+            condition: eq(variables.runBackupState, 'true')
+            inputs:
+              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+              targetType: 'inline'
+              script: |         
+                source ./iac.tf.sh
+
+                echo "Az login"
+
+                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+                echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
+               
+                # Create backup container name and convert to lower case
+                backupContainerName=`echo $(Build.BuildId)-$(Build.SourceVersion) | tr '[:upper:]' '[:lower:]'`
+                
+                backupResourceGroup=`az storage account list --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].resourceGroup" -o tsv`
+
+                sourceEndPoint=`az storage account list -g $(STATERG) --query "[?name=='$(STATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+                backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+
+                # backupstatestorageaccount
+                echo "Copying remote state to container ${backupContainerName} in storage account $(BACKUPSTATESTORAGEACCOUNT) located in resource group ${backupResourceGroup}"
+                az storage copy -s ${sourceEndPoint}$(STATECONTAINER)/$(ENV)/* -d ${backupEndpoint}$(STATECONTAINER)/$(ENV)/${backupContainerName} --recursive
