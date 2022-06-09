@@ -36,7 +36,7 @@ for deployment in "${modules[@]}"; do
     done
 
     echo "11111111"
-    printenv
+    echo "${resource_group_name}"
     echo "11111111"
 
     output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resource_group_name}")
@@ -50,7 +50,7 @@ for deployment in "${modules[@]}"; do
     bicep_output_to_env "${output}"
 
     echo "222222"
-    printenv
+    echo "${resource_group_name}"
     echo "222222"
 
     echo "------------------------"
