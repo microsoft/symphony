@@ -9,7 +9,7 @@ usage() {
 }
 
 _target_scope() {
-    local bicep_file_path=$1
+    local bicep_file_path="${1}"
 
     target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
     target_scope=${target_scope//\'/}
@@ -40,6 +40,7 @@ parse_bicep_parameters() {
         fi
     fi
 }
+export -f parse_bicep_parameters
 
 bicep_output_to_env() {
     local bicep_output_json="${1}"
@@ -56,6 +57,7 @@ bicep_output_to_env() {
             echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
         done
 }
+export -f bicep_output_to_env
 
 lint() {
     local bicep_file_path=$1
@@ -67,6 +69,7 @@ lint() {
 
     return $exit_code
 }
+export -f lint
 
 validate() {
     local bicep_file_path=$1
