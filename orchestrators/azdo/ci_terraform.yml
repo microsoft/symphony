@@ -46,7 +46,7 @@ stages:
        dependsOn: validate
        condition: eq('false', 'true')
 
-         steps:
+       steps:
            - checkout: Symphony 
           
            - task: Bash@3
