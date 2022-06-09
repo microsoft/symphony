@@ -18,61 +18,61 @@ on:
         default: "westus"
 
 jobs:
-  Validate:
-    runs-on: ubuntu-latest
+  # Validate:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      # - name: Setup Toolset
-      #   run: |
-      #     # ./setup-azcli.sh
-      #     ./setup-gitleaks.sh
-      #     # ./setup-powershell.sh
-      #     # ./setup-pester.sh
-      #     # ./setup-armttk.sh
-      #     # ./setup-shellspec.sh
-      #   working-directory: orchestrators/scripts
+  #     # - name: Setup Toolset
+  #     #   run: |
+  #     #     # ./setup-azcli.sh
+  #     #     ./setup-gitleaks.sh
+  #     #     # ./setup-powershell.sh
+  #     #     # ./setup-pester.sh
+  #     #     # ./setup-armttk.sh
+  #     #     # ./setup-shellspec.sh
+  #     #   working-directory: orchestrators/scripts
 
-      # - name: Run Gitleaks
-      #   run: |
-      #     source ./scanners.sh
-      #     run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
-      #   working-directory: orchestrators/scripts
+  #     # - name: Run Gitleaks
+  #     #   run: |
+  #     #     source ./scanners.sh
+  #     #     run_gitleaks './../../IAC/Bicep' './' 'json' 'info'
+  #     #   working-directory: orchestrators/scripts
 
-      - name: Run Bicep Lint
-        run: |
-          ./iac.bicep.lint.gh.sh
-        working-directory: orchestrators/scripts
+  #     - name: Run Bicep Lint
+  #       run: |
+  #         ./iac.bicep.lint.gh.sh
+  #       working-directory: orchestrators/scripts
 
-      - uses: Azure/login@v1
-        name: Run Azure Login
-        with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+  #     - uses: Azure/login@v1
+  #       name: Run Azure Login
+  #       with:
+  #         creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
-      - uses: Azure/get-keyvault-secrets@v1
-        name: Get KeyVault Secrets
-        with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
-        id: KvSecrets
+  #     - uses: Azure/get-keyvault-secrets@v1
+  #       name: Get KeyVault Secrets
+  #       with:
+  #         keyvault: "kv-symphony-env"
+  #         secrets: "clientid, clientsecret, subid, tenantid"
+  #       id: KvSecrets
 
-      - name: Run global pre-deploy script
-        run: |
-          ./pre.sh
-        working-directory: IAC/Bicep/scripts
+  #     - name: Run global pre-deploy script
+  #       run: |
+  #         ./pre.sh
+  #       working-directory: IAC/Bicep/scripts
 
-      - name: Run Bicep Validate
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
-          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
-          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
-          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
-          LOCATION: ${{ github.event.inputs.location }}
-        run: |
-          ./iac.bicep.validate.gh.sh
-        working-directory: orchestrators/scripts
+  #     - name: Run Bicep Validate
+  #       env:
+  #         ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+  #         ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
+  #         ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
+  #         ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+  #         ENVIRONMENT: ${{ github.event.inputs.environment }}
+  #         LOCATION: ${{ github.event.inputs.location }}
+  #       run: |
+  #         ./iac.bicep.validate.gh.sh
+  #       working-directory: orchestrators/scripts
 
   Preview:
     name: "Preview"

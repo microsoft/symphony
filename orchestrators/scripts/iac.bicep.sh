@@ -117,20 +117,6 @@ preview() {
     local optional_args=$5 # --management-group-id or --resource-group
 
     target_scope=$(_target_scope "${bicep_file_path}")
-
-    if [[ "${target_scope}" == "managementGroup" ]]; then
-        az deployment mg what-if --management-group-id "${optional_args}" --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${target_scope}" == "subscription" ]]; then
-        az deployment sub what-if --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    elif [[ "${target_scope}" == "tenant" ]]; then
-        az deployment tenant what-if --location "${location}" --name "${deployment_id}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    else
-        az deployment group what-if --name "${deployment_id}" --resource-group "${optional_args}" --template-file "${bicep_file_path}" --parameters "@${bicep_parameters_file_path}"
-    fi
-
-    return $?
-
-    target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
