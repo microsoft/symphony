@@ -63,7 +63,7 @@ bicep_output_to_env() {
 
             #declare ${outputName}=${outputValue}
 
-            # echo "${outputName}"
+            echo "${outputName} = ${outputValue}"
             #export ${resource_group_name}=${outputValue}
 
             # export ${outputName}="${outputValue}"
