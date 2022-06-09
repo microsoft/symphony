@@ -10,8 +10,8 @@ jobs:
         - checkout: Symphony 
 
         - task: Bash@3
-         displayName: "Install Terraform"
-         inputs:
+          displayName: "Install Terraform"
+          inputs:
             filePath: 'orchestrators/scripts/setup-terraform.sh'
             workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
             arguments: "1.1.7"
