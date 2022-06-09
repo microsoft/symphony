@@ -44,6 +44,8 @@ export -f parse_bicep_parameters
 
 bicep_output_to_env() {
     local bicep_output_json="${1}"
+    
+    echo "${bicep_output_json}"
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
@@ -138,7 +140,7 @@ preview() {
         exit_code=$?
         # az group delete --resource-group "${optional_args}" --yes --no-wait
     fi
-
+    echo "${command}"
     echo "${output}"
 
     return $exit_code
