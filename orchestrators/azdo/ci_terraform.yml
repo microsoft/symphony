@@ -41,6 +41,6 @@ stages:
      
      - template: ./ci_terraform_preview.yml
      
-     - tempalte: ./ci_terraform_test.yml
+     - template: ./ci_terraform_test.yml
 
-     - tempalte: ./ci_terraform_report.yml 
+     - template: ./ci_terraform_report.yml 
