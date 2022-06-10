@@ -42,9 +42,15 @@ stages:
    displayName: "Validate Configuration"
    jobs:
      - template: ./ci_terraform_validate.yml
-     
+       parameters:
+          goVersion : "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
+
      - template: ./ci_terraform_preview.yml
-     
+       parameters:
+          goVersion : "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
+
      - template: ./ci_terraform_test.yml
        parameters:
           goVersion : "$(goVersion)"
