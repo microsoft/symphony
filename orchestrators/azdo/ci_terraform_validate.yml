@@ -1,11 +1,17 @@
+parameters:
+  - name: goVersion
+    type: string
+    default: '1.18.1'
+  - name: terraformVersion
+    type: string
+    default: '1.1.7'
+
 jobs:
       - job: validate
         workspace:
           clean:  resources       
         displayName: "Validate"
         #condition: eq('false', 'true')
-        #variables:
-          #deployments: $[ dependencies.gitDiff.outputs['gitDiff.DEPLOYMENTS'] ]
         steps:
           - checkout: Symphony 
           
@@ -14,7 +20,7 @@ jobs:
             inputs:
               filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              arguments: "1.1.7"
+              arguments:  ${{ parameters.terraformVersion }}
               bashEnvValue: '~/.profile'
               failOnStderr: true
           
@@ -79,7 +85,7 @@ jobs:
 
           - task: GoTool@0
             inputs:
-              version: '1.18.1'
+              version:  ${{ parameters.goVersion }}
               goBin: "$(System.DefaultWorkingDirectory)"
 
           - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
