@@ -1,3 +1,11 @@
+parameters:
+  - name: goVersion
+    type: string
+    default: '1.18.1'
+ - name: terraformVersion
+    type: string
+    default: '1.1.7'
+    
 jobs:
     - job: test
       workspace:
@@ -14,13 +22,13 @@ jobs:
           inputs:
             filePath: 'orchestrators/scripts/setup-terraform.sh'
             workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-            arguments: "1.1.7"
+            arguments: ${{ parameters.terraformVersion }}
             bashEnvValue: '~/.profile'
             failOnStderr: true
 
         - task: GoTool@0
           inputs:
-            version: '1.18.1'
+            version: ${{ parameters.goVersion }}
             goBin: "$(System.DefaultWorkingDirectory)"
 
         - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
@@ -79,7 +87,7 @@ jobs:
             testResultsFormat: "JUnit"
             testResultsFiles: "*.xml"
             searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
-            failTaskOnFailedTests: true # TEMP true
+            failTaskOnFailedTests: true
             testRunTitle: "Terraform Modules end to end tests"
             publishRunAttachments: true
             mergeTestResults: true
