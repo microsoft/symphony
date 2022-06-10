@@ -12,7 +12,6 @@ jobs:
       clean:  resources       
     displayName: "Preivew & Deploy"
     dependsOn: validate
-       #condition: eq('false', 'true')
 
     steps:
       - checkout: Symphony 
@@ -31,16 +30,6 @@ jobs:
           version: ${{ parameters.goVersion }}
           goBin: "$(System.DefaultWorkingDirectory)"
 
-    #- task: Bash@3
-    #  displayName: "Install Go"
-    #  inputs:
-    #    targetType: "inline"
-    #    workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-    #    script: |
-    #      pushd .
-    #      cd orchestrators/scripts
-    #      ./setup-go.sh "1.18.1" "usr/local/go" "$(System.DefaultWorkingDirectory)"
-    #      popd
 
       - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
     
