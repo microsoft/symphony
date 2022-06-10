@@ -36,6 +36,7 @@ variables:
     value: "1.18.1"
   - name: terraformVersion
     value: "1.1.7"
+
 stages:
  - stage: Validate
    displayName: "Validate Configuration"
@@ -46,7 +47,7 @@ stages:
      
      - template: ./ci_terraform_test.yml
        parameters:
-          goVersion : $(goVersion)
-          terraformVersion: $(terraformVersion)
+          goVersion : "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
 
      - template: ./ci_terraform_report.yml 
