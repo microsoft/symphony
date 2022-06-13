@@ -40,16 +40,10 @@ parse_bicep_parameters() {
         fi
     fi
 }
-# export -f parse_bicep_parameters
-
-# test_json='{"id":"/subscriptions/{/providers/Microsoft.Resources/deployments/2465903842","location":"westus","name":"2465903842","properties":{"correlationId":"bb2a8e92-9b1b-4f3b-a69e-75824d7b380e","debugSetting":null,"dependencies":[{"dependsOn":[{"id":"/subscriptions/{/providers/Microsoft.Resources/deployments/6irlmpsi3sgjg-resourceGroupNameGenerator","resourceName":"6irlmpsi3sgjg-resourceGroupNameGenerator","resourceType":"Microsoft.Resources/deployments"}],"id":"/subscriptions/{/providers/Microsoft.Resources/deployments/6irlmpsi3sgjg-resourceGroup","resourceName":"6irlmpsi3sgjg-resourceGroup","resourceType":"Microsoft.Resources/deployments"}],"duration":"PT51.0919275S","error":null,"mode":"Incremental","onErrorDeployment":null,"outputResources":[{"id":"/subscriptions/resourceGroups/dev-rg-sql-zy4"}],"outputs":{"resource_group_id":{"type":"String","value":"/subscriptions/resourceGroups/dev-rg-sql-zy4"},"resource_group_name":{"type":"String","value":"dev-rg-sql-zy4"}},"parameters":{"deploymentName":{"type":"String","value":""},"environment":{"type":"String","value":"dev"},"location":{"type":"String","value":"westus"},"resourceGroupName":{"type":"String","value":""}},"parametersLink":null,"providers":[{"id":null,"namespace":"Microsoft.Resources","providerAuthorizationConsentState":null,"registrationPolicy":null,"registrationState":null,"resourceTypes":[{"aliases":null,"apiProfiles":null,"apiVersions":null,"capabilities":null,"defaultApiVersion":null,"locationMappings":null,"locations":["westus"],"properties":null,"resourceType":"deployments","zoneMappings":null}]}],"provisioningState":"Succeeded","templateHash":"2500724690036119314","templateLink":null,"timestamp":"2022-06-08T21:16:20.322538-07:00","validatedResources":null},"tags":null,"type":"Microsoft.Resources/deployments"}'
 
 bicep_output_to_env() {
     local bicep_output_json="${1}"
 
-    # echo "${bicep_output_json}"s
-
-    # select(.properties.outputs | length > 0) |
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
@@ -60,20 +54,8 @@ bicep_output_to_env() {
 
             # GitHub
             echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
-
-            #declare ${outputName}=${outputValue}
-
-            # echo "${outputName} = ${outputValue}"
-            #export ${resource_group_name}=${outputValue}
-
-            # export ${outputName}="${outputValue}"
-            export "${outputName}"="${outputValue}"
-
         done
 }
-# export -f bicep_output_to_env
-
-# bicep_output_to_env "${test_json}"
 
 lint() {
     local bicep_file_path=$1
@@ -166,11 +148,11 @@ deploy() {
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg create --management-group-id ${optional_args} --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
+        command="az deployment mg create --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub create --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
+        command="az deployment sub create --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant create --location ${location} --name ${deployment_id} --template-file ${bicep_file_path} ${bicep_parameters}"
+        command="az deployment tenant create --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     else
         command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} {bicep_parameters}"
     fi
