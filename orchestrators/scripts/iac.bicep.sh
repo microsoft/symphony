@@ -49,6 +49,8 @@ bicep_output_to_env() {
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
+            export "${outputName}"="${outputValue}"
+
             # Azure DevOps
             # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
 
