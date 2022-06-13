@@ -11,7 +11,13 @@ _debug() {
     if [ ${DEBUG_FLAG} == true ]; then
         _color="\e[35m" # magenta
         # echo -e "${_color}##[debug] $@\n\e[0m" 2>&1
-        echo -e "${_color}::debug::$@\n\e[0m" 2>&1
+        # echo -e "${_color}::debug::$@\n\e[0m" 2>&1
+
+        if [ -n "${GITHUB_ACTION}" ]; then
+            echo "::debug::$@"
+        else
+            echo "DEBUG: $@"
+        fi
     fi
 }
 
@@ -30,7 +36,13 @@ _error() {
 _warning() {
     _color="\e[33m" # yellow
     # echo -e "${_color}##[warning] $@\n\e[0m" 2>&1
-    echo -e "${_color}::warning::$@\n\e[0m" 2>&1
+    # echo -e "${_color}::warning::$@\n\e[0m" 2>&1
+
+    if [ -n "${GITHUB_ACTION}" ]; then
+        echo "::warning::$@"
+    else
+        echo "WARNING: $@"
+    fi
 }
 
 _information() {
@@ -48,7 +60,13 @@ _information() {
 _success() {
     _color="\e[32m" # green
     # echo -e "${_color}##[command] $@\n\e[0m" 2>&1
-    echo -e "${_color}::notice::$@\n\e[0m" 2>&1
+    # echo -e "${_color}::notice::$@\n\e[0m" 2>&1
+
+    if [ -n "${GITHUB_ACTION}" ]; then
+        echo "::notice::$@"
+    else
+        echo "NOTICE: $@"
+    fi
 }
 
 azlogin() {
@@ -86,14 +104,3 @@ azlogin() {
         return 1
     fi
 }
-
-# parse_bicep_parameters() {
-#     local bicep_parameters_file_path=$1
-
-#     if [[ -f "${bicep_parameters_file_path}" ]]; then
-#         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-#         if [ ! -z $(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$") ]; then
-#             echo $(cat "${bicep_parameters_file_path}") | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)' >"${bicep_parameters_file_path}"
-#         fi
-#     fi
-# }
