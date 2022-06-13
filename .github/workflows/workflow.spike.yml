@@ -16,6 +16,7 @@ jobs:
         id: step_one
         run: |
           echo "foo=bar" >> $GITHUB_ENV
+          export foo="bar"
           echo "----------"
           echo "${{ env.foo }}"
           echo "----------"
