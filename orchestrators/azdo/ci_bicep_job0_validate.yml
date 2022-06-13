@@ -49,7 +49,7 @@ jobs:
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
-          script: | 
+          script: |
             echo 'create ./results directory'
             mkdir results
 
