@@ -15,8 +15,10 @@ jobs:
       - name: Set the value
         id: step_one
         run: |
-          echo "foo=bar" >> $GITHUB_ENV
-          export foo="bar"
+          echo "foo=bar1" >> $GITHUB_ENV
+          export foo="bar2"
+          echo "----------"
+          echo "${foo}"
           echo "----------"
           echo "${{ env.foo }}"
           echo "----------"
@@ -27,6 +29,8 @@ jobs:
       - name: Use the value
         id: step_two
         run: |
+          echo "----------"
+          echo "${foo}"
           echo "----------"
           echo "${{ env.foo }}"
           echo "----------"
