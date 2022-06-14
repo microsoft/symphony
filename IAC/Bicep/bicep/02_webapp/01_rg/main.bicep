@@ -27,5 +27,5 @@ module resourceGroup './../../modules/resourceGroup.bicep' = {
   }
 }
 
-output id string = resourceGroup.outputs.id
-output name string = resourceGroup.outputs.name
+output resource_group_id string = resourceGroup.outputs.id
+output resource_group_name string = resourceGroup.outputs.name
