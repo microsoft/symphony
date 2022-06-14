@@ -47,6 +47,7 @@ jobs:
                 echo "bicep preview ${path}/${fileName}"
                 paramFiles="$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json"
                 preview "${fileName}" "${paramFiles}"
+                deploy "${fileName}" "${paramFiles}"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "biceplint failed - returned code ${code}"
