@@ -62,28 +62,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./iac.bicep.sh
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name '*.bicep' | sort -u)
-
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=($modules)
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                echo "linting ${deployment}"
-                lint "${deployment}"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "bicep linting failed- returned code ${code}"
-                  exit $code
-                fi
-                echo "------------------------"
-              done
-            popd
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.lint.azdo.sh
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -91,34 +70,8 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./iac.bicep.sh
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name 'main.bicep' | sort -u)
-
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=(${modules})
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                pushd .
-                path=$(dirname "${deployment}")
-                fileName=$(basename "${deployment}")
-                cd "${path}"
-                echo "bicep validating ${path}/${fileName}"
-                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json" "$(Build.BuildId)" "westus" "rg-test"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "biceplint failed- returned code ${code}"
-                  exit $code
-                fi
-                popd
-                echo "------------------------"
-              done
-            popd
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.validate.azdo.sh
 
       - task: Bash@3
         displayName: "Run module tests"

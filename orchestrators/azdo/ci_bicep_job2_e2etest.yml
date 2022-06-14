@@ -30,14 +30,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./tests.runner.sh
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-
-            export resource_group_name=$(STATERG)
-            export storage_account_name=$(STATESTORAGEACCOUNT) 
-            export container_name=$(STATECONTAINER)
-
-            bicep
 
       - task: PublishTestResults@2
         displayName: "Publish end to end test results"

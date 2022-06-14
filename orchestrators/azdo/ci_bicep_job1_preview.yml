@@ -28,32 +28,6 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./iac.bicep.sh
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name 'main.bicep' | sort -u)
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=(${modules})
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                pushd .
-                path=$(dirname "${deployment}")
-                fileName=$(basename "${deployment}")
-                cd "${path}"
-                echo "bicep preview ${path}/${fileName}"
-                paramFiles="$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json"
-                preview "${fileName}" "${paramFiles}"
-                deploy "${fileName}" "${paramFiles}"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "biceplint failed - returned code ${code}"
-                  exit $code
-                fi
-                popd
-                echo "------------------------"
-              done
-            popd
+
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.preview.azdo.sh
