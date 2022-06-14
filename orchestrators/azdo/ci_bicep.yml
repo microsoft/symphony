@@ -18,24 +18,6 @@ pool:
   vmImage: "ubuntu-latest"
 
 jobs:
-  - job: Validate
-    displayName: "Validate"
-    workspace:
-      clean:  resources
-    steps:
-    - template: ./ci_bicep_job0_validate.yml
-
-  - job: Preview
-    displayName: "Preview"
-    workspace:
-      clean:  resources
-    steps:
-    - template: ./ci_bicep_job1_preview.yml
-
-  - job: e2etest
-    displayName: "e2e Test"
-    workspace:
-      clean:  resources
-
-    steps:
-    - template: ./ci_bicep_job2_e2etest.yml
+  - template: ./ci_bicep_job0_validate.yml
+  - template: ./ci_bicep_job1_preview.yml
+  - template: ./ci_bicep_job2_e2etest.yml

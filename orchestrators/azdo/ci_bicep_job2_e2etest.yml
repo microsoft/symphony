@@ -1,43 +1,49 @@
-steps:
-  - checkout: symphony
+jobs:
+  - job: e2etest
+    displayName: "e2e Test"
+    workspace:
+      clean:  resources
 
-  - task: Bash@3
-    displayName: "Install Azure CLI"
-    inputs:
-      filePath: 'orchestrators/scripts/setup-azcli.sh'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      bashEnvValue: '~/.profile'
-      failOnStderr: true
+    steps:
+      - checkout: symphony
 
-  - task: AzureKeyVault@2
-    inputs:
-      azureSubscription: 'Symphony-kv2'
-      KeyVaultName: 'kv-symphony-env'
-      SecretsFilter: '*'
-      RunAsPreJob: true
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
 
-  - task: Bash@3
-    displayName: "Run end to end tests"
-    inputs:
-      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-      targetType: 'inline'
-      script: |
-        source ./tests.runner.sh
-        azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: 'Symphony-kv2'
+          KeyVaultName: 'kv-symphony-env'
+          SecretsFilter: '*'
+          RunAsPreJob: true
 
-        export resource_group_name=$(STATERG)
-        export storage_account_name=$(STATESTORAGEACCOUNT) 
-        export container_name=$(STATECONTAINER)
+      - task: Bash@3
+        displayName: "Run end to end tests"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./tests.runner.sh
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-        bicep
+            export resource_group_name=$(STATERG)
+            export storage_account_name=$(STATESTORAGEACCOUNT) 
+            export container_name=$(STATECONTAINER)
 
-  - task: PublishTestResults@2
-    displayName: "Publish end to end test results"
-    inputs:
-      testResultsFormat: "JUnit"
-      testResultsFiles: "*.xml"
-      searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/bicep"
-      failTaskOnFailedTests: true
-      testRunTitle: "Bicep Modules end to end tests"
-      publishRunAttachments: true
-      mergeTestResults: true
+            bicep
+
+      - task: PublishTestResults@2
+        displayName: "Publish end to end test results"
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/bicep"
+          failTaskOnFailedTests: true
+          testRunTitle: "Bicep Modules end to end tests"
+          publishRunAttachments: true
+          mergeTestResults: true
