@@ -1,6 +1,8 @@
 jobs:
   - job: Preview
     displayName: "Preview"
+    dependsOn:
+      - Validate
 
     steps:
       - checkout: symphony

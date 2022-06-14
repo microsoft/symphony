@@ -1,6 +1,8 @@
 jobs:
   - job: e2etest
     displayName: "e2e Test"
+    dependsOn:
+      - Preview
     workspace:
       clean:  resources
 
