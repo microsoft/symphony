@@ -1,61 +1,57 @@
-jobs:
-  - job: Preview
-    displayName: "Preview"
+steps:
+  - checkout: symphony
 
-    steps:
-      - checkout: symphony
+  - task: Bash@3
+    displayName: "Install Azure CLI"
+    inputs:
+      filePath: 'orchestrators/scripts/setup-azcli.sh'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+      bashEnvValue: '~/.profile'
+      failOnStderr: true
 
-      - task: Bash@3
-        displayName: "Install Azure CLI"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
+  - task: AzureKeyVault@2
+    inputs:
+      azureSubscription: 'Symphony-kv2'
+      KeyVaultName: 'kv-symphony-env'
+      SecretsFilter: '*'
+      RunAsPreJob: true
 
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: 'Symphony-kv2'
-          KeyVaultName: 'kv-symphony-env'
-          SecretsFilter: '*'
-          RunAsPreJob: true
-
-      - task: Bash@3
-        displayName: "Run bicep preview"
-        inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'inline'
-          script: |
-            source ./iac.bicep.sh
-            azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
+  - task: Bash@3
+    displayName: "Run bicep preview"
+    inputs:
+      workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+      targetType: 'inline'
+      script: |
+        source ./iac.bicep.sh
+        azlogin ${{ steps.KvSecrets.outputs.subid }} ${{ steps.KvSecrets.outputs.tenantid }} ${{ steps.KvSecrets.outputs.clientid }} ${{ steps.KvSecrets.outputs.clientsecret }} 'AzureCloud'
+        pushd .
+        cd ./../../IAC/Bicep/bicep
+        modules=$(find . -type f -name 'main.bicep' | sort -u)
+        SAVEIFS=$IFS
+        IFS=$'\n'
+        array=(${modules})
+        IFS=$SAVEIFS
+        len=${#array[@]}
+        for deployment in "${array[@]}"
+          do
             pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name 'main.bicep' | sort -u)
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=(${modules})
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                pushd .
-                path=$(dirname "${deployment}")
-                fileName=$(basename "${deployment}")
-                cd "${path}"
-                echo "bicep preview ${path}/${fileName}"
-                extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
-                if [[ -f "${extraFileParam}" ]]; then
-                    paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
-                else
-                    paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
-                fi
-                preview "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "biceplint failed - returned code ${code}"
-                  exit $code
-                fi
-                popd
-                echo "------------------------"
-              done
+            path=$(dirname "${deployment}")
+            fileName=$(basename "${deployment}")
+            cd "${path}"
+            echo "bicep preview ${path}/${fileName}"
+            extraFileParam="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/${path//.\//}/parameters.json"
+            if [[ -f "${extraFileParam}" ]]; then
+                paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json @${extraFileParam}"
+            else
+                paramFiles="${{ github.workspace }}/env/bicep/${{ github.event.inputs.environment }}/parameters.json"
+            fi
+            preview "${fileName}" "${paramFiles}" "${{ github.run_id }}" "${{ github.event.inputs.location }}"
+            code=$?
+            if [[ $code != 0 ]]; then
+              echo "biceplint failed - returned code ${code}"
+              exit $code
+            fi
             popd
+            echo "------------------------"
+          done
+        popd
