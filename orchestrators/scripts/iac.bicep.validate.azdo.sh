@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ./iac.bicep.sh
-
 pushd .
 
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
