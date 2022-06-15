@@ -3,7 +3,7 @@ resources:
   - repository: symphony
     name: microsoft/symphony
     type: github
-    ref: main
+    ref: enpolat/bicep-pipeline-e2e-test-job
     endpoint: Symphony2
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
