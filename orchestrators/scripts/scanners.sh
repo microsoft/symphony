@@ -40,12 +40,12 @@ run_gitleaks() {
 # export -f run_gitleaks
 
 run_armttk() {
-    local root_dir=$1
-    local bicep_file_path=$2
+    # local root_dir=$1
+    local bicep_file_path=$1
 
     az bicep build --file "${bicep_file_path}"
     pushd .
-    cd "${root_dir}/arm-ttk"
+    cd "arm-ttk"
     ./Test-AzTemplate.sh "${bicep_file_path/.bicep/.json}"
     popd
 }
