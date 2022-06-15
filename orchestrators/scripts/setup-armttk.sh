@@ -26,4 +26,4 @@ case "${unameOut}" in
     Darwin*) LOCAL_READLINK=greadlink ;;
 esac
 
-pwsh -noprofile -nologo -command "Import-Module '$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk.psd1'"
+pwsh -noprofile -nologo -command "Import-Module '$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk/arm-ttk.psd1'"
