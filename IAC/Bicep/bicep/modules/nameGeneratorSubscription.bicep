@@ -13,6 +13,7 @@ param prefix string = ''
 param suffix string = ''
 
 @maxValue(6)
+@minValue(0)
 param suffixLength int = 3
 
 param suffixGenerated bool = true
