@@ -31,7 +31,7 @@ done
 for deployment in "${modules[@]}"; do
     _information "Executing ARM-TTK for: ${deployment}"
 
-    run_armttk "${GITHUB_WORKSPACE}" "${deployment}"
+    run_armttk "${deployment}"
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
