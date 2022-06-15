@@ -30,5 +30,7 @@ ARMTTK_PATH="$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk"
 
 pwsh -noprofile -nologo -command "Import-Module '${ARMTTK_PATH}/arm-ttk.psd1'"
 
+chmod +x "${ARMTTK_PATH}/Test-AzTemplate.sh"
+
 echo "PATH=${PATH:+${PATH}:}${ARMTTK_PATH}" >> ~/.bashrc
 
