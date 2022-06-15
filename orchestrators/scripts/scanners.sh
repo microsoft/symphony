@@ -9,13 +9,13 @@ usage() {
 }
 
 run_gitleaks() {
-    source_path=$1
-    report_path=$2
-    report_format=$3
-    log_level=$4
-    verbose=$5
-    redact=$6
-    no_git=$7
+    local source_path=$1
+    local report_path=$2
+    local report_format=$3
+    local log_level=$4
+    local verbose=$5
+    local redact=$6
+    local no_git=$7
 
     _information "Run Gitleaks detect cmd"
 
