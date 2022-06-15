@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
+source ./scanners.sh
 
 pushd .
 
@@ -13,7 +14,7 @@ IFS=$SAVEIFS
 
 # LINT
 for deployment in "${modules[@]}"; do
-    _information "Executing Bicep lint: ${deployment}"
+    _information "Executing Bicep lint for: ${deployment}"
 
     lint "${deployment}"
     exit_code=$?
@@ -28,7 +29,7 @@ done
 
 # ARM-TTK
 for deployment in "${modules[@]}"; do
-    _information "Executing ARM-TTK: ${deployment}"
+    _information "Executing ARM-TTK for: ${deployment}"
 
     run_armttk "${GITHUB_WORKSPACE}" "${deployment}"
     exit_code=$?
