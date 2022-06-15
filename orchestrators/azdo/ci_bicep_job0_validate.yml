@@ -62,6 +62,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
+            ls -lah
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.lint.azdo.sh
 
       - task: Bash@3
