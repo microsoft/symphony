@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./_helpers.sh
+source ./iac.bicep.sh
 
 pushd .
 
