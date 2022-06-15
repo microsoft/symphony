@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
 pushd .
 
@@ -36,7 +35,7 @@ for deployment in "${modules[@]}"; do
     done
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
-    output=$(validate "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
+    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then

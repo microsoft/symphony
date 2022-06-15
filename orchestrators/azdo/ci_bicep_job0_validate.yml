@@ -62,8 +62,8 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            ls -lah
-            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.lint.azdo.sh
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            ./iac.bicep.lint.azdo.sh
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -72,7 +72,11 @@ jobs:
           targetType: 'inline'
           script: |
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.validate.azdo.sh
+
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            RUN_ID="$(Build.BuildId)" \
+            LOCATION="westus" \
+            ./iac.bicep.validate.azdo.sh
 
       - task: Bash@3
         displayName: "Run module tests"
