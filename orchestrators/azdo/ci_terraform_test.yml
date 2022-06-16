@@ -41,7 +41,7 @@ jobs:
           displayName: "Pull env cred from Azure Key valut"
           inputs:
             azureSubscription: ${{ parameters.envKVSVCName }}
-          KeyVaultName: ${{ parameters.envKVName }}
+            KeyVaultName: ${{ parameters.envKVName }}
             SecretsFilter: '*'
             RunAsPreJob: true
           
