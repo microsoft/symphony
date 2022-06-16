@@ -49,6 +49,8 @@ stages:
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
 
      - template: ./ci_terraform_preview.yml
        parameters:
@@ -61,5 +63,10 @@ stages:
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
 
-     - template: ./ci_terraform_report.yml 
+     - template: ./ci_terraform_report.yml
+       parameters:
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"

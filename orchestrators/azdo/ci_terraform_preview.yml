@@ -7,10 +7,9 @@ parameters:
     default: '1.1.7'
   - name: envKVSVCName
     type: string
-    default: 'Symphony-kv2'
   - name: envKVName
     type: string
-    default: 'kv-symphony-env'
+
 
 jobs:
   - job: preview
