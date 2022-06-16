@@ -28,6 +28,8 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
+            source ./iac.bicep.sh
+
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
