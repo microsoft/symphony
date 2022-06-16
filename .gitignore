@@ -3,3 +3,4 @@ arm-ttk/
 .DS_Store/
 .secrets
 .env
+.actrc
