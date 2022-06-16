@@ -18,7 +18,7 @@ pool:
   vmImage: "ubuntu-latest"
 
 jobs:
-#  - template: ./ci_bicep_job0_validate.yml
-#  - template: ./ci_bicep_job1_preview.yml
+  - template: ./ci_bicep_job0_validate.yml
+  - template: ./ci_bicep_job1_preview.yml
   - template: ./ci_bicep_job2_deploy.yml
   - template: ./ci_bicep_job3_e2etest.yml
