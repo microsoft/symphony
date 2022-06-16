@@ -35,7 +35,7 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(preview "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resource_group_name}")
+    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resource_group_name}")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
