@@ -32,28 +32,34 @@ variables:
 #============================================================
   - name: env
     value: "dev"
+  - name : envKVSVCName
+    value: "Symphony-kv2"
+  - name : envKVName
+    value: "kv-symphony-env"
   - name: goVersion
     value: "1.18.1"
   - name: terraformVersion
     value: "1.1.7"
-
+  
 stages:
  - stage: Validate
    displayName: "Validate Configuration"
    jobs:
-     - template: ./ci_terraform_validate.yml
+     - template: ./templates/ci_terraform_validate.yml
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
 
-     - template: ./ci_terraform_preview.yml
+     - template: ./templates/ci_terraform_preview.yml
+       parameters:
+          goVersion : "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
+
+     - template: ./templates/ci_terraform_test.yml
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
 
-     - template: ./ci_terraform_test.yml
-       parameters:
-          goVersion : "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-
-     - template: ./ci_terraform_report.yml 
+     - template: ./templates/ci_terraform_report.yml 
