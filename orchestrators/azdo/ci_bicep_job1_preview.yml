@@ -30,4 +30,8 @@ jobs:
           script: |
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" ./iac.bicep.preview.azdo.sh
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            RUN_ID="$(Build.BuildId)" \
+            LOCATION="westus" \
+            ENVIRONMENT="dev" \
+            ./iac.bicep.preview.azdo.sh
