@@ -35,7 +35,7 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resource_group_name}")
+    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${RESOURCE_GROUP_NAME}")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
