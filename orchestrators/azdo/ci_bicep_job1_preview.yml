@@ -32,8 +32,8 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            ENVIRONMENT=$(cat /env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
-            LOCATION=$(cat /env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+            ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
+            LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
             RESOURCE_GROUP_NAME="symphony-bicep-preview-${ENVIRONMENT}"
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
