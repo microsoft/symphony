@@ -1,0 +1,40 @@
+name: "Main Terraform"
+
+on:
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        default: "dev"
+      goVersion:
+        description: "Go Version"
+        required: true
+        default:  "1.18.1"
+      terraformVersion:
+        description: "Terraform Version"
+        required: true
+        default:  "1.1.7"
+
+jobs:
+  Validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          ./setup-gitleaks.sh
+        working-directory: orchestrators/scripts
+
+      - name: Setup Terraform
+        run: |
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+        working-directory: orchestrators/scripts
