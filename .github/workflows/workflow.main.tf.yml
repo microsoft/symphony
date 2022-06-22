@@ -36,5 +36,5 @@ jobs:
 
       - name: Setup Terraform
         run: |
-          sudo ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
