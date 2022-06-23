@@ -34,9 +34,12 @@ jobs:
           ./setup-gitleaks.sh
         working-directory: orchestrators/scripts
 
-      - name: Setup Terraform
+      - name: Setup Terraform & TF Lint
         run: |
           chmod +x  ./setup-terraform.sh 
           bash  ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+          
+          chmod +x ./setup-tflint.sh
+          bash ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
