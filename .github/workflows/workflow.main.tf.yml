@@ -36,6 +36,6 @@ jobs:
 
       - name: Setup Terraform
         run: |
-          git update-index --chmod +x ./setup-terraform.sh 
-          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+          chmod +x  ./setup-terraform.sh 
+          sh ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
