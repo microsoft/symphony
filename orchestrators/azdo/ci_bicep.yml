@@ -4,7 +4,7 @@ resources:
     name: microsoft/symphony
     type: github
     ref: enpolat/bicep-pipeline-e2e-test-job
-    endpoint: Symphony2
+    endpoint: Symphony3
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
