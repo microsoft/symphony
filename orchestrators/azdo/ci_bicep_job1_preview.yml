@@ -38,7 +38,4 @@ jobs:
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
-            ENVIRONMENT="${ENVIRONMENT}" \
-            LOCATION="${LOCATION}" \
-            RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME}" \
             ./iac.bicep.preview.azdo.sh

@@ -75,10 +75,11 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
+            ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
+            LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
-            LOCATION="westus" \
-            ENVIRONMENT="dev" \
             ./iac.bicep.validate.azdo.sh
 
       - task: Bash@3
@@ -88,7 +89,9 @@ jobs:
           targetType: 'inline'
           script: |
             source ./tests.runner.sh
+
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
             bicep pester
 
       - task: PublishTestResults@2
