@@ -43,3 +43,9 @@ jobs:
           bash ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
+        
+      - name: Run Gitleaks
+        run: |
+          source ./scanners.sh
+          run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
+        working-directory: orchestrators/scripts
