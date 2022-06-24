@@ -37,15 +37,16 @@ jobs:
       - name: Setup Terraform & TF Lint
         run: |
           chmod +x  ./setup-terraform.sh 
-          bash  ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
           
           chmod +x ./setup-tflint.sh
-          bash ./setup-tflint.sh
+          ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
         
       - name: Run Gitleaks
         run: |
+          mkdir results
           source ./scanners.sh
           run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
         working-directory: orchestrators/scripts
@@ -58,6 +59,7 @@ jobs:
           
       - name: Run TF Lint
         run: |
+          chmod +x ./iac.tf.lint.sh
           ./iac.tf.lint.sh
         working-directory: orchestrators/scripts
         shell: bash
