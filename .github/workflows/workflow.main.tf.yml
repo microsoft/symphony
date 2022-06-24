@@ -82,6 +82,10 @@ jobs:
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
                 pushd .
@@ -101,7 +105,7 @@ jobs:
                       echo "tf init ${deployment}"
                       pushd .
                       cd $deployment
-                      init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+                      init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
                       echo "tf init ${deployment}"
                       echo "tf validate ${deployment}"
                       validate
