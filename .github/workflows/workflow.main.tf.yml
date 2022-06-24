@@ -47,5 +47,11 @@ jobs:
       - name: Run Gitleaks
         run: |
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
+          run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
         working-directory: orchestrators/scripts
+        
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-results
+          path: ./results/gitleaks-report.json
