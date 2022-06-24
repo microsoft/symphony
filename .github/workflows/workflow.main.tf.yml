@@ -58,31 +58,8 @@ jobs:
           
       - name: Run TF Lint
         run: |
-          echo 'Run tflint'             
-                source ./iac.tf.sh
-                pushd .
-                cd ./../../IAC/Terraform/terraform
-                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
-                
-                SAVEIFS=$IFS
-                IFS=$'\n'
-                array=($modules)
-                IFS=$SAVEIFS
-                len=${#array[@]}
-                for deployment in "${array[@]}"
-                  do
-                    echo "linting ${deployment}"
-                    pushd .
-                    cd $deployment
-                    lint
-                    code=$?
-                    if [[ $code != 0 ]]; then
-                      echo "tflint failed- returned code ${code}" 
-                      exit $code
-                    fi
-                    popd
-                    echo "------------------------"
-                  done
-                popd
+          ./iac.tf.lint.sh
         working-directory: orchestrators/scripts
         shell: bash
+
+  
