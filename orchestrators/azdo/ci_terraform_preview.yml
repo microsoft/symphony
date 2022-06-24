@@ -65,8 +65,6 @@ jobs:
             IFS=$SAVEIFS
             len=${#array[@]}
 
-            echo "Az login"
-
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
             for deployment in "${array[@]}"
               do
