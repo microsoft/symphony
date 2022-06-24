@@ -88,37 +88,73 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
+          pushd .
+          cd ./../../IAC/Terraform/terraform
+          modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+          
+          SAVEIFS=$IFS
+          IFS=$'\n'
+          array=($modules)
+          IFS=$SAVEIFS
+          len=${#array[@]}
+          echo "Az login"
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          for deployment in "${array[@]}"
+            do
+              if [[ ${deployment} != *"01_init"* ]]; then
+                echo "tf init ${deployment}"
                 pushd .
-                cd ./../../IAC/Terraform/terraform
-                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
-                
-                SAVEIFS=$IFS
-                IFS=$'\n'
-                array=($modules)
-                IFS=$SAVEIFS
-                len=${#array[@]}
-                echo "Az login"
-                azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-                for deployment in "${array[@]}"
-                  do
-                    if [[ ${deployment} != *"01_init"* ]]; then
-                      echo "tf init ${deployment}"
-                      pushd .
-                      cd $deployment
-                      init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
-                      echo "tf init ${deployment}"
-                      echo "tf validate ${deployment}"
-                      validate
-                      code=$?
-                      if [[ $code != 0 ]]; then
-                        echo "terraform validate - returned code ${code}" 
-                        exit $code
-                      fi
-                      popd
-                      echo "------------------------"
-                    fi
-                  done
+                cd $deployment
+                init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
+                echo "tf init ${deployment}"
+                echo "tf validate ${deployment}"
+                validate
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "terraform validate - returned code ${code}" 
+                  exit $code
+                fi
                 popd
+                echo "------------------------"
+              fi
+            done
+          popd
+        working-directory: orchestrators/scripts
+        shell: bash
+      
+      - name: Run Modules Tests
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
+        run: |
+          source ./tests.runner.sh
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          
+          #install junit 
+          echo "install go-junit-report"
+          go install github.com/jstemmer/go-junit-report@latest
+
+          # set test vars
+          export resource_group_name="${STATERG}"
+          export storage_account_name="${STATESTORAGEACCOUNT}"
+          export container_name="${STATECONTAINER}"
+
+          pushd .
+          
+          cd ./../../IAC/Terraform/test/terraform
+    
+
+          echo "Run tests with tag = module_tests"
+          terraform module_test true
+        
+          popd
+
         working-directory: orchestrators/scripts
         shell: bash
 
