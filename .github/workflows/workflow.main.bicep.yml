@@ -32,6 +32,7 @@ jobs:
           ./setup-pester.sh
           ./setup-armttk.sh
           ./setup-shellspec.sh
+          source ~/.bashrc
         working-directory: orchestrators/scripts
 
       - name: Run Gitleaks

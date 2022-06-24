@@ -9,13 +9,13 @@ usage() {
 }
 
 run_gitleaks() {
-    source_path=$1
-    report_path=$2
-    report_format=$3
-    log_level=$4
-    verbose=$5
-    redact=$6
-    no_git=$7
+    local source_path=$1
+    local report_path=$2
+    local report_format=$3
+    local log_level=$4
+    local verbose=$5
+    local redact=$6
+    local no_git=$7
 
     _information "Run Gitleaks detect cmd"
 
@@ -37,11 +37,16 @@ run_gitleaks() {
     gitleaks detect ${cmd_options}
     exit $?
 }
-export -f run_gitleaks
+# export -f run_gitleaks
 
 run_armttk() {
-    echo 1
-    # _information "Execute Bicep ARM-TTK"
-    # TODO (enpolat): Test-AzTemplate.sh ${bicep_file_path}
+    # local root_dir=$1
+    local bicep_file_path=$1
+
+    az bicep build --file "${bicep_file_path}"
+    # pushd .
+    # cd "arm-ttk"
+    arm-ttk/Test-AzTemplate.sh "${bicep_file_path/.bicep/.json}"
+    # popd
 }
-export -f run_armttk
+# export -f run_armttk

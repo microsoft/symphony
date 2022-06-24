@@ -1,18 +1,26 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
+source ./scanners.sh
 
 pushd .
 
-cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+looking_path="${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+
+cd "${looking_path}"
 
 SAVEIFS=$IFS
 IFS=$'\n'
 modules=($(find . -type f -name '*.bicep' | sort -u))
 IFS=$SAVEIFS
 
+popd
+
+# LINT
 for deployment in "${modules[@]}"; do
-    _information "Executing Bicep lint: ${deployment}"
+    deployment=${deployment/'./'/"${looking_path}/"}
+
+    _information "Executing Bicep lint for: ${deployment}"
 
     lint "${deployment}"
     exit_code=$?
@@ -25,4 +33,18 @@ for deployment in "${modules[@]}"; do
     echo "------------------------"
 done
 
-popd
+# ARM-TTK
+for deployment in "${modules[@]}"; do
+    deployment=${deployment/'./'/"${looking_path}/"}
+    _information "Executing ARM-TTK for: ${deployment}"
+
+    run_armttk "${deployment}"
+    exit_code=$?
+
+    if [[ $exit_code != 0 ]]; then
+        _error "ARM-TTK failed - returned code ${exit_code}"
+        exit $exit_code
+    fi
+
+    echo "------------------------"
+done
