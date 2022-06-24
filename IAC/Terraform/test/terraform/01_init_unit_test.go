@@ -29,7 +29,7 @@ func Test01_Init_Storage(t *testing.T) {
 	// Run `terraform output` to get the values of output variables from the terraform.tfstate
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
 	storageAccountName := terraform.Output(t, terraformOptions, "storage_account_name")
-	containerName := terraform.Output(t, terraformOptions, "Container_name")
+	containerName := terraform.Output(t, terraformOptions, "container_name")
 
 	bkResourceGroupName := terraform.Output(t, terraformOptions, "backup_resource_group_name")
 	bkStorageAccoutName := terraform.Output(t, terraformOptions, "backup_storage_account_name")

@@ -22,10 +22,12 @@ EOF
 
 # @description: run tests for terraform
 # @param ${1}: test file name
+# @param ${2}: is a tag
 # @usage <to run all the tests>: source ${0} && terraform
 # @usage <to run {FILENAME} tests only>; source ${0} && terraform 00_dummy_test.go
 terraform() {
   TEST_FILE_NAME=${1:-}
+  IS_TAG=${2:-}
 
   # cd into the terraform directory
   pushd ../../terraform/
@@ -42,7 +44,7 @@ terraform() {
  
   CWD=$(pwd)
 
-  if [ -z "${TEST_FILE_NAME}" ]; then
+  if [[ -z "${TEST_FILE_NAME}" && -z "${IS_TAG}" ]]; then
       # find all tests
       TEST_FILE_NAMES=`find ${CWD}/*.go`
 
@@ -52,7 +54,7 @@ terraform() {
 
         go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
       done
-  else
+  elif [ ! -z "${TEST_FILE_NAME}" ] && [ -z "${IS_TAG}" ]; then
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
       
       # run a specific test
@@ -60,9 +62,17 @@ terraform() {
       go test -v -timeout 8000s ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
 
       #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
+  else
+
+      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for tag '${TEST_FILE_NAME}'" | tee -a test.out
+      
+      # run tests of certain tag
+      echo "go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME}.xml"
+      go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > "${TEST_FILE_NAME}.xml"
+
   fi
 
-  popd
+  popd 
 }
 
 # @description: run tests for bicep
