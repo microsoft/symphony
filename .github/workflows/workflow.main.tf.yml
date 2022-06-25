@@ -122,10 +122,10 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
       
-      - name: Run Modules Tests
-        uses: actions/setup-go@v3
+      - uses: actions/setup-go@v3
         with:
           go-version: ${{ github.event.inputs.goVersion }}
+      - name: Run Modules Tests
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
