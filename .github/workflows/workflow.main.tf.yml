@@ -161,10 +161,10 @@ jobs:
 
         working-directory: orchestrators/scripts
         shell: bash
-        
+
       - uses: actions/upload-artifact@v2  # upload test results
         if: success() || failure()        # run this step even if previous step failed
         with:
           name: Modules test results
           path: ./*.xml
-         working-directory: /IAC/Terraform/test/terraform
+        working-directory: /IAC/Terraform/test/terraform
