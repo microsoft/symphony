@@ -56,7 +56,7 @@ jobs:
         with:
           name: test-results
           path: ./IAC/Terraform/results/gitleaks-report.json
- 
+      - name: Upload Gitleaks Scan Results
 
       - name: Run TF Lint
         run: |
@@ -167,3 +167,4 @@ jobs:
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
+      - name: Upload Modules Tests Results
