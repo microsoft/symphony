@@ -166,5 +166,4 @@ jobs:
         if: success() || failure()        # run this step even if previous step failed
         with:
           name: Modules test results
-          path: ./*.xml
-        working-directory: /IAC/Terraform/test/terraform
+          path: ./IAC/Terraform/test/terraform/*.xml
