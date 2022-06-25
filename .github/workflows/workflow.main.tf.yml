@@ -123,6 +123,9 @@ jobs:
         shell: bash
       
       - name: Run Modules Tests
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ github.event.inputs.goVersion }}
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
