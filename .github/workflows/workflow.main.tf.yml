@@ -56,7 +56,8 @@ jobs:
         with:
           name: test-results
           path: ./results/gitleaks-report.json
-          
+        working-directory: /IAC/Terraform/results
+
       - name: Run TF Lint
         run: |
           chmod +x ./iac.tf.lint.sh
@@ -160,5 +161,9 @@ jobs:
 
         working-directory: orchestrators/scripts
         shell: bash
-
-  
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: Modules test results
+          path: ./*.xml
+         working-directory: /IAC/Terraform/test/terraform
