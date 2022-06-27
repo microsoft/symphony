@@ -1,4 +1,4 @@
-parameters:  
+parameters:
   - name: EnvironmentName
     type: string
   - name: KeyVaultAzureSubscriptionName
@@ -48,7 +48,7 @@ jobs:
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: 'Symphony-kv2'
-          KeyVaultName: ${{ KeyVaultName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
           SecretsFilter: '*'
           RunAsPreJob: true
 
