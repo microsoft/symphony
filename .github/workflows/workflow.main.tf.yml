@@ -24,7 +24,6 @@ on:
 jobs:
   Validate:
     runs-on: ubuntu-latest
-    if: 'true' == 'false'
 
     steps:
       - uses: actions/checkout@v3
