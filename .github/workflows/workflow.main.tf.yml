@@ -24,6 +24,7 @@ on:
 jobs:
   Validate:
     runs-on: ubuntu-latest
+    if: 'true' == 'false'
 
     steps:
       - uses: actions/checkout@v3
@@ -173,3 +174,91 @@ jobs:
         if: always()
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
+
+
+  Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+        working-directory: orchestrators/scripts
+
+      - name: Setup Terraform
+        run: |
+          chmod +x  ./setup-terraform.sh 
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+        working-directory: orchestrators/scripts
+        shell: bash
+
+      - uses: Azure/login@v1
+      name: Run Azure Login
+      with:
+        creds: "${{ secrets.AZURE_CREDENTIALS }}"
+
+      - uses: Azure/get-keyvault-secrets@v1
+        name: Get KeyVault Secrets
+        with:
+          keyvault: "kv-symphony-env"
+          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+        id: KvSecrets
+
+      - name: Run TF plan- Apply
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
+        run: |
+          source ./iac.tf.sh
+          pushd .
+          cd ./../../IAC/Terraform/terraform
+          modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+          
+          SAVEIFS=$IFS
+          IFS=$'\n'
+          array=($modules)
+          IFS=$SAVEIFS
+          len=${#array[@]}
+          echo "Az login"
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          for deployment in "${array[@]}"
+            do
+              if [[ ${deployment} != *"01_init"* ]]; then
+                echo "tf init ${deployment}"
+                pushd .
+                cd $deployment
+                init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
+                # Preview deployment
+                envfile=${deployment/'./'/''}
+                envfile=${envfile/'/'/'_'}                      
+                preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "terraform plan - returned code ${code}" 
+                  exit $code
+                fi
+                
+                # Check for resources destruction 
+                detect_destroy "terraform.tfplan"
+                # Apply deployment
+                deploy "terraform.tfplan"
+                code=$?
+                if [[ $code != 0 ]]; then
+                  echo "terraform apply - returned code ${code}" 
+                  exit $code
+                fi
+                popd
+                echo "------------------------"
+              fi
+            done
+          popd
+        working-directory: orchestrators/scripts
+        shell: bash
