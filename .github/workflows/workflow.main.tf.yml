@@ -255,80 +255,80 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-   Test:
-     name: "Test"
-     needs: Deploy
-     runs-on: ubuntu-latest
-     steps:
-        - uses: actions/checkout@v3
+  Test:
+    name: "Test"
+    needs: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-        - name: Setup Toolset
-          run: |
-            ./setup-azcli.sh
-            chmod +x  ./setup-terraform.sh 
-            ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
-          working-directory: orchestrators/scripts
-          shell: bash       
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          chmod +x  ./setup-terraform.sh 
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+        working-directory: orchestrators/scripts
+        shell: bash       
 
-        - uses: Azure/login@v1
-          name: Run Azure Login
-          with:
-            creds: "${{ secrets.AZURE_CREDENTIALS }}"
+      - uses: Azure/login@v1
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
-        - uses: Azure/get-keyvault-secrets@v1
-          name: Get KeyVault Secrets
-          with:
-            keyvault: "kv-symphony-env"
-            secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-          id: KvSecrets
+      - uses: Azure/get-keyvault-secrets@v1
+        name: Get KeyVault Secrets
+        with:
+          keyvault: "kv-symphony-env"
+          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+        id: KvSecrets
 
-        - uses: actions/setup-go@v3
-          with:
-            go-version: ${{ github.event.inputs.goVersion }}
-        - name: Run Modules Tests
-          env:
-            SUBID: ${{ steps.KvSecrets.outputs.subid }}
-            TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-            CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-            CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-            STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-            STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-            STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-            ENV: ${{ github.event.inputs.environment }}
-          run: |
-            source ./tests.runner.sh
-            azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-            
-            #install junit 
-            echo "install go-junit-report"
-            go install github.com/jstemmer/go-junit-report@latest
-
-            # set test vars
-            export resource_group_name="${STATERG}"
-            export storage_account_name="${STATESTORAGEACCOUNT}"
-            export container_name="${STATECONTAINER}"
-
-            pushd .
-            
-            cd ./../../IAC/Terraform/test/terraform
-      
-
-            echo "Run tests with tag = e2e_test"
-            terraform e2e_test true
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ github.event.inputs.goVersion }}
+      - name: Run Modules Tests
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
+        run: |
+          source ./tests.runner.sh
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
           
-            popd
+          #install junit 
+          echo "install go-junit-report"
+          go install github.com/jstemmer/go-junit-report@latest
 
-          working-directory: orchestrators/scripts
-          shell: bash
+          # set test vars
+          export resource_group_name="${STATERG}"
+          export storage_account_name="${STATESTORAGEACCOUNT}"
+          export container_name="${STATECONTAINER}"
 
-        - uses: actions/upload-artifact@v2  # upload test results
-          if: success() || failure()        # run this step even if previous step failed
-          with:
-            name: End to End Test results
-            path: ./IAC/Terraform/test/terraform/*.xml
+          pushd .
+          
+          cd ./../../IAC/Terraform/test/terraform
+    
+
+          echo "Run tests with tag = e2e_test"
+          terraform e2e_test true
         
-        - name: Publish End to End Test Results
-          uses: EnricoMi/publish-unit-test-result-action@v1
-          if: always()
-          with:
-            files: "./IAC/Terraform/test/terraform/*.xml"
+          popd
+
+        working-directory: orchestrators/scripts
+        shell: bash
+
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: End to End Test results
+          path: ./IAC/Terraform/test/terraform/*.xml
+      
+      - name: Publish End to End Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "./IAC/Terraform/test/terraform/*.xml"
