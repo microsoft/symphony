@@ -175,9 +175,10 @@ jobs:
           files: "./IAC/Terraform/test/terraform/*.xml"
 
   Deploy:
-
-    needs: Validate
     runs-on: ubuntu-latest
+    
+    needs: Validate
+    
     steps:
       - uses: actions/checkout@v3
 
