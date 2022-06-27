@@ -1,3 +1,11 @@
+parameters:  
+  - name: EnvironmentName
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
 jobs:
   - job: Validate
     displayName: "Validate"
@@ -40,7 +48,7 @@ jobs:
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: 'Symphony-kv2'
-          KeyVaultName: 'kv-symphony-env'
+          KeyVaultName: ${{ KeyVaultName }}
           SecretsFilter: '*'
           RunAsPreJob: true
 
@@ -75,8 +83,8 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
-            LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+            export ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
