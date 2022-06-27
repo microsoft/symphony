@@ -174,30 +174,25 @@ jobs:
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
 
-  Deploy:
-    runs-on: ubuntu-latest
-    
+  Deploy:    
     needs: Validate
     
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-        working-directory: orchestrators/scripts
-
-      - name: Setup Terraform
-        run: |
           chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
-        shell: bash
+        shell: bash       
 
       - uses: Azure/login@v1
-      name: Run Azure Login
-      with:
-        creds: "${{ secrets.AZURE_CREDENTIALS }}"
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
