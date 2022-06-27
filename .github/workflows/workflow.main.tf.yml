@@ -234,7 +234,7 @@ jobs:
                 # Preview deployment
                 envfile=${deployment/'./'/''}
                 envfile=${envfile/'/'/'_'}                      
-                preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
+                preview "terraform.tfplan" "./../../../../../env/terraform/${ENV}/${envfile}.tfvars.json"
                 code=$?
                 if [[ $code != 0 ]]; then
                   echo "terraform plan - returned code ${code}" 
