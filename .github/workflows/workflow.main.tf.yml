@@ -175,7 +175,7 @@ jobs:
           files: "./IAC/Terraform/test/terraform/*.xml"
 
   Deploy:
-    name: "Deploy"
+
     needs: Validate
     runs-on: ubuntu-latest
     steps:
