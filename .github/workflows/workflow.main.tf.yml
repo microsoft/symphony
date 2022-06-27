@@ -167,3 +167,9 @@ jobs:
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
+      
+      - name: Publish Module Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "./IAC/Terraform/test/terraform/*.xml"
