@@ -334,7 +334,7 @@ jobs:
           files: "./IAC/Terraform/test/terraform/*.xml"
 
   Report:
-   name: "Report"
+    name: "Report"
     needs: Validate
     runs-on: ubuntu-latest
     steps:
@@ -344,7 +344,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           chmod +x  ./setup-terraform.sh 
-          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
+
         working-directory: orchestrators/scripts
         shell: bash
 
