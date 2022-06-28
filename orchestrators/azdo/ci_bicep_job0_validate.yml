@@ -58,7 +58,7 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            echo 'create ./results directory'
+            echo 'creating ./results directory'
             mkdir results
 
             source ./scanners.sh
@@ -82,6 +82,9 @@ jobs:
             source ./iac.bicep.sh
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
+            echo "ENVIRONMENT_NAME: $(EnvironmentName)"
+            echo "ENVIRONMENTNAME: $(ENVIRONMENTNAME)"
 
             export ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
             export LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
