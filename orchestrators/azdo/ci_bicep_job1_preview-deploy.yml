@@ -8,7 +8,7 @@ parameters:
 
 jobs:
   - job: PreviewDeploy
-    displayName: "PreviewDeploy"
+    displayName: "Preview Deploy"
     dependsOn:
       - Validate
 
@@ -40,9 +40,9 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
-            LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
-            RESOURCE_GROUP_NAME="symphony-bicep-preview-${ENVIRONMENT}"
+            export ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+            export RESOURCE_GROUP_NAME="symphony-bicep-preview-${ENVIRONMENT}"
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
@@ -58,9 +58,9 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
-            LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
-            RESOURCE_GROUP_NAME="symphony-bicep-preview-${ENVIRONMENT}"
+            export ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+            export RESOURCE_GROUP_NAME="symphony-bicep-preview-${ENVIRONMENT}"
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
