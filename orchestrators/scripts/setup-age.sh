@@ -20,6 +20,6 @@ filename="age-v${VERSION}-linux-${os_architecture}.tar.gz"
 curl -sSL -o "${filename}" "https://github.com/FiloSottile/age/releases/download/v${VERSION}/${filename}"
 tar -xf "${filename}" age
 rm -f "${filename}"
-sudo mv -f age/age /usr/local/bin/
-sudo mv -f age/age-keygen /usr/local/bin/
+mv -f age/age /usr/local/bin/
+mv -f age/age-keygen /usr/local/bin/
 rm -rf age
