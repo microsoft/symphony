@@ -33,7 +33,7 @@ parse_bicep_parameters() {
     local bicep_parameters_file_path="${1}"
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
-        _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
+        _information "Parsing parameter file with envs: ${bicep_parameters_file_path}"
         if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
@@ -49,13 +49,7 @@ bicep_output_to_env() {
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
-            export "${outputName}"="${outputValue}"
-
-            # Azure DevOps
-            # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
-
-            # GitHub
-            echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
+            echo "${outputName}=\"${outputValue}\""
         done
 }
 
@@ -156,7 +150,7 @@ deploy() {
     elif [[ "${target_scope}" == "tenant" ]]; then
         command="az deployment tenant create --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     else
-        command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} {bicep_parameters}"
+        command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
     fi
 
     output=$(eval "${command}")

@@ -83,11 +83,8 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
-            echo "ENVIRONMENT_NAME: $(EnvironmentName)"
-            echo "ENVIRONMENTNAME: $(ENVIRONMENTNAME)"
-
-            export ENVIRONMENT=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.environment.value')
-            export LOCATION=$(cat ../../env/bicep/dev/parameters.json | jq -r '.parameters.location.value')
+            export ENVIRONMENT=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
