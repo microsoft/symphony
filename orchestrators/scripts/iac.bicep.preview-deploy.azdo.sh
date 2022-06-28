@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./iac.bicep.sh
+
 pushd .
 
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
@@ -10,7 +12,7 @@ modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
-    _information "Executing Bicep deploy: ${deployment}"
+    _information "Executing Bicep preview: ${deployment}"
 
     path=$(dirname "${deployment}")
 
@@ -32,11 +34,12 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resource_group_name}")
+    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${RESOURCE_GROUP_NAME}")
+    output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${RESOURCE_GROUP_NAME}")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
-        _error "Bicep deploy failed - returned code ${exit_code}"
+        _error "Bicep preview failed - returned code ${exit_code}"
         exit $exit_code
     fi
 
