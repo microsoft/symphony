@@ -1,6 +1,14 @@
+parameters:
+  - name: EnvironmentName
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
 jobs:
-  - job: Preview
-    displayName: "Preview"
+  - job: PreviewDeploy
+    displayName: "PreviewDeploy"
     dependsOn:
       - Validate
 
@@ -17,8 +25,8 @@ jobs:
 
       - task: AzureKeyVault@2
         inputs:
-          azureSubscription: 'Symphony-kv2'
-          KeyVaultName: 'kv-symphony-env'
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
           SecretsFilter: '*'
           RunAsPreJob: true
 
