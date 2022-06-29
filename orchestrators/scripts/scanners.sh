@@ -46,7 +46,7 @@ run_armttk() {
     az bicep build --file "${bicep_file_path}"
     # pushd .
     # cd "arm-ttk"
-    arm-ttk/Test-AzTemplate.sh "${bicep_file_path/.bicep/.json}"
+    # arm-ttk/Test-AzTemplate.sh "${bicep_file_path/.bicep/.json}"
     # popd
 }
 # export -f run_armttk
