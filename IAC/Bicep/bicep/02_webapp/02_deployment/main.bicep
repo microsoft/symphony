@@ -5,8 +5,6 @@ param appSvcPlanSkuName string
 param appSvcPlanSkuTier string
 param appSvcDockerImage string
 param appSvcDockerImageTag string
-// param catalogDbConnectionString string
-// param identityDbConnectionString string
 param sqlDatabaseCatalogDbName string
 param sqlDatabaseIdentityDbName string
 param sqlServerFqdn string
@@ -58,9 +56,7 @@ module appSvc './modules/appSvc.bicep' = {
     environment: environment
     appSvcPlanId: appSvcPlan.outputs.id
     dockerImage: _dockerImage
-    // catalogDbConnectionString: catalogDbConnectionString
     catalogDbConnectionString: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseCatalogDbName};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    // identityDbConnectionString: identityDbConnectionString
     identityDbConnectionString: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseIdentityDbName};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     containerRegistryResourceGroupName: containerRegistryResourceGroupName
     containerRegistryName: containerRegistryName

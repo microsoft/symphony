@@ -35,7 +35,6 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-
     load_dotenv
 
     output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resourceGroupName}")
