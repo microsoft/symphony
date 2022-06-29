@@ -9,16 +9,16 @@
       "value": "Standard"
     },
     "appSvcDockerImage": {
-      "value": "crghusuofrdev103.azurecr.io/eshoppublicapi"
+      "value": "crsymphony362.azurecr.io/eshoppublicapi"
     },
     "appSvcDockerImageTag": {
       "value": "a87f571"
     },
     "containerRegistryResourceGroupName": {
-      "value": "rg-ghusuofr-dev-103"
+      "value": "devops-symphony-362"
     },
     "containerRegistryName": {
-      "value": "crghusuofrdev103"
+      "value": "crsymphony362"
     },
     "sqlDatabaseCatalogDbName": {
       "value": "$sqlDatabaseCatalogDbName"
