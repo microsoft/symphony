@@ -44,12 +44,15 @@ parse_bicep_parameters() {
 bicep_output_to_env() {
     local bicep_output_json="${1}"
 
+    env_file="${RANDOM}.env"
+
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
-            export "${outputName}"="${outputValue}"
+            echo "${outputName}"="${outputValue}" >>${env_file}
+            eval export "${outputName}"="${outputValue}"
 
             # Azure DevOps
             # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
@@ -57,6 +60,12 @@ bicep_output_to_env() {
             # GitHub
             echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
         done
+
+    # set -o allexport
+    # source ${env_file} set
+    # +o allexport
+    cat ${env_file}
+    rm -f ${env_file}
 }
 
 lint() {
