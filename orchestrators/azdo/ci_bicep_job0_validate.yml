@@ -14,36 +14,20 @@ jobs:
       - checkout: symphony
 
       - task: Bash@3
-        displayName: "Install Azure CLI"
+        displayName: "Install required tools"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
-
-      - task: Bash@3
-        displayName: "Install gitleaks"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-gitleaks.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
-
-      - task: Bash@3
-        displayName: "Install pester"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-pester.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
-
-      - task: Bash@3
-        displayName: "Install shellspec"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-shellspec.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
+          targetType: 'inline'
+          script: |
+            ./setup-azcli.sh
+            ./setup-gitleaks.sh
+            ./setup-powershell.sh
+            ./setup-pester.sh
+            ./setup-armttk.sh
+            ./setup-shellspec.sh
+            source ~/.bashrc
 
       - task: AzureKeyVault@2
         inputs:
@@ -62,7 +46,7 @@ jobs:
             mkdir results
 
             source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info' 
+            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info'
 
       - task: Bash@3
         displayName: "Run linter"

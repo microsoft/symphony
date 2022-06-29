@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
 pushd .
 
@@ -26,7 +25,7 @@ for deployment in "${modules[@]}"; do
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json' -and -not -name '*mockup*'))
     fi
     IFS=${SAVEIFS}
-
+printenv
     params_path=()
     for param_path_tmp in "${params[@]}"; do
         if [[ -f "${param_path_tmp}" ]]; then
