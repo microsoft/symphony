@@ -32,6 +32,7 @@ jobs:
           ./setup-pester.sh
           ./setup-armttk.sh
           ./setup-shellspec.sh
+          source ~/.bashrc
         working-directory: orchestrators/scripts
 
       - name: Run Gitleaks
@@ -41,8 +42,10 @@ jobs:
         working-directory: orchestrators/scripts
 
       - name: Run Bicep Lint
+        env:
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          ./iac.bicep.lint.gh.sh
+          ./iac.bicep.lint.sh
         working-directory: orchestrators/scripts
 
       - uses: Azure/login@v1
@@ -70,47 +73,15 @@ jobs:
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           ENVIRONMENT: ${{ github.event.inputs.environment }}
           LOCATION: ${{ github.event.inputs.location }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.bicep.validate.gh.sh
+          ./iac.bicep.validate.sh
         working-directory: orchestrators/scripts
 
-  Preview:
-    name: "Preview"
+  PreviewDeploy:
+    name: "Preview and Deploy"
     needs: Validate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Toolset
-        run: |
-          ./setup-azcli.sh
-        working-directory: orchestrators/scripts
-
-      - uses: Azure/login@v1
-        with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
-
-      - uses: Azure/get-keyvault-secrets@v1
-        with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
-        id: KvSecrets
-
-      - name: Run Bicep Preview
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
-          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
-          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
-          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
-          LOCATION: ${{ github.event.inputs.location }}
-        run: |
-          ./iac.bicep.preview.gh.sh
-        working-directory: orchestrators/scripts
-
-  Deploy:
-    name: "Deploy"
-    needs: Preview
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -138,13 +109,15 @@ jobs:
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           ENVIRONMENT: ${{ github.event.inputs.environment }}
           LOCATION: ${{ github.event.inputs.location }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.bicep.deploy.gh.sh
+          ./iac.bicep.previewdeploy.sh
         working-directory: orchestrators/scripts
 
   # Test:
   #   name: "Test"
-  #   needs: Deploy
+  #   needs: PreviewDeploy
   #   runs-on: ubuntu-latest
   #   steps:
   #     # - uses: actions/checkout@v3

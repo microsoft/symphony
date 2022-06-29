@@ -44,13 +44,25 @@ parse_bicep_parameters() {
 
 bicep_output_to_env() {
     local bicep_output_json="${1}"
+    local dotenv_file_path="${2:-".env"}"
+
+    if [[ -f "${dotenv_file_path}" ]]; then
+        rm -f "${dotenv_file_path}"
+    fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
-            echo "${outputName}=\"${outputValue}\""
+            echo "${outputName}"="${outputValue}" >>"${dotenv_file_path}"
+            eval export "${outputName}"="${outputValue}"
+
+            # Azure DevOps
+            # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
+
+            # GitHub
+            echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
         done
 }
 
@@ -62,7 +74,7 @@ lint() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f lint
 
@@ -99,7 +111,7 @@ validate() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f validate
 
@@ -129,7 +141,7 @@ preview() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f preview
 
@@ -159,6 +171,6 @@ deploy() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f deploy

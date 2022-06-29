@@ -5,7 +5,9 @@ param environment string
 param appSvcPlanId string
 param dockerImage string
 
+@secure()
 param catalogDbConnectionString string
+@secure()
 param identityDbConnectionString string
 
 param containerRegistryResourceGroupName string
