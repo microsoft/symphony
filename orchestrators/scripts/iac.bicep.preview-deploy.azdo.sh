@@ -6,10 +6,10 @@ pushd .
 
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
-SAVEIFS=$IFS
+SAVEIFS=${IFS}
 IFS=$'\n'
 modules=($(find . -type f -name 'main.bicep' | sort -u))
-IFS=$SAVEIFS
+IFS=${SAVEIFS}
 
 for deployment in "${modules[@]}"; do
   _information "Executing Bicep preview/deploy: ${deployment}"
@@ -24,7 +24,7 @@ for deployment in "${modules[@]}"; do
   if [[ -d "${param_tmp_deployment}" ]]; then
     params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json' -and -not -name '*mockup*'))
   fi
-  IFS=$SAVEIFS
+  IFS=${SAVEIFS}
 
   params_path=()
   for param_path_tmp in "${params[@]}"; do
@@ -37,23 +37,25 @@ for deployment in "${modules[@]}"; do
   preview_output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resource_group_name}")
   exit_code=$?
 
-  if [[ $exit_code != 0 ]]; then
+  if [[ ${exit_code} != 0 ]]; then
     _error "Bicep preview failed - returned code ${exit_code}"
-    exit $exit_code
+    exit ${exit_code}
   fi
 
   deploy_output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resource_group_name}")
   exit_code=$?
 
-  if [[ $exit_code != 0 ]]; then
+  if [[ ${exit_code} != 0 ]]; then
     _error "Bicep deploy failed - returned code ${exit_code}"
-    exit $exit_code
+    exit ${exit_code}
   fi
 
+  echo "deploy_output:${deploy_output}"
+
   for entry in $(bicep_output_to_env "${deploy_output}"); do
-    export $entry
+    export ${entry}
   done
-  IFS=$SAVEIFS
+  IFS=${SAVEIFS}
 
   echo "------------------------"
 done

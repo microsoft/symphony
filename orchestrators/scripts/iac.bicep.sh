@@ -37,6 +37,7 @@ parse_bicep_parameters() {
         if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
+            echo $new_content
         fi
     fi
 }
