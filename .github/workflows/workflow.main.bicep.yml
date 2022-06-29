@@ -111,7 +111,7 @@ jobs:
 
   Deploy:
     name: "Deploy"
-    needs: Preview
+    # needs: Preview
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
