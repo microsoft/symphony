@@ -41,17 +41,31 @@ parse_bicep_parameters() {
     fi
 }
 
+load_dotenv() {
+    local dotenv_file_path="${1:-".env"}"
+
+    if [[ -f "${dotenv_file_path}" ]]; then
+        _information "Loading .env file: ${dotenv_file_path}"
+        set -o allexport
+        source "${dotenv_file_path}" set
+        +o allexport
+    fi
+}
+
 bicep_output_to_env() {
     local bicep_output_json="${1}"
+    local dotenv_file_path="${2:-".env"}"
 
-    env_file="${RANDOM}.env"
+    if [[ -f "${dotenv_file_path}" ]]; then
+        rm -f "${dotenv_file_path}"
+    fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
-            echo "${outputName}"="${outputValue}" >>${env_file}
+            echo "${outputName}"="${outputValue}" >>"${dotenv_file_path}"
             eval export "${outputName}"="${outputValue}"
 
             # Azure DevOps
@@ -60,12 +74,6 @@ bicep_output_to_env() {
             # GitHub
             echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
         done
-
-    # set -o allexport
-    # source ${env_file} set
-    # +o allexport
-    cat ${env_file}
-    rm -f ${env_file}
 }
 
 lint() {

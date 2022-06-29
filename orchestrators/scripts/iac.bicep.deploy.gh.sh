@@ -35,7 +35,10 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resource_group_name}")
+
+    load_dotenv
+
+    output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resourceGroupName}")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
