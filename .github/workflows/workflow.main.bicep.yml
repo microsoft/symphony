@@ -42,6 +42,8 @@ jobs:
         working-directory: orchestrators/scripts
 
       - name: Run Bicep Lint
+        env:
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           ./iac.bicep.lint.sh
         working-directory: orchestrators/scripts
