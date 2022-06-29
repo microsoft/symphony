@@ -5,7 +5,7 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
-cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
 SAVEIFS=$IFS
 IFS=$'\n'
@@ -13,17 +13,17 @@ modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=$SAVEIFS
 
 for deployment in "${modules[@]}"; do
-    _information "Executing Bicep deploy: ${deployment}"
+    _information "Executing Bicep validate: ${deployment}"
 
     path=$(dirname "${deployment}")
 
     params=()
     SAVEIFS=$IFS
     IFS=$'\n'
-    params=($(find "${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
-    param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
+    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
+    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
-        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json' -and -not -name '*mockup*'))
+        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
     IFS=$SAVEIFS
 
@@ -37,11 +37,12 @@ for deployment in "${modules[@]}"; do
 
     load_dotenv
 
-    output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resourceGroupName}")
+    uniquer=$(echo $RANDOM | md5sum | head -c 6)
+    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
-        _error "Bicep deploy failed - returned code ${exit_code}"
+        _error "Bicep validate failed - returned code ${exit_code}"
         exit $exit_code
     fi
 

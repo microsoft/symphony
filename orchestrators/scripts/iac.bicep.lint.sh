@@ -5,7 +5,7 @@ source ./scanners.sh
 
 pushd .
 
-looking_path="${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+looking_path="${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
 cd "${looking_path}"
 

@@ -43,7 +43,7 @@ jobs:
 
       - name: Run Bicep Lint
         run: |
-          ./iac.bicep.lint.gh.sh
+          ./iac.bicep.lint.sh
         working-directory: orchestrators/scripts
 
       - uses: Azure/login@v1
@@ -71,8 +71,10 @@ jobs:
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           ENVIRONMENT: ${{ github.event.inputs.environment }}
           LOCATION: ${{ github.event.inputs.location }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.bicep.validate.gh.sh
+          ./iac.bicep.validate.sh
         working-directory: orchestrators/scripts
 
   # Preview:
@@ -105,8 +107,10 @@ jobs:
   #         ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
   #         ENVIRONMENT: ${{ github.event.inputs.environment }}
   #         LOCATION: ${{ github.event.inputs.location }}
+  #         WORKSPACE_PATH: ${{ github.workspace }}
+  #         RUN_ID: ${{ github.run_id }}
   #       run: |
-  #         ./iac.bicep.preview.gh.sh
+  #         ./iac.bicep.preview.sh
   #       working-directory: orchestrators/scripts
 
   Deploy:
@@ -139,8 +143,10 @@ jobs:
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           ENVIRONMENT: ${{ github.event.inputs.environment }}
           LOCATION: ${{ github.event.inputs.location }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.bicep.deploy.gh.sh
+          ./iac.bicep.deploy.sh
         working-directory: orchestrators/scripts
 
   # Test:

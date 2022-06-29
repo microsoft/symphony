@@ -41,17 +41,6 @@ parse_bicep_parameters() {
     fi
 }
 
-load_dotenv() {
-    local dotenv_file_path="${1:-".env"}"
-
-    if [[ -f "${dotenv_file_path}" ]]; then
-        _information "Loading .env file: ${dotenv_file_path}"
-        set -o allexport
-        source "${dotenv_file_path}"
-        set +o allexport
-    fi
-}
-
 bicep_output_to_env() {
     local bicep_output_json="${1}"
     local dotenv_file_path="${2:-".env"}"
@@ -174,7 +163,7 @@ deploy() {
     elif [[ "${target_scope}" == "tenant" ]]; then
         command="az deployment tenant create --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
     else
-        command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} {bicep_parameters}"
+        command="az deployment group create --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
     fi
 
     output=$(eval "${command}")
