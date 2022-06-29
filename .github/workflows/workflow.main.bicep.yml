@@ -110,7 +110,7 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.bicep.deploy.sh
+          ./iac.bicep.previewdeploy.sh
         working-directory: orchestrators/scripts
 
   # Test:
