@@ -60,10 +60,11 @@ module sqlDatabaseIdentityDb './modules/sqlDatabase.bicep' = {
   ]
 }
 
-output sqlServerName string = sqlServer.outputs.name
+// output sqlServerName string = sqlServer.outputs.name
+output sqlServerFqdn string = sqlServer.outputs.fqdn
 
 output sqlDatabaseCatalogDbName string = sqlDatabaseCatalogDb.outputs.name
-output sqlDatabaseCatalogDbCS string = 'Server=tcp:${sqlServer.outputs.fqdn},1433;Initial Catalog=${sqlDatabaseCatalogDb.outputs.name};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+// output sqlDatabaseCatalogDbCS string = 'Server=tcp:${sqlServer.outputs.fqdn},1433;Initial Catalog=${sqlDatabaseCatalogDb.outputs.name};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
 output sqlDatabaseIdentityDbName string = sqlDatabaseIdentityDb.outputs.name
-output sqlDatabaseIdentityDbCS string = 'Server=tcp:${sqlServer.outputs.fqdn},1433;Initial Catalog=${sqlDatabaseIdentityDb.outputs.name};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+// output sqlDatabaseIdentityDbCS string = 'Server=tcp:${sqlServer.outputs.fqdn},1433;Initial Catalog=${sqlDatabaseIdentityDb.outputs.name};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
