@@ -73,7 +73,7 @@ lint() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f lint
 
@@ -110,7 +110,7 @@ validate() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f validate
 
@@ -140,7 +140,7 @@ preview() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f preview
 
@@ -170,6 +170,6 @@ deploy() {
 
     echo "${output}"
 
-    return $exit_code
+    return ${exit_code}
 }
 export -f deploy

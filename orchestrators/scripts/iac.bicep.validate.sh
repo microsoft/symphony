@@ -7,10 +7,10 @@ pushd .
 
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
-SAVEIFS=$IFS
+SAVEIFS=${IFS}
 IFS=$'\n'
 modules=($(find . -type f -name 'main.bicep' | sort -u))
-IFS=$SAVEIFS
+IFS=${SAVEIFS}
 
 for deployment in "${modules[@]}"; do
     _information "Executing Bicep validate: ${deployment}"
@@ -18,14 +18,14 @@ for deployment in "${modules[@]}"; do
     path=$(dirname "${deployment}")
 
     params=()
-    SAVEIFS=$IFS
+    SAVEIFS=${IFS}
     IFS=$'\n'
     params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
-    IFS=$SAVEIFS
+    IFS=${SAVEIFS}
 
     params_path=()
     for param_path_tmp in "${params[@]}"; do
@@ -41,9 +41,9 @@ for deployment in "${modules[@]}"; do
     output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
     exit_code=$?
 
-    if [[ $exit_code != 0 ]]; then
+    if [[ ${exit_code} != 0 ]]; then
         _error "Bicep validate failed - returned code ${exit_code}"
-        exit $exit_code
+        exit ${exit_code}
     fi
 
     bicep_output_to_env "${output}"
