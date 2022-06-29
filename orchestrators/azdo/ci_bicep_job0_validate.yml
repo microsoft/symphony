@@ -71,7 +71,7 @@ jobs:
           targetType: 'inline'
           script: |
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
-            ./iac.bicep.lint.azdo.sh
+            ./iac.bicep.lint.sh
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -88,7 +88,7 @@ jobs:
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
-            ./iac.bicep.validate.azdo.sh
+            ./iac.bicep.validate.sh
 
       - task: Bash@3
         displayName: "Run module tests"

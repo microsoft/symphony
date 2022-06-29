@@ -45,4 +45,4 @@ jobs:
 
             WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
             RUN_ID="$(Build.BuildId)" \
-            ./iac.bicep.preview-deploy.azdo.sh
+            ./iac.bicep.previewdeploy.sh
