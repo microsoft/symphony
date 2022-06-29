@@ -102,7 +102,6 @@ validate() {
         exit_code=$?
     else
         command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
-        echo "${command}"
         az group create --resource-group "${optional_args}" --location "${location}"
         output=$(eval "${command}")
         exit_code=$?
