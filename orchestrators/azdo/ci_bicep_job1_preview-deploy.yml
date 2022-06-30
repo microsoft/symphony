@@ -1,0 +1,48 @@
+parameters:
+  - name: EnvironmentName
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
+jobs:
+  - job: PreviewDeploy
+    displayName: "Preview Deploy"
+    dependsOn:
+      - Validate
+
+    steps:
+      - checkout: symphony
+
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+      - task: Bash@3
+        displayName: "Run bicep preview"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
+
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
+            export ENVIRONMENT=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
+
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            RUN_ID="$(Build.BuildId)" \
+            ./iac.bicep.previewdeploy.sh
