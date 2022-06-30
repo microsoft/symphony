@@ -361,7 +361,7 @@ jobs:
           secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount, backupstatestorageaccount"
         id: KvSecrets
 
-      - name: Run Modules Tests
+      - name: Backup Remote State
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
@@ -381,9 +381,9 @@ jobs:
            # Create backup container name and convert to lower case
             backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
             
-            backupResourceGroup=`az storage account list --query "[?name=='${BACKUPSTATESTORAGEACCOUNT}'].resourceGroup" -o tsv`
+            backupResourceGroup=`az storage account list --query "[?name=="${BACKUPSTATESTORAGEACCOUNT}""].resourceGroup" -o tsv`
 
-            echo "backupResourceGroup : $backupResourceGroup "
+            echo "backupResourceGroup : ${backupResourceGroup} "
             sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
             backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
             # backupstatestorageaccount
