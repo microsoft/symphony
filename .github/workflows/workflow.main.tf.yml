@@ -378,17 +378,17 @@ jobs:
           
           echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 
-           # Create backup container name and convert to lower case
-            backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
+          # Create backup container name and convert to lower case
+          backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
             
-            backupResourceGroup=`az storage account list --query "[?name==${BACKUPSTATESTORAGEACCOUNT}].resourceGroup" -o tsv`
+          backupResourceGroup=`az storage account list --query "[?name=='${BACKUPSTATESTORAGEACCOUNT}'].resourceGroup" -o tsv`
 
-            echo "backupResourceGroup : ${backupResourceGroup} "
-            sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-            backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-            # backupstatestorageaccount
-            echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
-            az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
+          echo "backupResourceGroup : ${backupResourceGroup} "
+          sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          # backupstatestorageaccount
+          echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
+          az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
 
         working-directory: orchestrators/scripts
         shell: bash
