@@ -1,3 +1,11 @@
+parameters:
+  - name: EnvironmentName
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
 jobs:
   - job: Validate
     displayName: "Validate"
@@ -6,41 +14,36 @@ jobs:
       - checkout: symphony
 
       - task: Bash@3
-        displayName: "Install Azure CLI"
+        displayName: "Install required tools"
         inputs:
           filePath: 'orchestrators/scripts/setup-azcli.sh'
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
+          targetType: 'inline'
+          script: |
+            ./setup-azcli.sh
+            ./setup-gitleaks.sh
+            ./setup-powershell.sh
+            ./setup-pester.sh
+            ./setup-armttk.sh
+            ./setup-shellspec.sh
+            source ~/.bashrc
 
       - task: Bash@3
-        displayName: "Install gitleaks"
+        displayName: "Login Azure CLI"
         inputs:
-          filePath: 'orchestrators/scripts/setup-gitleaks.sh'
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
+          targetType: 'inline'
+          script: |
+            source ./tests.runner.sh
 
-      - task: Bash@3
-        displayName: "Install pester"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-pester.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
-
-      - task: Bash@3
-        displayName: "Install shellspec"
-        inputs:
-          filePath: 'orchestrators/scripts/setup-shellspec.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
-          failOnStderr: true
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
       - task: AzureKeyVault@2
         inputs:
-          azureSubscription: 'Symphony-kv2'
-          KeyVaultName: 'kv-symphony-env'
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
           SecretsFilter: '*'
           RunAsPreJob: true
 
@@ -54,7 +57,7 @@ jobs:
             mkdir results
 
             source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info' 
+            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info'
 
       - task: Bash@3
         displayName: "Run linter"
@@ -62,28 +65,8 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./iac.bicep.sh
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name '*.bicep' | sort -u)
-
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=($modules)
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                echo "linting ${deployment}"
-                lint "${deployment}"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "bicep linting failed- returned code ${code}"
-                  exit $code
-                fi
-                echo "------------------------"
-              done
-            popd
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            ./iac.bicep.lint.sh
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -92,33 +75,13 @@ jobs:
           targetType: 'inline'
           script: |
             source ./iac.bicep.sh
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            pushd .
-            cd ./../../IAC/Bicep/bicep
-            modules=$(find . -type f -name 'main.bicep' | sort -u)
 
-            SAVEIFS=$IFS
-            IFS=$'\n'
-            array=(${modules})
-            IFS=$SAVEIFS
-            len=${#array[@]}
-            for deployment in "${array[@]}"
-              do
-                pushd .
-                path=$(dirname "${deployment}")
-                fileName=$(basename "${deployment}")
-                cd "${path}"
-                echo "bicep validating ${path}/${fileName}"
-                validate "${fileName}" "$(System.DefaultWorkingDirectory)/env/bicep/dev/parameters.json" "$(Build.BuildId)" "westus3" "rg-test"
-                code=$?
-                if [[ $code != 0 ]]; then
-                  echo "biceplint failed- returned code ${code}"
-                  exit $code
-                fi
-                popd
-                echo "------------------------"
-              done
-            popd
+            export ENVIRONMENT=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.environment.value')
+            export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
+
+            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
+            RUN_ID="$(Build.BuildId)" \
+            ./iac.bicep.validate.sh
 
       - task: Bash@3
         displayName: "Run module tests"
@@ -127,7 +90,7 @@ jobs:
           targetType: 'inline'
           script: |
             source ./tests.runner.sh
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
             bicep pester
 
       - task: PublishTestResults@2
