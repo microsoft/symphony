@@ -335,7 +335,7 @@ jobs:
 
   Report:
     name: "Report"
-    needs: Validate
+    #needs: Validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -375,7 +375,7 @@ jobs:
           source ./iac.tf.sh
           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
           
-          echo "Starting backup of $(ENV) environment remote state.  Commit: ${{ github.sha }} }"
+          echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 
            # Create backup container name and convert to lower case
             backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
