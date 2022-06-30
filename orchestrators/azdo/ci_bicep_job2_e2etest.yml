@@ -1,0 +1,52 @@
+parameters:
+  - name: EnvironmentName
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
+jobs:
+  - job: e2etest
+    displayName: "e2e Test"
+    dependsOn:
+      - PreviewDeploy
+    workspace:
+      clean:  resources
+
+    steps:
+      - checkout: symphony
+
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+      - task: Bash@3
+        displayName: "Run end to end tests"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
+      - task: PublishTestResults@2
+        displayName: "Publish end to end test results"
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/bicep"
+          failTaskOnFailedTests: true
+          testRunTitle: "Bicep Modules end to end tests"
+          publishRunAttachments: true
+          mergeTestResults: true
