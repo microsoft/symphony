@@ -380,7 +380,7 @@ jobs:
 
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-          echo "${{ env.BACKUPSTATESTORAGEACCOUNT}}"
+          echo "${{ env.ENV}}"
           backupResourceGroup=`az storage account list --query "[?name==${{ env.BACKUPSTATESTORAGEACCOUNT }}].resourceGroup" -o tsv`
 
           echo "backupResourceGroup : $backupResourceGroup "
