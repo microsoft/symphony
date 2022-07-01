@@ -381,7 +381,7 @@ jobs:
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
   
-          export backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
+          backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
 
          
 
@@ -392,7 +392,7 @@ jobs:
 
           echo "backupResourceGroup"
           echo $backupResourceGroup
-          
+
           backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
           
           echo "backup endpoint"
