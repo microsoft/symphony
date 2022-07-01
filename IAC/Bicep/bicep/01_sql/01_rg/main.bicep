@@ -8,12 +8,14 @@ param resourceGroupName string = ''
 var _resourceGroupName = empty(deploymentName) ? resourceGroupNameGenerator.outputs.name : resourceGroupName
 var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscriptionId, location, environment) : deploymentName
 
+param randomName string = newGuid()
+
 // Resource Group
 
 module resourceGroupNameGenerator './../../modules/nameGeneratorSubscription.bicep' = {
   name: '${_deploymentName}-resourceGroupNameGenerator'
   params: {
-    name: 'rg-sql'
+    name: 'rg-sql-${substring(uniqueString(randomName), 0, 3)}'
     prefix: environment
   }
 }
