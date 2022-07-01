@@ -381,16 +381,16 @@ jobs:
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
           echo "${{ env.ENV}}"
-          backupResourceGroup=`az storage account list --query "[?name==${{ env.BACKUPSTATESTORAGEACCOUNT }}].resourceGroup" -o tsv`
+          backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
 
-          echo "backupResourceGroup : $backupResourceGroup "
+          echo "backupResourceGroup : '$BACKUPSTATESTORAGEACCOUNT' "
           echo $backupResourceGroup
 
-          sourceEndPoint=`az storage account list -g "$STATERG" --query "[?name=='${STATESTORAGEACCOUNT}'].{endpointName:primaryEndpoints.blob}" -o tsv`
-          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='${BACKUPSTATESTORAGEACCOUNT}'].{endpointName:primaryEndpoints.blob}" -o tsv`
-          # backupstatestorageaccount
-          echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
-          az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
+          #sourceEndPoint=`az storage account list -g "$STATERG" --query "[?name=='${STATESTORAGEACCOUNT}'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          #backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='${BACKUPSTATESTORAGEACCOUNT}'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          ## backupstatestorageaccount
+          #echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
+          #az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
 
         working-directory: orchestrators/scripts
         shell: bash
