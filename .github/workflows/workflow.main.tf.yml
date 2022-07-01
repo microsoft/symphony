@@ -364,13 +364,13 @@ jobs:
       - name: Backup Remote State
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          BACKUPSTATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.backupstatestorageaccount }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          BACKUPSTATESTORAGEACCOUNT: $ {{ steps.KvSecrets.outputs.backupstatestorageaccount }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}       
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
@@ -380,7 +380,7 @@ jobs:
 
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-  
+          echo `az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
           backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
 
          
