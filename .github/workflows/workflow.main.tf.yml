@@ -241,6 +241,9 @@ jobs:
                 terraform show -no-color -json ${plan_file_name} >mytmp.json
                 actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
 
+                echo "******************************************************"
+                cat mytmp.json
+                echo $actions
                 if [[ -z $actions ]]; then
                     _information "Plan file ${plan_file_name} has no delete changes"
                 else
