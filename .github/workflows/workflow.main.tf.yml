@@ -244,6 +244,7 @@ jobs:
 
                 echo " ---------------- Check for resources destruction"
                 terraform show -no-color -json "terraform.tfplan" >mytmp.json
+                echo " ---------------- after  terraform show"
                 actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
                 echo $actions
                 echo "8888888888888888888888888888888888888888888"
