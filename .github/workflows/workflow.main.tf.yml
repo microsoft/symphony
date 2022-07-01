@@ -237,7 +237,16 @@ jobs:
                   exit $code
                 fi
                 
-                # Check for resources destruction 
+                # Check for resources destruction
+                terraform show -no-color -json ${plan_file_name} >mytmp.json
+                actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
+
+                if [[ -z $actions ]]; then
+                    _information "Plan file ${plan_file_name} has no delete changes"
+                else
+                    _warning "Plan file ${plan_file_name} has delete changes"
+                fi
+
                 detect_destroy "terraform.tfplan"
                 # Apply deployment
                 deploy "terraform.tfplan"
