@@ -23,6 +23,16 @@ jobs:
           bashEnvValue: '~/.profile'
           failOnStderr: true
 
+      - task: Bash@3
+        displayName: "Login Azure CLI"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./iac.bicep.sh
+
+            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
@@ -37,8 +47,6 @@ jobs:
           targetType: 'inline'
           script: |
             source ./iac.bicep.sh
-
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
             export ENVIRONMENT=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.environment.value')
             export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
