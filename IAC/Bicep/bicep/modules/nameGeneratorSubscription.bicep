@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-@maxLength(12)
+@maxLength(50)
 param name string
 
 @maxLength(1)
