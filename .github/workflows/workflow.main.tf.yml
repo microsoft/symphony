@@ -340,8 +340,8 @@ jobs:
 
   Report:
     name: "Report"
-    if: ${{ github.event.inputs.backupstatefiles == 'true' }}
-    #needs: Validate
+    #needs: 
+    if: ${{ github.event.inputs.backupstatefiles == 'true' }} 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -367,6 +367,7 @@ jobs:
         id: KvSecrets
 
       - name: Backup Remote State
+        #if: ${{ github.event.inputs.backupstatefiles == 'true' }} 
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           BACKUPSTATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.backupstatestorageaccount }}
