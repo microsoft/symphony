@@ -171,7 +171,7 @@ jobs:
 
   PreviewDeploy:
     name: "Preview and Deploy"    
-    needs: Validate
+#    needs: Validate
     
     runs-on: ubuntu-latest
     steps:
