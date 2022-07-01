@@ -108,9 +108,9 @@ detect_destroy() {
     actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
 
     if [[ -z $actions ]]; then
-        _information "Plan file ${plan_file_name} has not delete changes"
+        _information "Plan file ${plan_file_name} has no delete changes"
     else
-        _information "Plan file ${plan_file_name} has delete changes"
+        _warning "Plan file ${plan_file_name} has delete changes"
     fi
 
     return $?
