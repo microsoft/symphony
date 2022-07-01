@@ -385,8 +385,11 @@ jobs:
 
          
 
-          sourceEndPoint=`az storage account list -g "$STATERG" --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
           
+          echo "source endpoint"
+          echo $sourceEndPoint
+
           backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
           
           echo "backup endpoint"
