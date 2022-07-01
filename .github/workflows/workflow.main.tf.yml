@@ -188,14 +188,14 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-         creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
           secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-       id: KvSecrets
+        id: KvSecrets
 
       - name: Run TF plan- Apply
         env:
