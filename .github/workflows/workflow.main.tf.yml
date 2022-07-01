@@ -243,9 +243,11 @@ jobs:
                 # Check for resources destruction
 
                 echo " ---------------- Check for resources destruction"
-                terraform show -no-color -json ${plan_file_name} >mytmp.json
+                terraform show -no-color -json "terraform.tfplan" >mytmp.json
                 actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep 'delete')
-
+                echo $actions
+                echo "8888888888888888888888888888888888888888888"
+                cat mytmp.json
                 detect_destroy "terraform.tfplan"
                 # Apply deployment
                 deploy "terraform.tfplan"
