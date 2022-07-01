@@ -358,7 +358,7 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount, backupstatestorageaccount "
+          secrets: "backupstatestorageaccount, clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount  "
         id: KvSecrets
 
       - name: Backup Remote State
