@@ -183,7 +183,7 @@ jobs:
           chmod +x  ./setup-terraform.sh
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
-       shell: bash       
+        shell: bash       
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -259,7 +259,7 @@ jobs:
     needs: PreviewDeploy
     runs-on: ubuntu-latest
     steps:
-     - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Setup Toolset
         run: |
@@ -282,7 +282,6 @@ jobs:
         id: KvSecrets
 
       - uses: actions/setup-go@v3
-
         with:
           go-version: ${{ github.event.inputs.goVersion }}
       - name: Run Modules Tests
