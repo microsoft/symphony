@@ -49,7 +49,7 @@ if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     curl -fsSL -o tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
     exit_code=$?
     set -e
-    if [ "$exit_code" != "0" ]; then
+    if [ "${exit_code}" != "0" ]; then
         echo "(!) Download failed."
         # Try one break fix version number less if we get a failure
         major="$(echo "${VERSION}" | grep -oE '^[0-9]+' || echo '')"

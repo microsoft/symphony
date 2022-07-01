@@ -26,11 +26,11 @@ git_diff() {
     echo "git diff ${cmd_options} | xargs -L1 dirname | uniq"
     res=$(git diff ${cmd_options} | xargs -L1 dirname | uniq)
 
-    SAVEIFS=$IFS
+    SAVEIFS=${IFS}
     IFS=$'\n'
 
     array=($res)
-    IFS=$SAVEIFS
+    IFS=${SAVEIFS}
 
     len=${#array[@]}
 
