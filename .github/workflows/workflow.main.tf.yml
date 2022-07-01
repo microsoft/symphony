@@ -374,7 +374,7 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
-          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          azlogin '$SUBID' '$TENANTID' '$CLIENTID' '$CLIENTSECRET' 'AzureCloud'
           
           echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 
