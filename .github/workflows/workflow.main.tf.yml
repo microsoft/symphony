@@ -358,7 +358,7 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount, backupstatestorageaccount"
+          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount, backupstatestorageaccount "
         id: KvSecrets
 
       - name: Backup Remote State
@@ -381,7 +381,7 @@ jobs:
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
   
-          backupResourceGroup=`az storage account list --query "[?name=='$STATESTORAGEACCOUNT'].resourceGroup" -o tsv`
+          backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
 
          
 
