@@ -5,12 +5,12 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
-cd "${GITHUB_WORKSPACE}/IAC/Bicep/bicep"
+cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
-SAVEIFS=$IFS
+SAVEIFS=${IFS}
 IFS=$'\n'
 modules=($(find . -type f -name 'main.bicep' | sort -u))
-IFS=$SAVEIFS
+IFS=${SAVEIFS}
 
 for deployment in "${modules[@]}"; do
     _information "Executing Bicep deploy: ${deployment}"
@@ -18,14 +18,14 @@ for deployment in "${modules[@]}"; do
     path=$(dirname "${deployment}")
 
     params=()
-    SAVEIFS=$IFS
+    SAVEIFS=${IFS}
     IFS=$'\n'
-    params=($(find "${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
-    param_tmp_deployment="${GITHUB_WORKSPACE}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
+    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
+    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json' -and -not -name '*mockup*'))
     fi
-    IFS=$SAVEIFS
+    IFS=${SAVEIFS}
 
     params_path=()
     for param_path_tmp in "${params[@]}"; do
@@ -35,12 +35,20 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    output=$(deploy "${deployment}" params_path "${GITHUB_RUN_ID}" "${LOCATION}" "${resource_group_name}")
-    exit_code=$?
+    load_dotenv
 
-    if [[ $exit_code != 0 ]]; then
+    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resourceGroupName}")
+    exit_code=$?
+    if [[ ${exit_code} != 0 ]]; then
+        _error "Bicep preview failed - returned code ${exit_code}"
+        exit ${exit_code}
+    fi
+
+    output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "${resourceGroupName}")
+    exit_code=$?
+    if [[ ${exit_code} != 0 ]]; then
         _error "Bicep deploy failed - returned code ${exit_code}"
-        exit $exit_code
+        exit ${exit_code}
     fi
 
     bicep_output_to_env "${output}"

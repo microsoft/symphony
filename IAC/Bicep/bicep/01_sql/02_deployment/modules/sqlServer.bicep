@@ -24,7 +24,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
 }
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules?tabs=bicep
-resource sqlFirewallRuleAzure 'Microsoft.Sql/servers/firewallRules@2021-08-01-preview' = {
+resource sqlFirewallRuleAzure 'Microsoft.Sql/servers/firewallRules@2021-11-01-preview' = {
   parent: sqlServer
   name: 'AzureAccess'
   properties: {
