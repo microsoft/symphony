@@ -380,7 +380,6 @@ jobs:
 
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-          echo `az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
           backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`
 
          
@@ -398,8 +397,8 @@ jobs:
           echo "backup endpoint"
           echo $backupEndpoint
 
-          #echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
-          #az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
+          echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
+          az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive 
 
         working-directory: orchestrators/scripts
         shell: bash
