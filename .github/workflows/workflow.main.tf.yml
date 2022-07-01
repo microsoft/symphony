@@ -244,7 +244,7 @@ jobs:
 
                 echo " ---------------- Check for resources destruction"
                 terraform show -no-color -json "terraform.tfplan" >mytmp.json
-                actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep -c 'delete' )
+                actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep -c 'delete' | cat )
 
                 echo " ---------------- Check for resources destruction"
 
