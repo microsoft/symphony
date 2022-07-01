@@ -7,6 +7,8 @@ param sqlServerAdministratorLogin string
 @secure()
 param sqlServerAdministratorPassword string
 
+param randomName string = newGuid()
+
 var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscriptionId, location, environment) : deploymentName
 
 // SQL Server
@@ -14,7 +16,7 @@ var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscr
 module sqlServerName './../../modules/nameGenerator.bicep' = {
   name: '${_deploymentName}-sqlServerName'
   params: {
-    name: 'sqlserver'
+    name: 'sqlserver-${substring(uniqueString(randomName), 0, 3)}'
     prefix: environment
   }
 }
