@@ -26,152 +26,122 @@ on:
         default:  "true"
 
 jobs:
-#  Validate:
-#     name: "Validate"
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
+ Validate:
+    name: "Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-#       - name: Setup Toolset
-#         run: |
-#           ./setup-azcli.sh
-#           ./setup-gitleaks.sh
-#           chmod +x  ./setup-terraform.sh 
-#           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}        
-#           chmod +x ./setup-tflint.sh
-#           ./setup-tflint.sh
-#         working-directory: orchestrators/scripts
-#         shell: bash
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          ./setup-gitleaks.sh
+          chmod +x  ./setup-terraform.sh 
+          ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}        
+          chmod +x ./setup-tflint.sh
+          ./setup-tflint.sh
+        working-directory: orchestrators/scripts
+        shell: bash
               
         
-#       - name: Run Gitleaks
-#         run: |
-#           mkdir results
-#           source ./scanners.sh
-#           run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
-#         working-directory: orchestrators/scripts
+      - name: Run Gitleaks
+        run: |
+          mkdir results
+          source ./scanners.sh
+          run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+        working-directory: orchestrators/scripts
         
-#       - uses: actions/upload-artifact@v2  # upload test results
-#         if: success() || failure()        # run this step even if previous step failed
-#         with:
-#           name: test-results
-#           path: ./IAC/Terraform/results/gitleaks-report.json
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-results
+          path: ./IAC/Terraform/results/gitleaks-report.json
  
 
-#       - name: Run TF Lint
-#         run: |
-#           chmod +x ./iac.tf.lint.sh
-#           ./iac.tf.lint.sh
-#         working-directory: orchestrators/scripts
-#         shell: bash
+      - name: Run TF Lint
+        run: |
+          chmod +x ./iac.tf.lint.sh
+          ./iac.tf.lint.sh
+        working-directory: orchestrators/scripts
+        shell: bash
 
-#       - uses: Azure/login@v1
-#         name: Run Azure Login
-#         with:
-#           creds: "${{ secrets.AZURE_CREDENTIALS }}"
+      - uses: Azure/login@v1
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
 
-#       - uses: Azure/get-keyvault-secrets@v1
-#         name: Get KeyVault Secrets
-#         with:
-#           keyvault: "kv-symphony-env"
-#           secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-#         id: KvSecrets
+      - uses: Azure/get-keyvault-secrets@v1
+        name: Get KeyVault Secrets
+        with:
+          keyvault: "kv-symphony-env"
+          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+        id: KvSecrets
 
-#       - name: Run TF Validate
-#         env:
-#           SUBID: ${{ steps.KvSecrets.outputs.subid }}
-#           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-#           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-#           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-#           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-#           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-#           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-#           ENV: ${{ github.event.inputs.environment }}
-#         run: |
-#           source ./iac.tf.sh
-#           pushd .
-#           cd ./../../IAC/Terraform/terraform
-#           modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
-          
-#           SAVEIFS=$IFS
-#           IFS=$'\n'
-#           array=($modules)
-#           IFS=$SAVEIFS
-#           len=${#array[@]}
-#           echo "Az login"
-#           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-#           for deployment in "${array[@]}"
-#             do
-#               if [[ ${deployment} != *"01_init"* ]]; then
-#                 echo "tf init ${deployment}"
-#                 pushd .
-#                 cd $deployment
-#                 init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
-#                 echo "tf init ${deployment}"
-#                 echo "tf validate ${deployment}"
-#                validate
-#                 code=$?
-#                 if [[ $code != 0 ]]; then
-#                   echo "terraform validate - returned code ${code}" 
-#                   exit $code
-#                 fi
-#                 popd
-
-#               fi
-#             done
-#           popd
-#         working-directory: orchestrators/scripts
-#         shell: bash
+      - name: Run TF Validate
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
+        run: |
+          chmod +x ./iac.tf.validate.sh
+          ./iac.tf.validate.sh
+        working-directory: orchestrators/scripts
+        shell: bash
       
-#       - uses: actions/setup-go@v3
-#         with:
-#           go-version: ${{ github.event.inputs.goVersion }}
-#       - name: Run Modules Tests
-#         env:
-#           SUBID: ${{ steps.KvSecrets.outputs.subid }}
-#           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-#           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-#           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-#           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-#           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-#           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-#           ENV: ${{ github.event.inputs.environment }}
-#         run: |
-#           source ./tests.runner.sh
-#           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ github.event.inputs.goVersion }}
+      - name: Run Modules Tests
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment }}
+        run: |
+          source ./tests.runner.sh
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
           
-#           #install junit 
-#           echo "install go-junit-report"
-#           go install github.com/jstemmer/go-junit-report@latest
-#           # set test vars
-#           export resource_group_name="${STATERG}"
-#           export storage_account_name="${STATESTORAGEACCOUNT}"
-#           export container_name="${STATECONTAINER}"
+          #install junit 
+          echo "install go-junit-report"
+          go install github.com/jstemmer/go-junit-report@latest
+          # set test vars
+          export resource_group_name="${STATERG}"
+          export storage_account_name="${STATESTORAGEACCOUNT}"
+          export container_name="${STATECONTAINER}"
 
-#           pushd .          
-#           cd ./../../IAC/Terraform/test/terraform
-#           echo "Run tests with tag = module_tests"
-#           terraform module_test true        
-#           popd
+          pushd .          
+          cd ./../../IAC/Terraform/test/terraform
+          echo "Run tests with tag = module_tests"
+          terraform module_test true        
+          popd
 
-#         working-directory: orchestrators/scripts
-#         shell: bash
+        working-directory: orchestrators/scripts
+        shell: bash
 
-#       - uses: actions/upload-artifact@v2  # upload test results
-#         if: success() || failure()        # run this step even if previous step failed
-#         with:
-#           name: Modules test results
-#           path: ./IAC/Terraform/test/terraform/*.xml
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: Modules test results
+          path: ./IAC/Terraform/test/terraform/*.xml
       
-#       - name: Publish Module Test Results
-#         uses: EnricoMi/publish-unit-test-result-action@v1
-#         if: always()
-#         with:
-#           files: "./IAC/Terraform/test/terraform/*.xml"
+      - name: Publish Module Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "./IAC/Terraform/test/terraform/*.xml"
 
   PreviewDeploy:
     name: "Preview and Deploy"    
-#    needs: Validate
+    needs: Validate
     
     runs-on: ubuntu-latest
     steps:
