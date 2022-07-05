@@ -26,7 +26,7 @@ on:
         default:  "true"
 
 jobs:
- Validate:
+  Validate:
     name: "Validate"
     runs-on: ubuntu-latest
     steps:
@@ -259,7 +259,7 @@ jobs:
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
 
-  Report:
+  Report:.
     name: "Report"
     needs: Test
     if: ${{ github.event.inputs.backupstatefiles == 'true' }} 
