@@ -244,7 +244,18 @@ jobs:
 
                 echo " ---------------- Check for resources destruction"
                 terraform show -no-color -json "terraform.tfplan" >mytmp.json
-                actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | grep -c 'delete' | cat )
+                actions1=$(cat mytmp.json)
+                echo "actions1 -- $actions1"
+                actions2=$(echo $actions1 | jq '.resource_changes[].change.actions[]' )
+                echo "actions2 -- $actions2"
+                actions3=$(echo $actions2 | grep -c 'delete' )
+                echo "actions3 -- $actions3"
+
+                if [[ -z $actions3 ]]; then
+                    _information "Plan file "terraform.tfplan" has no delete changes"
+                else
+                    _warning "Plan file "terraform.tfplan" has delete changes"
+                fi
 
                 echo " ---------------- Check for resources destruction --2 "
 
