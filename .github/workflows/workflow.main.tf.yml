@@ -138,6 +138,7 @@ jobs:
         if: always()
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
+          check_name: "Modules tests Results"
 
   PreviewDeploy:
     name: "Preview and Deploy"    
@@ -258,6 +259,7 @@ jobs:
         if: always()
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
+          check_name: "End2End tests Results"
 
   Report:
     name: "Report"
