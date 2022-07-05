@@ -208,6 +208,7 @@ jobs:
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
           ENV: ${{ github.event.inputs.environment }}
         run: |
+          chmod +x . ./iac.tf.previewdeploy.sh
           ./iac.tf.previewdeploy.sh
           # source ./iac.tf.sh
           # pushd .
