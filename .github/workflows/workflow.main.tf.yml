@@ -248,7 +248,7 @@ jobs:
                 echo "actions1 -- $actions1"
                 actions2=$(echo $actions1 | jq '.resource_changes[].change.actions[]' )
                 echo "actions2 -- $actions2"
-                actions3=$(echo $actions2 | {grep -c 'delete'} || true: )
+                actions3=$(echo $actions2 | (grep -c 'delete' || true;))
                 echo "actions3 -- $actions3"
 
                 if [[ $actions3 == 0 ]]; then
