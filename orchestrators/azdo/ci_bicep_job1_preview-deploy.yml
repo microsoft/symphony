@@ -32,6 +32,9 @@ jobs:
 
       - task: Bash@3
         displayName: "Run bicep preview"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
@@ -43,6 +46,4 @@ jobs:
             export ENVIRONMENT=${EnvironmentName}
             export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
 
-            WORKSPACE_PATH="$(System.DefaultWorkingDirectory)" \
-            RUN_ID="$(Build.BuildId)" \
             ./iac.bicep.previewdeploy.sh
