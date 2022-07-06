@@ -267,7 +267,7 @@ jobs:
 
   Report:
     name: "Report"
-    needs: Test
+    needs: PreviewDeploy
     if: ${{ github.event.inputs.backupstatefiles == 'true' }} 
     runs-on: ubuntu-latest
     steps:
