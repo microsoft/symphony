@@ -16,7 +16,8 @@ var _deploymentName = empty(deploymentName) ? uniqueString(subscription().subscr
 module sqlServerName './../../modules/nameGenerator.bicep' = {
   name: '${_deploymentName}-sqlServerName'
   params: {
-    name: 'sqlserver-${substring(uniqueString(randomName), 0, 3)}'
+    suffix: substring(uniqueString(randomName), 0, 3)
+    name: 'sqlserver'
     prefix: environment
   }
 }
