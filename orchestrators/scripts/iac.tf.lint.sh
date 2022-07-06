@@ -14,7 +14,7 @@ len=${#array[@]}
 for deployment in "${array[@]}"
     do
     _information "Executing tf lint for: ${deployment}"
-    #pushd .
+    pushd .
     cd $deployment
     lint
     code=$?
@@ -22,7 +22,7 @@ for deployment in "${array[@]}"
         _error "tflint failed- returned code ${code}" 
         exit $code
     fi
-    #popd
+    popd
 
     done
 popd
