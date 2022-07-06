@@ -15,7 +15,8 @@ param randomName string = newGuid()
 module resourceGroupNameGenerator './../../modules/nameGeneratorSubscription.bicep' = {
   name: '${_deploymentName}-resourceGroupNameGenerator'
   params: {
-    name: 'rg-sql-${substring(uniqueString(randomName), 0, 3)}'
+    suffix: substring(uniqueString(randomName), 0, 3)
+    name: 'rg-sql'
     prefix: environment
   }
 }
