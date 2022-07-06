@@ -178,6 +178,7 @@ jobs:
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
           ENV: ${{ github.event.inputs.environment }}
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           chmod +x . ./iac.tf.previewdeploy.sh
           ./iac.tf.previewdeploy.sh

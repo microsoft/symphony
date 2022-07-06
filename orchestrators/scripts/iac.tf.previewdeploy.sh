@@ -2,7 +2,8 @@
 
 source ./iac.tf.sh
 pushd .
-cd ./../../IAC/Terraform/terraform
+#cd ./../../IAC/Terraform/terraform
+cd ${WORKSPACE_PATH}/IAC/Terraform/terraform
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
 
 SAVEIFS=$IFS
@@ -22,7 +23,8 @@ for deployment in "${array[@]}"
     # Preview deployment
     envfile=${deployment/'./'/''}
     envfile=${envfile/'/'/'_'}                      
-    preview "terraform.tfplan" "./../../../../../env/terraform/${ENV}/${envfile}.tfvars.json"
+    #preview "terraform.tfplan" "./../../../../../env/terraform/${ENV}/${envfile}.tfvars.json"
+    preview "terraform.tfplan" "${WORKSPACE_PATH}/env/terraform/${ENV}/${envfile}.tfvars.json"
     code=$?
 
     if [[ $code != 0 ]]; then
