@@ -59,6 +59,8 @@ jobs:
  
 
       - name: Run TF Lint
+        env:
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           chmod +x ./iac.tf.lint.sh
           ./iac.tf.lint.sh
@@ -87,6 +89,7 @@ jobs:
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
           ENV: ${{ github.event.inputs.environment }}
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           chmod +x ./iac.tf.validate.sh
           ./iac.tf.validate.sh

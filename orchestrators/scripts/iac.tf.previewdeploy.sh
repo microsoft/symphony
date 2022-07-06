@@ -2,7 +2,7 @@
 
 source ./iac.tf.sh
 pushd .
-#cd ./../../IAC/Terraform/terraform
+
 cd ${WORKSPACE_PATH}/IAC/Terraform/terraform
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
 
@@ -22,8 +22,7 @@ for deployment in "${array[@]}"
     init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
     # Preview deployment
     envfile=${deployment/'./'/''}
-    envfile=${envfile/'/'/'_'}                      
-    #preview "terraform.tfplan" "./../../../../../env/terraform/${ENV}/${envfile}.tfvars.json"
+    envfile=${envfile/'/'/'_'}                         
     preview "terraform.tfplan" "${WORKSPACE_PATH}/env/terraform/${ENV}/${envfile}.tfvars.json"
     code=$?
 
