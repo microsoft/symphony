@@ -27,10 +27,11 @@ jobs:
               failOnStderr: true
               targetType: 'inline'
               script: |
+                chmod  +x -R ./
                 ./setup-terraform.sh ${{ parameters.terraformVersion }}
                 ./setup-tflint.sh
                 ./setup-gitleaks.sh
-                source ~/.bashrc
+               
 
           # - task: Bash@3
           #   displayName: "Install Terraform"
