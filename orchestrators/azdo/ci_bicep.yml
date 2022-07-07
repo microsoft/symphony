@@ -3,7 +3,7 @@ resources:
   - repository: symphony
     name: microsoft/symphony
     type: github
-    ref: enpolat/house-keeping
+    ref: main
     endpoint: Symphony2
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
