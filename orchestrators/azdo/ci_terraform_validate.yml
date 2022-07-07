@@ -83,6 +83,14 @@ jobs:
             displayName: "Run Terraform validate"
             env:
               WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+              SUBID: $(SUBID)
+              TENANTID: $(TENANTID)
+              CLIENTID: $(CLIENTID)
+              CLIENTSECRET: $(CLIENTSECRET)
+              STATESTORAGEACCOUNT: $(STATESTORAGEACCOUNT)
+              STATECONTAINER: $(STATECONTAINER)
+              STATERG: $(STATERG)
+              ENV: $(env)
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
