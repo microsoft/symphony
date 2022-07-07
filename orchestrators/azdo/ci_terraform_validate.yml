@@ -14,7 +14,6 @@ jobs:
         workspace:
           clean:  resources       
         displayName: "Validate"
-        #condition: eq('false', 'true')
         steps:
           - checkout: Symphony 
           
