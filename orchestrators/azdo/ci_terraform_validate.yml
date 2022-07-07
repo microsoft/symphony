@@ -26,10 +26,10 @@ jobs:
               bashEnvValue: '~/.profile'
               failOnStderr: true
               targetType: 'inline'
-                script: |
-                  ./setup-terraform.sh ${{ parameters.terraformVersion }}
-                  ./setup-tflint.sh
-                  ./setup-gitleaks.sh
+              script: |
+                ./setup-terraform.sh ${{ parameters.terraformVersion }}
+                ./setup-tflint.sh
+                ./setup-gitleaks.sh
 
           # - task: Bash@3
           #   displayName: "Install Terraform"
