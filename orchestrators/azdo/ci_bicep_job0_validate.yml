@@ -81,6 +81,8 @@ jobs:
 
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
 
+            export WORKSPACE_PATH=$(System.DefaultWorkingDirectory)
+            export RUN_ID=$(Build.BuildId)
             export ENVIRONMENT=${EnvironmentName}
             export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
 
