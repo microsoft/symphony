@@ -30,6 +30,7 @@ jobs:
                 ./setup-terraform.sh ${{ parameters.terraformVersion }}
                 ./setup-tflint.sh
                 ./setup-gitleaks.sh
+                source ~/.bashrc
 
           # - task: Bash@3
           #   displayName: "Install Terraform"
