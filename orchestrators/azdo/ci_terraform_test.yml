@@ -63,9 +63,9 @@ jobs:
               export storage_account_name=$(STATESTORAGEACCOUNT) 
               export container_name=$(STATECONTAINER)
 
-              pushd .
               echo 'get tests list'
-              cd ./../../IAC/Terraform/test/terraform
+
+              pushd ./../../IAC/Terraform/test/terraform
 
               tests=$(find . -type f -name '*end_test.go' -print)
               

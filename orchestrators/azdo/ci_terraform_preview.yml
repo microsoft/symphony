@@ -48,58 +48,63 @@ jobs:
 
       - task: Bash@3
         displayName: "Run Terraform plan & Apply"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
-          script: |         
-            source ./iac.tf.sh
-            pushd .
+          script: |  
+            chmod +x . ./iac.tf.previewdeploy.sh
+            ./iac.tf.previewdeploy.sh   
+                
+            # source ./iac.tf.sh
+            # pushd .
 
-            cd ./../../IAC/Terraform/terraform
-            modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+            # cd ./../../IAC/Terraform/terraform
+            # modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
             
-            SAVEIFS=$IFS
-            IFS=$'\n' sorted=($(sort <<<"${array[*]}")); 
+            # SAVEIFS=$IFS
+            # IFS=$'\n' sorted=($(sort <<<"${array[*]}")); 
 
-            array=($modules)
-            IFS=$SAVEIFS
-            len=${#array[@]}
+            # array=($modules)
+            # IFS=$SAVEIFS
+            # len=${#array[@]}
 
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            for deployment in "${array[@]}"
-              do
-                if [[ ${deployment} != *"01_init"* ]]; then
-                  pushd .
-                  cd $deployment
+            # azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            # for deployment in "${array[@]}"
+            #   do
+            #     if [[ ${deployment} != *"01_init"* ]]; then
+            #       pushd .
+            #       cd $deployment
 
-                  # Init deployment
-                  init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
+            #       # Init deployment
+            #       init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
                   
 
-                  # Preview deployment
-                  envfile=${deployment/'./'/''}
-                  envfile=${envfile/'/'/'_'}                      
-                  preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
+            #       # Preview deployment
+            #       envfile=${deployment/'./'/''}
+            #       envfile=${envfile/'/'/'_'}                      
+            #       preview "terraform.tfplan" "./../../../../../env/terraform/$(ENV)/${envfile}.tfvars.json"
 
-                  code=$?
-                  if [[ $code != 0 ]]; then
-                    echo "terraform plan - returned code ${code}" 
-                    exit $code
-                  fi
+            #       code=$?
+            #       if [[ $code != 0 ]]; then
+            #         echo "terraform plan - returned code ${code}" 
+            #         exit $code
+            #       fi
                   
-                  # Check for resources destruction 
-                  detect_destroy "terraform.tfplan"
+            #       # Check for resources destruction 
+            #       detect_destroy "terraform.tfplan"
 
-                  # Apply deployment
-                  deploy "terraform.tfplan"
+            #       # Apply deployment
+            #       deploy "terraform.tfplan"
 
-                  code=$?
-                  if [[ $code != 0 ]]; then
-                    echo "terraform apply - returned code ${code}" 
-                    exit $code
-                  fi
-                  popd
-                  echo "------------------------"
-                fi
-              done
-            popd
+            #       code=$?
+            #       if [[ $code != 0 ]]; then
+            #         echo "terraform apply - returned code ${code}" 
+            #         exit $code
+            #       fi
+            #       popd
+            #       echo "------------------------"
+            #     fi
+            #   done
+            # popd
