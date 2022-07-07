@@ -10,10 +10,12 @@ usage() {
 
 _target_scope() {
     local bicep_file_path="${1}"
+_information "bicep_file_path:${bicep_file_path}"
 
     target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
     target_scope=${target_scope//\'/}
 
+_information "target_scope:${target_scope}"
     echo "${target_scope}"
 }
 
@@ -90,7 +92,7 @@ validate() {
     local optional_args=$5 # --management-group-id or --resource-group
 
     target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
+    bicep_parameters=$(_bicep_parameters ${bicep_parameters_file_path_array})
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${location} --template-file ${bicep_file_path} ${bicep_parameters}"
