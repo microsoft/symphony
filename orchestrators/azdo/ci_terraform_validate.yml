@@ -27,7 +27,7 @@ jobs:
               failOnStderr: true
               targetType: 'inline'
               script: |
-                chmod  +x -R ./
+                chmod  +x  ./*.sh
                 ./setup-terraform.sh ${{ parameters.terraformVersion }}
                 ./setup-tflint.sh
                 ./setup-gitleaks.sh
