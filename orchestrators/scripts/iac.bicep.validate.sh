@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+#azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
 pushd .
 
@@ -22,16 +22,19 @@ for deployment in "${modules[@]}"; do
     IFS=$'\n'
     params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
+echo "param_tmp_deployment:${param_tmp_deployment}"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
     IFS=${SAVEIFS}
-
+echo "params:${params}"
     params_path=()
     for param_path_tmp in "${params[@]}"; do
         if [[ -f "${param_path_tmp}" ]]; then
+echo "param_path_tmp:${param_path_tmp}"
             parse_bicep_parameters "${param_path_tmp}"
             params_path+=("${param_path_tmp}")
+echo "params_path:${params_path}"
         fi
     done
 
