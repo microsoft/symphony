@@ -90,6 +90,12 @@ validate() {
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
+_information "bicep_file_path:${bicep_file_path}"
+_information "bicep_parameters_file_path_array_tmp:${bicep_parameters_file_path_array_tmp`}"
+_information "bicep_parameters_file_path_array:${bicep_parameters_file_path_array}"
+_information "deployment_id:${deployment_id}"
+_information "location:${location}"
+_information "optional_args:${optional_args}"
 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters ${bicep_parameters_file_path_array})
