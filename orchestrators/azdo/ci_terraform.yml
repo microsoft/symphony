@@ -5,7 +5,7 @@ resources:
     type: github
     endpoint: Symphony2
     name: microsoft/symphony
-    ref: cleanup_azdo_tf_ci #main
+    ref: main
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
