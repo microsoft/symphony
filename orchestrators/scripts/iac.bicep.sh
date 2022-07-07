@@ -91,7 +91,7 @@ validate() {
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
 _information "bicep_file_path:${bicep_file_path}"
-_information "bicep_parameters_file_path_array_tmp:${bicep_parameters_file_path_array_tmp`}"
+_information "bicep_parameters_file_path_array_tmp:${bicep_parameters_file_path_array_tmp}"
 _information "bicep_parameters_file_path_array:${bicep_parameters_file_path_array}"
 _information "deployment_id:${deployment_id}"
 _information "location:${location}"
