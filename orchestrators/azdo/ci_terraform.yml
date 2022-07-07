@@ -52,7 +52,7 @@ stages:
           envKVSVCName: "$(envKVSVCName)"
           envKVName: "$(envKVName)"
 
-     - template: ./ci_terraform_preview.yml
+     - template: ./ci_terraform_previewdeploy.yml
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"

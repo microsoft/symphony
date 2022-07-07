@@ -12,7 +12,7 @@ parameters:
 
 
 jobs:
-  - job: preview
+  - job: previewDeploy
     workspace:
       clean:  resources       
     displayName: "Preivew & Deploy"
