@@ -114,6 +114,8 @@ _information "optional_args:${optional_args}"
         output=$(eval "${command}")
         exit_code=$?
     else
+_information "target_scope:${target_scope}"
+_information "bicep_parameters:${bicep_parameters}"
         command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
         az group create --resource-group "${optional_args}" --location "${location}"
         output=$(eval "${command}")
