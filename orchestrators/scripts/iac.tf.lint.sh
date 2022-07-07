@@ -2,8 +2,7 @@
 
 echo 'Run tflint'             
 source ./iac.tf.sh
-pushd .
-cd ${WORKSPACE_PATH}/IAC/Terraform/terraform
+pushd ${WORKSPACE_PATH}/IAC/Terraform/terraform
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
 
 SAVEIFS=$IFS
@@ -14,8 +13,7 @@ len=${#array[@]}
 for deployment in "${array[@]}"
     do
     _information "Executing tf lint for: ${deployment}"
-    pushd .
-    cd $deployment
+    pushd $deployment
     lint
     code=$?
     if [[ $code != 0 ]]; then

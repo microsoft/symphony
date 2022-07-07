@@ -121,8 +121,7 @@ jobs:
           export storage_account_name="${STATESTORAGEACCOUNT}"
           export container_name="${STATECONTAINER}"
 
-          pushd .          
-          cd ./../../IAC/Terraform/test/terraform
+          pushd ./../../IAC/Terraform/test/terraform
           echo "Run tests with tag = module_tests"
           terraform module_test true        
           popd
@@ -242,9 +241,7 @@ jobs:
           export storage_account_name="${STATESTORAGEACCOUNT}"
           export container_name="${STATECONTAINER}"
 
-          pushd .
-          
-          cd ./../../IAC/Terraform/test/terraform
+          pushd ./../../IAC/Terraform/test/terraform
           echo "Run tests with tag = e2e_test"
           terraform e2e_test true        
           popd

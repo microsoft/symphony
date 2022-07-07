@@ -1,9 +1,7 @@
 #!/bin/bash
 
 source ./iac.tf.sh
-pushd .
-
-cd ${WORKSPACE_PATH}/IAC/Terraform/terraform
+pushd ${WORKSPACE_PATH}/IAC/Terraform/terraform
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
 
 SAVEIFS=$IFS
@@ -17,8 +15,7 @@ for deployment in "${array[@]}"
     do
     if [[ ${deployment} != *"01_init"* ]]; then
     echo "tf init ${deployment}"
-    pushd .
-    cd $deployment
+    pushd $deployment
     init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
     # Preview deployment
     envfile=${deployment/'./'/''}
