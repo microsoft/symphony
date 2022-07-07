@@ -21,7 +21,7 @@ _bicep_parameters() {
     local bicep_file_path_array_tmp=$1[@]
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
-echo "bicep_file_path_array:${bicep_file_path_array}"
+_information "bicep_file_path_array:${bicep_file_path_array}"
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     params="${var%?}"
@@ -33,6 +33,8 @@ echo "bicep_file_path_array:${bicep_file_path_array}"
 
 parse_bicep_parameters() {
     local bicep_parameters_file_path="${1}"
+
+_information "bicep_parameters_file_path:${bicep_parameters_file_path}"
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
