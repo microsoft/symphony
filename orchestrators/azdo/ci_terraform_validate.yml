@@ -94,7 +94,10 @@ jobs:
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: |   
+              script: |
+                echo "----------------------------ENV-----------------------------"   
+                printenv
+                echo "------------------------------------------------------------"  
                 ./iac.tf.validate.sh      
                 # source ./iac.tf.sh
                 # pushd .
