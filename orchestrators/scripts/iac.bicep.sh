@@ -21,6 +21,8 @@ _bicep_parameters() {
     local bicep_file_path_array_tmp=$1[@]
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
+echo "bicep_file_path_array:${bicep_file_path_array}"
+
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     params="${var%?}"
 

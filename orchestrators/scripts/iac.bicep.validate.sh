@@ -37,6 +37,7 @@ echo "param_path_tmp:${param_path_tmp}"
 echo "params_path:${params_path}"
         fi
     done
+echo "params_path:${params_path}"
 
     load_dotenv
 
