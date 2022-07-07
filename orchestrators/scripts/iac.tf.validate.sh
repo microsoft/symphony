@@ -16,8 +16,9 @@ for deployment in "${array[@]}"
 do
     if [[ ${deployment} != *"01_init"* ]]; then
     echo "tf init ${deployment}"
-    pushd .
-    cd $deployment
+    pushd $deployment
+    #pushd .
+    #cd $deployment
     init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
     echo "tf init ${deployment}"
     echo "tf validate ${deployment}"
