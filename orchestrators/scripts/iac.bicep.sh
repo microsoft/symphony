@@ -21,7 +21,7 @@ _information "target_scope:${target_scope}"
 
 _bicep_parameters() {
 _information "param:${1}"
-    local bicep_file_path_array_tmp=$1[@]
+    local bicep_file_path_array_tmp=$1 #[@]
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
 _information "bicep_file_path_array:${bicep_file_path_array}"
