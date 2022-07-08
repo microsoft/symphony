@@ -29,7 +29,7 @@ jobs:
             ./setup-armttk.sh
             ./setup-shellspec.sh
             source ~/.bashrc
-0
+
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
