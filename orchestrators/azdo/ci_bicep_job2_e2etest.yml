@@ -20,6 +20,17 @@ jobs:
       - checkout: symphony
 
       - task: Bash@3
+        displayName: "Install required tools"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+          targetType: 'inline'
+          script: |
+            ./setup-pester.sh
+
+      - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
           filePath: 'orchestrators/scripts/setup-azcli.sh'
@@ -36,30 +47,21 @@ jobs:
 
       - task: Bash@3
         displayName: "Run end to end tests"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          RUN_ID: $(Build.BuildId)
-          ENVIRONMENT: ${{ parameters.EnvironmentName }}
-          LOCATION: ${{ parameters.Location }}
-          ARM_SUBSCRIPTION_ID: $(subid)
-          ARM_TENANT_ID: $(tenantid)
-          ARM_CLIENT_ID: $(clientid)
-          ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
-            source ./iac.bicep.sh
+            source ./tests.runner.sh
 
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            bicep pester
 
       - task: PublishTestResults@2
-        displayName: "Publish end to end test results"
+        displayName: "Publish unit test results for helpers"
         inputs:
           testResultsFormat: "JUnit"
           testResultsFiles: "*.xml"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/bicep"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
           failTaskOnFailedTests: true
-          testRunTitle: "Bicep Modules end to end tests"
+          testRunTitle: "Module testing"
           publishRunAttachments: true
           mergeTestResults: true

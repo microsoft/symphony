@@ -27,7 +27,6 @@ jobs:
             ./setup-azcli.sh
             ./setup-gitleaks.sh
             ./setup-powershell.sh
-            ./setup-pester.sh
             ./setup-armttk.sh
             ./setup-shellspec.sh
             source ~/.bashrc
@@ -75,22 +74,3 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: "filePath"
           filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"
-
-      - task: Bash@3
-        displayName: "Run module tests"
-        inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'inline'
-          script: |
-            source ./tests.runner.sh
-
-            bicep pester
-
-      - task: PublishTestResults@2
-        displayName: "Publish unit test results for helpers"
-        inputs:
-          testResultsFormat: "JUnit"
-          testResultsFiles: "*.xml"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
-          failTaskOnFailedTests: true
-          testRunTitle: "Module testing"
