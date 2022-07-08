@@ -1,6 +1,8 @@
 parameters:
   - name: EnvironmentName
     type: string
+  - name: Location
+    type: string
   - name: KeyVaultAzureSubscriptionName
     type: string
   - name: KeyVaultName
@@ -63,16 +65,16 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.EnvironmentName }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'inline'
-          script: |
-            source ./iac.bicep.sh
-
-            export ENVIRONMENT=${EnvironmentName}
-            export LOCATION=$(cat ../../env/bicep/$(EnvironmentName)/parameters.json | jq -r '.parameters.location.value')
-
-            ./iac.bicep.validate.sh
+          targetType: "filePath"
+          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"
 
       - task: Bash@3
         displayName: "Run module tests"

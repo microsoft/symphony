@@ -1,6 +1,8 @@
 parameters:
   - name: EnvironmentName
     type: string
+  - name: Location
+    type: string
   - name: KeyVaultAzureSubscriptionName
     type: string
   - name: KeyVaultName
@@ -34,11 +36,23 @@ jobs:
 
       - task: Bash@3
         displayName: "Run end to end tests"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.EnvironmentName }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
           script: |
+            source ./iac.bicep.sh
+
             azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+
       - task: PublishTestResults@2
         displayName: "Publish end to end test results"
         inputs:
