@@ -26,9 +26,11 @@ jobs:
               failOnStderr: true
               targetType: 'inline'
               script: |
-                chmod  +x  ./*.sh
+                chmod  +x ./setup-terraform.sh
                 ./setup-terraform.sh ${{ parameters.terraformVersion }}
+                chmod  +x ./setup-tflint.sh
                 ./setup-tflint.sh
+                chmod  +x ./setup-gitleaks.sh
                 ./setup-gitleaks.sh      
 
           - task: GoTool@0
@@ -66,7 +68,8 @@ jobs:
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: | 
+              script: |
+                chmod  +x ./iac.tf.lint.sh
                 ./iac.tf.lint.sh
                 
 
@@ -94,6 +97,7 @@ jobs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
               script: |               
+                chmod +x ./iac.tf.validate.sh 
                 ./iac.tf.validate.sh      
                 
           - task: Bash@3
