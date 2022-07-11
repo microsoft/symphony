@@ -10,7 +10,7 @@ var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefin
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.authorization/roleassignments?tabs=bicep
 resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
-  name: guid(resourceGroup().id, containerRegistry.id, 'appSvc.name', roleDefinitionId)
+  name: guid(resourceGroup().id, containerRegistry.id, 'appSvc.name2', roleDefinitionId)
   scope: containerRegistry
   properties: {
     roleDefinitionId: roleDefinitionId
