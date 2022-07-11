@@ -28,19 +28,19 @@ variables:
     value: "kv-symphony-env"
 
 jobs:
-  - template: ./ci_bicep_job0_validate.yml
+  - template: ./ci_bicep_validate.yml
     parameters:
       EnvironmentName: $(EnvironmentName)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
-  - template: ./ci_bicep_job1_previewdeploy.yml
+  - template: ./ci_bicep_previewdeploy.yml
     parameters:
       EnvironmentName: $(EnvironmentName)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
-  - template: ./ci_bicep_job2_e2etest.yml
+  - template: ./ci_bicep_e2etest.yml
     parameters:
       EnvironmentName: $(EnvironmentName)
       Location: $(Location)
