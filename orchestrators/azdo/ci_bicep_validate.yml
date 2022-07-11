@@ -54,7 +54,7 @@ jobs:
         displayName: "Publish Gitleaks results"
         inputs:
           testResultsFiles: "*.json"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/results/gitleaks-report"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/results"
           failTaskOnFailedTests: true
           testRunTitle: "Gitleaks report"
           mergeTestResults: true
