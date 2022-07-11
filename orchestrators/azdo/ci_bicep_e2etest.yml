@@ -1,5 +1,5 @@
 parameters:
-  - name: EnvironmentName
+  - name: Environment
     type: string
   - name: Location
     type: string
