@@ -47,6 +47,15 @@ jobs:
 
       - task: Bash@3
         displayName: "Run end to end tests"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.Environment }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
