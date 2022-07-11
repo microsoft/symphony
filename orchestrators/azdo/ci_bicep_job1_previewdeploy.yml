@@ -11,8 +11,6 @@ parameters:
 jobs:
   - job: PreviewDeploy
     displayName: "Preview Deploy"
-    dependsOn:
-      - Validate
 
     steps:
       - checkout: symphony
