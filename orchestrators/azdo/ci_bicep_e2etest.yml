@@ -69,7 +69,7 @@ jobs:
         inputs:
           testResultsFormat: "JUnit"
           testResultsFiles: "*.xml"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
           failTaskOnFailedTests: true
           testRunTitle: "Module testing"
           publishRunAttachments: true

@@ -50,6 +50,15 @@ jobs:
             source ./scanners.sh
             run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info'
 
+      - task: PublishTestResults@2
+        displayName: "Publish Gitleaks results"
+        inputs:
+          testResultsFiles: "*.json"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/results"
+          failTaskOnFailedTests: true
+          testRunTitle: "Gitleaks report"
+          mergeTestResults: true
+
       - task: Bash@3
         displayName: "Run linter"
         env:
