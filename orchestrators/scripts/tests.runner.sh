@@ -100,10 +100,12 @@ bicep() {
         fi
       fi
 
+      exit_code=$?
+
     # return to the previous directory
     popd
 
-    exit $?
+    exit ${exit_code}
   }
 
   shellspec() {
@@ -112,10 +114,12 @@ bicep() {
 
     shellspec -f d
 
+    exit_code=$?
+
     # return to the previous directory
     popd
 
-    exit $?
+    exit ${exit_code}
   }
 
   # cd to the tests directory
