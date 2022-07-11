@@ -86,7 +86,7 @@ terraform() {
 bicep() {
 
   pester() {
-    # run pester tests
+    _information "run pester tests"
     pushd ./pester
 
       # if the test file is not specified, run for all files
@@ -102,16 +102,20 @@ bicep() {
 
     # return to the previous directory
     popd
+
+    exit $?
   }
 
   shellspec() {
-    # run spec tests
+    _information "run shellspec tests"
     pushd ./spec
 
     shellspec -f d
 
     # return to the previous directory
     popd
+
+    exit $?
   }
 
   # cd to the tests directory
