@@ -102,6 +102,9 @@ bicep() {
           pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE}"
         fi
       fi
+      echo "...ls -lah"
+      ls -lah
+      echo "ls -lah..."
 
     # return to the previous directory
     popd
