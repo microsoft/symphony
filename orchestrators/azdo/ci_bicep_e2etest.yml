@@ -64,6 +64,8 @@ jobs:
 
             bicep pester
 
+            ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
+
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
         inputs:
