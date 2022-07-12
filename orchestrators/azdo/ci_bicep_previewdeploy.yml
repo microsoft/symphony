@@ -33,7 +33,7 @@ jobs:
           RunAsPreJob: true
 
       - task: Bash@3
-        displayName: "Run bicep preview"
+        displayName: "Run bicep preview and deploy"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)

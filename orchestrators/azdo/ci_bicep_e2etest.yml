@@ -65,7 +65,7 @@ jobs:
             bicep pester
 
       - task: PublishTestResults@2
-        displayName: "Publish unit test results for helpers"
+        displayName: "Publish end to end test results"
         inputs:
           testResultsFormat: "NUnit"
           testResultsFiles: "*.xml"
