@@ -55,15 +55,11 @@ jobs:
           script: |
             source ./tests.runner.sh
 
-            exit_code=$(bicep pester)
+            bicep pester
 
             echo "list of files in the ${WORKSPACE_PATH}/IAC/Bicep/test/pester folder"
             ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
             echo "end of list"
-
-            echo "xx${exit_code}xx"
-
-            exit ${exit_code}
 
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
