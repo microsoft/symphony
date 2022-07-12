@@ -103,6 +103,9 @@ bicep() {
         fi
       fi
 
+      apt install tree -y
+      tree
+
       exit_code=$?
 
     # return to the previous directory
