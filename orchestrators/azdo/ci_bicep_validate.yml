@@ -64,7 +64,7 @@ jobs:
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
         inputs:
-          testResultsFormat: "JUnit"
+          testResultsFormat: "NUnit"
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
           failTaskOnFailedTests: true
