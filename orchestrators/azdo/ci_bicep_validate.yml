@@ -61,6 +61,8 @@ jobs:
             ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
             echo "end of list"
 
+            echo "xx${exit_code}xx"
+
             exit ${exit_code}
 
       - task: PublishTestResults@2
