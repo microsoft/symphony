@@ -21,8 +21,6 @@ pool:
 variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  # - name: runModuleTest
-  #   value: true
   - name: runBackupState
     value: true
 
