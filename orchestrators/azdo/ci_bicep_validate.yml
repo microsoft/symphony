@@ -63,6 +63,19 @@ jobs:
 
             exit ${exit_code}
 
+      - task: PublishTestResults@2
+        displayName: "Publish unit test results for helpers"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(WORKSPACE_PATH)/IAC/Bicep/test/pester"
+          failTaskOnFailedTests: true
+          testRunTitle: "Module testing"
+          publishRunAttachments: true
+          mergeTestResults: true
+
       - task: Bash@3
         displayName: "Run gitleaks"
         inputs:
