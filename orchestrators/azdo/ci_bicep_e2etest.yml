@@ -64,7 +64,9 @@ jobs:
 
             bicep pester
 
+            echo "list of files in the ${WORKSPACE_PATH}/IAC/Bicep/test/pester folder"
             ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
+            echo "end of list"
 
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
