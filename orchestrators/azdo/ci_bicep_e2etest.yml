@@ -64,17 +64,13 @@ jobs:
 
             bicep pester
 
-            echo "list of files in the ${WORKSPACE_PATH}/IAC/Bicep/test/pester folder"
-            ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
-            echo "end of list"
-
       - task: PublishTestResults@2
         displayName: "Publish unit test results for helpers"
         inputs:
-          testResultsFormat: "JUnit"
+          testResultsFormat: "NUnit"
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
           failTaskOnFailedTests: true
-          testRunTitle: "Module testing"
+          testRunTitle: "e2e testing"
           publishRunAttachments: true
           mergeTestResults: true
