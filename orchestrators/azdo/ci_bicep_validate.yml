@@ -55,11 +55,13 @@ jobs:
           script: |
             source ./tests.runner.sh
 
-            bicep pester
+            exit_code=$(bicep pester)
 
             echo "list of files in the ${WORKSPACE_PATH}/IAC/Bicep/test/pester folder"
             ls -lah ${WORKSPACE_PATH}/IAC/Bicep/test/pester
             echo "end of list"
+
+            exit ${exit_code}
 
       - task: Bash@3
         displayName: "Run gitleaks"
