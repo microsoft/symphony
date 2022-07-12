@@ -9,6 +9,9 @@ parameters:
     type: string
   - name: envKVName
     type: string
+  - name: runLayerTest
+    type: boolean
+    default: true
 jobs:
       - job: validate
         workspace:
@@ -101,7 +104,8 @@ jobs:
                 ./iac.tf.validate.sh      
                 
           - task: Bash@3
-            displayName: "Run Modules tests"
+            condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
+            displayName: "Run Layers tests"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
@@ -126,12 +130,13 @@ jobs:
                 popd
 
           - task: PublishTestResults@2
-            displayName: "Publish modules unit test results"
+            condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
+            displayName: "Publish Layer tests results"
             inputs:
               testResultsFormat: "JUnit"
               testResultsFiles: "*.xml"
               searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
               failTaskOnFailedTests: true
-              testRunTitle: "Terraform Modules unit tests"
+              testRunTitle: "Terraform Layers tests"
               publishRunAttachments: true
               mergeTestResults: true

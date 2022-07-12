@@ -5,7 +5,7 @@ resources:
     type: github
     endpoint: Symphony2
     name: microsoft/symphony
-    ref: main
+    ref: make-layertest-configurable #main
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
@@ -21,8 +21,8 @@ pool:
 variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runModuleTest
-    value: true
+  # - name: runModuleTest
+  #   value: true
   - name: runBackupState
     value: true
 
@@ -51,6 +51,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           envKVSVCName: "$(envKVSVCName)"
           envKVName: "$(envKVName)"
+          runLayerTest: 'false'
 
      - template: ./ci_terraform_previewdeploy.yml
        parameters:
