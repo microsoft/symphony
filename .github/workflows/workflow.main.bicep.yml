@@ -8,8 +8,8 @@ on:
 
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Environment"
+      environment_name:
+        description: "EnvironmentName"
         required: true
         default: "dev"
       location:
@@ -71,7 +71,7 @@ jobs:
           ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
           ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          ENVIRONMENT: ${{ github.event.inputs.environment_name }}
           LOCATION: ${{ github.event.inputs.location }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
@@ -107,7 +107,7 @@ jobs:
           ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
           ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          ENVIRONMENT: ${{ github.event.inputs.environment_name }}
           LOCATION: ${{ github.event.inputs.location }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
