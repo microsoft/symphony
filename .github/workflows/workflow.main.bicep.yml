@@ -15,7 +15,7 @@ on:
       location:
         description: "Location"
         required: true
-        default: "westus"
+        default: "westus2"
 
 jobs:
   Validate:
