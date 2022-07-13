@@ -1,4 +1,3 @@
-
 resources:
   repositories:
   - repository: Symphony
@@ -30,15 +29,15 @@ variables:
 #============================================================
 # The following Variables Should Be Set On the Pipeline
 #============================================================
-  - name: env
+  - name: EnvironmentName
     value: "dev"
-  - name : envKVSVCName
+  - name : KeyVaultAzureSubscriptionName
     value: "Symphony-kv2"
-  - name : envKVName
+  - name : KeyVaultName
     value: "kv-symphony-env"
-  - name: goVersion
+  - name: GoVersion
     value: "1.18.1"
-  - name: terraformVersion
+  - name: TerraformVersion
     value: "1.1.7"
   
 stages:
@@ -47,26 +46,26 @@ stages:
    jobs:
      - template: ./ci_terraform_validate.yml
        parameters:
-          goVersion : "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          goVersion : "$(GoVersion)"
+          terraformVersion: "$(TerraformVersion)"
+          envKVSVCName: "$(KeyVaultAzureSubscriptionName)"
+          envKVName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_previewdeploy.yml
        parameters:
-          goVersion : "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          goVersion : "$(GoVersion)"
+          terraformVersion: "$(TerraformVersion)"
+          envKVSVCName: "$(KeyVaultAzureSubscriptionName)"
+          envKVName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_test.yml
        parameters:
-          goVersion : "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          goVersion : "$(GoVersion)"
+          terraformVersion: "$(TerraformVersion)"
+          envKVSVCName: "$(KeyVaultAzureSubscriptionName)"
+          envKVName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_report.yml
        parameters:
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          envKVSVCName: "$(KeyVaultAzureSubscriptionName)"
+          envKVName: "$(KeyVaultName)"

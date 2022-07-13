@@ -1,4 +1,4 @@
-parameters:  
+parameters:
   - name: goVersion
     type: string
     default: '1.18.1'
@@ -14,7 +14,7 @@ parameters:
 jobs:
   - job: previewDeploy
     workspace:
-      clean:  resources       
+      clean:  resources
     displayName: "Preivew & Deploy"
     dependsOn: validate
 
@@ -35,9 +35,8 @@ jobs:
           version: ${{ parameters.goVersion }}
           goBin: "$(System.DefaultWorkingDirectory)"
 
-
       - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
-    
+
       - task: AzureKeyVault@2
         displayName: "Pull env cred from Azure Key valut"
         inputs:
@@ -61,7 +60,6 @@ jobs:
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'inline'
-          script: |  
+          script: |
             chmod +x . ./iac.tf.previewdeploy.sh
             ./iac.tf.previewdeploy.sh
-           

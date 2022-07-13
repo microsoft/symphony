@@ -13,12 +13,12 @@ parameters:
 jobs:
     - job: test
       workspace:
-        clean:  resources       
+        clean:  resources
       displayName: "Execute End to End Test"
       dependsOn: previewDeploy
 
       steps:
-        - checkout: Symphony 
+        - checkout: Symphony
 
         - task: Bash@3
           displayName: "Install Terraform"

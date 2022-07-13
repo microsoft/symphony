@@ -12,10 +12,10 @@ parameters:
 jobs:
       - job: validate
         workspace:
-          clean:  resources       
+          clean:  resources
         displayName: "Validate"
         steps:
-          - checkout: Symphony 
+          - checkout: Symphony
           
           - task: Bash@3
             displayName: "Setup Toolset"
@@ -96,16 +96,16 @@ jobs:
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: |               
+              script: |
                 chmod +x ./iac.tf.validate.sh 
-                ./iac.tf.validate.sh      
+                ./iac.tf.validate.sh
                 
           - task: Bash@3
             displayName: "Run Modules tests"
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: |         
+              script: |
                 source ./tests.runner.sh
                 azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 
