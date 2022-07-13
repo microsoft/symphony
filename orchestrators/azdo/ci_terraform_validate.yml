@@ -14,34 +14,24 @@ jobs:
         workspace:
           clean:  resources       
         displayName: "Validate"
-        #condition: eq('false', 'true')
         steps:
           - checkout: Symphony 
           
           - task: Bash@3
-            displayName: "Install Terraform"
+            displayName: "Setup Toolset"
             inputs:
-              filePath: 'orchestrators/scripts/setup-terraform.sh'
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               arguments:  ${{ parameters.terraformVersion }}
               bashEnvValue: '~/.profile'
               failOnStderr: true
-          
-          - task: Bash@3
-            displayName: "Install Tflint"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-tflint.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              bashEnvValue: '~/.profile'
-              failOnStderr: true
-
-          - task: Bash@3
-            displayName: "Install gitleaks"
-            inputs:
-              filePath: 'orchestrators/scripts/setup-gitleaks.sh'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-              bashEnvValue: '~/.profile'
-              failOnStderr: true         
+              targetType: 'inline'
+              script: |
+                chmod  +x ./setup-terraform.sh
+                ./setup-terraform.sh ${{ parameters.terraformVersion }}
+                chmod  +x ./setup-tflint.sh
+                ./setup-tflint.sh
+                chmod  +x ./setup-gitleaks.sh
+                ./setup-gitleaks.sh      
 
           - task: GoTool@0
             inputs:
@@ -60,7 +50,8 @@ jobs:
                 mkdir results
 
                 source ./scanners.sh
-                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info' 
+                run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+
           - task: PublishTestResults@2
             displayName: "Publish Gitleaks results"
             inputs:
@@ -72,40 +63,15 @@ jobs:
 
           - task: Bash@3
             displayName: "Run Terraform lint"
+            env:
+              WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: | 
-                echo 'Run tflint'             
-                source ./iac.tf.sh
-                pushd .
-
-                cd ./../../IAC/Terraform/terraform
-                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+              script: |
+                chmod  +x ./iac.tf.lint.sh
+                ./iac.tf.lint.sh
                 
-                SAVEIFS=$IFS
-                IFS=$'\n'
-
-                array=($modules)
-                IFS=$SAVEIFS
-                len=${#array[@]}
-
-                for deployment in "${array[@]}"
-                  do
-                    echo "linting ${deployment}"
-                    pushd .
-                    cd $deployment
-
-                    lint
-                    code=$?
-                    if [[ $code != 0 ]]; then
-                      echo "tflint failed- returned code ${code}" 
-                      exit $code
-                    fi
-                    popd
-                    echo "------------------------"
-                  done
-                popd
 
           - task: AzureKeyVault@2
             displayName: "Pull env cred from Azure Key valut"
@@ -117,48 +83,23 @@ jobs:
 
           - task: Bash@3
             displayName: "Run Terraform validate"
+            env:
+              WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+              SUBID: $(SUBID)
+              TENANTID: $(TENANTID)
+              CLIENTID: $(CLIENTID)
+              CLIENTSECRET: $(CLIENTSECRET)
+              STATESTORAGEACCOUNT: $(STATESTORAGEACCOUNT)
+              STATECONTAINER: $(STATECONTAINER)
+              STATERG: $(STATERG)
+              ENV: $(env)
             inputs:
               workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
               targetType: 'inline'
-              script: |         
-                source ./iac.tf.sh
-                pushd .
-
-                cd ./../../IAC/Terraform/terraform
-                modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+              script: |               
+                chmod +x ./iac.tf.validate.sh 
+                ./iac.tf.validate.sh      
                 
-                SAVEIFS=$IFS
-                IFS=$'\n'
-
-                array=($modules)
-                IFS=$SAVEIFS
-                len=${#array[@]}
-
-                echo "Az login"
-
-                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-                for deployment in "${array[@]}"
-                  do
-                    if [[ ${deployment} != *"01_init"* ]]; then
-                      echo "tf init ${deployment}"
-                      pushd .
-                      cd $deployment
-
-                      init true "$(ENV)${deployment}.tfstate" $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) $(STATESTORAGEACCOUNT) $(STATECONTAINER) $(STATERG)
-                      echo "tf init ${deployment}"
-                      echo "tf validate ${deployment}"
-                      validate
-                      code=$?
-                      if [[ $code != 0 ]]; then
-                        echo "terraform validate - returned code ${code}" 
-                        exit $code
-                      fi
-                      popd
-                      echo "------------------------"
-                    fi
-                  done
-                popd
-
           - task: Bash@3
             displayName: "Run Modules tests"
             inputs:
@@ -177,10 +118,7 @@ jobs:
                 export storage_account_name=$(STATESTORAGEACCOUNT) 
                 export container_name=$(STATECONTAINER)
 
-                pushd .
-                
-                cd ./../../IAC/Terraform/test/terraform
-          
+                pushd ./../../IAC/Terraform/test/terraform         
 
                 echo "Run tests with tag = module_tests"
                 terraform module_test true

@@ -9,7 +9,7 @@ jobs:
     workspace:
         clean:  resources       
     displayName: "Report"
-    dependsOn: preview
+    dependsOn: previewDeploy
 
     steps:
       - checkout: Symphony 
