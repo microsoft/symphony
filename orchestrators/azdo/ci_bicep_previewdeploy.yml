@@ -45,5 +45,5 @@ jobs:
           ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.previewdeploy.sh"
+          targetType: 'filePath'
+          filePath: 'orchestrators/scripts/iac.bicep.previewdeploy.sh'

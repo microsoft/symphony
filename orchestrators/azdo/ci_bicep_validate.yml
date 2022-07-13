@@ -18,7 +18,6 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
@@ -66,7 +65,7 @@ jobs:
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           targetType: 'filePath'
-          filePath: '$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh'
+          filePath: 'orchestrators/scripts/iac.bicep.lint.sh'
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -81,5 +80,5 @@ jobs:
           ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"
+          targetType: 'filePath'
+          filePath: 'orchestrators/scripts/iac.bicep.validate.sh'

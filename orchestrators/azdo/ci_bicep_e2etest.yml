@@ -26,9 +26,8 @@ jobs:
           workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
           bashEnvValue: '~/.profile'
           failOnStderr: true
-          targetType: 'inline'
-          script: |
-            ./setup-pester.sh
+          targetType: 'filePath'
+          script: 'orchestrators/scripts/setup-pester.sh'
 
       - task: Bash@3
         displayName: "Install Azure CLI"
