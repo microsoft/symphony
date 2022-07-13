@@ -32,6 +32,7 @@ jobs:
         environment: ${{ github.event.inputs.environment }}
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
         goVersion: ${{ github.event.inputs.goVersion }}
+        runLayerTest: false
     secrets:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     # name: "Validate"

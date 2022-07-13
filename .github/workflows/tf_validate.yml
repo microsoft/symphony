@@ -18,6 +18,11 @@ on:
         required: true
         default:  "1.1.7"
         type: string
+      runLayerTest:
+        description: "Run Layer tests"
+        required: true
+        default:  true
+        type: boolean
     secrets:
       azEnvCred:
         required: true
@@ -94,9 +99,10 @@ jobs:
         shell: bash
       
       - uses: actions/setup-go@v3
+        if: ${{ inputs.runLayerTest }}
         with:
           go-version: ${{ inputs.goVersion }}
-      - name: Run Modules Tests
+      - name: Run Layer Tests
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
