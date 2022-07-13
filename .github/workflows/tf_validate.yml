@@ -19,11 +19,11 @@ on:
         default:  "1.1.7"
         type: string
     secrets:
-      AZURE_CREDENTIALS:
+      azEnvCred:
         required: true
 
 jobs:
-  Validate2:
+  Validate:
     name: "Validate2"
     runs-on: ubuntu-latest
     steps:
@@ -48,8 +48,8 @@ jobs:
           run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
         working-directory: orchestrators/scripts
         
-      - uses: actions/upload-artifact@v2  # upload test results
-        if: success() || failure()        # run this step even if previous step failed
+      - uses: actions/upload-artifact@v2  
+        if: success() || failure()
         with:
           name: test-results
           path: ./IAC/Terraform/results/gitleaks-report.json
@@ -67,7 +67,7 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          creds: "${{ secrets.azEnvCred }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
@@ -126,8 +126,8 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2  # upload test results
-        if: success() || failure()        # run this step even if previous step failed
+      - uses: actions/upload-artifact@v2
+        if: success() || failure()
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml

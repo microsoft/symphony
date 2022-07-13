@@ -33,7 +33,7 @@ jobs:
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
         goVersion: ${{ github.event.inputs.goVersion }}
     secrets:
-        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     # name: "Validate"
     # runs-on: ubuntu-latest
     # steps:
