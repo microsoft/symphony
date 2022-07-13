@@ -133,14 +133,16 @@ on:
         shell: bash
 
       - uses: actions/upload-artifact@v2
-        if: success() || failure()
+        #if: success() || failure()
+        if: ${{ inputs.runLayerTest }} && success() || failure()
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
       
       - name: Publish Module Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
+        #if: always()
+        if: ${{ inputs.runLayerTest }}
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "Modules tests Results"
