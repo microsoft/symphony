@@ -18,7 +18,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
     name: skuName
   }
   tags:{
-    'Env': environment
+    Env: environment
   }
 }
 

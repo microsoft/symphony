@@ -1,0 +1,49 @@
+parameters:
+  - name: Environment
+    type: string
+  - name: Location
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
+jobs:
+  - job: PreviewDeploy
+    displayName: "Preview Deploy"
+    dependsOn:
+      - Validate
+
+    steps:
+      - checkout: symphony
+
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+      - task: Bash@3
+        displayName: "Run bicep preview and deploy"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.Environment }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          targetType: "filePath"
+          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.previewdeploy.sh"

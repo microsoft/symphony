@@ -1,0 +1,85 @@
+parameters:
+  - name: Environment
+    type: string
+  - name: Location
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
+jobs:
+  - job: Validate
+    displayName: "Validate"
+
+    steps:
+      - checkout: symphony
+
+      - task: Bash@3
+        displayName: "Install required tools"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+          targetType: 'inline'
+          script: |
+            ./setup-azcli.sh
+            ./setup-gitleaks.sh
+            ./setup-powershell.sh
+            ./setup-armttk.sh
+            ./setup-shellspec.sh
+            source ~/.bashrc
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+      - task: Bash@3
+        displayName: "Run gitleaks"
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            echo 'create ./results directory'
+            mkdir results
+
+            source ./scanners.sh
+            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info'
+
+      - task: PublishTestResults@2
+        displayName: "Publish Gitleaks results"
+        inputs:
+          testResultsFiles: "*.json"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/results"
+          failTaskOnFailedTests: true
+          testRunTitle: "Gitleaks report"
+          mergeTestResults: true
+
+      - task: Bash@3
+        displayName: "Run linter"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'filePath'
+          filePath: '$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh'
+
+      - task: Bash@3
+        displayName: "Run bicep validate"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.Environment }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: "filePath"
+          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"

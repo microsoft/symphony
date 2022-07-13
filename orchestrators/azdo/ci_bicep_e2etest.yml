@@ -1,0 +1,76 @@
+parameters:
+  - name: Environment
+    type: string
+  - name: Location
+    type: string
+  - name: KeyVaultAzureSubscriptionName
+    type: string
+  - name: KeyVaultName
+    type: string
+
+jobs:
+  - job: e2etest
+    displayName: "e2e Test"
+    dependsOn:
+      - PreviewDeploy
+    workspace:
+      clean:  resources
+
+    steps:
+      - checkout: symphony
+
+      - task: Bash@3
+        displayName: "Install required tools"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+          targetType: 'inline'
+          script: |
+            ./setup-pester.sh
+
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: 'orchestrators/scripts/setup-azcli.sh'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          bashEnvValue: '~/.profile'
+          failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          KeyVaultName: ${{ parameters.KeyVaultName }}
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+      - task: Bash@3
+        displayName: "Run end to end tests"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          RUN_ID: $(Build.BuildId)
+          ENVIRONMENT: ${{ parameters.Environment }}
+          LOCATION: ${{ parameters.Location }}
+          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_TENANT_ID: $(tenantid)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientsecret)
+        inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          targetType: 'inline'
+          script: |
+            source ./tests.runner.sh
+
+            bicep pester
+
+      - task: PublishTestResults@2
+        displayName: "Publish end to end test results"
+        inputs:
+          testResultsFormat: "NUnit"
+          testResultsFiles: "*.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
+          failTaskOnFailedTests: true
+          testRunTitle: "e2e testing"
+          publishRunAttachments: true
+          mergeTestResults: true

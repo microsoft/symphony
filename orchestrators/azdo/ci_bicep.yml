@@ -17,6 +17,32 @@ pr:
 pool:
   vmImage: "ubuntu-latest"
 
+variables:
+  - name: Environment
+    value: "dev"
+  - name: Location
+    value: "westus"
+  - name : KeyVaultAzureSubscriptionName
+    value: "Symphony-kv2"
+  - name : KeyVaultName
+    value: "kv-symphony-env"
+
 jobs:
-  - template: ./ci_bicep_job0_validate.yml
-  - template: ./ci_bicep_job1_preview.yml
+  - template: ./ci_bicep_validate.yml
+    parameters:
+      Environment: $(Environment)
+      Location: $(Location)
+      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultName: $(KeyVaultName)
+  - template: ./ci_bicep_previewdeploy.yml
+    parameters:
+      Environment: $(Environment)
+      Location: $(Location)
+      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultName: $(KeyVaultName)
+  - template: ./ci_bicep_e2etest.yml
+    parameters:
+      Environment: $(Environment)
+      Location: $(Location)
+      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultName: $(KeyVaultName)

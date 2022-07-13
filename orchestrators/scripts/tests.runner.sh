@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source ./iac.bicep.sh
+azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+
 # include helpers
 source _helpers.sh
 
@@ -86,7 +89,7 @@ terraform() {
 bicep() {
 
   pester() {
-    # run pester tests
+    _information "run pester tests"
     pushd ./pester
 
       # if the test file is not specified, run for all files
@@ -105,7 +108,7 @@ bicep() {
   }
 
   shellspec() {
-    # run spec tests
+    _information "run shellspec tests"
     pushd ./spec
 
     shellspec -f d

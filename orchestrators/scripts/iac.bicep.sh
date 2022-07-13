@@ -57,11 +57,11 @@ bicep_output_to_env() {
             echo "${outputName}"="${outputValue}" >>"${dotenv_file_path}"
             eval export "${outputName}"="${outputValue}"
 
-            # Azure DevOps
-            # echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
-
-            # GitHub
-            echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
+            if [ -n "${GITHUB_ACTION}" ]; then
+                echo "{${outputName}}={${outputValue}}" >>$GITHUB_ENV
+            elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
+                echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
+            fi
         done
 }
 
