@@ -35,8 +35,8 @@ jobs:
         runLayerTest: false
     secrets:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
-    # name: "Validate"
-    # runs-on: ubuntu-latest
+     name: "Validate"
+     runs-on: ubuntu-latest
     # steps:
     #   - uses: actions/checkout@v3
 

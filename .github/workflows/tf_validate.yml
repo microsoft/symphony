@@ -27,10 +27,10 @@ on:
       azEnvCred:
         required: true
 
-jobs:
-  Validate:
+#jobs:
+#  Validate:
 #    name: "Validate"
-    runs-on: ubuntu-latest
+#    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
