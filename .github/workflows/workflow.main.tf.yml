@@ -8,8 +8,8 @@ on:
 
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Environment"
+      environment_name:
+        description: "EnvironmentName"
         required: true
         default: "dev"
       goVersion:
@@ -88,7 +88,7 @@ jobs:
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ github.event.inputs.environment }}
+          ENV: ${{ github.event.inputs.environment_name }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           chmod +x ./iac.tf.validate.sh
@@ -108,7 +108,7 @@ jobs:
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ github.event.inputs.environment }}
+          ENV: ${{ github.event.inputs.environment_name }}
         run: |
           source ./tests.runner.sh
           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
@@ -179,7 +179,7 @@ jobs:
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ github.event.inputs.environment }}
+          ENV: ${{ github.event.inputs.environment_name }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           chmod +x . ./iac.tf.previewdeploy.sh
@@ -227,7 +227,7 @@ jobs:
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
           STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ github.event.inputs.environment }}
+          ENV: ${{ github.event.inputs.environment_name }}
         run: |
           source ./tests.runner.sh
           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
@@ -299,8 +299,8 @@ jobs:
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}       
-          ENV: ${{ github.event.inputs.environment }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ github.event.inputs.environment_name }}
         run: |
           source ./iac.tf.sh
           azlogin $SUBID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
