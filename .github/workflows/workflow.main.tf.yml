@@ -1,4 +1,4 @@
-name: "Main Terraform"
+name: "CI Terraform"
 
 on:
   # push:
@@ -36,9 +36,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           ./setup-gitleaks.sh
-          chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}        
-          chmod +x ./setup-tflint.sh
           ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
@@ -62,7 +60,6 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          chmod +x ./iac.tf.lint.sh
           ./iac.tf.lint.sh
         working-directory: orchestrators/scripts
         shell: bash
@@ -91,7 +88,6 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          chmod +x ./iac.tf.validate.sh
           ./iac.tf.validate.sh
         working-directory: orchestrators/scripts
         shell: bash
@@ -153,7 +149,6 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          chmod +x  ./setup-terraform.sh
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
         shell: bash       
@@ -182,7 +177,6 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          chmod +x . ./iac.tf.previewdeploy.sh
           ./iac.tf.previewdeploy.sh
           
         working-directory: orchestrators/scripts
@@ -198,7 +192,6 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
         shell: bash       
@@ -273,7 +266,6 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          chmod +x  ./setup-terraform.sh 
 
         working-directory: orchestrators/scripts
         shell: bash

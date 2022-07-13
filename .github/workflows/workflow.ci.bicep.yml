@@ -1,4 +1,4 @@
-name: "Main Bicep"
+name: "CI Bicep"
 
 on:
   # push:
