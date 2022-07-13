@@ -1,4 +1,6 @@
 
+name: "validate Terraform Template"
+
 On:
  workflow_call:
     inputs:
@@ -14,8 +16,8 @@ On:
 
 
 jobs:
-  Validate:
-    name: "Validate"
+  Validate2:
+    name: "Validate2"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
