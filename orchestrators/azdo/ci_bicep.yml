@@ -18,7 +18,7 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  - name: Environment
+  - name: EnvironmentName
     value: "dev"
   - name: Location
     value: "westus"
@@ -30,19 +30,19 @@ variables:
 jobs:
   - template: ./ci_bicep_validate.yml
     parameters:
-      Environment: $(Environment)
+      EnvironmentName: $(EnvironmentName)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
   - template: ./ci_bicep_previewdeploy.yml
     parameters:
-      Environment: $(Environment)
+      EnvironmentName: $(EnvironmentName)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
   - template: ./ci_bicep_e2etest.yml
     parameters:
-      Environment: $(Environment)
+      EnvironmentName: $(EnvironmentName)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)

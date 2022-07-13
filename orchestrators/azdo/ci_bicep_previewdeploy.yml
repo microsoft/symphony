@@ -1,5 +1,5 @@
 parameters:
-  - name: Environment
+  - name: EnvironmentName
     type: string
   - name: Location
     type: string
@@ -37,7 +37,7 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
-          ENVIRONMENT: ${{ parameters.Environment }}
+          ENVIRONMENT_NAME: ${{ parameters.EnvironmentName }}
           LOCATION: ${{ parameters.Location }}
           ARM_SUBSCRIPTION_ID: $(subid)
           ARM_TENANT_ID: $(tenantid)
