@@ -27,7 +27,7 @@ on:
       azEnvCred:
         required: true
 
-jobs:
+#jobs:
 #  Validate:
 #    name: "Validate"
 #    runs-on: ubuntu-latest
