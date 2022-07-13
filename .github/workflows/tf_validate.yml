@@ -1,21 +1,20 @@
 
 name: "validate Terraform Template"
-
-On:
-  push:
-    branches:
-      - main
+on:
   workflow_call:
     inputs:
       environment:
         description: "Environment"
         required: true
+        default: "dev"
       goVersion:
         description: "Go Version"
         required: true
+        default:  "1.18.1"
       terraformVersion:
         description: "Terraform Version"
         required: true
+        default:  "1.1.7"
 
 
 jobs:
