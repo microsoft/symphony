@@ -98,11 +98,11 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
       
-      - uses: actions/setup-go@v3
-        if: ${{ inputs.runLayerTest }}
+      - uses: actions/setup-go@v3       
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run Layer Tests
+        if: ${{ inputs.runLayerTest }}
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
