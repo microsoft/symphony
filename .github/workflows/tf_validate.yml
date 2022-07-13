@@ -29,7 +29,7 @@ on:
 
 jobs:
   Validate:
-    name: "Validate2"
+    name: "Validate"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
