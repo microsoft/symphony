@@ -26,13 +26,13 @@ on:
         default:  "true"
 
 jobs:
-  Validate:
-    uses: ./.github/workflows/tf_validate.yml
-    with:
-        environment: ${{ github.event.inputs.environment }}
-        terraformVersion: ${{ github.event.inputs.terraformVersion }}
-        goVersion: ${{ github.event.inputs.goVersion }}
-    # name: "Validate"
+  # Validate:
+  #   uses: ./.github/workflows/tf_validate.yml
+  #   with:
+  #       environment: ${{ github.event.inputs.environment }}
+  #       terraformVersion: ${{ github.event.inputs.terraformVersion }}
+  #       goVersion: ${{ github.event.inputs.goVersion }}
+  #   # name: "Validate"
     # runs-on: ubuntu-latest
     # steps:
     #   - uses: actions/checkout@v3
