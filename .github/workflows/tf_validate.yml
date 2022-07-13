@@ -2,7 +2,10 @@
 name: "validate Terraform Template"
 
 On:
- workflow_call:
+  push:
+    branches:
+      - main
+  workflow_call:
     inputs:
       environment:
         description: "Environment"
