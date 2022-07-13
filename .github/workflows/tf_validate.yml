@@ -1,5 +1,5 @@
 
-
+On:
  workflow_call:
     inputs:
       environment:
