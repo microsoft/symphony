@@ -24,7 +24,7 @@ on:
         default:  true
         type: boolean
       branch:
-        description: "branch"
+        description: "Branch Name"
         required: true
         type: string
         default: "main"

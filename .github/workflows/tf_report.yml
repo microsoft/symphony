@@ -7,6 +7,11 @@ on:
         required: true
         type: string
         default: "dev"
+      branch:
+        description: "Branch Name"
+        required: true
+        type: string
+        default: "main"
     secrets:
       azEnvCred:
         required: true
@@ -17,7 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          ref: ${{ inputs.branch }}
+          
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
