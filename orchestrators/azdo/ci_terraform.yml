@@ -23,7 +23,7 @@ variables:
   - name: env
     value: "dev"
   - name : envKVSVCName
-    value: "Symphony-kv2"
+    value: "Symphony-KV"
   - name : envKVName
     value: "kv-symphony-env"
   - name: goVersion

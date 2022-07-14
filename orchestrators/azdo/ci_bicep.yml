@@ -15,7 +15,7 @@ variables:
   - name: Location
     value: "westus"
   - name : KeyVaultAzureSubscriptionName
-    value: "Symphony-kv2"
+    value: "Symphony-KV"
   - name : KeyVaultName
     value: "kv-symphony-env"
 
