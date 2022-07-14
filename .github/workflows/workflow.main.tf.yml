@@ -38,6 +38,7 @@ jobs:
     
   PreviewDeploy:
     uses: ./.github/workflows/tf_previewdeploy.yml
+    needs: Validate
     with:
         environment: ${{ github.event.inputs.environment }}
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
