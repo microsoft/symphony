@@ -1,11 +1,3 @@
-# resources:
-#   repositories:
-#   - repository: symphony
-#     name: microsoft/symphony
-#     type: github
-#     ref: daporo/minorupdates
-#     endpoint: Symphony2
-
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
 trigger:
