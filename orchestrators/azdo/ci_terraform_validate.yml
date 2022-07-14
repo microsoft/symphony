@@ -80,13 +80,13 @@ jobs:
         displayName: "Run Terraform validate"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          SUBSCRIPTIONID: $(SUBSCRIPTIONID)
-          TENANTID: $(TENANTID)
-          CLIENTID: $(CLIENTID)
-          CLIENTSECRET: $(CLIENTSECRET)
-          STATESTORAGEACCOUNT: $(STATESTORAGEACCOUNT)
-          STATECONTAINER: $(STATECONTAINER)
-          STATERG: $(STATERG)
+          ARM_SUBSCRIPTION_ID: $(SUBSCRIPTIONID)
+          ARM_TENANT_ID: $(TENANTID)
+          ARM_CLIENT_ID: $(CLIENTID)
+          ARM_CLIENT_SECRET: $(CLIENTSECRET)
+          STATE_STORAGE_ACCOUNT: $(STATESTORAGEACCOUNT)
+          STATE_CONTAINER: $(STATECONTAINER)
+          STATE_RG: $(STATERG)
           ENV: $(env)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
