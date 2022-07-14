@@ -1,5 +1,5 @@
 
-name: "validate Terraform Template"
+name: "Template-TF-Validate"
 on:
   workflow_call:
     inputs:
@@ -133,7 +133,6 @@ jobs:
         shell: bash
 
       - uses: actions/upload-artifact@v2
-        #if: success() || failure()
         if: ${{ inputs.runLayerTest }} && success() || failure()
         with:
           name: Modules test results
@@ -141,7 +140,6 @@ jobs:
       
       - name: Publish Module Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
-        #if: always()
         if: ${{ inputs.runLayerTest }}
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
