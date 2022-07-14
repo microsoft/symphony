@@ -5,7 +5,7 @@ NAME="${1:-"$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n
 LOCATION="${2:-"westus"}"
 NNN="${3:-"$(echo $RANDOM | fold -w 3 | head -n 1)"}"
 
-# SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+SUBSCRIPTION_ID=$(az account show --query id --output tsv)
 
 RG_NAME="rg-${NAME}-${NNN}"
 CR_NAME="cr${NAME}${NNN}"
@@ -60,23 +60,41 @@ set_kv_secret() {
     az keyvault secret set --name "${_name}" --value "${_value}" --vault-name "${_vault_name}"
 }
 
-rg_id=$(create_rg | jq -r .id)
-sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "${rg_id}")
+# Create RG
+create_rg
 
-kv_obj=$(create_kv)
-kv_id=$(echo "${kv_obj}" | jq -r .id)
+# Create CR
+create_cr
+
+# Create Owner SP and assing to subscription level
+sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SUBSCRIPTION_ID}")
+
+# Create KV
+kv_id=$(create_kv | jq -r .id)
+
+# Save Owner SP details to KV
+clientId=$(echo "${sp_owner_obj}" | jq -r .appId)
+set_kv_secret 'clientId' "${clientId}" "${KV_NAME}"
+
+clientSecret=$(echo "${sp_owner_obj}" | jq -r .password)
+set_kv_secret 'clientSecret' "${clientSecret}" "${KV_NAME}"
+
+set_kv_secret 'subscriptionId' "${SUBSCRIPTION_ID}" "${KV_NAME}"
+
+tenantId=$(echo "${sp_owner_obj}" | jq -r .tenant)
+set_kv_secret 'tenantId' "${tenantId}" "${KV_NAME}"
+
+# Create Reader SP and assing to KV only
 sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
 
-kv_name=$(echo "${kv_obj}" | jq -r .name)
-
+# Save Reader SP details to KV
 clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
-set_kv_secret 'clientId' "${clientId}" "${kv_name}"
+set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
 
 clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
-set_kv_secret 'clientSecret' "${clientId}" "${kv_name}"
+set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
 
-subscriptionId=$(az account show --query id --output tsv)
-set_kv_secret 'subscriptionId' "${clientId}" "${kv_name}"
+set_kv_secret 'readerSubscriptionId' "${SUBSCRIPTION_ID}" "${KV_NAME}"
 
 tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
-set_kv_secret 'tenantId' "${clientId}" "${kv_name}"
+set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
