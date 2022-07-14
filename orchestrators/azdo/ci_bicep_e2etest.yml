@@ -17,7 +17,7 @@ jobs:
       clean:  resources
 
     steps:
-      - checkout: symphony
+      - checkout: self
 
       - task: Bash@3
         displayName: "Install required tools"
