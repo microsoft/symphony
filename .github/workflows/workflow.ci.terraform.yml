@@ -27,7 +27,7 @@ on:
 
 jobs:
   Validate:
-    uses: ./.github/workflows/tf_validate.yml
+    uses: ./.github/workflows/template.terraform.validate.yml
     with:
         environment: ${{ github.event.inputs.environment }}
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
@@ -38,7 +38,7 @@ jobs:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     
   PreviewDeploy:
-    uses: ./.github/workflows/tf_previewdeploy.yml
+    uses: ./.github/workflows/template.terraform.previewdeploy.yml
     needs: Validate
     with:
         environment: ${{ github.event.inputs.environment }}
@@ -48,7 +48,7 @@ jobs:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
-    uses: ./.github/workflows/tf_test.yml
+    uses: ./.github/workflows/template.terraform.test.yml
     needs: PreviewDeploy
     with:
         environment: ${{ github.event.inputs.environment }}
@@ -59,7 +59,7 @@ jobs:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     
   Report:
-    uses: ./.github/workflows/tf_report.yml
+    uses: ./.github/workflows/template.terraform.report.yml
     needs: PreviewDeploy
     with:
         environment: ${{ github.event.inputs.environment }}
