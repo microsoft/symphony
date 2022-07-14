@@ -33,6 +33,7 @@ jobs:
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
         goVersion: ${{ github.event.inputs.goVersion }}
         runLayerTest: false
+        branch: main
     secrets:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     

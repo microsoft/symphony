@@ -23,6 +23,11 @@ on:
         required: true
         default:  true
         type: boolean
+      branch:
+        description: "branch"
+        required: true
+        type: string
+        default: "main"
     secrets:
       azEnvCred:
         required: true
@@ -33,6 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }} 
 
       - name: Setup Toolset
         run: |
