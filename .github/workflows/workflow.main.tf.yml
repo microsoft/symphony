@@ -37,7 +37,7 @@ jobs:
         azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
     
   PreviewDeploy:
-    uses: ./.github/workflows/.github/tf_previewdeploy.yml
+    uses: ./.github/workflows/tf_previewdeploy.yml
     with:
         environment: ${{ github.event.inputs.environment }}
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
