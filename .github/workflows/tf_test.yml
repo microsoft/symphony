@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.goVersion }}
-      - name: Run Modules Tests
+      - name: Run End to End Tests
         env:
           SUBID: ${{ steps.KvSecrets.outputs.subid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
