@@ -22,7 +22,8 @@ on:
         required: true
 
 jobs:
-  name: "Test"    
+  Test:
+    name: "Test"    
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
