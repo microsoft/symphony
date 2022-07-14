@@ -59,6 +59,7 @@ module roleAssignmentCr 'roleAssignmentCr.bicep' = {
   params: {
     containerRegistryName: containerRegistryName
     principalId: appSvc.identity.principalId
+    objectResourceId: appSvc.id
   }
   scope:resourceGroup(containerRegistryResourceGroupName)
 }
