@@ -15,7 +15,7 @@ jobs:
       - Validate
 
     steps:
-      - checkout: symphony
+      - checkout: self
 
       - task: Bash@3
         displayName: "Install Azure CLI"

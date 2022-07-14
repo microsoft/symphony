@@ -18,7 +18,7 @@ jobs:
     dependsOn: validate
 
     steps:
-      - checkout: Symphony
+      - checkout: self
 
       - task: Bash@3
         displayName: "Install Terraform"

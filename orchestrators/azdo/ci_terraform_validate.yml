@@ -16,7 +16,7 @@ jobs:
       clean: resources
     displayName: "Validate"
     steps:
-      - checkout: Symphony
+      - checkout: self
 
       - task: Bash@3
         displayName: "Setup Toolset"
