@@ -23,6 +23,8 @@ jobs:
     with:
       environment: ${{ github.event.inputs.environment }}
       location: ${{ github.event.inputs.location }}
+    secrets:
+      azure_enviroment_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeploy:
     needs: Validate
@@ -30,3 +32,5 @@ jobs:
     with:
       environment: ${{ github.event.inputs.environment }}
       location: ${{ github.event.inputs.location }}
+    secrets:
+      azure_enviroment_credentials: ${{ secrets.AZURE_CREDENTIALS }}

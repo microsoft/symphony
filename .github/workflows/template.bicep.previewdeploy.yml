@@ -12,6 +12,9 @@ on:
         required: true
         type: string
         default: "westus"
+    secrets:
+      azure_enviroment_credentials:
+        required: true
 
 jobs:
   PreviewDeploy:
@@ -27,7 +30,7 @@ jobs:
 
       - uses: Azure/login@v1
         with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          creds: "${{ secrets.azure_enviroment_credentials }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         with:
