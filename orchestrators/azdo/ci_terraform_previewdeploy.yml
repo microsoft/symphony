@@ -59,4 +59,4 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "filePath"
-          script: "orchestrators/scripts/iac.tf.previewdeploy.sh"
+          filePath: "orchestrators/scripts/iac.tf.previewdeploy.sh"
