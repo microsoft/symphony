@@ -3,7 +3,7 @@ parameters:
     type: string
   - name: Location
     type: string
-  - name: KeyVaultAzureSubscriptionName
+  - name: KeyVaultSvcName
     type: string
   - name: KeyVaultName
     type: string
@@ -27,7 +27,7 @@ jobs:
 
       - task: AzureKeyVault@2
         inputs:
-          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
+          azureSubscription: ${{ parameters.KeyVaultSvcName }}
           KeyVaultName: ${{ parameters.KeyVaultName }}
           SecretsFilter: '*'
           RunAsPreJob: true
@@ -39,7 +39,7 @@ jobs:
           RUN_ID: $(Build.BuildId)
           ENVIRONMENT: ${{ parameters.Environment }}
           LOCATION: ${{ parameters.Location }}
-          ARM_SUBSCRIPTION_ID: $(subid)
+          ARM_SUBSCRIPTION_ID: $(subscriptionid)
           ARM_TENANT_ID: $(tenantid)
           ARM_CLIENT_ID: $(clientid)
           ARM_CLIENT_SECRET: $(clientsecret)

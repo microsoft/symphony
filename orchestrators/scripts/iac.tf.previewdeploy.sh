@@ -10,13 +10,13 @@ array=($modules)
 IFS=$SAVEIFS
 len=${#array[@]}
 echo "Az login"
-azlogin "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" 'AzureCloud'
+azlogin "${SUBSCRIPTIONID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" 'AzureCloud'
 for deployment in "${array[@]}"
     do
     if [[ ${deployment} != *"01_init"* ]]; then
     echo "tf init ${deployment}"
     pushd $deployment
-    init true "${ENV}${deployment}.tfstate" "${SUBID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
+    init true "${ENV}${deployment}.tfstate" "${SUBSCRIPTIONID}" "${TENANTID}" "${CLIENTID}" "${CLIENTSECRET}" "${STATESTORAGEACCOUNT}" "${STATECONTAINER}" "${STATERG}"
     # Preview deployment
     envfile=${deployment/'./'/''}
     envfile=${envfile/'/'/'_'}                         

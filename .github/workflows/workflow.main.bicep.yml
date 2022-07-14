@@ -15,7 +15,10 @@ on:
       location:
         description: "Location"
         required: true
-        default: "westus2"
+        default: "westus"
+
+env:
+  keyvault_name: "kv-symphony-env"
 
 jobs:
   Validate:
@@ -56,8 +59,8 @@ jobs:
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
+          keyvault: ${{ env.keyvault_name }}
+          secrets: "clientid, clientsecret, subscriptionid, tenantid"
         id: KvSecrets
 
       - name: Run global pre-deploy script
@@ -67,7 +70,7 @@ jobs:
 
       - name: Run Bicep Validate
         env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
           ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
@@ -98,12 +101,12 @@ jobs:
       - uses: Azure/get-keyvault-secrets@v1
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
+          secrets: "clientid, clientsecret, subscriptionid, tenantid"
         id: KvSecrets
 
       - name: Run Bicep Deploy
         env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
           ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
           ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}

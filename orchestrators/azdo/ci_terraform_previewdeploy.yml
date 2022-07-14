@@ -50,7 +50,7 @@ jobs:
         displayName: "Run Terraform plan & Apply"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          SUBID: $(SUBID)
+          SUBSCRIPTIONID: $(SUBSCRIPTIONID)
           TENANTID: $(TENANTID)
           CLIENTID: $(CLIENTID)
           CLIENTSECRET: $(CLIENTSECRET)

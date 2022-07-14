@@ -51,7 +51,7 @@ jobs:
             targetType: 'inline'
             script: |         
               source ./tests.runner.sh
-              azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+              azlogin $(SUBSCRIPTIONID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 
               #install junit 
               echo "install go-junit-report"

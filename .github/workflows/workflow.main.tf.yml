@@ -73,12 +73,12 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+          secrets: "clientid, clientsecret, subscriptionid, tenantid, staterg, statecontainer, statestorageaccount"
         id: KvSecrets
 
       - name: Run TF Validate
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          SUBSCRIPTIONID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
@@ -97,7 +97,7 @@ jobs:
           go-version: ${{ github.event.inputs.goVersion }}
       - name: Run Modules Tests
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          SUBSCRIPTIONID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
@@ -107,7 +107,7 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./tests.runner.sh
-          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          azlogin "${SUBSCRIPTIONID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
           
           #install junit 
           echo "install go-junit-report"
@@ -162,12 +162,12 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+          secrets: "clientid, clientsecret, subscriptionid, tenantid, staterg, statecontainer, statestorageaccount"
         id: KvSecrets
 
       - name: Run TF plan- Apply
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          SUBSCRIPTIONID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
@@ -205,7 +205,7 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+          secrets: "clientid, clientsecret, subscriptionid, tenantid, staterg, statecontainer, statestorageaccount"
         id: KvSecrets
 
       - uses: actions/setup-go@v3
@@ -213,7 +213,7 @@ jobs:
           go-version: ${{ github.event.inputs.goVersion }}
       - name: Run Modules Tests
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          SUBSCRIPTIONID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
@@ -223,7 +223,7 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./tests.runner.sh
-          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          azlogin "${SUBSCRIPTIONID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
           
           #install junit 
           echo "install go-junit-report"
@@ -279,12 +279,12 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
-          secrets: "backupstatestorageaccount, clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount  "
+          secrets: "backupstatestorageaccount, clientid, clientsecret, subscriptionid, tenantid, staterg, statecontainer, statestorageaccount  "
         id: KvSecrets
 
       - name: Backup Remote State
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          SUBSCRIPTIONID: ${{ steps.KvSecrets.outputs.subscriptionid }}
           BACKUPSTATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.backupstatestorageaccount }}
           TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
           CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
@@ -295,7 +295,7 @@ jobs:
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
-          azlogin $SUBID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
+          azlogin $SUBSCRIPTIONID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
           
           echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 

@@ -32,9 +32,9 @@ variables:
 #============================================================
   - name: env
     value: "dev"
-  - name : envKVSVCName
-    value: "Symphony-kv2"
-  - name : envKVName
+  - name : KeyVaultSvcName
+    value: "Symphony-KV"
+  - name : KeyVaultName
     value: "kv-symphony-env"
   - name: goVersion
     value: "1.18.1"
@@ -49,24 +49,24 @@ stages:
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          KeyVaultSvcName: "$(KeyVaultSvcName)"
+          KeyVaultName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_previewdeploy.yml
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          KeyVaultSvcName: "$(KeyVaultSvcName)"
+          KeyVaultName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_test.yml
        parameters:
           goVersion : "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          KeyVaultSvcName: "$(KeyVaultSvcName)"
+          KeyVaultName: "$(KeyVaultName)"
 
      - template: ./ci_terraform_report.yml
        parameters:
-          envKVSVCName: "$(envKVSVCName)"
-          envKVName: "$(envKVName)"
+          KeyVaultSvcName: "$(KeyVaultSvcName)"
+          KeyVaultName: "$(KeyVaultName)"

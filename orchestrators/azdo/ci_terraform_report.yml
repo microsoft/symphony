@@ -33,7 +33,7 @@ jobs:
 
             echo "Az login"
 
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+            azlogin $(SUBSCRIPTIONID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
             echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
             
             # Create backup container name and convert to lower case

@@ -80,7 +80,7 @@ jobs:
             displayName: "Run Terraform validate"
             env:
               WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-              SUBID: $(SUBID)
+              SUBSCRIPTIONID: $(SUBSCRIPTIONID)
               TENANTID: $(TENANTID)
               CLIENTID: $(CLIENTID)
               CLIENTSECRET: $(CLIENTSECRET)
@@ -100,7 +100,7 @@ jobs:
               targetType: 'inline'
               script: |         
                 source ./tests.runner.sh
-                azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
+                azlogin $(SUBSCRIPTIONID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
                 
                 #install junit 
                 echo "install go-junit-report"

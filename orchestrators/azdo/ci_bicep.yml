@@ -22,8 +22,8 @@ variables:
     value: "dev"
   - name: Location
     value: "westus"
-  - name : KeyVaultAzureSubscriptionName
-    value: "Symphony-kv2"
+  - name : KeyVaultSvcName
+    value: "Symphony-KV"
   - name : KeyVaultName
     value: "kv-symphony-env"
 
@@ -32,17 +32,17 @@ jobs:
     parameters:
       Environment: $(Environment)
       Location: $(Location)
-      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultSvcName: $(KeyVaultSvcName)
       KeyVaultName: $(KeyVaultName)
   - template: ./ci_bicep_previewdeploy.yml
     parameters:
       Environment: $(Environment)
       Location: $(Location)
-      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultSvcName: $(KeyVaultSvcName)
       KeyVaultName: $(KeyVaultName)
   - template: ./ci_bicep_e2etest.yml
     parameters:
       Environment: $(Environment)
       Location: $(Location)
-      KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
+      KeyVaultSvcName: $(KeyVaultSvcName)
       KeyVaultName: $(KeyVaultName)
