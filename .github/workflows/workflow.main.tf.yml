@@ -15,15 +15,15 @@ on:
       goVersion:
         description: "Go Version"
         required: true
-        default:  "1.18.1"
+        default: "1.18.1"
       terraformVersion:
         description: "Terraform Version"
         required: true
-        default:  "1.1.7"
+        default: "1.1.7"
       backupstatefiles:
         description: "Run Backup State Files"
         required: true
-        default:  "true"
+        default: "true"
 
 jobs:
   Validate:
@@ -40,21 +40,19 @@ jobs:
           ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
-              
-        
+
       - name: Run Gitleaks
         run: |
           mkdir results
           source ./scanners.sh
           run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
         working-directory: orchestrators/scripts
-        
-      - uses: actions/upload-artifact@v2  # upload test results
-        if: success() || failure()        # run this step even if previous step failed
+
+      - uses: actions/upload-artifact@v2 # upload test results
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results
           path: ./IAC/Terraform/results/gitleaks-report.json
- 
 
       - name: Run TF Lint
         env:
@@ -91,7 +89,7 @@ jobs:
           ./iac.tf.validate.sh
         working-directory: orchestrators/scripts
         shell: bash
-      
+
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ github.event.inputs.goVersion }}
@@ -108,7 +106,7 @@ jobs:
         run: |
           source ./tests.runner.sh
           azlogin "${SUBSCRIPTIONID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-          
+
           #install junit 
           echo "install go-junit-report"
           go install github.com/jstemmer/go-junit-report@latest
@@ -125,12 +123,12 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2  # upload test results
-        if: success() || failure()        # run this step even if previous step failed
+      - uses: actions/upload-artifact@v2 # upload test results
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
-      
+
       - name: Publish Module Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -139,9 +137,9 @@ jobs:
           check_name: "Modules tests Results"
 
   PreviewDeploy:
-    name: "Preview and Deploy"    
+    name: "Preview and Deploy"
     needs: Validate
-    
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -151,7 +149,7 @@ jobs:
           ./setup-azcli.sh
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
-        shell: bash       
+        shell: bash
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -178,7 +176,7 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           ./iac.tf.previewdeploy.sh
-          
+
         working-directory: orchestrators/scripts
         shell: bash
 
@@ -194,7 +192,7 @@ jobs:
           ./setup-azcli.sh
           ./setup-terraform.sh ${{ github.event.inputs.terraformVersion }}
         working-directory: orchestrators/scripts
-        shell: bash       
+        shell: bash
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -224,7 +222,7 @@ jobs:
         run: |
           source ./tests.runner.sh
           azlogin "${SUBSCRIPTIONID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-          
+
           #install junit 
           echo "install go-junit-report"
           go install github.com/jstemmer/go-junit-report@latest
@@ -242,12 +240,12 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2  
+      - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
           name: End to End Test results
           path: ./IAC/Terraform/test/terraform/*.xml
-      
+
       - name: Publish End to End Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -258,7 +256,7 @@ jobs:
   Report:
     name: "Report"
     needs: PreviewDeploy
-    if: ${{ github.event.inputs.backupstatefiles == 'true' }} 
+    if: ${{ github.event.inputs.backupstatefiles == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -291,12 +289,12 @@ jobs:
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}       
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
           ENV: ${{ github.event.inputs.environment }}
         run: |
           source ./iac.tf.sh
           azlogin $SUBSCRIPTIONID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
-          
+
           echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 
           # Create backup container name and convert to lower case
@@ -305,7 +303,7 @@ jobs:
 
           sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
           backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-  
+
           echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
           az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive
         working-directory: orchestrators/scripts
