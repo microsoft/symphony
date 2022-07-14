@@ -27,7 +27,7 @@ on:
 
 jobs:
   Validate:
-    uses: ./.github/workflows/tf_validate.yml
+    uses: ./.github/workflows/templates/tf_validate.yml
     with:
         environment: ${{ github.event.inputs.environment }}
         terraformVersion: ${{ github.event.inputs.terraformVersion }}
