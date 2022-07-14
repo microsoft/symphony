@@ -20,16 +20,16 @@ jobs:
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
+          filePath: "orchestrators/scripts/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          bashEnvValue: "~/.profile"
           failOnStderr: true
 
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.KeyVaultSvcName }}
           KeyVaultName: ${{ parameters.KeyVaultName }}
-          SecretsFilter: '*'
+          SecretsFilter: "*"
           RunAsPreJob: true
 
       - task: Bash@3
@@ -45,5 +45,5 @@ jobs:
           ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: 'filePath'
-          filePath: 'orchestrators/scripts/iac.bicep.previewdeploy.sh'
+          targetType: "filePath"
+          filePath: "orchestrators/scripts/iac.bicep.previewdeploy.sh"

@@ -14,7 +14,7 @@ jobs:
     dependsOn:
       - PreviewDeploy
     workspace:
-      clean:  resources
+      clean: resources
 
     steps:
       - checkout: symphony
@@ -22,26 +22,26 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
+          filePath: "orchestrators/scripts/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          bashEnvValue: "~/.profile"
           failOnStderr: true
-          targetType: 'filePath'
-          script: 'orchestrators/scripts/setup-pester.sh'
+          targetType: "filePath"
+          script: "orchestrators/scripts/setup-pester.sh"
 
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
+          filePath: "orchestrators/scripts/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          bashEnvValue: "~/.profile"
           failOnStderr: true
 
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.KeyVaultSvcName }}
           KeyVaultName: ${{ parameters.KeyVaultName }}
-          SecretsFilter: '*'
+          SecretsFilter: "*"
           RunAsPreJob: true
 
       - task: Bash@3
@@ -56,8 +56,8 @@ jobs:
           ARM_CLIENT_ID: $(clientid)
           ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'inline'
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          targetType: "inline"
           script: |
             source ./tests.runner.sh
 
