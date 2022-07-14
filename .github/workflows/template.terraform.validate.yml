@@ -1,0 +1,153 @@
+
+name: "Template-TF-Validate"
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        type: string
+        default: "dev"
+      goVersion:
+        description: "Go Version"
+        required: true
+        default:  "1.18.1"
+        type: string
+      terraformVersion:
+        description: "Terraform Version"
+        required: true
+        default:  "1.1.7"
+        type: string
+      runLayerTest:
+        description: "Run Layer tests"
+        required: true
+        default:  true
+        type: boolean
+      branch:
+        description: "Branch Name"
+        required: true
+        type: string
+        default: "main"
+    secrets:
+      azEnvCred:
+        required: true
+
+jobs:
+  Validate:
+    name: "Validate"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }} 
+
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          ./setup-gitleaks.sh
+          chmod +x  ./setup-terraform.sh 
+          ./setup-terraform.sh ${{ inputs.terraformVersion }}        
+          chmod +x ./setup-tflint.sh
+          ./setup-tflint.sh
+        working-directory: orchestrators/scripts
+        shell: bash
+              
+        
+      - name: Run Gitleaks
+        run: |
+          mkdir results
+          source ./scanners.sh
+          run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+        working-directory: orchestrators/scripts
+        
+      - uses: actions/upload-artifact@v2  
+        if: success() || failure()
+        with:
+          name: test-results
+          path: ./IAC/Terraform/results/gitleaks-report.json
+ 
+
+      - name: Run TF Lint
+        env:
+          WORKSPACE_PATH: ${{ github.workspace }}
+        run: |
+          chmod +x ./iac.tf.lint.sh
+          ./iac.tf.lint.sh
+        working-directory: orchestrators/scripts
+        shell: bash
+
+      - uses: Azure/login@v1
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.azEnvCred }}"
+
+      - uses: Azure/get-keyvault-secrets@v1
+        name: Get KeyVault Secrets
+        with:
+          keyvault: "kv-symphony-env"
+          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+        id: KvSecrets
+
+      - name: Run TF Validate
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ inputs.environment }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+        run: |
+          chmod +x ./iac.tf.validate.sh
+          ./iac.tf.validate.sh
+        working-directory: orchestrators/scripts
+        shell: bash
+      
+      - uses: actions/setup-go@v3       
+        with:
+          go-version: ${{ inputs.goVersion }}
+      - name: Run Layer Tests
+        if: ${{ inputs.runLayerTest }}
+        env:
+          SUBID: ${{ steps.KvSecrets.outputs.subid }}
+          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
+          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
+          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
+          ENV: ${{ inputs.environment }}
+        run: |
+          source ./tests.runner.sh
+          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
+          
+          #install junit 
+          echo "install go-junit-report"
+          go install github.com/jstemmer/go-junit-report@latest
+          # set test vars
+          export resource_group_name="${STATERG}"
+          export storage_account_name="${STATESTORAGEACCOUNT}"
+          export container_name="${STATECONTAINER}"
+
+          pushd ./../../IAC/Terraform/test/terraform
+          echo "Run tests with tag = module_tests"
+          terraform module_test true        
+          popd
+
+        working-directory: orchestrators/scripts
+        shell: bash
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ inputs.runLayerTest }} && success() || failure()
+        with:
+          name: Modules test results
+          path: ./IAC/Terraform/test/terraform/*.xml
+      
+      - name: Publish Module Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ inputs.runLayerTest }}
+        with:
+          files: "./IAC/Terraform/test/terraform/*.xml"
+          check_name: "Modules tests Results"
