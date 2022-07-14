@@ -49,7 +49,7 @@ create_sp() {
     sp_object=$(az ad sp create-for-rbac --display-name "${_display_name}" --role "${_role}" --scopes "${_scope}")
     echo "${sp_object}" >"${_display_name}.json"
 
-    return "${sp_object}"
+    echo "${sp_object}"
 }
 
 set_kv_secret() {
