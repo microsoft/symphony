@@ -1,11 +1,10 @@
-
-resources:
-  repositories:
-  - repository: Symphony
-    type: github
-    endpoint: Symphony2
-    name: microsoft/symphony
-    ref: daporo/minorupdates
+# resources:
+#   repositories:
+#     - repository: Symphony
+#       type: github
+#       endpoint: Symphony2
+#       name: microsoft/symphony
+#       ref: daporo/minorupdates
 
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
@@ -20,53 +19,52 @@ pool:
 
 variables:
   - name: workDir
-    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
+    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
   - name: runModuleTest
     value: true
   - name: runBackupState
     value: true
 
-
-#============================================================
-# The following Variables Should Be Set On the Pipeline
-#============================================================
+  #============================================================
+  # The following Variables Should Be Set On the Pipeline
+  #============================================================
   - name: env
     value: "dev"
-  - name : KeyVaultSvcName
+  - name: KeyVaultSvcName
     value: "Symphony-KV"
-  - name : KeyVaultName
+  - name: KeyVaultName
     value: "kv-symphony-env"
   - name: goVersion
     value: "1.18.1"
   - name: terraformVersion
     value: "1.1.7"
-  
+
 stages:
- - stage: Validate
-   displayName: "Validate Configuration"
-   jobs:
-     - template: ./ci_terraform_validate.yml
-       parameters:
-          goVersion : "$(goVersion)"
+  - stage: Validate
+    displayName: "Validate Configuration"
+    jobs:
+      - template: ./ci_terraform_validate.yml
+        parameters:
+          goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
           KeyVaultSvcName: "$(KeyVaultSvcName)"
           KeyVaultName: "$(KeyVaultName)"
 
-     - template: ./ci_terraform_previewdeploy.yml
-       parameters:
-          goVersion : "$(goVersion)"
+      - template: ./ci_terraform_previewdeploy.yml
+        parameters:
+          goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
           KeyVaultSvcName: "$(KeyVaultSvcName)"
           KeyVaultName: "$(KeyVaultName)"
 
-     - template: ./ci_terraform_test.yml
-       parameters:
-          goVersion : "$(goVersion)"
+      - template: ./ci_terraform_test.yml
+        parameters:
+          goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
           KeyVaultSvcName: "$(KeyVaultSvcName)"
           KeyVaultName: "$(KeyVaultName)"
 
-     - template: ./ci_terraform_report.yml
-       parameters:
+      - template: ./ci_terraform_report.yml
+        parameters:
           KeyVaultSvcName: "$(KeyVaultSvcName)"
           KeyVaultName: "$(KeyVaultName)"
