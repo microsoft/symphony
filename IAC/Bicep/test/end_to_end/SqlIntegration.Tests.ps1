@@ -1,5 +1,5 @@
 BeforeDiscovery {
-    Import-Module $PSScriptRoot/AzCli -Force
+    . $PSScriptRoot/UtilsLoader.ps1
 }
 
 BeforeAll {
