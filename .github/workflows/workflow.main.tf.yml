@@ -93,48 +93,48 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ github.event.inputs.goVersion }}
-      - name: Run Modules Tests
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subscriptionid }}
-          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
-          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
-          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATE_STORAGE_ACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATE_CONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATE_RG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ github.event.inputs.environment }}
-        run: |
-          source ./tests.runner.sh
-          azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+      # - name: Run Modules Tests
+      #   env:
+      #     ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subscriptionid }}
+      #     ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
+      #     ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
+      #     ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
+      #     STATE_STORAGE_ACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
+      #     STATE_CONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
+      #     STATE_RG: ${{ steps.KvSecrets.outputs.staterg }}
+      #     ENV: ${{ github.event.inputs.environment }}
+      #   run: |
+      #     source ./tests.runner.sh
+      #     azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
-          #install junit 
-          echo "install go-junit-report"
-          go install github.com/jstemmer/go-junit-report@latest
-          # set test vars
-          export resource_group_name="${STATE_RG}"
-          export storage_account_name="${STATE_STORAGE_ACCOUNT}"
-          export container_name="${STATE_CONTAINER}"
+      #     #install junit 
+      #     echo "install go-junit-report"
+      #     go install github.com/jstemmer/go-junit-report@latest
+      #     # set test vars
+      #     export resource_group_name="${STATE_RG}"
+      #     export storage_account_name="${STATE_STORAGE_ACCOUNT}"
+      #     export container_name="${STATE_CONTAINER}"
 
-          pushd ./../../IAC/Terraform/test/terraform
-          echo "Run tests with tag = module_tests"
-          terraform module_test true        
-          popd
+      #     pushd ./../../IAC/Terraform/test/terraform
+      #     echo "Run tests with tag = module_tests"
+      #     terraform module_test true        
+      #     popd
 
-        working-directory: orchestrators/scripts
-        shell: bash
+      #   working-directory: orchestrators/scripts
+      # #   shell: bash
 
-      - uses: actions/upload-artifact@v2 # upload test results
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: Modules test results
-          path: ./IAC/Terraform/test/terraform/*.xml
+      # - uses: actions/upload-artifact@v2 # upload test results
+      #   if: success() || failure() # run this step even if previous step failed
+      #   with:
+      #     name: Modules test results
+      #     path: ./IAC/Terraform/test/terraform/*.xml
 
-      - name: Publish Module Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: "./IAC/Terraform/test/terraform/*.xml"
-          check_name: "Modules tests Results"
+      # - name: Publish Module Test Results
+      #   uses: EnricoMi/publish-unit-test-result-action@v1
+      #   if: always()
+      #   with:
+      #     files: "./IAC/Terraform/test/terraform/*.xml"
+      #     check_name: "Modules tests Results"
 
   PreviewDeploy:
     name: "Preview and Deploy"
