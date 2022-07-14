@@ -21,8 +21,6 @@ pool:
 variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
-  - name: runModuleTest
-    value: true
   - name: runBackupState
     value: true
 
@@ -51,6 +49,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           envKVSVCName: "$(envKVSVCName)"
           envKVName: "$(envKVName)"
+          runLayerTest: 'false'
 
      - template: ./ci_terraform_previewdeploy.yml
        parameters:
