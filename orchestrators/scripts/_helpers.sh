@@ -60,16 +60,16 @@ _success() {
 }
 
 azlogin() {
-    local subscription_id=$1
-    local tenant_id=$2
-    local client_id=$3
-    local client_secret=$4
-    local cloud_name=$5
+    local subscription_id="${1}"
+    local tenant_id="${2}"
+    local client_id="${3}"
+    local client_secret="${4}"
+    local cloud_name="${5}"
 
     # AzureCloud AzureChinaCloud AzureUSGovernment AzureGermanCloud
-    az cloud set --name ${cloud_name}
-    az login --service-principal --username ${client_id} --password ${client_secret} --tenant ${tenant_id}
-    az account set --subscription ${subscription_id}
+    az cloud set --name "${cloud_name}"
+    az login --service-principal --username="${client_id}" --password="${client_secret}" --tenant="${tenant_id}"
+    az account set --subscription "${subscription_id}"
 
     export ARM_CLIENT_ID="${client_id}"
     export ARM_CLIENT_SECRET="${client_secret}"
