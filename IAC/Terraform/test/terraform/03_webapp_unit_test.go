@@ -30,8 +30,9 @@ func Test03_WebAPP(t *testing.T) {
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
 			"key":                  rmKey},
-
-		VarFiles:    []string{"dev.tfvars.json"},
+		Vars: map[string]interface{}{
+			"rs_container_key": "Test_Mocks/02_sql/01_deployment.tfstate",
+		},
 		Reconfigure: true,
 	}
 
