@@ -44,9 +44,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           ./setup-gitleaks.sh
-          chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ inputs.terraformVersion }}        
-          chmod +x ./setup-tflint.sh
           ./setup-tflint.sh
         working-directory: orchestrators/scripts
         shell: bash
@@ -68,7 +66,6 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          chmod +x ./iac.tf.lint.sh
           ./iac.tf.lint.sh
         working-directory: orchestrators/scripts
         shell: bash
@@ -97,7 +94,6 @@ jobs:
           ENV: ${{ inputs.environment }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          chmod +x ./iac.tf.validate.sh
           ./iac.tf.validate.sh
         working-directory: orchestrators/scripts
         shell: bash
