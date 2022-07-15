@@ -13,16 +13,16 @@ jobs:
     displayName: "Validate"
 
     steps:
-      - checkout: symphony
+      - checkout: self
 
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: 'orchestrators/scripts/setup-azcli.sh'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          bashEnvValue: '~/.profile'
+          filePath: "orchestrators/scripts/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          bashEnvValue: "~/.profile"
           failOnStderr: true
-          targetType: 'inline'
+          targetType: "inline"
           script: |
             ./setup-azcli.sh
             ./setup-gitleaks.sh
@@ -35,14 +35,14 @@ jobs:
         inputs:
           azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
           KeyVaultName: ${{ parameters.KeyVaultName }}
-          SecretsFilter: '*'
+          SecretsFilter: "*"
           RunAsPreJob: true
 
       - task: Bash@3
         displayName: "Run gitleaks"
         inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'inline'
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          targetType: "inline"
           script: |
             echo 'create ./results directory'
             mkdir results
@@ -64,9 +64,9 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
         inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
-          targetType: 'filePath'
-          filePath: '$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh'
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          targetType: "filePath"
+          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh"
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -80,6 +80,6 @@ jobs:
           ARM_CLIENT_ID: $(clientid)
           ARM_CLIENT_SECRET: $(clientsecret)
         inputs:
-          workingDirectory: '$(System.DefaultWorkingDirectory)/orchestrators/scripts'
+          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "filePath"
           filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"

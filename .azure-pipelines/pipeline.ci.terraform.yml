@@ -1,0 +1,61 @@
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: workDir
+    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
+  - name: runBackupState
+    value: true
+
+  #============================================================
+  # The following Variables Should Be Set On the Pipeline
+  #============================================================
+  - name: env
+    value: "dev"
+  - name: envKVSVCName
+    value: "Symphony-KV"
+  - name: envKVName
+    value: "kv-symphony-env"
+  - name: goVersion
+    value: "1.18.1"
+  - name: terraformVersion
+    value: "1.1.7"
+
+stages:
+  - stage: Validate
+    displayName: "Validate Configuration"
+    jobs:
+      - template: ./template.terraform.validate.yml
+        parameters:
+          goVersion: "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
+          runLayerTest: "false"
+
+      - template: ./template.terraform.previewdeploy.yml
+        parameters:
+          goVersion: "$(goVersion)s"
+          terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
+
+      - template: ./template.terraform.test.yml
+        parameters:
+          goVersion: "$(goVersion)"
+          terraformVersion: "$(terraformVersion)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
+
+      - template: ./template.terraform.report.yml
+        parameters:
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"

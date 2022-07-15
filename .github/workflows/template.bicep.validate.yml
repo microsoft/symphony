@@ -1,26 +1,25 @@
-name: "Main Bicep"
-
+name: "Template-Bicep-Validate"
 on:
-  # push:
-  #   branches: [main]
-  # pull_request:
-  #   branches: [main]
-
-  workflow_dispatch:
+  workflow_call:
     inputs:
       environment:
         description: "Environment"
         required: true
+        type: string
         default: "dev"
       location:
         description: "Location"
         required: true
+        type: string
         default: "westus"
+    secrets:
+      azure_enviroment_credentials:
+        required: true
 
 jobs:
   Validate:
+    name: "Validate"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -51,7 +50,7 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
+          creds: "${{ secrets.azure_enviroment_credentials }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
@@ -78,61 +77,3 @@ jobs:
         run: |
           ./iac.bicep.validate.sh
         working-directory: orchestrators/scripts
-
-  PreviewDeploy:
-    name: "Preview and Deploy"
-    needs: Validate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Toolset
-        run: |
-          ./setup-azcli.sh
-        working-directory: orchestrators/scripts
-
-      - uses: Azure/login@v1
-        with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
-
-      - uses: Azure/get-keyvault-secrets@v1
-        with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
-        id: KvSecrets
-
-      - name: Run Bicep Deploy
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
-          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
-          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
-          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
-          LOCATION: ${{ github.event.inputs.location }}
-          WORKSPACE_PATH: ${{ github.workspace }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          ./iac.bicep.previewdeploy.sh
-        working-directory: orchestrators/scripts
-
-  # Test:
-  #   name: "Test"
-  #   needs: PreviewDeploy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # - uses: actions/checkout@v3
-
-  #     - name: Run script
-  #       run: |
-  #         echo Hello world!
-
-  # Report:
-  #   name: "Report"
-  #   needs: Test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # - uses: actions/checkout@v3
-
-  #     - name: Run script
-  #       run: |
-  #         echo Hello world!

@@ -1,11 +1,3 @@
-resources:
-  repositories:
-  - repository: symphony
-    name: microsoft/symphony
-    type: github
-    ref: main
-    endpoint: Symphony2
-
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
 trigger:
@@ -22,25 +14,25 @@ variables:
     value: "dev"
   - name: Location
     value: "westus"
-  - name : KeyVaultAzureSubscriptionName
-    value: "Symphony-kv2"
-  - name : KeyVaultName
+  - name: KeyVaultAzureSubscriptionName
+    value: "Symphony-KV"
+  - name: KeyVaultName
     value: "kv-symphony-env"
 
 jobs:
-  - template: ./ci_bicep_validate.yml
+  - template: ./template.bicep.validate.yml
     parameters:
       Environment: $(Environment)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
-  - template: ./ci_bicep_previewdeploy.yml
+  - template: ./template.bicep.previewdeploy.yml
     parameters:
       Environment: $(Environment)
       Location: $(Location)
       KeyVaultAzureSubscriptionName: $(KeyVaultAzureSubscriptionName)
       KeyVaultName: $(KeyVaultName)
-  - template: ./ci_bicep_e2etest.yml
+  - template: ./template.bicep.test.yml
     parameters:
       Environment: $(Environment)
       Location: $(Location)
