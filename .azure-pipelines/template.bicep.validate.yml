@@ -65,7 +65,7 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.bicep.lint.sh"
+          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh"
 
       - task: Bash@3
         displayName: "Run bicep validate"

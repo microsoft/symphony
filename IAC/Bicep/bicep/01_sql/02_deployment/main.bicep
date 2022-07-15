@@ -60,7 +60,7 @@ module sqlDatabaseIdentityDb './modules/sqlDatabase.bicep' = {
   ]
 }
 
-output sqlServerResourceGroupName string = sqlServerName.outputs.name
+output sqlServerResourceGroupName string = resourceGroup().name
 output sqlServerName string = sqlServerName.outputs.name
 output sqlServerFqdn string = sqlServer.outputs.fqdn
 output sqlDatabaseCatalogDbName string = sqlDatabaseCatalogDb.outputs.name

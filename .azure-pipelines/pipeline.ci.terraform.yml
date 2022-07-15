@@ -11,9 +11,7 @@ pool:
 
 variables:
   - name: workDir
-    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
-  - name: runModuleTest
-    value: true
+    value: "$(System.DefaultWorkingDirectory)/IAC/Terraform//terraform"
   - name: runBackupState
     value: true
 
@@ -22,9 +20,9 @@ variables:
   #============================================================
   - name: env
     value: "dev"
-  - name: KeyVaultSvcName
+  - name: envKVSVCName
     value: "Symphony-KV"
-  - name: KeyVaultName
+  - name: envKVName
     value: "kv-symphony-env"
   - name: goVersion
     value: "1.18.1"
@@ -35,28 +33,29 @@ stages:
   - stage: Validate
     displayName: "Validate Configuration"
     jobs:
-      - template: ./ci_terraform_validate.yml
+      - template: ./template.terraform.validate.yml
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          KeyVaultSvcName: "$(KeyVaultSvcName)"
-          KeyVaultName: "$(KeyVaultName)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
+          runLayerTest: "false"
 
-      - template: ./ci_terraform_previewdeploy.yml
+      - template: ./template.terraform.previewdeploy.yml
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          KeyVaultSvcName: "$(KeyVaultSvcName)"
-          KeyVaultName: "$(KeyVaultName)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
 
-      - template: ./ci_terraform_test.yml
+      - template: ./template.terraform.test.yml
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          KeyVaultSvcName: "$(KeyVaultSvcName)"
-          KeyVaultName: "$(KeyVaultName)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"
 
-      - template: ./ci_terraform_report.yml
+      - template: ./template.terraform.report.yml
         parameters:
-          KeyVaultSvcName: "$(KeyVaultSvcName)"
-          KeyVaultName: "$(KeyVaultName)"
+          envKVSVCName: "$(envKVSVCName)"
+          envKVName: "$(envKVName)"

@@ -7,7 +7,7 @@ resource userAssignedManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIden
   name: name
   location: location
   tags: {
-    'Env': environment
+    Env: environment
   }
 }
 
