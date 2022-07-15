@@ -24,11 +24,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branch }}
-          
+
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          
+
         working-directory: orchestrators/scripts
         shell: bash
 
@@ -53,12 +53,12 @@ jobs:
           CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
           STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
           STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}       
+          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
           ENV: ${{ inputs.environment }}
         run: |
           source ./iac.tf.sh
           azlogin $SUBID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
-          
+
           echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
 
           # Create backup container name and convert to lower case
@@ -67,7 +67,7 @@ jobs:
 
           sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
           backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-  
+
           echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
           az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive
         working-directory: orchestrators/scripts

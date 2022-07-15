@@ -9,6 +9,7 @@ on:
         default: "dev"
       location:
         description: "Location"
+
         required: true
         type: string
         default: "westus"

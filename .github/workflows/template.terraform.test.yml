@@ -10,12 +10,12 @@ on:
       goVersion:
         description: "Go Version"
         required: true
-        default:  "1.18.1"
+        default: "1.18.1"
         type: string
       terraformVersion:
         description: "Terraform Version"
         required: true
-        default:  "1.1.7"
+        default: "1.1.7"
         type: string
       branch:
         description: "Branch Name"
@@ -28,20 +28,20 @@ on:
 
 jobs:
   Test:
-    name: "Test"    
+    name: "Test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branch }}
-          
+
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
           chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ inputs.terraformVersion }}
         working-directory: orchestrators/scripts
-        shell: bash       
+        shell: bash
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -71,7 +71,7 @@ jobs:
         run: |
           source ./tests.runner.sh
           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-          
+
           #install junit 
           echo "install go-junit-report"
           go install github.com/jstemmer/go-junit-report@latest
@@ -89,12 +89,12 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2  
+      - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
           name: End to End Test results
           path: ./IAC/Terraform/test/terraform/*.xml
-      
+
       - name: Publish End to End Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
