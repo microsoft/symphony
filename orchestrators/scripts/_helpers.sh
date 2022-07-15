@@ -68,7 +68,7 @@ azlogin() {
 
     # AzureCloud AzureChinaCloud AzureUSGovernment AzureGermanCloud
     az cloud set --name ${cloud_name}
-    az login --service-principal --username ${client_id} --password ${client_secret} --tenant ${tenant_id}
+    az login --service-principal --username="${client_id}" --password="${client_secret}" --tenant="${tenant_id}"
     az account set --subscription ${subscription_id}
 
     export ARM_CLIENT_ID="${client_id}"
