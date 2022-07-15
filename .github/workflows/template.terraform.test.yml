@@ -38,7 +38,6 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          chmod +x  ./setup-terraform.sh 
           ./setup-terraform.sh ${{ inputs.terraformVersion }}
         working-directory: orchestrators/scripts
         shell: bash

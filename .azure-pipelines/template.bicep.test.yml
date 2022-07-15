@@ -22,13 +22,11 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
+          filePath: "orchestrators/scripts/setup-pester.sh"
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           bashEnvValue: "~/.profile"
           failOnStderr: true
-          targetType: "inline"
-          script: |
-            ./setup-pester.sh
+          targetType: "filePath"
 
       - task: Bash@3
         displayName: "Install Azure CLI"

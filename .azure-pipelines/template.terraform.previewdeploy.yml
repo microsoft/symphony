@@ -58,7 +58,5 @@ jobs:
           ENV: $(env)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "inline"
-          script: |
-            chmod +x . ./iac.tf.previewdeploy.sh
-            ./iac.tf.previewdeploy.sh
+          targetType: "filePath"
+          filePath: "orchestrators/scripts/iac.tf.previewdeploy.sh"

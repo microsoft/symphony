@@ -43,7 +43,7 @@ stages:
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:
-          goVersion: "$(goVersion)s"
+          goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
           envKVSVCName: "$(envKVSVCName)"
           envKVName: "$(envKVName)"
