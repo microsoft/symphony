@@ -1,0 +1,36 @@
+name: "CI Bicep"
+
+on:
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        default: "dev"
+      location:
+        description: "Location"
+        required: true
+        default: "westus"
+
+jobs:
+  Validate:
+    uses: ./.github/workflows/template.bicep.validate.yml
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      location: ${{ github.event.inputs.location }}
+    secrets:
+      azure_enviroment_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  PreviewDeploy:
+    needs: Validate
+    uses: ./.github/workflows/template.bicep.previewdeploy.yml
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      location: ${{ github.event.inputs.location }}
+    secrets:
+      azure_enviroment_credentials: ${{ secrets.AZURE_CREDENTIALS }}
