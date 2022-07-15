@@ -61,40 +61,53 @@ set_kv_secret() {
 }
 
 # Create RG
+echo "Creating RG: ${RG_NAME}"
 create_rg
 
 # Create CR
+echo "Creating CR: ${CR_NAME}"
 create_cr
 
 # Create Owner SP and assing to subscription level
+echo "Creating Owner SP: ${SP_OWNER_NAME}"
 sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SUBSCRIPTION_ID}")
 
 # Create KV
+echo "Creating KV: ${KV_NAME}"
 kv_id=$(create_kv | jq -r .id)
 
 # Save Owner SP details to KV
+echo "Saving Owner SP (${SP_OWNER_NAME}) clientId to KV"
 clientId=$(echo "${sp_owner_obj}" | jq -r .appId)
 set_kv_secret 'clientId' "${clientId}" "${KV_NAME}"
 
+echo "Saving Owner SP (${SP_OWNER_NAME}) clientSecret to KV"
 clientSecret=$(echo "${sp_owner_obj}" | jq -r .password)
 set_kv_secret 'clientSecret' "${clientSecret}" "${KV_NAME}"
 
+echo "Saving Owner SP (${SP_OWNER_NAME}) subscriptionId to KV"
 set_kv_secret 'subscriptionId' "${SUBSCRIPTION_ID}" "${KV_NAME}"
 
+echo "Saving Owner SP (${SP_OWNER_NAME}) tenantId to KV"
 tenantId=$(echo "${sp_owner_obj}" | jq -r .tenant)
 set_kv_secret 'tenantId' "${tenantId}" "${KV_NAME}"
 
 # Create Reader SP and assing to KV only
+echo "Creating Reader SP: ${SP_READER_NAME}"
 sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
 
 # Save Reader SP details to KV
+echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
 clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
 set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
 
+echo "Saving Reader SP (${SP_READER_NAME}) readerClientSecret to KV"
 clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
 set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
 
+echo "Saving Reader SP (${SP_READER_NAME}) readerSubscriptionId to KV"
 set_kv_secret 'readerSubscriptionId' "${SUBSCRIPTION_ID}" "${KV_NAME}"
 
+echo "Saving Reader SP (${SP_READER_NAME}) readerTenantId to KV"
 tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
 set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
