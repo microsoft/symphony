@@ -14,9 +14,9 @@ variables:
     value: "dev"
   - name: Location
     value: "westus"
-  - name : KeyVaultAzureSubscriptionName
+  - name: KeyVaultAzureSubscriptionName
     value: "Symphony-KV"
-  - name : KeyVaultName
+  - name: KeyVaultName
     value: "kv-symphony-env"
 
 jobs:
