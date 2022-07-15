@@ -4,7 +4,7 @@ function Deploy-BicepFeature([string]$path, $params){
     $armPath  = Join-Path -Path $folder -ChildPath "$fileName.json"
 
     Write-Host "Tranpiling Bicep to Arm"
-    bicep build $path
+    az bicep build --file $path
 
     $code = $?
     if ($code -eq "True"){ # arm deployment was successful
