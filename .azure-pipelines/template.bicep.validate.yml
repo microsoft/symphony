@@ -58,7 +58,7 @@ jobs:
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
-          artifact: 'CodeAnalysisLogs/gitleaks-report.sarif'
+          artifact: 'CodeAnalysisLogs'
           publishLocation: "pipeline"
 
       - task: Bash@3
