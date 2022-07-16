@@ -51,8 +51,8 @@ jobs:
           ./setup-gitleaks.sh
           ./setup-terraform.sh ${{ inputs.terraformVersion }}        
           ./setup-tflint.sh
+          source ~/.bashrc
         working-directory: orchestrators/scripts
-        shell: bash
 
       - name: Run Gitleaks
         run: |
