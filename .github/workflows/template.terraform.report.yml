@@ -46,7 +46,7 @@ jobs:
         name: Get KeyVault Secrets
         with:
           keyvault: ${{ github.event.inputs.keyVaultName }}
-          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount. stateStorageAccountBackup"
+          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
         id: kvSecrets
 
       - name: Backup Remote State
