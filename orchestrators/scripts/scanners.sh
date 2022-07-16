@@ -18,7 +18,7 @@ run_gitleaks() {
 
     _information "Run Gitleaks detect cmd"
 
-    cmd_options="--source ${source_path} --report-path gitleaks-report.${report_format} --report-format ${report_format} --log-level ${log_level}"
+    cmd_options="--source ${source_path} --report-path ./gitleaks-report.${report_format} --report-format ${report_format} --log-level ${log_level}"
 
     if [[ ! -z "${verbose}" ]]; then
         cmd_options+=" --verbose"
