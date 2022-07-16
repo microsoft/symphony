@@ -1,24 +1,30 @@
 name: "Template-Bicep-Validate"
+
 on:
   workflow_call:
     inputs:
       environmentName:
         description: "environmentName"
-        required: true
         type: string
+        required: true
         default: "dev"
       locationName:
         description: "locationName"
-        required: true
         type: string
+        required: true
         default: "westus"
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
     secrets:
       azureEnviromentCredentials:
         required: true
 
 jobs:
   Validate:
-    name: "Validate"
+    name: Validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -55,8 +61,8 @@ jobs:
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId"
         id: kvSecrets
 
       - name: Run global pre-deploy script

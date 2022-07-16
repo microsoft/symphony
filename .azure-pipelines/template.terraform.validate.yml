@@ -46,17 +46,14 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "inline"
           script: |
-            echo 'create ./results directory'
-            mkdir results
-
             source ./scanners.sh
-            run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+            run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
 
       - task: PublishTestResults@2
         displayName: "Publish Gitleaks results"
         inputs:
-          testResultsFiles: "*.json"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/results"
+          testResultsFiles: "*gitleaks*.json"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform"
           failTaskOnFailedTests: true
           testRunTitle: "Gitleask report"
           mergeTestResults: true

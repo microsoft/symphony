@@ -27,8 +27,13 @@ on:
         required: true
         type: string
         default: "main"
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
     secrets:
-      azEnvCred:
+      azureEnviromentCredentials:
         required: true
 
 jobs:
@@ -51,16 +56,15 @@ jobs:
 
       - name: Run Gitleaks
         run: |
-          mkdir results
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+          run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
         working-directory: orchestrators/scripts
 
       - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
           name: test-results
-          path: ./IAC/Terraform/results/gitleaks-report.json
+          path: ./IAC/Terraform/gitleaks-report.json
 
       - name: Run TF Lint
         env:
@@ -73,13 +77,13 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azEnvCred }}"
+          creds: ${{ secrets.azureEnviromentCredentials }}
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
         id: kvSecrets
 
       - name: Run TF Validate

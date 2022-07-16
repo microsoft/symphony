@@ -22,8 +22,13 @@ on:
         required: true
         type: string
         default: "main"
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
     secrets:
-      azEnvCred:
+      azureEnviromentCredentials:
         required: true
 
 jobs:
@@ -45,13 +50,13 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azEnvCred }}"
+          creds: "${{ secrets.azureEnviromentCredentials }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
         id: kvSecrets
 
       - uses: actions/setup-go@v3

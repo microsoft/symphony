@@ -1,17 +1,23 @@
 name: "Template-Bicep-PreviewDeploy"
+
 on:
   workflow_call:
     inputs:
       environmentName:
         description: "environmentName"
-        required: true
         type: string
+        required: true
         default: "dev"
       locationName:
         description: "locationName"
-        required: true
         type: string
+        required: true
         default: "westus"
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -30,12 +36,12 @@ jobs:
 
       - uses: Azure/login@v1
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
+          creds: ${{ secrets.azureEnviromentCredentials }}
 
       - uses: Azure/get-keyvault-secrets@v1
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid"
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId"
         id: kvSecrets
 
       - name: Run Bicep Deploy

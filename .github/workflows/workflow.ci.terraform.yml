@@ -20,7 +20,7 @@ on:
         description: "Terraform Version"
         required: true
         default: "1.1.7"
-      backupstatefiles:
+      backupStateFiles:
         description: "Run Backup State Files"
         required: true
         default: "true"
@@ -35,17 +35,17 @@ jobs:
       runLayerTest: false
       branch: main
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeploy:
-    uses: ./.github/workflows/template.terraform.previewdeploy.yml
     needs: Validate
+    uses: ./.github/workflows/template.terraform.previewdeploy.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       branch: main
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -56,14 +56,14 @@ jobs:
       goVersion: ${{ github.event.inputs.goVersion }}
       branch: main
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
-    uses: ./.github/workflows/template.terraform.report.yml
     needs: PreviewDeploy
+    if: ${{ github.event.inputs.backupStateFiles == 'true' }}
+    uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       branch: main
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
-    if: ${{ github.event.inputs.backupstatefiles == 'true' }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
