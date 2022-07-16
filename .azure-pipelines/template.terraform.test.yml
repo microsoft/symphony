@@ -46,21 +46,29 @@ jobs:
 
       - task: Bash@3
         displayName: "Run E2E tests"
+        env:
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
+          ARM_CLIENT_ID: $(clientId)
+          ARM_CLIENT_SECRET: $(clientSecret)
+          STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
+          STATE_CONTAINER: $(stateContainer)
+          STATE_RG: $(stateRg)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "inline"
           script: |
             source ./tests.runner.sh
-            azlogin $(ARM_SUBSCRIPTION_ID) $(ARM_TENANT_ID) $(ARM_CLIENT_ID) $(ARM_CLIENT_SECRET) 'AzureCloud'
+            azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
               
             #install junit 
             echo "install go-junit-report"
             go install github.com/jstemmer/go-junit-report@latest
 
             # set test vars
-            export resource_group_name=$(STATE_RG)
-            export storage_account_name=$(STATE_STORAGE_ACCOUNT) 
-            export container_name=$(STATE_CONTAINER)
+            export resource_group_name="${STATE_RG}"
+            export storage_account_name="${STATE_STORAGE_ACCOUNT}"
+            export container_name="${STATE_CONTAINER}"
 
             echo 'get tests list'
 
