@@ -46,15 +46,6 @@ jobs:
             source ./scanners.sh
             run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'true'
 
-      # - task: PublishTestResults@2
-      #   displayName: "Publish Gitleaks results"
-      #   inputs:
-      #     testResultsFiles: "gitleaks-report.*"
-      #     searchFolder: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-      #     failTaskOnFailedTests: true
-      #     testRunTitle: "Gitleaks report"
-      #     mergeTestResults: true
-
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"

@@ -55,9 +55,10 @@ jobs:
         shell: bash
 
       - name: Run Gitleaks
+        id: gitleaks
         run: |
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' 'json' 'info' 'true'
+          run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true'
         working-directory: orchestrators/scripts
 
       - uses: actions/upload-artifact@v3
@@ -65,6 +66,11 @@ jobs:
         with:
           name: gitleaks-report
           path: orchestrators/scripts/gitleaks-report.*
+
+      - name: Upload Gitleaks SARIF report to code scanning service
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: orchestrators/scripts/gitleaks-report.sarif
 
       - name: Run TF Lint
         env:
