@@ -10,7 +10,7 @@ parameters:
 
 jobs:
   - job: Test
-    displayName: "Test"
+    displayName: "E2E Test"
     dependsOn:
       - PreviewDeploy
     workspace:

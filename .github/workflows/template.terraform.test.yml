@@ -28,7 +28,7 @@ on:
 
 jobs:
   Test:
-    name: "Test"
+    name: "E2E Test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

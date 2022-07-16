@@ -12,9 +12,9 @@ parameters:
 
 jobs:
   - job: PreviewDeploy
+    displayName: "Preivew and Deploy"
     workspace:
       clean: resources
-    displayName: "Preivew & Deploy"
     dependsOn: validate
 
     steps:

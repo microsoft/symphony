@@ -6,9 +6,9 @@ parameters:
 
 jobs:
   - job: Report
+    displayName: "Report"
     workspace:
       clean: resources
-    displayName: "Report"
     dependsOn: PreviewDeploy
 
     steps:

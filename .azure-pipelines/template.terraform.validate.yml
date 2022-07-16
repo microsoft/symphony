@@ -14,9 +14,9 @@ parameters:
     default: true
 jobs:
   - job: Validate
+    displayName: "Validate"
     workspace:
       clean: resources
-    displayName: "Validate"
     steps:
       - checkout: self
 

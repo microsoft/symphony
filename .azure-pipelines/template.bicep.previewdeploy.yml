@@ -10,7 +10,7 @@ parameters:
 
 jobs:
   - job: PreviewDeploy
-    displayName: "Preview Deploy"
+    displayName: "Preview and Deploy"
     dependsOn:
       - Validate
 
