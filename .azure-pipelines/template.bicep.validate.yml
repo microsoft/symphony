@@ -44,16 +44,22 @@ jobs:
           targetType: "inline"
           script: |
             source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' 'json' 'info' 'ture'
+            run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'ture'
 
-      - task: PublishTestResults@2
-        displayName: "Publish Gitleaks results"
+      # - task: PublishTestResults@2
+      #   displayName: "Publish Gitleaks results"
+      #   inputs:
+      #     testResultsFiles: "gitleaks-report.*"
+      #     searchFolder: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+      #     failTaskOnFailedTests: true
+      #     testRunTitle: "Gitleaks report"
+      #     mergeTestResults: true
+
+      - task: PublishPipelineArtifact@1
         inputs:
-          testResultsFiles: "gitleaks-report.*"
-          searchFolder: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          failTaskOnFailedTests: true
-          testRunTitle: "Gitleaks report"
-          mergeTestResults: true
+          targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
+          artifact: 'CodeAnalysisLogs/gitleaks-report.sarif'
+          publishLocation: "pipeline"
 
       - task: Bash@3
         displayName: "Run linter"
