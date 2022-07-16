@@ -49,7 +49,7 @@ jobs:
 
             backupResourceGroup=`az storage account list --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].resourceGroup" -o tsv`
 
-            sourceEndPoint=`az storage account list -g "${STATE_RG}" --query "[?name=='$(STATE_STORAGE_ACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
+            sourceEndPoint=`az storage account list -g "${STATE_RG}" --query "[?name=='$STATE_STORAGE_ACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
             backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].{endpointName:primaryEndpoints.blob}" -o tsv`
 
             # backupstatestorageaccount
