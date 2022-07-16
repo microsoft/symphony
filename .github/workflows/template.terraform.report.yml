@@ -52,28 +52,17 @@ jobs:
       - name: Backup Remote State
         env:
           ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
-          STATE_STORAGE_ACCOUNT_BACKUP: ${{ steps.kvSecrets.outputs.stateStorageAccountBackup }}
           ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
           ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
           ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
           STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
-          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
+          STATE_STORAGE_ACCOUNT_BACKUP: ${{ steps.kvSecrets.outputs.stateStorageAccountBackup }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          COMMIT_ID: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          source ./iac.tf.sh
-          azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
-          echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
-
-          # Create backup container name and convert to lower case
-          backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-          backupResourceGroup=`az storage account list --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].resourceGroup" -o tsv`      
-
-          sourceEndPoint=`az storage account list -g "${STATE_RG}" --query "[?name=='$STATE_STORAGE_ACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].{endpointName:primaryEndpoints.blob}" -o tsv`
-
-          echo "Copying remote state to container ${backupContainerName} in storage account $STATE_STORAGE_ACCOUNT_BACKUP located in resource group ${backupResourceGroup}"
-          az storage copy -s ${sourceEndPoint}$STATE_CONTAINER/${ENVIRONMENT_NAME}/* -d ${backupEndpoint}$STATE_CONTAINER/${ENVIRONMENT_NAME}/${backupContainerName} --recursive
+          ./iac.tf.statebackup
         working-directory: orchestrators/scripts
         shell: bash
