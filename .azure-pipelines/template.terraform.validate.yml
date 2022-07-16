@@ -47,7 +47,7 @@ jobs:
           targetType: "inline"
           script: |
             source ./scanners.sh
-            run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'ture'
+            run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true'
 
       # - task: PublishTestResults@2
       #   displayName: "Publish Gitleaks results"

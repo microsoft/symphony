@@ -57,7 +57,7 @@ jobs:
       - name: Run Gitleaks
         run: |
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' 'json' 'info' 'ture'
+          run_gitleaks './../../IAC/Terraform' 'json' 'info' 'true'
         working-directory: orchestrators/scripts
 
       - uses: actions/upload-artifact@v3
