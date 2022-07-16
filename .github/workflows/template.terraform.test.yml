@@ -73,7 +73,7 @@ jobs:
           STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
           STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          TEST_TAG: e2e_test
+          # TEST_TAG: e2e_test
         run: |
           ./iac.tf.test.sh
 
