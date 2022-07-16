@@ -34,6 +34,8 @@ run_gitleaks() {
 
     echo "gitleaks detect ${cmd_options}"
     gitleaks detect ${cmd_options}
+    pwd
+    ls
     exit $?
 }
 # export -f run_gitleaks
