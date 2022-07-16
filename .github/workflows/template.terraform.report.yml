@@ -2,7 +2,7 @@ name: "Template-TF-Report"
 on:
   workflow_call:
     inputs:
-      environment:
+      environmentName:
         description: "environmentName"
         required: true
         type: string

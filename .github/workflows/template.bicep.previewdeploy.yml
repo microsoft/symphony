@@ -2,7 +2,7 @@ name: "Template-Bicep-PreviewDeploy"
 on:
   workflow_call:
     inputs:
-      environment:
+      environmentName:
         description: "environmentName"
         required: true
         type: string
