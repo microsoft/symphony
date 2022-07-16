@@ -63,6 +63,6 @@ jobs:
           COMMIT_ID: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          ./iac.tf.statebackup
+          ./iac.tf.statebackup.sh
         working-directory: orchestrators/scripts
         shell: bash
