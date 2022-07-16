@@ -5,13 +5,13 @@ parameters:
   - name: terraformVersion
     type: string
     default: "1.1.7"
-  - name: envKVSVCName
+  - name: keyVaultArmSvcConnectionName
     type: string
-  - name: envKVName
+  - name: keyVaultName
     type: string
 
 jobs:
-  - job: previewDeploy
+  - job: PreviewDeploy
     workspace:
       clean: resources
     displayName: "Preivew & Deploy"
@@ -39,23 +39,23 @@ jobs:
       - task: AzureKeyVault@2
         displayName: "Pull env cred from Azure Key valut"
         inputs:
-          azureSubscription: ${{ parameters.envKVSVCName }}
-          KeyVaultName: ${{ parameters.envKVName }}
-          SecretsFilter: "*"
-          RunAsPreJob: true
+          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
+          keyVaultName: ${{ parameters.keyVaultName }}
+          secretsFilter: "*"
+          runAsPreJob: true
 
       - task: Bash@3
         displayName: "Run Terraform plan & Apply"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          SUBID: $(SUBID)
-          TENANTID: $(TENANTID)
-          CLIENTID: $(CLIENTID)
-          CLIENTSECRET: $(CLIENTSECRET)
-          STATESTORAGEACCOUNT: $(STATESTORAGEACCOUNT)
-          STATECONTAINER: $(STATECONTAINER)
-          STATERG: $(STATERG)
-          ENV: $(env)
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
+          ARM_CLIENT_ID: $(clientid)
+          ARM_CLIENT_SECRET: $(clientSecret)
+          STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
+          STATE_CONTAINER: $(stateContainer)
+          STATE_RG: $(stateRg)
+          ENVIRONMENT_NAME: $(environmentName)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "filePath"

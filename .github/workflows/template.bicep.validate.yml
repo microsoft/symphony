@@ -3,17 +3,17 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment"
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
-      location:
-        description: "Location"
+      locationName:
+        description: "locationName"
         required: true
         type: string
         default: "westus"
     secrets:
-      azure_enviroment_credentials:
+      azureEnviromentCredentials:
         required: true
 
 jobs:
@@ -50,14 +50,14 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azure_enviroment_credentials }}"
+          creds: "${{ secrets.azureEnviromentCredentials }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
           keyvault: "kv-symphony-env"
           secrets: "clientid, clientsecret, subid, tenantid"
-        id: KvSecrets
+        id: kvSecrets
 
       - name: Run global pre-deploy script
         run: |
@@ -66,12 +66,12 @@ jobs:
 
       - name: Run Bicep Validate
         env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.KvSecrets.outputs.subid }}
-          ARM_TENANT_ID: ${{ steps.KvSecrets.outputs.tenantid }}
-          ARM_CLIENT_ID: ${{ steps.KvSecrets.outputs.clientid }}
-          ARM_CLIENT_SECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          ENVIRONMENT: ${{ github.event.inputs.environment }}
-          LOCATION: ${{ github.event.inputs.location }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
+          LOCATION_NAME: ${{ github.event.inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |

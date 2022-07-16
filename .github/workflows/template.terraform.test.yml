@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment"
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
@@ -52,21 +52,21 @@ jobs:
         with:
           keyvault: "kv-symphony-env"
           secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-        id: KvSecrets
+        id: kvSecrets
 
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run End to End Tests
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
+          SUBID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          TENANTID: ${{ steps.kvSecrets.outputs.tenantId }}
+          CLIENTID: ${{ steps.kvSecrets.outputs.clientId }}
+          CLIENTSECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.statestorageaccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.statecontainer }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.staterg }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
           source ./tests.runner.sh
           azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
@@ -76,9 +76,9 @@ jobs:
           go install github.com/jstemmer/go-junit-report@latest
 
           # set test vars
-          export resource_group_name="${STATERG}"
-          export storage_account_name="${STATESTORAGEACCOUNT}"
-          export container_name="${STATECONTAINER}"
+          export resource_group_name="${STATE_RG}"
+          export storage_account_name="${STATE_STORAGE_ACCOUNT}"
+          export container_name="${STATE_CONTAINER}"
 
           pushd ./../../IAC/Terraform/test/terraform
           echo "Run tests with tag = e2e_test"

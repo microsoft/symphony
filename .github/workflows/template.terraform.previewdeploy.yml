@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment"
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
@@ -47,18 +47,18 @@ jobs:
         with:
           keyvault: "kv-symphony-env"
           secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-        id: KvSecrets
+        id: kvSecrets
 
       - name: Run TF plan- Apply
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
+          SUBID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          TENANTID: ${{ steps.kvSecrets.outputs.tenantId }}
+          CLIENTID: ${{ steps.kvSecrets.outputs.clientId }}
+          CLIENTSECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.statestorageaccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.statecontainer }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.staterg }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           ./iac.tf.previewdeploy.sh

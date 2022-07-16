@@ -10,31 +10,33 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  - name: Environment
+  - name: environmentName
     value: "dev"
-  - name: Location
+  - name: locationName
     value: "westus"
-  - name: KeyVaultAzureSubscriptionName
+  - name: keyVaultArmSvcConnectionName
     value: "Symphony-KV"
-  - name: KeyVaultName
+  - name: keyVaultName
     value: "kv-symphony-env"
 
 jobs:
   - template: ./template.bicep.validate.yml
     parameters:
-      Environment: $(Environment)
-      Location: $(Location)
-      KeyVaultSvcName: $(KeyVaultSvcName)
-      KeyVaultName: $(KeyVaultName)
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+
   - template: ./template.bicep.previewdeploy.yml
     parameters:
-      Environment: $(Environment)
-      Location: $(Location)
-      KeyVaultSvcName: $(KeyVaultSvcName)
-      KeyVaultName: $(KeyVaultName)
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+
   - template: ./template.bicep.test.yml
     parameters:
-      Environment: $(Environment)
-      Location: $(Location)
-      KeyVaultSvcName: $(KeyVaultSvcName)
-      KeyVaultName: $(KeyVaultName)
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)

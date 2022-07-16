@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment"
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
@@ -42,19 +42,19 @@ jobs:
         with:
           keyvault: "kv-symphony-env"
           secrets: "backupstatestorageaccount, clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount  "
-        id: KvSecrets
+        id: kvSecrets
 
       - name: Backup Remote State
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          BACKUPSTATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.backupstatestorageaccount }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
+          SUBID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          STATE_STORAGE_ACCOUNT_BACKUP: ${{ steps.kvSecrets.outputs.backupstatestorageaccount }}
+          TENANTID: ${{ steps.kvSecrets.outputs.tenantId }}
+          CLIENTID: ${{ steps.kvSecrets.outputs.clientId }}
+          CLIENTSECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.statestorageaccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.statecontainer }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.staterg }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
           source ./iac.tf.sh
           azlogin $SUBID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
@@ -63,12 +63,12 @@ jobs:
 
           # Create backup container name and convert to lower case
           backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-          backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`      
+          backupResourceGroup=`az storage account list --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].resourceGroup" -o tsv`      
 
-          sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          sourceEndPoint=`az storage account list -g $STATE_RG --query "[?name=='$STATE_STORAGE_ACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
+          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].{endpointName:primaryEndpoints.blob}" -o tsv`
 
-          echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
-          az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive
+          echo "Copying remote state to container ${backupContainerName} in storage account $STATE_STORAGE_ACCOUNT_BACKUP located in resource group ${backupResourceGroup}"
+          az storage copy -s ${sourceEndPoint}$STATE_CONTAINER/${ENV}/* -d ${backupEndpoint}$STATE_CONTAINER/${ENV}/${backupContainerName} --recursive
         working-directory: orchestrators/scripts
         shell: bash
