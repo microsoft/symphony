@@ -9,8 +9,8 @@ parameters:
     type: string
 
 jobs:
-  - job: e2etest
-    displayName: "e2e Test"
+  - job: Test
+    displayName: "Test"
     dependsOn:
       - PreviewDeploy
     workspace:
@@ -69,6 +69,6 @@ jobs:
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
           failTaskOnFailedTests: true
-          testRunTitle: "e2e testing"
+          testRunTitle: "Test"
           publishRunAttachments: true
           mergeTestResults: true

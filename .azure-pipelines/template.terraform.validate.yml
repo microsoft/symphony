@@ -13,7 +13,7 @@ parameters:
     type: boolean
     default: true
 jobs:
-  - job: validate
+  - job: Validate
     workspace:
       clean: resources
     displayName: "Validate"

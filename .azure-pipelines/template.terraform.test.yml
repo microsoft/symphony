@@ -11,7 +11,7 @@ parameters:
     type: string
 
 jobs:
-  - job: test
+  - job: Test
     workspace:
       clean: resources
     displayName: "Execute End to End Test"
