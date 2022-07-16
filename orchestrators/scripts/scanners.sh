@@ -12,20 +12,20 @@ run_gitleaks() {
     local source_path=$1
     local report_format=$2
     local log_level=$3
-    local verbose=$4
-    local redact=$5
+    local redact=$4
+    local verbose=$5
     local no_git=$6
 
     _information "Run Gitleaks detect cmd"
 
     cmd_options="--source ${source_path} --report-path ./gitleaks-report.${report_format} --report-format ${report_format} --log-level ${log_level}"
 
-    if [[ ! -z "${verbose}" ]]; then
-        cmd_options+=" --verbose"
-    fi
-
     if [[ ! -z "${redact}" ]]; then
         cmd_options+=" --redact"
+    fi
+
+    if [[ ! -z "${verbose}" ]]; then
+        cmd_options+=" --verbose"
     fi
 
     if [[ ! -z "${no_git}" ]]; then
