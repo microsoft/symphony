@@ -88,15 +88,15 @@ jobs:
 
       - name: Run TF Validate
         env:
+          WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
           ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
           ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
           ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
           STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
-          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           ./iac.tf.validate.sh
         working-directory: orchestrators/scripts
@@ -108,30 +108,18 @@ jobs:
       - name: Run Layer Tests
         if: ${{ inputs.runLayerTest }}
         env:
+          WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
           ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
           ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
           ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
           STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
-          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          TEST_TAG: module_tests
         run: |
-          source ./tests.runner.sh
-          azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
-          #install junit 
-          echo "install go-junit-report"
-          go install github.com/jstemmer/go-junit-report@latest
-          # set test vars
-          export resource_group_name="${STATE_RG}"
-          export storage_account_name="${STATE_STORAGE_ACCOUNT}"
-          export container_name="${STATE_CONTAINER}"
-
-          pushd ./../../IAC/Terraform/test/terraform
-          echo "Run tests with tag = module_tests"
-          terraform module_test true        
-          popd
+          ./iac.tf.test.sh
 
         working-directory: orchestrators/scripts
         shell: bash

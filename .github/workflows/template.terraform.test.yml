@@ -64,6 +64,7 @@ jobs:
           go-version: ${{ inputs.goVersion }}
       - name: Run E2E Tests
         env:
+          WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
           ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
           ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
@@ -72,23 +73,9 @@ jobs:
           STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
           STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          TEST_TAG: e2e_test
         run: |
-          source ./tests.runner.sh
-          azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
-          #install junit 
-          echo "install go-junit-report"
-          go install github.com/jstemmer/go-junit-report@latest
-
-          # set test vars
-          export resource_group_name="${STATE_RG}"
-          export storage_account_name="${STATE_STORAGE_ACCOUNT}"
-          export container_name="${STATE_CONTAINER}"
-
-          pushd ./../../IAC/Terraform/test/terraform
-          echo "Run tests with tag = e2e_test"
-          terraform e2e_test true        
-          popd
+          ./iac.tf.test.sh
 
         working-directory: orchestrators/scripts
         shell: bash

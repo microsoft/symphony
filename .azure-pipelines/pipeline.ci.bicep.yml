@@ -10,6 +10,9 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
+  #=============================================================#
+  # The following Variables should be set on the pipeline level #
+  #============================================================ #
   - name: environmentName
     value: "dev"
   - name: locationName

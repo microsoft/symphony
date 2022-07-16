@@ -15,9 +15,9 @@ variables:
   - name: runBackupState
     value: true
 
-  #============================================================
-  # The following Variables Should Be Set On the Pipeline
-  #============================================================
+  #=============================================================#
+  # The following Variables should be set on the pipeline level #
+  #============================================================ #
   - name: environmentName
     value: "dev"
   - name: keyVaultArmSvcConnectionName
