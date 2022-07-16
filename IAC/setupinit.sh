@@ -14,7 +14,7 @@ SP_READER_NAME="sp-reader-${NAME}-${NNN}"
 SP_OWNER_NAME="sp-owner-${NAME}-${NNN}"
 
 create_rg() {
-    az group create --resource-group "${RG_NAME}" --location "${LOCATION}"
+    az group create --resource-group "${RG_NAME}" --location "${LOCATION_NAME}"
 }
 
 create_cr() {
@@ -25,7 +25,7 @@ create_cr() {
     APP_API_NAME="eshoppublicapi"
     APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
 
-    az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
+    az acr create --resource-group "${RG_NAME}" --location "${LOCATION_NAME}" --name "${CR_NAME}" --sku Basic
 
     git clone "${APP_REPO}" "_app"
     pushd "_app"
@@ -37,7 +37,7 @@ create_cr() {
 }
 
 create_kv() {
-    az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled
+    az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION_NAME}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled
 }
 
 create_sp() {

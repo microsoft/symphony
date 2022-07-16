@@ -16,11 +16,11 @@ for deployment in "${array[@]}"
     if [[ ${deployment} != *"01_init"* ]]; then
     echo "tf init ${deployment}"
     pushd $deployment
-    init true "${ENV}${deployment}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
+    init true "${ENVIRONMENT_NAME}${deployment}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
     # Preview deployment
     envfile=${deployment/'./'/''}
     envfile=${envfile/'/'/'_'}                         
-    preview "terraform.tfplan" "${WORKSPACE_PATH}/env/terraform/${ENV}/${envfile}.tfvars.json"
+    preview "terraform.tfplan" "${WORKSPACE_PATH}/env/terraform/${ENVIRONMENT_NAME}/${envfile}.tfvars.json"
     code=$?
 
     if [[ $code != 0 ]]; then
