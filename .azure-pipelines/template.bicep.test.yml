@@ -59,7 +59,6 @@ jobs:
           targetType: "inline"
           script: |
             source ./tests.runner.sh
-
             bicep pester
 
       - task: PublishTestResults@2
@@ -69,6 +68,6 @@ jobs:
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
           failTaskOnFailedTests: true
-          testRunTitle: "Test"
+          testRunTitle: "E2E Test"
           publishRunAttachments: true
           mergeTestResults: true

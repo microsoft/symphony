@@ -67,6 +67,6 @@ jobs:
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
           failTaskOnFailedTests: true
-          testRunTitle: "Terraform Modules E2E tests"
+          testRunTitle: "E2E Test"
           publishRunAttachments: true
           mergeTestResults: true
