@@ -12,7 +12,7 @@ layer_path="bicep/${layer}"
 # 01_sql | 01_rg
 deployment="01_rg"
 deployment_path="${layer_path}/${deployment}"
-output=$(az deployment sub create --template-file "${deployment_path}/main.bicep" --location "${LOCATION_NAME}" --parameters "@${parameters_root_path}/parameters.json")
+output=$(az deployment sub create --template-file "${deployment_path}/main.bicep" --location "${location}" --parameters "@${parameters_root_path}/parameters.json")
 resource_group_name=$(echo "${output}" | jq -r -c '.properties.outputs.name.value')
 
 # 01_sql | 02_deployment
@@ -30,7 +30,7 @@ layer_path="bicep/${layer}"
 # 02_webapp | 01_rg
 deployment="01_rg"
 deployment_path="${layer_path}/${deployment}"
-output=$(az deployment sub create --template-file "${deployment_path}/main.bicep" --location "${LOCATION_NAME}" --parameters "@${parameters_root_path}/parameters.json")
+output=$(az deployment sub create --template-file "${deployment_path}/main.bicep" --location "${location}" --parameters "@${parameters_root_path}/parameters.json")
 resource_group_name=$(echo "${output}" | jq -r -c '.properties.outputs.name.value')
 
 # 02_webapp | 02_deployment
