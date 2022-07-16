@@ -22,16 +22,16 @@ on:
         required: true
         default: true
         type: boolean
-      branch:
-        description: "Branch Name"
-        required: true
-        type: string
-        default: "main"
       keyVaultName:
         description: "keyVaultName"
         type: string
         required: true
         default: "kv-symphony-env"
+      branch:
+        description: "Branch Name"
+        required: true
+        type: string
+        default: "main"
     secrets:
       azureEnviromentCredentials:
         required: true

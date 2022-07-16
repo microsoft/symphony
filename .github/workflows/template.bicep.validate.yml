@@ -18,6 +18,11 @@ on:
         type: string
         required: true
         default: "kv-symphony-env"
+      branch:
+        description: "Branch Name"
+        required: true
+        type: string
+        default: "main"
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -28,6 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Setup Toolset
         run: |

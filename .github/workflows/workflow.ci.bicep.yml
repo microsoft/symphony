@@ -28,6 +28,7 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branch: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -38,5 +39,6 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branch: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

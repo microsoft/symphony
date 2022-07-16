@@ -18,6 +18,11 @@ on:
         type: string
         required: true
         default: "kv-symphony-env"
+      branch:
+        description: "Branch Name"
+        required: true
+        type: string
+        default: "main"
     secrets:
       azureEnviromentCredentials:
         required: true
