@@ -57,14 +57,14 @@ jobs:
       - name: Run Gitleaks
         run: |
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
+          run_gitleaks './../../IAC/Terraform' 'json' 'info'
         working-directory: orchestrators/scripts
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
-          name: test-results
-          path: ./IAC/Terraform/gitleaks-report.json
+          name: gitleaks-report
+          path: ${{ github.workspace }}/IAC/Terraform/gitleaks-report.*
 
       - name: Run TF Lint
         env:
@@ -124,7 +124,7 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ inputs.runLayerTest }} && success() || failure()
         with:
           name: Modules test results

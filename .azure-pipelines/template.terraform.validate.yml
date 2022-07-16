@@ -41,18 +41,18 @@ jobs:
       - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
 
       - task: Bash@3
-        displayName: "Run gitleaks"
+        displayName: "Run Gitleaks"
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "inline"
           script: |
             source ./scanners.sh
-            run_gitleaks './../../IAC/Terraform' './' 'json' 'info'
+            run_gitleaks './../../IAC/Terraform' 'json' 'info'
 
       - task: PublishTestResults@2
         displayName: "Publish Gitleaks results"
         inputs:
-          testResultsFiles: "*gitleaks*.json"
+          testResultsFiles: "gitleaks-report.*"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform"
           failTaskOnFailedTests: true
           testRunTitle: "Gitleask report"

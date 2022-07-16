@@ -80,7 +80,7 @@ jobs:
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: E2E Test results
