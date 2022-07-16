@@ -45,7 +45,7 @@ jobs:
           runAsPreJob: true
 
       - task: Bash@3
-        displayName: "Run end to end tests"
+        displayName: "Run E2E tests"
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "inline"
@@ -85,12 +85,12 @@ jobs:
             popd
 
       - task: PublishTestResults@2
-        displayName: "Publish end to end test results"
+        displayName: "Publish E2E test results"
         inputs:
           testResultsFormat: "JUnit"
           testResultsFiles: "*.xml"
           searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Terraform/test/terraform"
           failTaskOnFailedTests: true
-          testRunTitle: "Terraform Modules end to end tests"
+          testRunTitle: "Terraform Modules E2E tests"
           publishRunAttachments: true
           mergeTestResults: true

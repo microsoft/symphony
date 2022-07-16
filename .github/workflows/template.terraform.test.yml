@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ${{ inputs.goVersion }}
-      - name: Run End to End Tests
+      - name: Run E2E Tests
         env:
           SUBID: ${{ steps.kvSecrets.outputs.subscriptionId }}
           TENANTID: ${{ steps.kvSecrets.outputs.tenantId }}
@@ -91,10 +91,10 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: End to End Test results
+          name: E2E Test results
           path: ./IAC/Terraform/test/terraform/*.xml
 
-      - name: Publish End to End Test Results
+      - name: Publish E2E Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
