@@ -91,4 +91,4 @@ jobs:
         if: always()
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
-          check_name: "End2End tests Results"
+          check_name: "E2E Tests Results"
