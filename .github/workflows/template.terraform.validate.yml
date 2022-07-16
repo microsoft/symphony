@@ -55,7 +55,6 @@ jobs:
         shell: bash
 
       - name: Run Gitleaks
-        id: gitleaks
         run: |
           source ./scanners.sh
           run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true'
