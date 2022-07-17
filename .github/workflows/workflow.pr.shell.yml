@@ -19,3 +19,4 @@ jobs:
           SHFMT_OPTS: -s # arguments to shfmt.
         with:
           sh_checker_comment: true
+          sh_checker_exclude: ".devcontainer"
