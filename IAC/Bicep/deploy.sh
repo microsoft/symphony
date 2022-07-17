@@ -2,8 +2,8 @@
 
 enviroment="dev"
 parameters_root_path="../../env/bicep/${enviroment}"
-parameters=$(cat ${parameters_root_path}/parameters.json)
-location=$(echo ${parameters} | jq -r -c '.parameters.location.value')
+parameters=$(cat "${parameters_root_path}/parameters.json")
+location=$(echo "${parameters}" | jq -r -c '.parameters.location.value')
 
 # 01_sql
 layer="01_sql"
