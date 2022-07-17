@@ -25,7 +25,7 @@ _DevContainer_ also has the following _VSCode_ extensions installed to make the 
 - [golang.Go](https://marketplace.visualstudio.com/items?itemName=golang.Go)
 - [mikestead.dotenv](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv)
 - [esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-- [GitHub.vscode-pull-request-github](https://marketplace.visualstudio.com/items?itemName=)
+- [GitHub.vscode-pull-request-github](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github)
 - [GitHub.codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces)
 - [GitHub.copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
 - [GitHub.remotehub](https://marketplace.visualstudio.com/items?itemName=GitHub.remotehub)
