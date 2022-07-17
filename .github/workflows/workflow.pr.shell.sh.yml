@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sh-checker:
+  shell-checker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
