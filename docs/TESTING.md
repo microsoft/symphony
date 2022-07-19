@@ -14,19 +14,19 @@ The tests will check a template or set of templates for coding best practices us
 az bicep build --file ../bicep/01_sql/02_deployment/main.bicep
 ```
 
-2. Install ARM TTK module
+1. Install ARM TTK module
 
 ```powershell
 Import-Module .\arm-ttk\arm-ttk.psd1
 ```
 
-3. Run the test
+1. Run the test
 
 ```powershell
 Test-AzTemplate -TemplatePath ../bicep/01_sql/02_deployment/main.json
 ```
 
-4. Cleanup
+1. Cleanup
 
 ```powershell
 Remove-Item -Force -Path ../bicep/01_sql/02_deployment/main.json
@@ -42,13 +42,13 @@ Remove-Item -Force -Path ../bicep/01_sql/02_deployment/main.json
 Install-Module -Name Pester -AllowClobber -Force -Confirm:$False -SkipPublisherCheck
 ```
 
-2. (option 1) Run the test
+1. (option 1) Run the test
 
 ```powershell
 Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1
 ```
 
-3. (option 2) Run the test with JUnit report
+1. (option 2) Run the test with JUnit report
 
 ```powershell
 Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -OutputFormat JUnitXml
@@ -64,13 +64,13 @@ Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -Outp
 curl -fsSL https://git.io/shellspec | sh -s -- --yes
 ```
 
-2. (option 1) Run the test
+1. (option 1) Run the test
 
 ```bash
 shellspec -f d
 ```
 
-3. (option 2) Run the test with JUnit report
+1. (option 2) Run the test with JUnit report
 
 ```bash
 shellspec -f j > tests.xml

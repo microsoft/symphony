@@ -34,9 +34,9 @@ get_sql_database_by_name() {
 run_az() {
     command=$1
     json=$(exec $command)
-    echo $json
+    echo "$json"
     local code=$?
-    if [[ ! -z "$json" ]]; then
+    if [[ -n "$json" ]]; then
         echo "$json"
     fi
     return $code

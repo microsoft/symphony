@@ -1,0 +1,72 @@
+name: PR Checker - markdown
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  markdown-lint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run markdownlint
+        id: markdownlint
+        # Official Docker image of markdownlint-cli
+        # https://www.npmjs.com/package/markdownlint-cli
+        uses: docker://ghcr.io/igorshubovych/markdownlint-cli:latest
+        with:
+          entrypoint: /usr/local/bin/markdownlint
+          args: "--config .markdownlint.yaml --output markdownlint-report.txt **/*.md"
+
+      - name: Prepare GitHub Summary
+        if: ${{ always() && steps.markdownlint.conclusion == 'failure' }}
+        run: |
+          report=$(cat markdownlint-report.txt)
+          summary=$(
+              cat <<EOF
+          # Markdown Lint \`failure\`
+          \`\`\`
+          "${report}"
+          \`\`\`
+          EOF
+          )
+          echo "${summary}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Report to PR as comment
+        if: ${{ always() && steps.markdownlint.conclusion == 'failure' && github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let fs = require('fs');
+            let reportContent = fs.readFileSync('markdownlint-report.txt');
+            const body = `# Markdown Lint \`failure\`
+            <details>
+            <summary>Details</summary>\n
+            \`\`\`
+            ` + reportContent + `
+            \`\`\`\n
+            </details>\n
+            Pusher: @${{ github.actor }}`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            })
+
+      - name: Archive report
+        if: ${{ always() && steps.markdownlint.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: markdownlint report
+          path: markdownlint-report.txt
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Markdown Link Checker
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
