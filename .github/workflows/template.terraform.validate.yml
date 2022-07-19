@@ -2,8 +2,8 @@ name: "Template-TF-Validate"
 on:
   workflow_call:
     inputs:
-      environment:
-        description: "Environment"
+      environmentName:
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
@@ -22,13 +22,18 @@ on:
         required: true
         default: true
         type: boolean
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
       branch:
         description: "Branch Name"
         required: true
         type: string
         default: "main"
     secrets:
-      azEnvCred:
+      azureEnviromentCredentials:
         required: true
 
 jobs:
@@ -46,21 +51,25 @@ jobs:
           ./setup-gitleaks.sh
           ./setup-terraform.sh ${{ inputs.terraformVersion }}        
           ./setup-tflint.sh
+          source ~/.bashrc
         working-directory: orchestrators/scripts
-        shell: bash
 
       - name: Run Gitleaks
         run: |
-          mkdir results
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' './results/gitleaks-report' 'json' 'info'
+          run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true'
         working-directory: orchestrators/scripts
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
-          name: test-results
-          path: ./IAC/Terraform/results/gitleaks-report.json
+          name: gitleaks-report
+          path: orchestrators/scripts/gitleaks-report.*
+
+      - name: Upload Gitleaks SARIF report to code scanning service
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: orchestrators/scripts/gitleaks-report.sarif
 
       - name: Run TF Lint
         env:
@@ -73,26 +82,26 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azEnvCred }}"
+          creds: ${{ secrets.azureEnviromentCredentials }}
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount"
-        id: KvSecrets
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+        id: kvSecrets
 
       - name: Run TF Validate
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
           WORKSPACE_PATH: ${{ github.workspace }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
           ./iac.tf.validate.sh
         working-directory: orchestrators/scripts
@@ -104,36 +113,24 @@ jobs:
       - name: Run Layer Tests
         if: ${{ inputs.runLayerTest }}
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          TEST_TAG: module_tests
         run: |
-          source ./tests.runner.sh
-          azlogin "${SUBID}" "${TENANTID}" "$CLIENTID" "$CLIENTSECRET" 'AzureCloud'
-
-          #install junit 
-          echo "install go-junit-report"
-          go install github.com/jstemmer/go-junit-report@latest
-          # set test vars
-          export resource_group_name="${STATERG}"
-          export storage_account_name="${STATESTORAGEACCOUNT}"
-          export container_name="${STATECONTAINER}"
-
-          pushd ./../../IAC/Terraform/test/terraform
-          echo "Run tests with tag = module_tests"
-          terraform module_test true        
-          popd
+          ./iac.tf.test.sh
 
         working-directory: orchestrators/scripts
         shell: bash
 
-      - uses: actions/upload-artifact@v2
-        if: ${{ inputs.runLayerTest }} && success() || failure()
+      - uses: actions/upload-artifact@v3
+        if: (success() || failure()) && ${{ inputs.runLayerTest }}
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml

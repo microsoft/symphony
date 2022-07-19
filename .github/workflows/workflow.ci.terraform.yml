@@ -8,8 +8,8 @@ on:
 
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Environment"
+      environmentName:
+        description: "environmentName"
         required: true
         default: "dev"
       goVersion:
@@ -20,50 +20,58 @@ on:
         description: "Terraform Version"
         required: true
         default: "1.1.7"
-      backupstatefiles:
+      backupStateFiles:
         description: "Run Backup State Files"
         required: true
         default: "true"
+      keyVaultName:
+        description: "keyVaultName"
+        required: true
+        default: "kv-symphony-env"
 
 jobs:
   Validate:
     uses: ./.github/workflows/template.terraform.validate.yml
     with:
-      environment: ${{ github.event.inputs.environment }}
+      environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: false
-      branch: main
+      branch: ${{ github.ref_name }}
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeploy:
-    uses: ./.github/workflows/template.terraform.previewdeploy.yml
     needs: Validate
+    uses: ./.github/workflows/template.terraform.previewdeploy.yml
     with:
-      environment: ${{ github.event.inputs.environment }}
+      environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
-      branch: main
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branch: ${{ github.ref_name }}
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
     needs: PreviewDeploy
     with:
-      environment: ${{ github.event.inputs.environment }}
+      environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
-      branch: main
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branch: ${{ github.ref_name }}
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
-    uses: ./.github/workflows/template.terraform.report.yml
     needs: PreviewDeploy
+    if: ${{ github.event.inputs.backupStateFiles == 'true' }}
+    uses: ./.github/workflows/template.terraform.report.yml
     with:
-      environment: ${{ github.event.inputs.environment }}
-      branch: main
+      environmentName: ${{ github.event.inputs.environmentName }}
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branch: ${{ github.ref_name }}
     secrets:
-      azEnvCred: ${{ secrets.AZURE_CREDENTIALS }}
-    if: ${{ github.event.inputs.backupstatefiles == 'true' }}
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

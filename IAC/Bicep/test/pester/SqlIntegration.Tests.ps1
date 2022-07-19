@@ -3,8 +3,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $resourceGroupName = "dev-rg-sql-zy4"
-    $sqlServerName = "dev-sqlserver-tl3"
+    $sqlServerResourceGroupName = $env:sqlServerResourceGroupName
+    $sqlServerName = $env:sqlServerName
 }
 
 Describe "SQL Integration Tests" {
@@ -12,7 +12,7 @@ Describe "SQL Integration Tests" {
         It "SQL Server (<serverName>) should has state '<expected>'" -TestCases @(
             @{ ServerName = $sqlServerName; Expected = 'Ready'}
         ) {
-            $azSqlServer = Invoke-AzCli -Command "sql server show --resource-group $resourceGroupName --name $sqlServerName"
+            $azSqlServer = Invoke-AzCli -Command "sql server show --resource-group $sqlServerResourceGroupName --name $sqlServerName"
             $azSqlServer.state | Should -Be $expected
 
             # Get-AzSqlServer does not contain 'state' property

@@ -44,38 +44,38 @@ terraform() {
 
   # cd to the test directory
   cd ../test/terraform
- 
+
   CWD=$(pwd)
 
   if [[ -z "${TEST_FILE_NAME}" && -z "${IS_TAG}" ]]; then
-      # find all tests
-      TEST_FILE_NAMES=`find ${CWD}/*.go`
+    # find all tests
+    TEST_FILE_NAMES=$(find ${CWD}/*.go)
 
-      # run all tests
-      for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
-        echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
-
-        go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
-      done
-  elif [ ! -z "${TEST_FILE_NAME}" ] && [ -z "${IS_TAG}" ]; then
+    # run all tests
+    for TEST_FILE_NAME in ${TEST_FILE_NAMES}; do
       echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
-      
-      # run a specific test
-      echo "go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
-      go test -v -timeout 8000s ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}
 
-      #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...  
+      go test -v -timeout 6000s ${TEST_FILE_NAME} | tee -a test.out
+    done
+  elif [ ! -z "${TEST_FILE_NAME}" ] && [ -z "${IS_TAG}" ]; then
+    echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for '${TEST_FILE_NAME}'" | tee -a test.out
+
+    # run a specific test
+    echo "go test -v ${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME/'.go'/'.xml'}"
+    go test -v -timeout 8000s ${TEST_FILE_NAME} 2>&1 | go-junit-report >${TEST_FILE_NAME/'.go'/'.xml'}
+
+    #gotestsum  --junitfile unit-tests.xml -- -tags=moule_test .\...
   else
 
-      echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for tag '${TEST_FILE_NAME}'" | tee -a test.out
-      
-      # run tests of certain tag
-      echo "go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME}.xml"
-      go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > "${TEST_FILE_NAME}.xml"
+    echo -e "--------------------------------------------------------------------------------\n[$(date)] : Running tests for tag '${TEST_FILE_NAME}'" | tee -a test.out
+
+    # run tests of certain tag
+    echo "go test -v -timeout 1000s --tags=${TEST_FILE_NAME}  2>&1 | go-junit-report > ${TEST_FILE_NAME}.xml"
+    go test -v -timeout 1000s --tags=${TEST_FILE_NAME} 2>&1 | go-junit-report >"${TEST_FILE_NAME}.xml"
 
   fi
 
-  popd 
+  popd
 }
 
 # @description: run tests for bicep
@@ -92,16 +92,16 @@ bicep() {
     _information "run pester tests"
     pushd ./pester
 
-      # if the test file is not specified, run for all files
-      if [ -z "${1}" ]; then
-        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML"
-      else
-        TEST_FILE=`find ${1}`
+    # if the test file is not specified, run for all files
+    if [ -z "${1}" ]; then
+      pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML"
+    else
+      TEST_FILE=$(find ${1})
 
-        if [ ! -z "${TEST_FILE}" ]; then
-          pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE}"
-        fi
+      if [ ! -z "${TEST_FILE}" ]; then
+        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE}"
       fi
+    fi
 
     # return to the previous directory
     popd

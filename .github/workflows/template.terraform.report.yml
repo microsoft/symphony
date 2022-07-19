@@ -2,18 +2,23 @@ name: "Template-TF-Report"
 on:
   workflow_call:
     inputs:
-      environment:
-        description: "Environment"
+      environmentName:
+        description: "environmentName"
         required: true
         type: string
         default: "dev"
+      keyVaultName:
+        description: "keyVaultName"
+        type: string
+        required: true
+        default: "kv-symphony-env"
       branch:
         description: "Branch Name"
         required: true
         type: string
         default: "main"
     secrets:
-      azEnvCred:
+      azureEnviromentCredentials:
         required: true
 
 jobs:
@@ -35,40 +40,29 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azEnvCred }}"
+          creds: "${{ secrets.azureEnviromentCredentials }}"
 
       - uses: Azure/get-keyvault-secrets@v1
         name: Get KeyVault Secrets
         with:
-          keyvault: "kv-symphony-env"
-          secrets: "backupstatestorageaccount, clientid, clientsecret, subid, tenantid, staterg, statecontainer, statestorageaccount  "
-        id: KvSecrets
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
+        id: kvSecrets
 
       - name: Backup Remote State
         env:
-          SUBID: ${{ steps.KvSecrets.outputs.subid }}
-          BACKUPSTATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.backupstatestorageaccount }}
-          TENANTID: ${{ steps.KvSecrets.outputs.tenantid }}
-          CLIENTID: ${{ steps.KvSecrets.outputs.clientid }}
-          CLIENTSECRET: ${{ steps.KvSecrets.outputs.clientsecret }}
-          STATESTORAGEACCOUNT: ${{ steps.KvSecrets.outputs.statestorageaccount }}
-          STATECONTAINER: ${{ steps.KvSecrets.outputs.statecontainer }}
-          STATERG: ${{ steps.KvSecrets.outputs.staterg }}
-          ENV: ${{ inputs.environment }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
+          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
+          STATE_STORAGE_ACCOUNT_BACKUP: ${{ steps.kvSecrets.outputs.stateStorageAccountBackup }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          COMMIT_ID: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          source ./iac.tf.sh
-          azlogin $SUBID $TENANTID $CLIENTID $CLIENTSECRET 'AzureCloud'
-
-          echo "Starting backup of $ENV environment remote state.  Commit: ${{ github.sha }} }"
-
-          # Create backup container name and convert to lower case
-          backupContainerName=`echo ${{ github.head_ref }}-${{ github.sha }} | tr '[:upper:]' '[:lower:]'`
-          backupResourceGroup=`az storage account list --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].resourceGroup" -o tsv`      
-
-          sourceEndPoint=`az storage account list -g $STATERG --query "[?name=='$STATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-          backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$BACKUPSTATESTORAGEACCOUNT'].{endpointName:primaryEndpoints.blob}" -o tsv`
-
-          echo "Copying remote state to container ${backupContainerName} in storage account $BACKUPSTATESTORAGEACCOUNT located in resource group ${backupResourceGroup}"
-          az storage copy -s ${sourceEndPoint}$STATECONTAINER/${ENV}/* -d ${backupEndpoint}$STATECONTAINER/${ENV}/${backupContainerName} --recursive
+          ./iac.tf.statebackup.sh
         working-directory: orchestrators/scripts
         shell: bash

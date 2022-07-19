@@ -1,11 +1,11 @@
 parameters:
-  - name: Environment
+  - name: environmentName
     type: string
-  - name: Location
+  - name: locationName
     type: string
-  - name: KeyVaultAzureSubscriptionName
+  - name: keyVaultArmSvcConnectionName
     type: string
-  - name: KeyVaultName
+  - name: keyVaultName
     type: string
 
 jobs:
@@ -18,7 +18,6 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           bashEnvValue: "~/.profile"
           failOnStderr: true
@@ -33,31 +32,25 @@ jobs:
 
       - task: AzureKeyVault@2
         inputs:
-          azureSubscription: ${{ parameters.KeyVaultAzureSubscriptionName }}
-          KeyVaultName: ${{ parameters.KeyVaultName }}
-          SecretsFilter: "*"
-          RunAsPreJob: true
+          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
+          keyVaultName: ${{ parameters.keyVaultName }}
+          secretsFilter: "*"
+          runAsPreJob: true
 
       - task: Bash@3
-        displayName: "Run gitleaks"
+        displayName: "Run Gitleaks"
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "inline"
           script: |
-            echo 'create ./results directory'
-            mkdir results
-
             source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' './results/gitleaks-report' 'json' 'info'
+            run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'true'
 
-      - task: PublishTestResults@2
-        displayName: "Publish Gitleaks results"
+      - task: PublishPipelineArtifact@1
         inputs:
-          testResultsFiles: "*.json"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/results"
-          failTaskOnFailedTests: true
-          testRunTitle: "Gitleaks report"
-          mergeTestResults: true
+          targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
+          artifact: 'CodeAnalysisLogs'
+          publishLocation: "pipeline"
 
       - task: Bash@3
         displayName: "Run linter"
@@ -73,13 +66,13 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
-          ENVIRONMENT: ${{ parameters.Environment }}
-          LOCATION: ${{ parameters.Location }}
-          ARM_SUBSCRIPTION_ID: $(subid)
-          ARM_TENANT_ID: $(tenantid)
-          ARM_CLIENT_ID: $(clientid)
-          ARM_CLIENT_SECRET: $(clientsecret)
+          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
+          LOCATION_NAME: ${{ parameters.locationName }}
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
+          ARM_CLIENT_ID: $(clientId)
+          ARM_CLIENT_SECRET: $(clientSecret)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
           targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.validate.sh"
+          filePath: "orchestrators/scripts/iac.bicep.validate.sh"

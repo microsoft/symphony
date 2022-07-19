@@ -5,7 +5,7 @@ declare environment="dev"
 # 01_init
 layer_path="01_init"
 pushd "${layer_path}"
-tfvar_file_path="../../../../env/terraform/${environment}/01_init.tfvars.json"
+tfvar_file_path="../../../../../env/terraform/${environment}/01_init.tfvars.json"
 
 terraform init
 terraform plan -var-file="${tfvar_file_path}" -state="${environment}.tfstate" -out="${environment}.tfplan"

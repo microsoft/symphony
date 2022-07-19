@@ -30,7 +30,7 @@ init() {
         terraform init
     else
         _information "Execute terraform init with backend-config"
-        
+
         echo "terraform init \
             -backend-config=storage_account_name=${storage_account_name} \
             -backend-config=container_name=${container_name} \
@@ -105,7 +105,7 @@ detect_destroy() {
     _information "Detect destroy in .tfplan file"
 
     terraform show -no-color -json ${plan_file_name} >mytmp.json
-    actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | (grep 'delete' || true;))
+    actions=$(cat mytmp.json | jq '.resource_changes[].change.actions[]' | (grep 'delete' || true))
 
     if [[ -z $actions ]]; then
         _information "Plan file ${plan_file_name} has no delete changes"
@@ -124,7 +124,7 @@ lint() {
 
     "tflint" >$filePath 2>&1
 
-    local code=$? 
+    local code=$?
     if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
         #exit 0

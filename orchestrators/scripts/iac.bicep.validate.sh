@@ -20,8 +20,8 @@ for deployment in "${modules[@]}"; do
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
-    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}" -maxdepth 1 -type f -name '*parameters*.json'))
-    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT}/${path//.\//}/"
+    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}" -maxdepth 1 -type f -name '*parameters*.json'))
+    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
     fi
@@ -38,7 +38,7 @@ for deployment in "${modules[@]}"; do
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
-    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION}" "rg${uniquer}validate")
+    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate")
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then

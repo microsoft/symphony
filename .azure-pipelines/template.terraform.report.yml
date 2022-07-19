@@ -1,15 +1,15 @@
 parameters:
-  - name: envKVSVCName
+  - name: keyVaultArmSvcConnectionName
     type: string
-  - name: envKVName
+  - name: keyVaultName
     type: string
 
 jobs:
   - job: Report
+    displayName: "Report"
     workspace:
       clean: resources
-    displayName: "Report"
-    dependsOn: previewDeploy
+    dependsOn: PreviewDeploy
 
     steps:
       - checkout: self
@@ -17,33 +17,27 @@ jobs:
       - task: AzureKeyVault@2
         displayName: "Pull env cred from Azure Key valut"
         inputs:
-          azureSubscription: ${{ parameters.envKVSVCName }}
-          KeyVaultName: ${{ parameters.envKVName }}
-          SecretsFilter: "*"
-          RunAsPreJob: true
+          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
+          keyVaultName: ${{ parameters.keyVaultName }}
+          secretsFilter: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
+          runAsPreJob: true
 
       - task: Bash@3
-        displayName: "backup $(ENV) state files"
+        displayName: "backup $(environmentName) state files"
         condition: eq(variables.runBackupState, 'true')
+        env:
+          ENVIRONMENT_NAME: $(environmentName)
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
+          ARM_CLIENT_ID: $(clientId)
+          ARM_CLIENT_SECRET: $(clientSecret)
+          STATE_RG: $(stateRg)
+          STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
+          STATE_CONTAINER: $(stateContainer)
+          STATE_STORAGE_ACCOUNT_BACKUP: $(stateStorageAccountBackup)
+          COMMIT_ID: $(Build.SourceVersion)
+          RUN_ID: $(Build.BuildId)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "inline"
-          script: |
-            source ./iac.tf.sh
-
-            echo "Az login"
-
-            azlogin $(SUBID) $(TENANTID) $(CLIENTID) $(CLIENTSECRET) 'AzureCloud'
-            echo "Starting backup of $(ENV) environment remote state.  Commit: $(Build.SourceVersion)}"
-
-            # Create backup container name and convert to lower case
-            backupContainerName=`echo $(Build.BuildId)-$(Build.SourceVersion) | tr '[:upper:]' '[:lower:]'`
-
-            backupResourceGroup=`az storage account list --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].resourceGroup" -o tsv`
-
-            sourceEndPoint=`az storage account list -g $(STATERG) --query "[?name=='$(STATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
-            backupEndpoint=`az storage account list -g $backupResourceGroup --query "[?name=='$(BACKUPSTATESTORAGEACCOUNT)'].{endpointName:primaryEndpoints.blob}" -o tsv`
-
-            # backupstatestorageaccount
-            echo "Copying remote state to container ${backupContainerName} in storage account $(BACKUPSTATESTORAGEACCOUNT) located in resource group ${backupResourceGroup}"
-            az storage copy -s ${sourceEndPoint}$(STATECONTAINER)/$(ENV)/* -d ${backupEndpoint}$(STATECONTAINER)/$(ENV)/${backupContainerName} --recursive
+          targetType: "filePath"
+          filePath: "orchestrators/scripts/iac.tf.statebackup.sh"

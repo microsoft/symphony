@@ -6,7 +6,7 @@
 resource "random_string" "sqlserverlogin" {
   length  = 10
   special = false
-  number  = false
+  numeric  = false
 }
 
 resource "random_password" "sqlserverpassword" {
