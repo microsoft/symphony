@@ -3,30 +3,24 @@ on:
   workflow_call:
     inputs:
       environmentName:
-        required: true
         type: string
-        default: "dev"
+        required: true
       goVersion:
-        required: true
-        default: "1.18.1"
         type: string
+        required: true
       terraformVersion:
-        required: true
-        default: "1.1.7"
         type: string
+        required: true
       runLayerTest:
+        type: boolean
         required: true
         default: true
-        type: boolean
       keyVaultName:
         type: string
         required: true
-        default: "kv-symphony-env"
       branchName:
-        description: "Branch Name"
-        required: true
         type: string
-        default: "main"
+        required: true
     secrets:
       azureEnviromentCredentials:
         required: true

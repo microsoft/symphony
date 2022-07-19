@@ -6,19 +6,15 @@ on:
       environmentName:
         type: string
         required: true
-        default: "dev"
       locationName:
         type: string
         required: true
-        default: "westus"
       keyVaultName:
         type: string
         required: true
-        default: "kv-symphony-env"
       branchName:
         required: true
         type: string
-        default: "main"
     secrets:
       azureEnviromentCredentials:
         required: true

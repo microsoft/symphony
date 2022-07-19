@@ -3,17 +3,14 @@ on:
   workflow_call:
     inputs:
       environmentName:
-        required: true
         type: string
-        default: "dev"
+        required: true
       keyVaultName:
         type: string
         required: true
-        default: "kv-symphony-env"
       branchName:
-        required: true
         type: string
-        default: "main"
+        required: true
     secrets:
       azureEnviromentCredentials:
         required: true
