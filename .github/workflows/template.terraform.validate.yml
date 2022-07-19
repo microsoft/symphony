@@ -3,27 +3,22 @@ on:
   workflow_call:
     inputs:
       environmentName:
-        description: "environmentName"
         required: true
         type: string
         default: "dev"
       goVersion:
-        description: "Go Version"
         required: true
         default: "1.18.1"
         type: string
       terraformVersion:
-        description: "Terraform Version"
         required: true
         default: "1.1.7"
         type: string
       runLayerTest:
-        description: "Run Layer tests"
         required: true
         default: true
         type: boolean
       keyVaultName:
-        description: "keyVaultName"
         type: string
         required: true
         default: "kv-symphony-env"

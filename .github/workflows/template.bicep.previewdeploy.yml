@@ -4,22 +4,18 @@ on:
   workflow_call:
     inputs:
       environmentName:
-        description: "environmentName"
         type: string
         required: true
         default: "dev"
       locationName:
-        description: "locationName"
         type: string
         required: true
         default: "westus"
       keyVaultName:
-        description: "keyVaultName"
         type: string
         required: true
         default: "kv-symphony-env"
       branch:
-        description: "Branch Name"
         required: true
         type: string
         default: "main"

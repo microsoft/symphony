@@ -9,15 +9,15 @@ on:
   workflow_dispatch:
     inputs:
       environmentName:
-        description: "environmentName"
+        description: "Name of the Environment"
         required: true
         default: "dev"
       locationName:
-        description: "locationName"
+        description: "Name of the deployment Location"
         required: true
         default: "westus"
       keyVaultName:
-        description: "keyVaultName"
+        description: "Environment Key Vault Name"
         required: true
         default: "kv-symphony-env"
 

@@ -9,15 +9,15 @@ on:
   workflow_dispatch:
     inputs:
       environmentName:
-        description: "environmentName"
+        description: "Name of the Environment"
         required: true
         default: "dev"
       goVersion:
-        description: "Go Version"
+        description: "Go Labg version"
         required: true
         default: "1.18.1"
       terraformVersion:
-        description: "Terraform Version"
+        description: "Terraform version"
         required: true
         default: "1.1.7"
       backupStateFiles:
@@ -25,7 +25,7 @@ on:
         required: true
         default: "true"
       keyVaultName:
-        description: "keyVaultName"
+        description: "Environment Key Vault Name"
         required: true
         default: "kv-symphony-env"
 

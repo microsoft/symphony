@@ -18,14 +18,24 @@ variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #============================================================ #
+
+  # Name of the Environment
   - name: environmentName
     value: "dev"
+
+  # ARM Service Connection Name used for environment Key Vault access
   - name: keyVaultArmSvcConnectionName
     value: "Symphony-KV"
+
+  # Environment Key Vault Name
   - name: keyVaultName
     value: "kv-symphony-env"
+
+  # Go Lang version
   - name: goVersion
     value: "1.18.1"
+
+  # Terraform version
   - name: terraformVersion
     value: "1.1.7"
 
