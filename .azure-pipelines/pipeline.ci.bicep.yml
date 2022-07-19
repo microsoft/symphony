@@ -12,13 +12,21 @@ pool:
 variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
-  #============================================================ #
+  #=============================================================#
+
+  # Name of the Environment
   - name: environmentName
     value: "dev"
+
+  # Name of the deployment Location
   - name: locationName
     value: "westus"
+
+  # ARM Service Connection Name used for environment Key Vault access
   - name: keyVaultArmSvcConnectionName
     value: "Symphony-KV"
+
+  # Environment Key Vault Name
   - name: keyVaultName
     value: "kv-symphony-env"
 

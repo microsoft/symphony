@@ -3,35 +3,24 @@ on:
   workflow_call:
     inputs:
       environmentName:
-        description: "environmentName"
-        required: true
         type: string
-        default: "dev"
+        required: true
       goVersion:
-        description: "Go Version"
-        required: true
-        default: "1.18.1"
         type: string
+        required: true
       terraformVersion:
-        description: "Terraform Version"
-        required: true
-        default: "1.1.7"
         type: string
+        required: true
       runLayerTest:
-        description: "Run Layer tests"
+        type: boolean
         required: true
         default: true
-        type: boolean
       keyVaultName:
-        description: "keyVaultName"
         type: string
         required: true
-        default: "kv-symphony-env"
-      branch:
-        description: "Branch Name"
-        required: true
+      branchName:
         type: string
-        default: "main"
+        required: true
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -43,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branchName }}
 
       - name: Setup Toolset
         run: |
