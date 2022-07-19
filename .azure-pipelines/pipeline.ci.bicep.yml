@@ -12,7 +12,7 @@ pool:
 variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
-  #============================================================ #
+  #=============================================================#
 
   # Name of the Environment
   - name: environmentName

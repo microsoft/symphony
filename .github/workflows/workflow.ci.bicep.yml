@@ -6,6 +6,9 @@ on:
   # pull_request:
   #   branches: [main]
 
+  #=============================================================#
+  # The following Variables should be set on the workflow level #
+  #============================================================ #
   workflow_dispatch:
     inputs:
       environmentName:
