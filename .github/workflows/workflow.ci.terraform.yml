@@ -13,7 +13,7 @@ on:
         required: true
         default: "dev"
       goVersion:
-        description: "Go Labg version"
+        description: "Go Lang version"
         required: true
         default: "1.18.1"
       terraformVersion:
@@ -38,7 +38,7 @@ jobs:
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: false
-      branch: ${{ github.ref_name }}
+      branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -49,7 +49,7 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      branch: ${{ github.ref_name }}
+      branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -61,7 +61,7 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      branch: ${{ github.ref_name }}
+      branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -72,6 +72,6 @@ jobs:
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      branch: ${{ github.ref_name }}
+      branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

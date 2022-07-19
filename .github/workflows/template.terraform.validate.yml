@@ -22,7 +22,7 @@ on:
         type: string
         required: true
         default: "kv-symphony-env"
-      branch:
+      branchName:
         description: "Branch Name"
         required: true
         type: string
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branchName }}
 
       - name: Setup Toolset
         run: |

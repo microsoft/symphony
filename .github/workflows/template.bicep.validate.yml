@@ -15,7 +15,7 @@ on:
         type: string
         required: true
         default: "kv-symphony-env"
-      branch:
+      branchName:
         required: true
         type: string
         default: "main"
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branchName }}
 
       - name: Setup Toolset
         run: |
