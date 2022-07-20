@@ -1,10 +1,8 @@
-
-
 BeforeAll{
     . $PSScriptRoot/UtilsLoader.ps1
     $ResourceGroupName = "rglayer"
 }
- 
+
 Describe '01 Sql Layer Tests' {
     it 'Should deploy a resource group for sql' {
         #arrange
