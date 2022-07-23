@@ -1,4 +1,4 @@
-BeforeAll{
+BeforeAll {
     . $PSScriptRoot/UtilsLoader.ps1
     $ResourceGroupName = "rgwebapplayer"
 }
@@ -11,35 +11,44 @@ Describe '02 Web Layer Tests' {
             deploymentName = "rgwebapplayer"
             resourceGroupName = $ResourceGroupName
             location = "westus"
-            environment = "dev"
+            environment = "test"
         }
         #act
         $deployment = Deploy-BicepFeature $bicepPath $params
         #assert
         $deployment.ProvisioningState | Should -Be "Succeeded"
-    } 
+    }
 
     it 'Should deploy an app service' {
         #arrange
         $bicepPath = "../bicep/02_webapp/02_deployment/main.bicep"
         $params = @{
             deploymentName = "rgwebapplayer"
-            resourceGroupName = $ResourceGroupName
             location = "westus"
-            environment = "dev"
+            environment = "test"
+            appSvcPlanSkuName = "S1"
+            appSvcPlanSkuTier = "Standard"
+            appSvcDockerImage = "crsymphony362.azurecr.io/eshoppublicapi"
+            appSvcDockerImageTag = "a87f571"
+            containerRegistryResourceGroupName = "devops-symphony-362"
+            containerRegistryName = "crsymphony362"
+            sqlDatabaseCatalogDbName = "sqlDatabaseCatalogDbName"
+            sqlDatabaseIdentityDbName = "sqlDatabaseIdentityDbName"
+            sqlServerFqdn = "sqlServerFqdn"
+            sqlServerAdministratorLogin = "sqlServerAdministratorLogin"
+            sqlServerAdministratorPassword = "sqlServerAdministratorPassword"
         }
-        $deployed = $True
         #act
-        #to do
+        $deployment = Deploy-BicepFeature $bicepPath $params $ResourceGroupName
         #assert
-        $deployed | Should -Be $True
-    } 
+        $deployment.ProvisioningState | Should -Be "Succeeded"
+    }
 }
 
-AfterAll{
+AfterAll {
     #clean up
     Write-Host "Cleaning up Resources!"
 
     Write-Host "Removing Resource Group $ResourceGroupName"
-    #Remove-BicepFeature $ResourceGroupName
+    Remove-BicepFeature $ResourceGroupName
 }

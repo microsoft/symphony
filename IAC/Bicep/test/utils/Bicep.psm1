@@ -1,4 +1,4 @@
-function Deploy-BicepFeature([string]$path, $params){
+function Deploy-BicepFeature([string]$path, $params, $resourceGroupName){
     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($path)
     $folder = Split-Path $path
     $armPath  = Join-Path -Path $folder -ChildPath "$fileName.json"
@@ -7,11 +7,20 @@ function Deploy-BicepFeature([string]$path, $params){
     az bicep build --file $path
 
     $code = $?
-    if ($code -eq "True"){ # arm deployment was successful
-        Write-Host "Deploying ARM Template"
-        New-AzSubscriptionDeployment -Name $params.deploymentName -Location $params.location -TemplateFile "$armPath" -TemplateParameterObject $params -SkipTemplateParameterPrompt
+    if ($code -eq "True"){
+        $location = $params.location
+        $deploymentName = $params.deploymentName
+
+        Write-Host "Deploying ARM Template ($deploymentName) to $location"
+
+        if ([string]::IsNullOrEmpty($resourceGroupName)){
+            New-AzSubscriptionDeployment -Name "$deploymentName" -Location "$location" -TemplateFile "$armPath" -TemplateParameterObject $params -SkipTemplateParameterPrompt
+        }
+        else{
+            New-AzResourceGroupDeployment -Name "$deploymentName" -ResourceGroupName "$resourceGroupName" -TemplateFile "$armPath" -TemplateParameterObject $params -SkipTemplateParameterPrompt
+        }
     }
-    # delete arm template json file, as it's no longer needed.
+
     Write-Host "Removing arm template json"
     rm "$armPath"
 }
