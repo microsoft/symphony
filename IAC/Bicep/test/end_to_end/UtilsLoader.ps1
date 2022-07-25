@@ -4,3 +4,4 @@ $PSUtilsPath = Join-Path -Path $PSScriptParent -ChildPath "utils"
 
 # Imports
 Import-Module $PSUtilsPath/AzCli -Force
+Import-Module $PSUtilsPath/Azure -Force
