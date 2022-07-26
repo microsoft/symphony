@@ -1,6 +1,8 @@
 BeforeAll {
     . $PSScriptRoot/UtilsLoader.ps1
-    $ResourceGroupName = "rgwebapplayer"
+    $resourceGroupName = "rgwebapplayer"
+    $appServicePlanName = "test-app-svc-plan-sbg"
+    $appServiceName = "test-app-svc-wj3"
 }
 
 Describe '02 Web Layer Tests' {
@@ -9,14 +11,18 @@ Describe '02 Web Layer Tests' {
         $bicepPath = "../bicep/02_webapp/01_rg/main.bicep"
         $params = @{
             deploymentName = "rgwebapplayer"
-            resourceGroupName = $ResourceGroupName
+            resourceGroupName = $resourceGroupName
             location = "westus"
             environment = "test"
         }
+
         #act
         $deployment = Deploy-BicepFeature $bicepPath $params
+        $resourceExists = Get-AppServicePlanExists $appServicePlanName $resourceGroupName
+
         #assert
         $deployment.ProvisioningState | Should -Be "Succeeded"
+        $resourceExists | Should -Be $true
     }
 
     it 'Should deploy an app service' {
@@ -38,10 +44,14 @@ Describe '02 Web Layer Tests' {
             sqlServerAdministratorLogin = "sqlServerAdministratorLogin"
             sqlServerAdministratorPassword = "sqlServerAdministratorPassword"
         }
+
         #act
-        $deployment = Deploy-BicepFeature $bicepPath $params $ResourceGroupName
+        $deployment = Deploy-BicepFeature $bicepPath $params $resourceGroupName
+        $resourceExists = Get-WebAppExists $appServiceName $resourceGroupName
+
         #assert
         $deployment.ProvisioningState | Should -Be "Succeeded"
+        $resourceExists | Should -Be $true
     }
 }
 
@@ -49,6 +59,6 @@ AfterAll {
     #clean up
     Write-Host "Cleaning up Resources!"
 
-    Write-Host "Removing Resource Group $ResourceGroupName"
-    Remove-BicepFeature $ResourceGroupName
+    Write-Host "Removing Resource Group $resourceGroupName"
+    Remove-BicepFeature $resourceGroupName
 }

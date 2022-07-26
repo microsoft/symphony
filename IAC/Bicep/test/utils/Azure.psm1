@@ -1,39 +1,53 @@
+function Get-ResourceGroup([string]$resourceGroupName) {
+    $resource = Get-AzResourceGroup $resourceGroupName
+    return $resource
+}
+
 function Get-ResourceGroupExists([string]$resourceGroupName) {
-    $rg = Get-AzResourceGroup $resourceGroupName
-    if ($null -eq $rg) {
-        throw "Resource group $resourceGroupName was not found!"
-    }
-    else{
+    $resource = Get-ResourceGroup $resourceGroupName
+
+    if ($resource -eq $null) {
+        return $false
+    } else {
         return $true
     }
 }
 
-Export-ModuleMember -Function Get-ResourceGroupExists
+function Get-AppServicePlan {
+    param (
+        [string]$appServicePlanName,
+        [string]$resourceGroupName
+    )
+    $resource = Get-AzAppServicePlan -ResourceGroupName $resourceGroupName -Name $appServicePlanName
+    return $resource
+}
 
 function Get-AppServicePlanExists {
     param (
         [string]$appServicePlanName,
         [string]$resourceGroupName
     )
-    $resource = Get-AzAppServicePlan -ResourceGroupName $resourceGroupName -Name $appServicePlanName
-    if ($null -eq $resource) {
-        throw "Resource $resourceGroupName/$appServicePlanName was not found!"
-    }
-    else{
+    $resource = Get-AppServicePlan $appServicePlanName $resourceGroupName
+    if ($resource -eq $null) {
+        return $false
+    } else{
         return $true
     }
 }
 
-Export-ModuleMember -Function Get-AppServicePlanExists
+function Get-WebApp([string]$webAppName, [string]$resourceGroupName) {
+    $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $webAppName
+    return $resource
+}
 
 function Get-WebAppExists([string]$webAppName, [string]$resourceGroupName) {
-    $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $webAppName
-    if ($null -eq $resource) {
-        throw "Resource $resourceGroupName/$appServicePlan was not found!"
+    $resource = Get-WebApp $webAppName $resourceGroupName
+    if ($resource -eq $null) {
+        return $false
     }
     else{
         return $true
     }
 }
 
-Export-ModuleMember -Function Get-WebAppExists
+Export-ModuleMember -Function Get-ResourceGroupExists, Get-AppServicePlanExists, Get-WebAppExists
