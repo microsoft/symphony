@@ -183,26 +183,26 @@ destroy() {
     local optional_args=$5 # --management-group-id or --resource-group
 
     target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters ${bicep_parameters_file_path_array})
+    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
     _information "Target scope: ${target_scope}"
-    _information "BICEP parameters: ${bicep_parameters}"
-    _information "BICEP file path: ${bicep_file_path}"
+    _information "Bicep parameters: ${bicep_parameters}"
+    _information "Bicep file path: ${bicep_file_path}"
     _information "Deployment ID: ${deployment_id}"
     _information "Location: ${location}"
     _information "Optional args: ${optional_args}"
 
-    if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg delete --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-    elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub delete --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-    elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant delete --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-    else
-        command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
-    fi
+    # if [[ "${target_scope}" == "managementGroup" ]]; then
+    #     command="az deployment mg delete --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    # elif [[ "${target_scope}" == "subscription" ]]; then
+    #     command="az deployment sub delete --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    # elif [[ "${target_scope}" == "tenant" ]]; then
+    #     command="az deployment tenant delete --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    # else
+    #     command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
+    # fi
 
-    output=$(eval "${command}")
+    # output=$(eval "${command}")
     exit_code=$?
 
     echo "${output}"
