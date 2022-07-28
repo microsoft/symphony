@@ -38,6 +38,7 @@ for deployment in "${modules[@]}"; do
     load_dotenv
 
     output=$(destroy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+    _information "Bicep destroy output: ${output}"
     exit_code=$?
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep destroy failed - returned code ${exit_code}"
