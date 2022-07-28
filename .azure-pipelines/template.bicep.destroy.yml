@@ -11,6 +11,8 @@ parameters:
 jobs:
   - job: Destroy
     displayName: "Destroy"
+    dependsOn:
+      - Test
     workspace:
       clean: resources
 
