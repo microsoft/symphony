@@ -185,6 +185,13 @@ destroy() {
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
+    _information "Target scope: ${target_scope}"
+    _information "BICEP parameters: ${bicep_parameters}"
+    _information "BICEP file path: ${bicep_file_path}"
+    _information "Deployment ID: ${deployment_id}"
+    _information "Location: ${location}"
+    _information "Optional args: ${optional_args}"
+
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg delete --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
