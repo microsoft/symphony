@@ -15,64 +15,64 @@ jobs:
     steps:
       - checkout: self
 
-      - task: Bash@3
-        displayName: "Install required tools"
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
-          targetType: "inline"
-          script: |
-            ./setup-azcli.sh
-            ./setup-gitleaks.sh
-            ./setup-powershell.sh
-            ./setup-armttk.sh
-            ./setup-shellspec.sh
-            source ~/.bashrc
+      # - task: Bash@3
+      #   displayName: "Install required tools"
+      #   inputs:
+      #     workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+      #     bashEnvValue: "~/.profile"
+      #     failOnStderr: true
+      #     targetType: "inline"
+      #     script: |
+      #       ./setup-azcli.sh
+      #       ./setup-gitleaks.sh
+      #       ./setup-powershell.sh
+      #       ./setup-armttk.sh
+      #       ./setup-shellspec.sh
+      #       source ~/.bashrc
 
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
+      # - task: AzureKeyVault@2
+      #   inputs:
+      #     azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
+      #     keyVaultName: ${{ parameters.keyVaultName }}
+      #     secretsFilter: "*"
+      #     runAsPreJob: true
 
-      - task: Bash@3
-        displayName: "Run Gitleaks"
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "inline"
-          script: |
-            source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'true'
+      # - task: Bash@3
+      #   displayName: "Run Gitleaks"
+      #   inputs:
+      #     workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+      #     targetType: "inline"
+      #     script: |
+      #       source ./scanners.sh
+      #       run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'true'
 
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
-          artifact: 'CodeAnalysisLogs'
-          publishLocation: "pipeline"
+      # - task: PublishPipelineArtifact@1
+      #   inputs:
+      #     targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
+      #     artifact: 'CodeAnalysisLogs'
+      #     publishLocation: "pipeline"
 
-      - task: Bash@3
-        displayName: "Run linter"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh"
+      # - task: Bash@3
+      #   displayName: "Run linter"
+      #   env:
+      #     WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+      #   inputs:
+      #     workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+      #     targetType: "filePath"
+      #     filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh"
 
-      - task: Bash@3
-        displayName: "Run bicep validate"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          LOCATION_NAME: ${{ parameters.locationName }}
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
-          targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.bicep.validate.sh"
+      # - task: Bash@3
+      #   displayName: "Run bicep validate"
+      #   env:
+      #     WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+      #     RUN_ID: $(Build.BuildId)
+      #     ENVIRONMENT_NAME: ${{ parameters.environmentName }}
+      #     LOCATION_NAME: ${{ parameters.locationName }}
+      #     ARM_SUBSCRIPTION_ID: $(subscriptionId)
+      #     ARM_TENANT_ID: $(tenantId)
+      #     ARM_CLIENT_ID: $(clientId)
+      #     ARM_CLIENT_SECRET: $(clientSecret)
+      #   inputs:
+      #     workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+      #     targetType: "filePath"
+      #     filePath: "orchestrators/scripts/iac.bicep.validate.sh"
