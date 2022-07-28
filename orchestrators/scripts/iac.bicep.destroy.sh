@@ -35,8 +35,6 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    _information "Executing Bicep destroy: ${deployment} with params_path: '${params_path[@]}', params: '${params[@]}'"
-
     load_dotenv
 
     output=$(destroy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
