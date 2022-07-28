@@ -9,7 +9,7 @@ cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
 SAVEIFS=${IFS}
 IFS=$'\n'
-modules=($(find . -type f -name 'main.bicep' | sort -u))
+modules=($(find . -type f -name 'main.bicep' | sort -u -r))
 IFS=${SAVEIFS}
 
 for deployment in "${modules[@]}"; do
