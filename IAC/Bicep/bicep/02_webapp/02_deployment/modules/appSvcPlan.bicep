@@ -20,6 +20,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   tags: {
     Env: environment
+    GeneratedBy: 'symphony'
   }
 }
 

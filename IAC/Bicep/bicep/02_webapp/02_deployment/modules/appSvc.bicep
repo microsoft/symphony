@@ -51,6 +51,7 @@ resource appSvc 'Microsoft.Web/sites@2021-03-01' = {
   }
   tags: {
     Env: environment
+    GeneratedBy: 'symphony'
   }
 }
 

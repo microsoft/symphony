@@ -8,6 +8,7 @@ resource userAssignedManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIden
   location: location
   tags: {
     Env: environment
+    GeneratedBy: 'symphony'
   }
 }
 
