@@ -194,7 +194,7 @@ destroy() {
     else
         command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args}"
     fi
-echo "${command}"
+
     output=$(eval "${command}")
     exit_code=$?
 
