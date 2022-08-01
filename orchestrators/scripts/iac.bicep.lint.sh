@@ -30,7 +30,7 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
-    echo "------------------------"
+    _information "------------------------"
 done
 
 # ARM-TTK
