@@ -19,7 +19,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
     version: '12.0'
   }
   tags:{
-    Env: environment
+    EnvironmentName: environment
     GeneratedBy: 'symphony'
   }
 }

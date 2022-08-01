@@ -19,7 +19,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
     tier: skuTier
   }
   tags: {
-    Env: environment
+    EnvironmentName: environment
     GeneratedBy: 'symphony'
   }
 }

@@ -175,25 +175,14 @@ deploy() {
 export -f deploy
 
 destroy() {
-    local bicep_file_path=$1
-    local bicep_parameters_file_path_array_tmp=$2[@]
-    local bicep_parameters_file_path_array=("${!bicep_parameters_file_path_array_tmp}")
-    local deployment_id=$3
-    local location=$4
-    local optional_args=$5 # --management-group-id or --resource-group
+    local environmentName=${1}
+    local layerName=${2}
 
-    target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
+    resourceGroups=$("az group list --tag \"GeneratedBy=symphony\" --tag \"EnvironmentName=${environmentName}\" --tag \"LayerName=${layerName}\"")
 
-    if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg delete --management-group-id ${optional_args} --name ${deployment_id}"
-    elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub delete --name ${deployment_id}"
-    elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant delete --name ${deployment_id} --location ${LOCATION_NAME}"
-    else
-        command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args}"
-    fi
+    echo "${resourceGroups}"
+
+    command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args}"
 
     output=$(eval "${command}")
     exit_code=$?
