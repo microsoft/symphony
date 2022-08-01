@@ -92,27 +92,27 @@ validate() {
 
     echo "Bicep parameters: ${bicep_parameters}"
 
-    if [[ "${target_scope}" == "managementGroup" ]]; then
-        command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
-    elif [[ "${target_scope}" == "subscription" ]]; then
-        command="az deployment sub validate --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
-    elif [[ "${target_scope}" == "tenant" ]]; then
-        command="az deployment tenant validate --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
-        output=$(eval "${command}")
-        exit_code=$?
-    else
-        command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
-        az group create --resource-group "${optional_args}" --location "${LOCATION_NAME}"
-        output=$(eval "${command}")
-        exit_code=$?
-        az group delete --resource-group "${optional_args}" --yes --no-wait
-    fi
+    # if [[ "${target_scope}" == "managementGroup" ]]; then
+    #     command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    #     output=$(eval "${command}")
+    #     exit_code=$?
+    # elif [[ "${target_scope}" == "subscription" ]]; then
+    #     command="az deployment sub validate --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    #     output=$(eval "${command}")
+    #     exit_code=$?
+    # elif [[ "${target_scope}" == "tenant" ]]; then
+    #     command="az deployment tenant validate --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
+    #     output=$(eval "${command}")
+    #     exit_code=$?
+    # else
+    #     command="az deployment group validate --name ${deployment_id} --resource-group ${optional_args} --template-file ${bicep_file_path} ${bicep_parameters}"
+    #     az group create --resource-group "${optional_args}" --location "${LOCATION_NAME}"
+    #     output=$(eval "${command}")
+    #     exit_code=$?
+    #     az group delete --resource-group "${optional_args}" --yes --no-wait
+    # fi
 
-    echo "${output}"
+    # echo "${output}"
 
     return ${exit_code}
 }
