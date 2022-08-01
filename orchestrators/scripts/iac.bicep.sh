@@ -86,9 +86,10 @@ validate() {
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
+    local layerName=$6
 
     target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
+    bicep_parameters=$(_bicep_parameters ${layerName} bicep_parameters_file_path_array)
 
     _information "Bicep parameters: ${bicep_parameters}"
 
