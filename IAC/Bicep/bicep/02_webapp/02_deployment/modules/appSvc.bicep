@@ -1,6 +1,7 @@
 param name string
 param location string
 param environment string
+param layerName string
 
 param appSvcPlanId string
 param dockerImage string
@@ -51,6 +52,7 @@ resource appSvc 'Microsoft.Web/sites@2021-03-01' = {
   }
   tags: {
     EnvironmentName: environment
+    LayerName: layerName
     GeneratedBy: 'symphony'
   }
 }

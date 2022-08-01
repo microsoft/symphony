@@ -1,6 +1,7 @@
 targetScope = 'subscription'
 
 param environment string
+param layerName string
 param location string = deployment().location
 param deploymentName string = ''
 param resourceGroupName string = ''
@@ -24,6 +25,7 @@ module resourceGroup './../../modules/resourceGroup.bicep' = {
     name: _resourceGroupName
     location: location
     environment: environment
+    layerName: layerName
   }
 }
 

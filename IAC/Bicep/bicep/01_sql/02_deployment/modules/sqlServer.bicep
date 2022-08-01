@@ -1,6 +1,7 @@
 param name string
 param location string
 param environment string
+param layerName string
 param administratorLogin string
 
 @secure()
@@ -20,6 +21,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
   }
   tags:{
     EnvironmentName: environment
+    LayerName: layerName
     GeneratedBy: 'symphony'
   }
 }

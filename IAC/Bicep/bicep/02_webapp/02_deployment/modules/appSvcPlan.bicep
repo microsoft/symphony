@@ -1,7 +1,7 @@
-
 param name string
 param location string
 param environment string
+param layerName string
 
 param skuName string
 param skuTier string
@@ -20,6 +20,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   tags: {
     EnvironmentName: environment
+    LayerName: layerName
     GeneratedBy: 'symphony'
   }
 }

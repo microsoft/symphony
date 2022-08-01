@@ -1,5 +1,6 @@
 param location string = resourceGroup().location
 param environment string
+param layerName string
 param deploymentName string = ''
 param appSvcPlanSkuName string
 param appSvcPlanSkuTier string
@@ -33,6 +34,7 @@ module appSvcPlan './modules/appSvcPlan.bicep' = {
     name: appSvcPlanNameGenerator.outputs.name
     location: location
     environment: environment
+    layerName: layerName
     skuName: appSvcPlanSkuName
     skuTier: appSvcPlanSkuTier
   }
@@ -54,6 +56,7 @@ module appSvc './modules/appSvc.bicep' = {
     name: appSvcNameGenerator.outputs.name
     location: location
     environment: environment
+    layerName: layerName
     appSvcPlanId: appSvcPlan.outputs.id
     dockerImage: _dockerImage
     catalogDbConnectionString: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseCatalogDbName};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'

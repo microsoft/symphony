@@ -1,5 +1,6 @@
 param location string = resourceGroup().location
 param environment string
+param layerName string
 param deploymentName string = ''
 
 param sqlServerAdministratorLogin string
@@ -27,6 +28,7 @@ module sqlServer './modules/sqlServer.bicep' = {
     administratorLogin: sqlServerAdministratorLogin
     administratorLoginPassword: sqlServerAdministratorPassword
     environment: environment
+    layerName: layerName
   }
 }
 
@@ -38,6 +40,7 @@ module sqlDatabaseCatalogDb './modules/sqlDatabase.bicep' = {
     sqlServerName: sqlServerName.outputs.name
     location: location
     environment: environment
+    layerName: layerName
     name: 'catalogdb'
     skuName: 'Basic'
   }
@@ -52,6 +55,7 @@ module sqlDatabaseIdentityDb './modules/sqlDatabase.bicep' = {
     sqlServerName: sqlServerName.outputs.name
     location: location
     environment: environment
+    layerName: layerName
     name: 'identitydb'
     skuName: 'Basic'
   }
