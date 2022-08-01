@@ -18,7 +18,9 @@ _target_scope() {
 }
 
 _bicep_parameters() {
-    local bicep_file_path_array_tmp=$1[@]
+    local layerName "${1}"
+
+    local bicep_file_path_array_tmp=${2[@]}
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
@@ -87,6 +89,8 @@ validate() {
 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
+
+    echo "Bicep parameters: ${bicep_parameters}"
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
