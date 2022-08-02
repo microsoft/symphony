@@ -18,16 +18,10 @@ _target_scope() {
 }
 
 _bicep_parameters() {
-
-    _information "layerName: ${1}"
-    _information "others1: ${2}"
-    _information "others2:"
-    _information $2[@]
-
-    local layerName "${1}"
-
-    local bicep_file_path_array_tmp=$2[@]
+    local bicep_file_path_array_tmp=$1[@]
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
+
+    local layerName "${2}"
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
     params="${var%?}"
@@ -94,8 +88,14 @@ validate() {
     local optional_args=$5 # --management-group-id or --resource-group
     local layerName=$6
 
+    _information "bicep_file_path: ${bicep_file_path}"
+    _information "deployment_id: ${deployment_id}"
+    _information "location: ${location}"
+    _information "layerName: ${layerName}"
+    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}"
+
     target_scope=$(_target_scope "${bicep_file_path}")
-    bicep_parameters=$(_bicep_parameters ${layerName} bicep_parameters_file_path_array)
+    bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array ${layerName})
 
     _information "Bicep parameters: ${bicep_parameters}"
 
