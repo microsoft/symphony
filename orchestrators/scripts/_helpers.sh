@@ -8,7 +8,7 @@ _debug_json() {
 
 _debug() {
     # Only print debug lines if debugging is turned on.
-    if [ ${DEBUG_FLAG} == true ]; then
+    if [ -n ${DEBUG_FLAG} ]; then
         if [ -n "${GITHUB_ACTION}" ]; then
             echo "::debug::$@"
         elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
