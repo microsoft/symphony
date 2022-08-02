@@ -164,6 +164,12 @@ deploy() {
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
+    _information "debug"
+    _information "deployment_id: ${deployment_id}"
+    _information "location: ${location}"
+    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}"
+    _information "bicep_parameters: ${bicep_parameters}"
+
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg create --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
