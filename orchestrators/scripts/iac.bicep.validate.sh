@@ -18,6 +18,10 @@ for deployment in "${modules[@]}"; do
     path=$(dirname "${deployment}")
     layerName=$(basename "$(dirname "$(dirname "${deployment}")")")
 
+    _information "deployment: ${deployment}"
+    _information "path: ${path}"
+    _information "layerName: ${layerName}"
+
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
