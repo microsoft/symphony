@@ -34,12 +34,18 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
+        _debug "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
         _debug_json $(cat "${bicep_parameters_file_path}")
+        _debug "Parsed parameter file with Envs: ${bicep_parameters_file_path}"
 
         if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
         fi
+
+        _debug "Completed"
+        _debug_json $(cat "${bicep_parameters_file_path}")
+        _debug "============================================================"
     fi
 }
 
