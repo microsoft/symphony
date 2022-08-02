@@ -18,6 +18,12 @@ _target_scope() {
 }
 
 _bicep_parameters() {
+
+    _information "layerName: ${1}"
+    _information "others1: ${2}"
+    _information "others2:"
+    _information $2[@]
+
     local layerName "${1}"
 
     local bicep_file_path_array_tmp=$2[@]
