@@ -20,7 +20,7 @@ _target_scope() {
 _bicep_parameters() {
     local layerName "${1}"
 
-    local bicep_file_path_array_tmp=${2[@]}
+    local bicep_file_path_array_tmp=${2}[@]
     local bicep_file_path_array=("${!bicep_file_path_array_tmp}")
 
     printf -v var '@%s ' "${bicep_file_path_array[@]}"
