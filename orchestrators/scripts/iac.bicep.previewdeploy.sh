@@ -16,6 +16,7 @@ for deployment in "${modules[@]}"; do
     _information "Executing Bicep deploy: ${deployment}"
 
     path=$(dirname "${deployment}")
+    export layerName=$(basename "$(dirname "$(dirname "${deployment}")")")
 
     params=()
     SAVEIFS=${IFS}

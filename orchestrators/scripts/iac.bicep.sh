@@ -34,7 +34,6 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-        _debug "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
         _debug_json $(cat "${bicep_parameters_file_path}")
         _debug "Parsed parameter file with Envs: ${bicep_parameters_file_path}"
 
