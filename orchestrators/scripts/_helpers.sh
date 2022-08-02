@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _debug_json() {
-    if [ ${DEBUG_FLAG} == true ]; then
+    if [ -n ${DEBUG_FLAG} ]; then
         echo "${@}" | jq
     fi
 }
