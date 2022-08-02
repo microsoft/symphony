@@ -187,7 +187,7 @@ destroy() {
     local environmentName=${1}
     local layerName=${2}
 
-    resourceGroups=$("az group list --tag \"GeneratedBy=symphony\" --tag \"EnvironmentName=${environmentName}\" --tag \"LayerName=${layerName}\"")
+    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}")
 
     echo "${resourceGroups}"
 
