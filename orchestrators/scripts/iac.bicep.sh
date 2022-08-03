@@ -191,7 +191,9 @@ destroy() {
     resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name --output tsv)
 
     for resourceGroup in ${resourceGroups}; do
-        az group delete --resource-group "${resourceGroup}" --yes --no-wait
+        _information "Destroying resource group: ${resourceGroup}"
+        az group delete --resource-group "${resourceGroup}" --yes
+        _information "Resource group destroyed: ${resourceGroup}"
     done
 }
 export -f deploy
