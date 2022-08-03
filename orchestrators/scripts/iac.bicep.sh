@@ -188,8 +188,10 @@ destroy() {
     local environmentName=${1}
     local layerName=${2}
 
-    exit_code=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name -o tsv | xargs -I {} az group delete --yes --name)
+    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name --output tsv)
 
-    return ${exit_code}
+    for resourceGroup in ${resourceGroups}; do
+        az group delete --resource-group "${resourceGroup}" --yes --no-wait
+    done
 }
 export -f deploy
