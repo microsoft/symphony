@@ -39,14 +39,18 @@ for deployment in "${modules[@]}"; do
     load_dotenv
 
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+
     exit_code=$?
+
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep preview failed - returned code ${exit_code}"
         exit ${exit_code}
     fi
 
     output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+
     exit_code=$?
+
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep deploy failed - returned code ${exit_code}"
         exit ${exit_code}

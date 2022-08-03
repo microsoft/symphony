@@ -34,17 +34,11 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
-        _debug_json $(cat "${bicep_parameters_file_path}")
-        _debug "Parsed parameter file with Envs: ${bicep_parameters_file_path}"
 
         if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
         fi
-
-        _debug "Completed"
-        _debug_json $(cat "${bicep_parameters_file_path}")
-        _debug "============================================================"
     fi
 }
 
@@ -171,12 +165,6 @@ deploy() {
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
-    _information "debug"
-    _information "deployment_id: ${deployment_id}"
-    _information "location: ${location}"
-    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}"
-    _information "bicep_parameters: ${bicep_parameters}"
-
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg create --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
@@ -200,16 +188,7 @@ destroy() {
     local environmentName=${1}
     local layerName=${2}
 
-    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}")
-
-    echo "${resourceGroups}"
-
-    command="az deployment group delete --name ${deployment_id} --resource-group ${optional_args}"
-
-    output=$(eval "${command}")
-    exit_code=$?
-
-    echo "${output}"
+    exit_code=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name -o tsv | xargs -I {} az group delete --yes --name)
 
     return ${exit_code}
 }
