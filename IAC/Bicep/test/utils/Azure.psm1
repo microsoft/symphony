@@ -50,4 +50,39 @@ function Get-WebAppExists([string]$webAppName, [string]$resourceGroupName) {
     }
 }
 
-Export-ModuleMember -Function Get-ResourceGroupExists, Get-AppServicePlanExists, Get-WebAppExists
+function Get-SqlServer([string]$serverName, [string]$resourceGroupName) {
+    $resource = Get-AzSqlServer -ResourceGroupName $resourceGroupName -ServerName $serverName
+    return $resource
+}
+
+function Get-SqlServerExists([string]$serverName, [string]$resourceGroupName) {
+    $resource = Get-SqlServer $serverName $resourceGroupName
+    if ($resource -eq $null) {
+        return $false
+    }
+    else{
+        return $true
+    }
+}
+
+function Get-SqlDatabase([string]$databaseName, [string]$serverName, [string]$resourceGroupName) {
+    $resource = Get-AzSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName
+    return $resource
+}
+
+function Get-SqlDatabaseExists([string]$databaseName, [string]$serverName, [string]$resourceGroupName) {
+    $resource = Get-SqlDatabase $databaseName $serverName $resourceGroupName
+    if ($resource -eq $null) {
+        return $false
+    }
+    else{
+        return $true
+    }
+}
+
+Export-ModuleMember -Function `
+    Get-ResourceGroup, Get-ResourceGroupExists, `
+    Get-AppServicePlan, Get-AppServicePlanExists, `
+    Get-WebApp, Get-WebAppExists, `
+    Get-SqlServer, Get-SqlServerExists, `
+    Get-SqlDatabase, Get-SqlDatabaseExists

@@ -18,11 +18,11 @@ Describe '02 Web Layer Tests' {
 
         #act
         $deployment = Deploy-BicepFeature $bicepPath $params
-        $resourceExists = Get-AppServicePlanExists $appServicePlanName $resourceGroupName
+        $resourceGroupExists = Get-ResourceGroupExists $resourceGroupName
 
         #assert
         $deployment.ProvisioningState | Should -Be "Succeeded"
-        $resourceExists | Should -Be $true
+        $resourceGroupExists | Should -Be $true
     }
 
     it 'Should deploy an app service' {
@@ -47,11 +47,13 @@ Describe '02 Web Layer Tests' {
 
         #act
         $deployment = Deploy-BicepFeature $bicepPath $params $resourceGroupName
-        $resourceExists = Get-WebAppExists $appServiceName $resourceGroupName
+        $appServicePlanResourceExists = Get-AppServicePlanExists $appServicePlanName $resourceGroupName
+        $webAppResourceExists = Get-WebAppExists $appServiceName $resourceGroupName
 
         #assert
         $deployment.ProvisioningState | Should -Be "Succeeded"
-        $resourceExists | Should -Be $true
+        $appServicePlanResourceExists | Should -Be $true
+        $webAppResourceExists | Should -Be $true
     }
 }
 
@@ -60,5 +62,6 @@ AfterAll {
     Write-Host "Cleaning up Resources!"
 
     Write-Host "Removing Resource Group $resourceGroupName"
+
     Remove-BicepFeature $resourceGroupName
 }

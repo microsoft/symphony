@@ -1,6 +1,9 @@
 BeforeAll{
     . $PSScriptRoot/UtilsLoader.ps1
-    $ResourceGroupName = "rglayer"
+    $resourceGroupName = "rgsqllayer"
+    $sqlServerName = "test-sqlserver-pyo"
+    $sqlDatabaseName1 = "catalogdb"
+    $sqlDatabaseName2 = "identitydb"
 }
 
 Describe '01 Sql Layer Tests' {
@@ -9,30 +12,51 @@ Describe '01 Sql Layer Tests' {
         $bicepPath = "../bicep/01_sql/01_rg/main.bicep"
         $params = @{
             deploymentName = "rgtestlayer"
-            resourceGroupName = $ResourceGroupName
+            resourceGroupName = $resourceGroupName
             location = "westus"
             environment = "dev"
         }
+
         #act
         $deployment = Deploy-BicepFeature $bicepPath $params
+        $resourceGroupExists = Get-ResourceGroupExists $resourceGroupName
+
         #assert
         $deployment.ProvisioningState| Should -Be "Succeeded"
+        $resourceGroupExists | Should -Be $true
     } 
 
     it 'Should deploy a sql server' {
         #arrange
-        $deployed = $True
+        $bicepPath = "../bicep/01_sql/02_deployment/main.bicep"
+        $params = @{
+            deploymentName = "sqltestlayer"
+            location = "westus"
+            environment = "test"
+            sqlServerAdministratorLogin = "sqladmin"
+            sqlServerAdministratorPassword = "Sql@dmin123"
+        }
+
         #act
-        #to do
+        $deployment = Deploy-BicepFeature $bicepPath $params $resourceGroupName
+
+        $sqlServerExists = Get-SqlServerExists $sqlServerName $resourceGroupName
+        $sqlDatabaseExists1 = Get-SqlDatabaseExists $sqlDatabaseName1 $sqlServerName $resourceGroupName
+        $sqlDatabaseExists2 = Get-SqlDatabaseExists $sqlDatabaseName2 $sqlServerName $resourceGroupName
+
         #assert
-        $deployed| Should -Be $True
-    } 
+        $deployment.ProvisioningState | Should -Be "Succeeded"
+        $sqlServerExists | Should -Be $true
+        $sqlDatabaseExists1 | Should -Be $true
+        $sqlDatabaseExists2 | Should -Be $true
+    }
 }
 
 AfterAll{
     #clean up
     Write-Host "Cleaning up Resources!"
 
-    Write-Host "Removing Resource Group $ResourceGroupName"
-    Remove-BicepFeature $ResourceGroupName
+    Write-Host "Removing Resource Group $resourceGroupName"
+
+    Remove-BicepFeature $resourceGroupName
 }
