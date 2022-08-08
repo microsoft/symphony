@@ -1,0 +1,75 @@
+name: "Template-Bicep-Test"
+
+on:
+  workflow_call:
+    inputs:
+      environmentName:
+        type: string
+        required: true
+      locationName:
+        type: string
+        required: true
+      keyVaultName:
+        type: string
+        required: true
+      branchName:
+        required: true
+        type: string
+    secrets:
+      azureEnviromentCredentials:
+        required: true
+
+jobs:
+  Test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branchName }}
+
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          ./setup-powershell.sh
+          ./setup-pester.sh
+          source ~/.bashrc
+        working-directory: orchestrators/scripts
+
+      - uses: Azure/login@v1
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.azureEnviromentCredentials }}"
+
+      - uses: Azure/get-keyvault-secrets@v1
+        name: Get KeyVault Secrets
+        with:
+          keyvault: ${{ github.event.inputs.keyVaultName }}
+          secrets: "clientId, clientSecret, subscriptionId, tenantId"
+        id: kvSecrets
+
+      - name: Run global pre-deploy script
+        run: |
+          ./pre.sh
+        working-directory: IAC/Bicep/scripts
+
+      - name: Run e2e tests
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
+          ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
+          LOCATION_NAME: ${{ github.event.inputs.locationName }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          source ./tests.runner.sh
+          bicep pester
+        working-directory: orchestrators/scripts
+
+      - uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: pest-results
+          path: IAC/Bicep/test/pester
