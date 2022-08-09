@@ -196,4 +196,4 @@ destroy() {
         _information "Resource group destroyed: ${resourceGroup}"
     done
 }
-export -f deploy
+export -f destroy
