@@ -42,8 +42,6 @@ for deployment in "${modules[@]}"; do
     output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
     exit_code=$?
 
-    echo "output: ${output}"
-
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep validate failed - returned code ${exit_code}"
         exit ${exit_code}
