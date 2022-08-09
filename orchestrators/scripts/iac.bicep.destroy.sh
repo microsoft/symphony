@@ -21,8 +21,6 @@ for deployment in "${modules[@]}"; do
 
     exit_code=$?
 
-    echo "${output}"
-
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep destroy failed - returned code ${exit_code}"
         exit ${exit_code}
