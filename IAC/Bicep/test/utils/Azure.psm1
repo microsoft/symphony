@@ -6,11 +6,7 @@ function Get-ResourceGroup([string]$resourceGroupName) {
 function Get-ResourceGroupExists([string]$resourceGroupName) {
     $resource = Get-ResourceGroup $resourceGroupName
 
-    if ($resource -eq $null) {
-        return $false
-    } else {
-        return $true
-    }
+    return ($resource -ne $null)
 }
 
 function Get-AppServicePlan {
@@ -28,11 +24,7 @@ function Get-AppServicePlanExists {
         [string]$resourceGroupName
     )
     $resource = Get-AppServicePlan $appServicePlanName $resourceGroupName
-    if ($resource -eq $null) {
-        return $false
-    } else{
-        return $true
-    }
+    return ($resource -ne $null)
 }
 
 function Get-WebApp([string]$webAppName, [string]$resourceGroupName) {
@@ -42,12 +34,7 @@ function Get-WebApp([string]$webAppName, [string]$resourceGroupName) {
 
 function Get-WebAppExists([string]$webAppName, [string]$resourceGroupName) {
     $resource = Get-WebApp $webAppName $resourceGroupName
-    if ($resource -eq $null) {
-        return $false
-    }
-    else{
-        return $true
-    }
+    return ($resource -ne $null)
 }
 
 function Get-SqlServer([string]$serverName, [string]$resourceGroupName) {
@@ -57,12 +44,7 @@ function Get-SqlServer([string]$serverName, [string]$resourceGroupName) {
 
 function Get-SqlServerExists([string]$serverName, [string]$resourceGroupName) {
     $resource = Get-SqlServer $serverName $resourceGroupName
-    if ($resource -eq $null) {
-        return $false
-    }
-    else{
-        return $true
-    }
+    return ($resource -ne $null)
 }
 
 function Get-SqlDatabase([string]$databaseName, [string]$serverName, [string]$resourceGroupName) {
@@ -72,12 +54,7 @@ function Get-SqlDatabase([string]$databaseName, [string]$serverName, [string]$re
 
 function Get-SqlDatabaseExists([string]$databaseName, [string]$serverName, [string]$resourceGroupName) {
     $resource = Get-SqlDatabase $databaseName $serverName $resourceGroupName
-    if ($resource -eq $null) {
-        return $false
-    }
-    else{
-        return $true
-    }
+    return ($resource -ne $null)
 }
 
 Export-ModuleMember -Function `
