@@ -41,9 +41,7 @@ Describe "End to End Tests" {
             $defaultHostName = $webAppResource.DefaultHostName
             $defaultHostName | Should -Not -Be $Null
 
-            $response = Invoke-RestMethod -Uri "http://$defaultHostName" -Method Get;
-
-            Write-Host ($response | ConvertTo-Json)
+            $response = Invoke-RestMethod -Uri "http://$defaultHostName/swagger/index.html" -Method Get;
         }
     }
 }
