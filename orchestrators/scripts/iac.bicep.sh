@@ -34,6 +34,7 @@ parse_bicep_parameters() {
 
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
+
         if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
             new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
@@ -84,9 +85,18 @@ validate() {
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
+    export layerName=$6
+
+    _information "bicep_file_path: ${bicep_file_path}"
+    _information "deployment_id: ${deployment_id}"
+    _information "location: ${location}"
+    _information "layerName: ${layerName}"
+    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}"
 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
+
+    _information "Bicep parameters: ${bicep_parameters}"
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
@@ -173,3 +183,17 @@ deploy() {
     return ${exit_code}
 }
 export -f deploy
+
+destroy() {
+    local environmentName=${1}
+    local layerName=${2}
+
+    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name --output tsv)
+
+    for resourceGroup in ${resourceGroups}; do
+        _information "Destroying resource group: ${resourceGroup}"
+        az group delete --resource-group "${resourceGroup}" --yes
+        _information "Resource group destroyed: ${resourceGroup}"
+    done
+}
+export -f destroy

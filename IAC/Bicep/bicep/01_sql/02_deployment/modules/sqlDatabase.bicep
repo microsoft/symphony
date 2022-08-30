@@ -2,6 +2,7 @@ param sqlServerName string
 param name string
 param location string
 param environment string
+param layerName string
 param skuName string
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers?tabs=bicep
@@ -18,7 +19,9 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
     name: skuName
   }
   tags:{
-    Env: environment
+    EnvironmentName: environment
+    LayerName: layerName
+    GeneratedBy: 'symphony'
   }
 }
 
