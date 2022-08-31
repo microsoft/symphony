@@ -13,7 +13,27 @@ modules=($(find . -type f -name 'main.bicep' | sort -u))
 IFS=${SAVEIFS}
 
 for deployment in "${modules[@]}"; do
-    _information "Executing Bicep deploy: ${deployment}"
+    SANITIZED_EXCLUDED_FOLDERS=",${EXCLUDED_FOLDERS},"
+    SANITIZED_EXCLUDED_FOLDERS=${SANITIZED_EXCLUDED_FOLDERS//;/,}
+
+    dirname=$(dirname "${deployment}")
+    sanitized_dirname=${dirname//.\//}
+
+    if [[ ${sanitized_dirname} == __* ]]; then
+        _information "Skipping ${deployment}"
+        echo ""
+        echo "------------------------"
+        continue
+    fi
+
+    if [[ ${SANITIZED_EXCLUDED_FOLDERS} == *",${sanitized_dirname},"* ]]; then
+        _information "${sanitized_dirname} excluded"
+        echo ""
+        echo "------------------------"
+        continue
+    fi
+
+    _information "Preparing for ${deployment}"
 
     path=$(dirname "${deployment}")
     export layerName=$(basename "$(dirname "$(dirname "${deployment}")")")
@@ -38,6 +58,8 @@ for deployment in "${modules[@]}"; do
 
     load_dotenv
 
+    _information "Executing Bicep preview: 'preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
+
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
 
     exit_code=$?
@@ -46,6 +68,8 @@ for deployment in "${modules[@]}"; do
         _error "Bicep preview failed - returned code ${exit_code}"
         exit ${exit_code}
     fi
+
+    _information "Executing Bicep deploy: 'deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
 
     output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
 
