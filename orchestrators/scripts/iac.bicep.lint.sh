@@ -18,6 +18,26 @@ popd
 
 # LINT
 for deployment in "${modules[@]}"; do
+    SANITIZED_EXCLUDED_FOLDERS=",${EXCLUDED_FOLDERS},"
+    SANITIZED_EXCLUDED_FOLDERS=${SANITIZED_EXCLUDED_FOLDERS//;/,}
+
+    dirname=$(dirname "${deployment}")
+    sanitized_dirname=${dirname//.\//}
+
+    if [[ ${sanitized_dirname} == __* ]]; then
+        _information "Skipping ${deployment}"
+        echo ""
+        echo "------------------------"
+        continue
+    fi
+
+    if [[ ${SANITIZED_EXCLUDED_FOLDERS} == *",${sanitized_dirname},"* ]]; then
+        _information "${sanitized_dirname} excluded"
+        echo ""
+        echo "------------------------"
+        continue
+    fi
+
     deployment=${deployment/'./'/"${looking_path}/"}
 
     _information "Executing Bicep lint for: ${deployment}"
