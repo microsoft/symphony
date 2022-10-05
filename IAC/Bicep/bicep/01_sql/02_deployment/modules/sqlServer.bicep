@@ -10,7 +10,7 @@ param administratorLoginPassword string
 // SQL SERVER
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers?tabs=bicep
-resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
   name: name
   location: location
   properties: {

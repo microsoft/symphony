@@ -6,12 +6,12 @@ param layerName string
 param skuName string
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers?tabs=bicep
-resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' existing = {
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01' existing = {
   name: sqlServerName
 }
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases?tabs=bicep
-resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
   parent: sqlServer
   name: name
   location: location
