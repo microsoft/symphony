@@ -8,20 +8,20 @@ To run the workflows, you need to have the following installed on agents
 
 ### Bicep Pipelines
 
-- [Azure CLI](../orchestrators/scripts/setup-azcli.sh)
-- [Gitleaks](../orchestrators/scripts/setup-gitleaks.sh)
-- [Powershell Core](../orchestrators/scripts/setup-powershell.sh)
-- [ARM-TTK](../orchestrators/scripts/setup-armttk.sh)
-- [Shellspec](../orchestrators/scripts/setup-shellspec.sh)
-- [Pester](../orchestrators/scripts/setup-pester.sh)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) here is a script to auto [install](../orchestrators/scripts/setup-azcli.sh) it
+- [Gitleaks](https://github.com/zricethezav/gitleaks) here is a script to auto [install](../orchestrators/scripts/setup-gitleaks.sh) it
+- [Powershell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.2) here is a script to auto [install](../orchestrators/scripts/setup-powershell.sh) it
+- [ARM-TTK](https://github.com/Azure/arm-ttk) here is a script to auto [install](../orchestrators/scripts/setup-armttk.sh) it
+- [Shellspec](https://shellspec.info/) here is a script to auto [install](../orchestrators/scripts/setup-shellspec.sh) it
+- [Pester](https://pester.dev/) here is a script to auto [install](../orchestrators/scripts/setup-pester.sh) it
 
 ### Terraform Pipelines
 
-- [Azure CLI](../orchestrators/scripts/setup-azcli.sh)
-- [Gitleaks](../orchestrators/scripts/setup-gitleaks.sh)
-- [Terraform](../orchestrators/scripts/setup-terraform.sh)
-- [TFLint](../orchestrators/scripts/setup-tflint.sh)
-- [Go](../orchestrators/scripts/setup-go.sh)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) here is a script to auto [install](../orchestrators/scripts/setup-azcli.sh) it
+- [Gitleaks](https://github.com/zricethezav/gitleaks) here is a script to auto [install](../orchestrators/scripts/setup-gitleaks.sh) it
+- [Terraform](https://www.terraform.io/downloads) here is a script to auto [install](../orchestrators/scripts/setup-terraform.sh) it
+- [TFLint](https://github.com/terraform-linters/tflint) here is a script to auto [install](../orchestrators/scripts/setup-tflint.sh) it
+- [Go](https://go.dev/learn/) here is a script to auto [install](../orchestrators/scripts/setup-go.sh) it
 
 ## Workflow steps
 
