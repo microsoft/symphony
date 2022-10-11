@@ -2,7 +2,7 @@
 
 Creating pipelines for Infrastructure as code seems easy to build task, but in a mature system, things can get complicated as it needs to handle many changing dynamics parts. A mature workflow for IAC not only automates the deployment of the IAC resources but also incorporates engineering fundamentals, resources validation, dependency management, test execution, security scanning, and more.
 
-## Pre-requisites
+## Required tools
 
 To run the workflows, you need to have the following installed on agents
 
