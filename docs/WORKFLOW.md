@@ -2,6 +2,27 @@
 
 Creating pipelines for Infrastructure as code seems easy to build task, but in a mature system, things can get complicated as it needs to handle many changing dynamics parts. A mature workflow for IAC not only automates the deployment of the IAC resources but also incorporates engineering fundamentals, resources validation, dependency management, test execution, security scanning, and more.
 
+## Pre-requisites
+
+To run the workflows, you need to have the following installed on agents
+
+### Bicep Pipelines
+
+- [Azure CLI](../orchestrators/scripts/setup-azcli.sh)
+- [Gitleaks](../orchestrators/scripts/setup-gitleaks.sh)
+- [Powershell Core](../orchestrators/scripts/setup-powershell.sh)
+- [ARM-TTK](../orchestrators/scripts/setup-armttk.sh)
+- [Shellspec](../orchestrators/scripts/setup-shellspec.sh)
+- [Pester](../orchestrators/scripts/setup-pester.sh)
+
+### Terraform Pipelines
+
+- [Azure CLI](../orchestrators/scripts/setup-azcli.sh)
+- [Gitleaks](../orchestrators/scripts/setup-gitleaks.sh)
+- [Terraform](../orchestrators/scripts/setup-terraform.sh)
+- [TFLint](../orchestrators/scripts/setup-tflint.sh)
+- [Go](../orchestrators/scripts/setup-go.sh)
+
 ## Workflow steps
 
 To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
@@ -14,9 +35,9 @@ This stage ensures code readiness. It runs validations and linting tools, scans 
 
 ```mermaid
 flowchart LR
-    A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
-    C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
-    E -->F(Finalize/Publish reports)
+  A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
+  C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
+  E -->F(Finalize/Publish reports)
 ```
 
 ### Preview
@@ -25,9 +46,9 @@ This stage plans the execution of the IAC code and estimates the scope of the ch
 
 ```mermaid
 flowchart LR
-    A(Init IAC tool) --> B(Run IAC cmds to preview changes) --> C(Store preview cmd changes/output)
-    C -->D(Check for resources destroy operations)
-    D -->E(Finalize/Publish reports)
+  A(Init IAC tool) --> B(Run IAC cmds to preview changes) --> C(Store preview cmd changes/output)
+  C -->D(Check for resources destroy operations)
+  D -->E(Finalize/Publish reports)
 ```
 
 ### Deploy
@@ -36,7 +57,7 @@ This stage deploys the IAC code to apply the changes from the planning stage. It
 
 ```mermaid
 flowchart LR
-    A(Init IAC tool) --> B(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
+  A(Init IAC tool) --> B(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
 ```
 
 ### Test
@@ -45,7 +66,7 @@ This stage executes the integration or end-to-end tests against the recent deplo
 
 ```mermaid
 flowchart LR
-    A(Init test framework) --> B(Execute e2e tests) -->E(Finalize/Publish reports)
+  A(Init test framework) --> B(Execute e2e tests) -->E(Finalize/Publish reports)
 ```
 
 ### Report
@@ -54,5 +75,5 @@ This stage generates the needed scripts to repro the deployments, publish the cr
 
 ```mermaid
 flowchart LR
-    A(Generate deplyment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
+  A(Generate deplyment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
 ```
