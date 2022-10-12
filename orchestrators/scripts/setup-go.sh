@@ -2,6 +2,13 @@
 
 # Syntax: ./setup-go.sh [version]
 
+# check if go is already installed
+if command -v go &> /dev/null
+then
+  echo "Go is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

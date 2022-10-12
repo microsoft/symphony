@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-gitleaks.sh [version]
 
+# check if gitleaks is already installed
+if [ -f "/usr/local/bin/gitleaks" ]; then
+  echo "gitleaks is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-sops.sh [version]
 
+# check if sops is already installed
+if [ -f "/usr/local/bin/sops" ]; then
+  echo "sops is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-tflint.sh [version]
 
+# check if tflint is already installed
+if [ -f "/usr/local/bin/tflint" ]; then
+  echo "tflint is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

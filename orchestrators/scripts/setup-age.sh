@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-age.sh [version]
 
+# check if age is already installed
+if [ -f "/usr/local/bin/age" ]; then
+  echo "age is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh
