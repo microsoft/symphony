@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-shellspec.sh [version]
 
+# check if shellspec is already installed
+if [ -f "./shellspec/shellspec" ]; then
+  echo "Shellspec is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

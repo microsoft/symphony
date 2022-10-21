@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-armttk.sh [version]
 
+# check if armttk is already installed
+if [ -f "./arm-ttk/Test-AzTemplate.cmd" ]; then
+  echo "armttk is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

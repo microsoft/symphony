@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-terraform.sh [version]
 
+# check if terraform is already installed
+if [ -f "/usr/local/bin/terraform" ]; then
+  echo "Terraform is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh

@@ -2,6 +2,12 @@
 
 # Syntax: ./setup-bicep.sh [version]
 
+# check if bicep is already installed
+if [ -f "/usr/local/bin/bicep" ]; then
+  echo "Bicep is already installed"
+  exit 0
+fi
+
 # Includes
 source _helpers.sh
 source _setup_helpers.sh
