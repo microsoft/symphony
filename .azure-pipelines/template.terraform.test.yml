@@ -21,8 +21,8 @@ jobs:
       - task: Bash@3
         displayName: "Install Terraform"
         inputs:
-          filePath: "orchestrators/scripts/setup-terraform.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-terraform.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           arguments: ${{ parameters.terraformVersion }}
           bashEnvValue: "~/.profile"
           failOnStderr: true
@@ -54,9 +54,9 @@ jobs:
           STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
           STATE_CONTAINER: $(stateContainer)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.test.sh"
+          filePath: "scripts/orchestrators/iac.tf.test.sh"
 
       - task: PublishTestResults@2
         displayName: "Publish E2E test results"

@@ -22,8 +22,8 @@ jobs:
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
 
@@ -46,6 +46,6 @@ jobs:
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.bicep.previewdeploy.sh"
+          filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"

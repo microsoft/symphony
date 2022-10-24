@@ -31,7 +31,7 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
         with:
@@ -55,4 +55,4 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           ./iac.bicep.previewdeploy.sh
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
