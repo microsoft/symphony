@@ -28,7 +28,7 @@ jobs:
         run: |
           ./setup-azcli.sh
 
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
         shell: bash
 
       - uses: Azure/login@v1
@@ -58,5 +58,5 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           ./iac.tf.statebackup.sh
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
         shell: bash

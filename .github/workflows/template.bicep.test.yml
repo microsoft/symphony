@@ -34,7 +34,7 @@ jobs:
           ./setup-powershell.sh
           ./setup-pester.sh
           source ~/.bashrc
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -66,7 +66,7 @@ jobs:
         run: |
           source ./tests.runner.sh
           bicep pester
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
 
       - uses: actions/upload-artifact@v3
         if: success() || failure()

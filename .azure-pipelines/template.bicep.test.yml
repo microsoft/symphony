@@ -24,8 +24,8 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          filePath: "orchestrators/scripts/setup-pester.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-pester.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
           targetType: "filePath"
@@ -33,8 +33,8 @@ jobs:
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
 
@@ -57,7 +57,7 @@ jobs:
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
           script: |
             source ./tests.runner.sh
