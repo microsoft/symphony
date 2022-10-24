@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source scripts/utilities/shell_logger.sh
 source scripts/install/banner.sh
 
-show_banner
+_information "Symphony Install"
+
