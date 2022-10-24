@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Boostrap Symphony"
+source scripts/install/banner.sh
+
+show_banner
