@@ -90,7 +90,7 @@ bicep() {
 
   pester() {
     _information "run pester tests"
-    pushd ./pester
+    pushd ../../IAC/Bicep/test/end_to_end
 
     # if the test file is not specified, run for all files
     if [ -z "${1}" ]; then
