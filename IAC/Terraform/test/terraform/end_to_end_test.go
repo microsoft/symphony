@@ -1,3 +1,4 @@
+//go:build e2e_test
 // +build e2e_test
 
 package terraform
@@ -20,8 +21,8 @@ func Test_EndToEnd(t *testing.T) {
 	//load remote state env vars
 	rmResourceGroupName := os.Getenv("resource_group_name")
 	rmStorageAccName := os.Getenv("storage_account_name")
-	rmContainerName := os.Getenv("container_name")///  FIx me in case of pipeline execution : the path should be envname/02_sql/01_deployment.tfstate
-	envName := os.Getenv("ENVIRONMENT_NAME")
+	rmContainerName := os.Getenv("container_name")
+	envName := os.Getenv("ENVIRONMENT_NAME") + "/"
 
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions_02 := &terraform.Options{
