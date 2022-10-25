@@ -52,7 +52,7 @@ bicep_output_to_env() {
 
     if [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
         local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
-        echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicep_output_json}"
+        echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
     fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
