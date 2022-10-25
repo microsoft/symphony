@@ -74,6 +74,8 @@ jobs:
           azureSubscription: 'Symphony-KV'
           ScriptType: 'InlineScript'
           Inline: |
+            Write-Host "Variable $(sqlServerResourceGroupName)"
+            Write-Host "PSEng: " + $env:SQLSERVER_RESOURCE_GROUP_NAME
             Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML
           preferredAzurePowerShellVersion: '3.1.0'
           pwsh: true
