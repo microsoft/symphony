@@ -59,8 +59,9 @@ for deployment in "${modules[@]}"; do
     load_dotenv
 
     _information "Executing Bicep preview: 'preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
-
+   
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+    echo $output
 
     exit_code=$?
 
@@ -81,7 +82,7 @@ for deployment in "${modules[@]}"; do
     fi
 
     bicep_output_to_env "${output}"
-
+    echo "${output}"
     echo "------------------------"
 done
 
