@@ -14,7 +14,7 @@ jobs:
   - job: Test
     variables:
       - name: bicepJson
-        value: $[ dependencies.A.outputs['PreviewDeploy.bicepJson'] ]
+        value: $[ dependencies.PreviewDeploy.outputs['BicepPreviewDeploy.bicepJson'] ]
     displayName: "E2E Test"
     dependsOn:
       - PreviewDeploy
