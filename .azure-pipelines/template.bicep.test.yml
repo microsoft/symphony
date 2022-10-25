@@ -12,6 +12,9 @@ parameters:
 
 jobs:
   - job: Test
+    variables:
+      - name: bicepJson
+        value: $[ dependencies.A.outputs['PreviewDeploy.bicepJson'] ]
     displayName: "E2E Test"
     dependsOn:
       - PreviewDeploy
@@ -74,8 +77,7 @@ jobs:
           azureSubscription: 'Symphony-KV'
           ScriptType: 'InlineScript'
           Inline: |
-            env
-            Write-Host "PSEnv: " + $env:SQLSERVER_RESOURCE_GROUP_NAME
+            Write-Host "bicepJson: $(bicepJson)"
             Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML
           preferredAzurePowerShellVersion: '3.1.0'
           pwsh: true

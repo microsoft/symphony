@@ -50,6 +50,10 @@ bicep_output_to_env() {
         rm -f "${dotenv_file_path}"
     fi
 
+    if [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
+        echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicep_output_json}"
+    fi
+
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$"\n" read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
