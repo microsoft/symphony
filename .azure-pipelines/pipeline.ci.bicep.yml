@@ -6,12 +6,6 @@ trigger:
 pr:
   - none
 
-variables:
-  - group: ${{ parameters.environmentName }}
-
-  - name: agentImage
-    value: "ubuntu-latest"
-
 parameters:
   - name: environmentName
     default: "dev"
@@ -28,16 +22,36 @@ parameters:
   - name: excludedFolders
     default: ","
 
+variables:
+  - group: ${{ parameters.environmentName }}
+
+  - name: agentImage
+    value: "ubuntu-latest"
+
 pool:
   vmImage: $(agentImage)
 
 jobs:
-  - job: xyz
-    steps:
-    - task: Bash@3
-      displayName: "test variable group"
-      inputs:
-        failOnStderr: true
-        targetType: "inline"
-        script: |
-          echo "variablegroup1: $(variablegroup1)"
+  - template: ./template.bicep.validate.yml
+    parameters:
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  - template: ./template.bicep.previewdeploy.yml
+    parameters:
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  - template: ./template.bicep.test.yml
+    parameters:
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)

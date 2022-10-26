@@ -6,69 +6,59 @@ trigger:
 pr:
   - none
 
+parameters:
+  - name: environmentName
+    default: "dev"
+
+  - name: keyVaultArmSvcConnectionName
+    default: "Symphony-KV"
+
+  - name: keyVaultName
+    default: "kv-symphony-env"
+
 variables:
   - name: agentImage
     value: "ubuntu-latest"
 
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
+
   - name: runBackupState
     value: true
 
-  #=============================================================#
-  # The following Variables should be set on the pipeline level #
-  #=============================================================#
-
-  # Name of the Environment
-  - name: environmentName
-    value: "dev"
-
-  # ARM Service Connection Name used for environment Key Vault access
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
-
-  # Environment Key Vault Name
-  - name: keyVaultName
-    value: "kv-symphony-env"
-
-  # Go Lang version
   - name: goVersion
     value: "1.18.1"
 
-  # Terraform version
   - name: terraformVersion
     value: "1.1.7"
 
 pool:
   vmImage: $(agentImage)
 
-stages:
-  - stage: Validate
-    displayName: "Validate Configuration"
-    jobs:
-      - template: ./template.terraform.validate.yml
-        parameters:
-          goVersion: "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
-          runLayerTest: "false"
+jobs:
+  - template: ./template.terraform.validate.yml
+    parameters:
+      goVersion: "$(goVersion)"
+      terraformVersion: "$(terraformVersion)"
+      keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
+      keyVaultName: "$(keyVaultName)"
+      runLayerTest: "false"
 
-      - template: ./template.terraform.previewdeploy.yml
-        parameters:
-          goVersion: "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
+  - template: ./template.terraform.previewdeploy.yml
+    parameters:
+      goVersion: "$(goVersion)"
+      terraformVersion: "$(terraformVersion)"
+      keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
+      keyVaultName: "$(keyVaultName)"
 
-      - template: ./template.terraform.test.yml
-        parameters:
-          goVersion: "$(goVersion)"
-          terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
+  - template: ./template.terraform.test.yml
+    parameters:
+      goVersion: "$(goVersion)"
+      terraformVersion: "$(terraformVersion)"
+      keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
+      keyVaultName: "$(keyVaultName)"
 
-      - template: ./template.terraform.report.yml
-        parameters:
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
+  - template: ./template.terraform.report.yml
+    parameters:
+      keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
+      keyVaultName: "$(keyVaultName)"

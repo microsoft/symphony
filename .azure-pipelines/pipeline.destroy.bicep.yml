@@ -6,30 +6,22 @@ trigger:
 pr:
   - none
 
-variables:
-  #=============================================================#
-  # The following Variables should be set on the pipeline level #
-  #=============================================================#
+parameters:
+  - name: environmentName
+    default: "dev"
 
-  # Name of the Agent Pool to use
+  - name: locationName
+    default: "westus"
+
+  - name: keyVaultArmSvcConnectionName
+    default: "Symphony-KV"
+
+  - name: keyVaultName
+    default: "kv-symphony-env"
+
+variables:
   - name: agentImage
     value: "ubuntu-latest"
-
-  # Name of the Environment
-  - name: environmentName
-    value: "dev"
-
-  # Name of the deployment Location
-  - name: locationName
-    value: "westus"
-
-  # ARM Service Connection Name used for environment Key Vault access
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
-
-  # Environment Key Vault Name
-  - name: keyVaultName
-    value: "kv-symphony-env"
 
 pool:
   vmImage: $(agentImage)
