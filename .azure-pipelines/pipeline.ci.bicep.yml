@@ -45,27 +45,3 @@ stages:
             targetType: "inline"
             script: |
               echo "variablegroup1: ${VARIABLE_GROUP1}"
-
-      - template: ./template.bicep.validate.yml
-        parameters:
-          environmentName: ${{parameters.environmentName}}
-          locationName: ${{parameters.locationName}}
-          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
-          keyVaultName: ${{parameters.keyVaultName}}
-          excludedFolders: ${{parameters.excludedFolders}}
-
-      - template: ./template.bicep.previewdeploy.yml
-        parameters:
-          environmentName: ${{parameters.environmentName}}
-          locationName: ${{parameters.locationName}}
-          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
-          keyVaultName: ${{parameters.keyVaultName}}
-          excludedFolders: ${{parameters.excludedFolders}}
-
-      - template: ./template.bicep.test.yml
-        parameters:
-          environmentName: ${{parameters.environmentName}}
-          locationName: ${{parameters.locationName}}
-          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
-          keyVaultName: ${{parameters.keyVaultName}}
-          excludedFolders: ${{parameters.excludedFolders}}
