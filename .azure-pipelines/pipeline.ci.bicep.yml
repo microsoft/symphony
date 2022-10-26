@@ -7,6 +7,7 @@ pr:
   - none
 
 variables:
+  - group: "dev"
   - name: agentImage
     value: "ubuntu-latest"
 
@@ -29,19 +30,15 @@ parameters:
 pool:
   vmImage: $(agentImage)
 
-stages:
-  - stage: CI_Pipeline
-    variables:
-      group: "dev"
-    jobs:
-      - job: xyz
-        steps:
-        - task: Bash@3
-          displayName: "test variable group"
-          env:
-            VARIABLE_GROUP1: $(variablegroup1)
-          inputs:
-            failOnStderr: true
-            targetType: "inline"
-            script: |
-              echo "variablegroup1: ${VARIABLE_GROUP1}"
+jobs:
+  - job: xyz
+    steps:
+    - task: Bash@3
+      displayName: "test variable group"
+      env:
+        VARIABLE_GROUP1: $(variablegroup1)
+      inputs:
+        failOnStderr: true
+        targetType: "inline"
+        script: |
+          echo "variablegroup1: ${VARIABLE_GROUP1}"
