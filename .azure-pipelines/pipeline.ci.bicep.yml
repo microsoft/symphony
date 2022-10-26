@@ -6,10 +6,11 @@ trigger:
 pr:
   - none
 
-parameters:
+variables:
   - name: agentImage
-    default: "ubuntu-latest"
+    value: "ubuntu-latest"
 
+parameters:
   - name: environmentName
     default: "dev"
 
@@ -26,7 +27,7 @@ parameters:
     default: ","
 
 pool:
-  vmImage: ${{parameters.agentImage}}
+  vmImage: $(agentImage)
 
 stages:
   - stage: CI_Pipeline
