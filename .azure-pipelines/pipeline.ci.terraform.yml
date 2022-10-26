@@ -6,10 +6,10 @@ trigger:
 pr:
   - none
 
-pool:
-  vmImage: "ubuntu-latest"
-
 variables:
+  - name: poolName
+    value: "ubuntu-latest"
+
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
   - name: runBackupState
@@ -38,6 +38,9 @@ variables:
   # Terraform version
   - name: terraformVersion
     value: "1.1.7"
+
+pool:
+  vmImage: $(poolName)
 
 stages:
   - stage: Validate
