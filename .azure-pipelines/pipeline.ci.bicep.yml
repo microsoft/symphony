@@ -33,7 +33,7 @@ pool:
   vmImage: $(agentImage)
 
 stages:
-  - stage: CI Pipeline
+  - stage: CI_Pipeline
     variables:
       group: ${{variables.environmentName}}
     jobs:
