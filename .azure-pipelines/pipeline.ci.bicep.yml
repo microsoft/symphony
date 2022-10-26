@@ -36,10 +36,8 @@ jobs:
     steps:
     - task: Bash@3
       displayName: "test variable group"
-      env:
-        VARIABLE_GROUP1: $(variablegroup1)
       inputs:
         failOnStderr: true
         targetType: "inline"
         script: |
-          echo "variablegroup1: ${VARIABLE_GROUP1}"
+          echo "variablegroup1: $(variablegroup1)"
