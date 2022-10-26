@@ -10,12 +10,24 @@ parameters:
   - name: excludedFolders
     type: string
 
+variables:
+  - group: ${{ parameters.environmentName }}
+
 jobs:
   - job: Validate
     displayName: "Validate"
 
     steps:
       - checkout: self
+
+    - task: Bash@3
+      displayName: "test variable group"
+      inputs:
+        failOnStderr: true
+        targetType: "inline"
+        script: |
+          echo "environmentName: $(environmentName)"
+          echo "variablegroup1: $(variablegroup1)"
 
       - task: Bash@3
         displayName: "Install required tools"
