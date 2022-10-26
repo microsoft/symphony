@@ -11,7 +11,7 @@ variables:
   # The following Variables should be set on the pipeline level #
   #=============================================================#
 
-  - name: poolName
+  - name: agentImage
     value: "ubuntu-latest"
 
   - name: environmentName
@@ -30,7 +30,7 @@ variables:
     value: ","
 
 pool:
-  vmImage: $(poolName)
+  vmImage: $(agentImage)
 
 jobs:
   - template: ./template.bicep.validate.yml

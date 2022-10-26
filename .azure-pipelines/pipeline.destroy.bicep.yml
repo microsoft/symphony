@@ -12,7 +12,7 @@ variables:
   #=============================================================#
 
   # Name of the Agent Pool to use
-  - name: poolName
+  - name: agentImage
     value: "ubuntu-latest"
 
   # Name of the Environment
@@ -32,7 +32,7 @@ variables:
     value: "kv-symphony-env"
 
 pool:
-  vmImage: $(poolName)
+  vmImage: $(agentImage)
 
 jobs:
   - template: ./template.bicep.destroy.yml
