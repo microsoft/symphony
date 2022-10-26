@@ -32,7 +32,7 @@ pool:
 stages:
   - stage: CI_Pipeline
     variables:
-      group: ${{parameters.environmentName}}
+      group: "dev"
     jobs:
       - job: xyz
         steps:
