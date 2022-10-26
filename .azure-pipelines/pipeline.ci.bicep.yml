@@ -43,8 +43,6 @@ stages:
             targetType: "inline"
             script: |
               echo "variablegroup1: $(variablegroup1)"
-              echo "variablegroup1: ${{variablegroup1}}"
-              echo "variablegroup1: ${variablegroup1}"
 
       - template: ./template.bicep.validate.yml
         parameters:
