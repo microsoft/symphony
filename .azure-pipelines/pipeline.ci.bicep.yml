@@ -7,6 +7,7 @@ pr:
   - none
 
 variables:
+  - group: $(environmentName)
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
@@ -33,6 +34,17 @@ pool:
   vmImage: $(agentImage)
 
 jobs:
+  - name: testing
+    steps:
+    - task: Bash@3
+        displayName: "test variable group"
+        inputs:
+          failOnStderr: true
+          targetType: "inline"
+          script: |
+            echo "environmentName: $(environmentName)"
+            echo "variablegroup1: $(variablegroup1)"
+
   - template: ./template.bicep.validate.yml
     parameters:
       environmentName: $(environmentName)
