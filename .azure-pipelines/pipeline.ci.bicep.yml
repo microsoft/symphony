@@ -8,22 +8,22 @@ pr:
 
 parameters:
   - name: agentImage
-    defaultValue: "ubuntu-latest"
+    default: "ubuntu-latest"
 
   - name: environmentName
-    defaultValue: "dev"
+    default: "dev"
 
   - name: locationName
-    defaultValue: "westus"
+    default: "westus"
 
   - name: keyVaultArmSvcConnectionName
-    defaultValue: "Symphony-KV"
+    default: "Symphony-KV"
 
   - name: keyVaultName
-    defaultValue: "kv-symphony-env"
+    default: "kv-symphony-env"
 
   - name: excludedFolders
-    defaultValue: ","
+    default: ","
 
 pool:
   vmImage: $(agentImage)
