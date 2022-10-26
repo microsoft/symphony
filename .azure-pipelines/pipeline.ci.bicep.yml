@@ -7,7 +7,7 @@ pr:
   - none
 
 variables:
-  - group: $(environmentName)
+  - group: ${{ variables.environmentName }}
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
