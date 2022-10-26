@@ -12,8 +12,7 @@ variables:
   #=============================================================#
 
   - name: poolName
-    type: string
-    default: "ubuntu-latest"
+    value: "ubuntu-latest"
 
   - name: environmentName
     value: "dev"
