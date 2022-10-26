@@ -6,28 +6,24 @@ trigger:
 pr:
   - none
 
-variables:
-  #=============================================================#
-  # The following Variables should be set on the pipeline level #
-  #=============================================================#
-
+parameters:
   - name: agentImage
-    value: "ubuntu-latest"
+    defaultValue: "ubuntu-latest"
 
   - name: environmentName
-    value: "dev"
+    defaultValue: "dev"
 
   - name: locationName
-    value: "westus"
+    defaultValue: "westus"
 
   - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
+    defaultValue: "Symphony-KV"
 
   - name: keyVaultName
-    value: "kv-symphony-env"
+    defaultValue: "kv-symphony-env"
 
   - name: excludedFolders
-    value: ","
+    defaultValue: ","
 
 pool:
   vmImage: $(agentImage)
@@ -35,7 +31,7 @@ pool:
 stages:
   - stage: CI_Pipeline
     variables:
-      group: ${{variables.environmentName}}
+      group: ${{parameters.environmentName}}
     jobs:
       - job: xyz
         steps:
@@ -45,29 +41,28 @@ stages:
             failOnStderr: true
             targetType: "inline"
             script: |
-              echo "environmentName: ${environmentName}"
               echo "variablegroup1: ${variablegroup1}"
 
       - template: ./template.bicep.validate.yml
         parameters:
-          environmentName: $(environmentName)
-          locationName: $(locationName)
-          keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-          keyVaultName: $(keyVaultName)
-          excludedFolders: $(excludedFolders)
+          environmentName: ${{parameters.environmentName}}
+          locationName: ${{parameters.locationName}}
+          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
+          keyVaultName: ${{parameters.keyVaultName}}
+          excludedFolders: ${{parameters.excludedFolders}}
 
       - template: ./template.bicep.previewdeploy.yml
         parameters:
-          environmentName: $(environmentName)
-          locationName: $(locationName)
-          keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-          keyVaultName: $(keyVaultName)
-          excludedFolders: $(excludedFolders)
+          environmentName: ${{parameters.environmentName}}
+          locationName: ${{parameters.locationName}}
+          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
+          keyVaultName: ${{parameters.keyVaultName}}
+          excludedFolders: ${{parameters.excludedFolders}}
 
       - template: ./template.bicep.test.yml
         parameters:
-          environmentName: $(environmentName)
-          locationName: $(locationName)
-          keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-          keyVaultName: $(keyVaultName)
-          excludedFolders: $(excludedFolders)
+          environmentName: ${{parameters.environmentName}}
+          locationName: ${{parameters.locationName}}
+          keyVaultArmSvcConnectionName: ${{parameters.keyVaultArmSvcConnectionName}}
+          keyVaultName: ${{parameters.keyVaultName}}
+          excludedFolders: ${{parameters.excludedFolders}}
