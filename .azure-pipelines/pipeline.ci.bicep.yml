@@ -6,18 +6,14 @@ trigger:
 pr:
   - none
 
-parameters:
-  - name: poolName
-    type: string
-    default: "ubuntu-latest"
-
-pool:
-  vmImage: ${{ parameters.poolName }}
-
 variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
+
+  - name: poolName
+    type: string
+    default: "ubuntu-latest"
 
   - name: environmentName
     value: "dev"
@@ -33,6 +29,9 @@ variables:
 
   - name: excludedFolders
     value: ","
+
+pool:
+  vmImage: $(poolName)
 
 jobs:
   - template: ./template.bicep.validate.yml
