@@ -26,7 +26,7 @@ parameters:
     default: ","
 
 pool:
-  vmImage: $(agentImage)
+  vmImage: ${{parameters.agentImage}}
 
 stages:
   - stage: CI_Pipeline
