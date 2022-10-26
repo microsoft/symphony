@@ -6,8 +6,13 @@ trigger:
 pr:
   - none
 
+parameters:
+  - name: poolName
+    type: string
+    default: "ubuntu-latest"
+
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: $(poolName)
 
 variables:
   #=============================================================#
