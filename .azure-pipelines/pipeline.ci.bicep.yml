@@ -12,7 +12,7 @@ parameters:
     default: "ubuntu-latest"
 
 pool:
-  vmImage: $(parameters.poolName)
+  vmImage: ${{ parameters.poolName }}
 
 variables:
   #=============================================================#
