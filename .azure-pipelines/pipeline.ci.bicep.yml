@@ -45,8 +45,8 @@ stages:
             failOnStderr: true
             targetType: "inline"
             script: |
-              echo "environmentName: $(environmentName)"
-              echo "variablegroup1: $(variablegroup1)"
+              echo "environmentName: ${environmentName}"
+              echo "variablegroup1: ${variablegroup1}"
 
       - template: ./template.bicep.validate.yml
         parameters:
