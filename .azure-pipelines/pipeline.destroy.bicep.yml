@@ -6,13 +6,14 @@ trigger:
 pr:
   - none
 
-pool:
-  vmImage: "ubuntu-latest"
-
 variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
+
+  # Name of the Agent Pool to use
+  - name: poolName
+    value: "ubuntu-latest"
 
   # Name of the Environment
   - name: environmentName
@@ -29,6 +30,9 @@ variables:
   # Environment Key Vault Name
   - name: keyVaultName
     value: "kv-symphony-env"
+
+pool:
+  vmImage: $(poolName)
 
 jobs:
   - template: ./template.bicep.destroy.yml
