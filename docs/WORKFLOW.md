@@ -40,24 +40,14 @@ flowchart LR
   E -->F(Finalize/Publish reports)
 ```
 
-### Preview
+### Preview & Deploy
 
-This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, and publishes the planning results as an artifact.
-
-```mermaid
-flowchart LR
-  A(Init IAC tool) --> B(Run IAC cmds to preview changes) --> C(Store preview cmd changes/output)
-  C -->D(Check for resources destroy operations)
-  D -->E(Finalize/Publish reports)
-```
-
-### Deploy
-
-This stage deploys the IAC code to apply the changes from the planning stage. It initializes the IAC tool selected, runs deploy commands to update the resources, and ensures successful resource updates.
+This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, then runs deploy commands to update the resources, and ensures successful resource updates.
 
 ```mermaid
 flowchart LR
-  A(Init IAC tool) --> B(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
+  A(Init IAC tool) --> B(Run IAC cmds to preview changes) -->  C(Check for resources destroy operations) 
+  C-->D(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
 ```
 
 ### Test
@@ -75,5 +65,5 @@ This stage generates the needed scripts to repro the deployments, publish the cr
 
 ```mermaid
 flowchart LR
-  A(Generate deplyment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
+  A(Generate deployment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
 ```
