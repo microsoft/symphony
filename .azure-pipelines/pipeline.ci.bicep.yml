@@ -6,13 +6,13 @@ trigger:
 pr:
   - none
 
-pool:
-  vmImage: "ubuntu-latest"
-
 variables:
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
+
+  - name: agentImage
+    value: "ubuntu-latest"
 
   - name: environmentName
     value: "dev"
@@ -28,6 +28,9 @@ variables:
 
   - name: excludedFolders
     value: ","
+
+pool:
+  vmImage: $(agentImage)
 
 jobs:
   - template: ./template.bicep.validate.yml
