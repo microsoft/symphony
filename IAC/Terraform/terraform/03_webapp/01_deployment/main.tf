@@ -65,7 +65,7 @@ resource "azurerm_app_service" "app" {
 
   site_config {
     acr_use_managed_identity_credentials = true
-    linux_fx_version                     = "DOCKER|${var.docker_image_name}:${var.docker_image_tag}"
+    linux_fx_version                     = "DOCKER|${var.docker_image_name_web}:${var.docker_image_tag}"
   }
 
   identity {

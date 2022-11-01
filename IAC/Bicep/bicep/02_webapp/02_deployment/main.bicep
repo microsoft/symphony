@@ -57,7 +57,7 @@ module appSvc './modules/appSvc.bicep' = {
     location: location
     environment: environment
     layerName: layerName
-    appSvcPlanId: appSvcPlan.outputs.id
+    appSvcPlanId: appSvcPlan.outputs.appServicePlanId
     dockerImage: _dockerImage
     catalogDbConnectionString: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseCatalogDbName};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
     identityDbConnectionString: 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${sqlDatabaseIdentityDbName};Persist Security Info=False;User ID=${sqlServerAdministratorLogin};Password=${sqlServerAdministratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'

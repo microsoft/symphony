@@ -21,7 +21,7 @@ jobs:
       - task: Bash@3
         displayName: "Setup Toolset"
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           arguments: ${{ parameters.terraformVersion }}
           bashEnvValue: "~/.profile"
           failOnStderr: true
@@ -41,7 +41,7 @@ jobs:
       - task: Bash@3
         displayName: "Run Gitleaks"
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
           script: |
             source ./scanners.sh
@@ -49,7 +49,7 @@ jobs:
 
       - task: PublishPipelineArtifact@1
         inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
+          targetPath: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/gitleaks-report.sarif"
           artifact: 'CodeAnalysisLogs'
           publishLocation: "pipeline"
 
@@ -58,9 +58,9 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.lint.sh"
+          filePath: "scripts/orchestrators/iac.tf.lint.sh"
 
       - task: AzureKeyVault@2
         displayName: "Pull env cred from Azure Key valut"
@@ -83,9 +83,9 @@ jobs:
           STATE_CONTAINER: $(stateContainer)
           ENVIRONMENT_NAME: $(environmentName)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.validate.sh"
+          filePath: "scripts/orchestrators/iac.tf.validate.sh"
 
       - task: Bash@3
         condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
@@ -101,9 +101,9 @@ jobs:
           STATE_CONTAINER: $(stateContainer)
           TEST_TAG: module_tests
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.test.sh"
+          filePath: "scripts/orchestrators/iac.tf.test.sh"
 
       - task: PublishTestResults@2
         condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))

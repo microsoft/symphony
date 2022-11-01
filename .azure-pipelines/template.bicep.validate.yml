@@ -20,7 +20,7 @@ jobs:
       - task: Bash@3
         displayName: "Install required tools"
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
           targetType: "inline"
@@ -42,7 +42,7 @@ jobs:
       - task: Bash@3
         displayName: "Run Gitleaks"
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
           script: |
             source ./scanners.sh
@@ -50,7 +50,7 @@ jobs:
 
       - task: PublishPipelineArtifact@1
         inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/gitleaks-report.sarif"
+          targetPath: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/gitleaks-report.sarif"
           artifact: 'CodeAnalysisLogs'
           publishLocation: "pipeline"
 
@@ -59,9 +59,9 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/orchestrators/scripts/iac.bicep.lint.sh"
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/iac.bicep.lint.sh"
 
       - task: Bash@3
         displayName: "Run bicep validate"
@@ -75,6 +75,6 @@ jobs:
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.bicep.validate.sh"
+          filePath: "scripts/orchestrators/iac.bicep.validate.sh"

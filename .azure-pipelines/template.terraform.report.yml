@@ -38,6 +38,6 @@ jobs:
           COMMIT_ID: $(Build.SourceVersion)
           RUN_ID: $(Build.BuildId)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.statebackup.sh"
+          filePath: "scripts/orchestrators/iac.tf.statebackup.sh"

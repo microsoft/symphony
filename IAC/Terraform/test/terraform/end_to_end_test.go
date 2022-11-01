@@ -1,3 +1,4 @@
+//go:build e2e_test
 // +build e2e_test
 
 package terraform
@@ -21,6 +22,7 @@ func Test_EndToEnd(t *testing.T) {
 	rmResourceGroupName := os.Getenv("resource_group_name")
 	rmStorageAccName := os.Getenv("storage_account_name")
 	rmContainerName := os.Getenv("container_name")
+	envName := os.Getenv("ENVIRONMENT_NAME") + "/"
 
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions_02 := &terraform.Options{
@@ -32,7 +34,7 @@ func Test_EndToEnd(t *testing.T) {
 			"resource_group_name":  rmResourceGroupName,
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
-			"key":                  "02_sql/01_deployment.tfstate"},
+			"key":                  envName + "02_sql/01_deployment.tfstate"},
 		Reconfigure: true,
 	}
 	terraformOptions_03 := &terraform.Options{
@@ -44,7 +46,7 @@ func Test_EndToEnd(t *testing.T) {
 			"resource_group_name":  rmResourceGroupName,
 			"container_name":       rmContainerName,
 			"storage_account_name": rmStorageAccName,
-			"key":                  "03_webapp/01_deployment.tfstate"},
+			"key":                  envName + "03_webapp/01_deployment.tfstate"},
 		Reconfigure: true,
 	}
 
