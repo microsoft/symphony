@@ -57,6 +57,8 @@ resource appSvc 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
+output appServiceName string = appSvc.name
+
 module roleAssignmentCr 'roleAssignmentCr.bicep' = {
   name: '${deployment().name}-roleAssignmentCr'
   params: {

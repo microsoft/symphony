@@ -7,5 +7,3 @@ variable "env" {
   description = "The name of the evnironemnt to be deployed"
   type = string
 }
-
-

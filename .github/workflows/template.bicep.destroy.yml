@@ -32,7 +32,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           source ~/.bashrc
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
         name: Run Azure Login
@@ -63,4 +63,4 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           ./iac.bicep.destroy.sh
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators

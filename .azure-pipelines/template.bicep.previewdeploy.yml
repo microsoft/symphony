@@ -22,8 +22,8 @@ jobs:
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
 
@@ -36,6 +36,7 @@ jobs:
 
       - task: Bash@3
         displayName: "Run bicep preview and deploy"
+        name: BicepPreviewDeploy
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
@@ -46,6 +47,6 @@ jobs:
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.bicep.previewdeploy.sh"
+          filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"

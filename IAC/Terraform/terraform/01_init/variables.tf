@@ -33,7 +33,7 @@ variable "storage_account_kind" {
 }
 
 variable "identity_type" {
-  description = "storage account identity type e.g. SystemAssigned "
+  description = "storage account identity type e.g. SystemAssigned"
   type = string
 }
 
