@@ -6,7 +6,7 @@ variable "env" {
   description = "The name of the evnironemnt to be deployed"
 }
 
-variable "docker_image_name" {
+variable "docker_image_name_web" {
   description = "The url to the app docker image"
 }
 

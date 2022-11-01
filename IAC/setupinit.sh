@@ -19,7 +19,7 @@ create_rg() {
 
 create_cr() {
     APP_REPO="https://github.com/dotnet-architecture/eShopOnWeb.git"
-    APP_COMMIT="a87f571"
+    APP_COMMIT="a72dd77"
     APP_WEB_NAME="eshopwebmvc"
     APP_WEB_DOCKERFILE="src/Web/Dockerfile"
     APP_API_NAME="eshoppublicapi"
