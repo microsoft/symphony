@@ -82,15 +82,23 @@ jobs:
 
       - name: Load KeyVault Secret(s)
         id: LoadSecrets
+        env:
+          KEYVAULT_NAME: ${{ inputs.keyVaultName }}
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
         run: |
+          echo $KEYVAULT_NAME
+          echo "----------------------- vault name-----------------------------------------------------"
+          echo $SECRETS
+          echo "----------------------- SECRETS -----------------------------------------------------"
+
           OIFS=$IFS
           IFS=', '
-          for secretname in ${{ inputs.secrets }}
+          for secretname in $SECRETS
           do
-            echo ${{ inputs.keyVaultName }}
+            echo $KEYVAULT_NAME
             echo "----------------------- Loading secrets -----------------------------------------------------"
             echo $secretname
-            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
+            secret=$(az keyvault secret show --name $secretname --vault-name  --query "value")
             echo $secret
             echo "::add-mask::$secret"            
             echo "$secretname=$secret" >> GITHUB_OUTPUT
