@@ -86,22 +86,16 @@ jobs:
           KEYVAULT_NAME: ${{ inputs.keyVaultName }}
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
         run: |
-          echo $KEYVAULT_NAME
-          echo "----------------------- vault name-----------------------------------------------------"
-          echo $SECRETS
-          echo "----------------------- SECRETS -----------------------------------------------------"
-
           OIFS=$IFS
           IFS=', '
           for secretname in $SECRETS
           do
             echo $KEYVAULT_NAME
             echo "----------------------- Loading secrets -----------------------------------------------------"
-            echo $secretname
             secret=$(az keyvault secret show --name $secretname --vault-name $KEYVAULT_NAME --query "value")
-            echo $secret
             echo "::add-mask::$secret"            
-            echo "$secretname=$secret" >> GITHUB_OUTPUT
+            # echo "$secretname=$secret" >> GITHUB_OUTPUT
+            echo "::set-output name=$secretname::$secret"
           done
           IFS=$OIFS
 
