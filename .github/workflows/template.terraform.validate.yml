@@ -93,10 +93,10 @@ jobs:
             echo "----------------------- Loading secrets -----------------------------------------------------"
             secret=$(az keyvault secret show --name $secretname --vault-name $KEYVAULT_NAME --query "value")
             echo "::add-mask::$secret"            
-            echo "$secretname=$secret" >> GITHUB_OUTPUT
+            echo "$secretname=$secret" >> $GITHUB_OUTPUT
             #echo "::set-output name=$secretname::$secret"
           done
-          echo "mytestsecretname=abcd" >> GITHUB_OUTPUT
+          echo "mytestsecretname=abcd" >> $GITHUB_OUTPUT
           IFS=$OIFS
 
       - name: Run TF Validate
