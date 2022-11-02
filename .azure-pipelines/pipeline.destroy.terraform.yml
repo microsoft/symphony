@@ -1,0 +1,31 @@
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+variables:
+  - name: agentImage
+    value: "ubuntu-latest"
+
+  - name: environmentName
+    value: "dev"
+
+  - name: keyVaultArmSvcConnectionName
+    value: "Symphony-KV"
+
+  - name: keyVaultName
+    value: "kv-symphony-env"
+
+pool:
+  vmImage: $(agentImage)
+
+jobs:
+  - template: ./template.terraform.destroy.yml
+    parameters:
+      environmentName: $(environmentName)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
