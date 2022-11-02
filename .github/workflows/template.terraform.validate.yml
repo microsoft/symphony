@@ -80,16 +80,34 @@ jobs:
       #     secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
       #   id: kvSecrets
 
+      - name: Load KeyVault Secret(s)
+        id: LoadSecrets
+        run: |
+          OIFS=$IFS
+          IFS=', '
+
+          for secretname in ${{ inputs.secrets }}
+          do
+            # Do stuff with each word
+            echo "----------------------- Loading secrets -----------------------------------------------------"
+            echo $secretname
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{github.event.inputs.keyVaultName}} --query "value")
+            echo $secret
+            echo "::add-mask::$secret"            
+            echo "$secretname=$secret" >> GITHUB_OUTPUT
+          done
+          IFS=$OIFS
+
       - name: Run TF Validate
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
-          ARM_SUBSCRIPTION_ID: ${{ needs.LoadSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ needs.LoadSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ needs.LoadSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ needs.LoadSecrets.outputs.clientSecret }}
-          STATE_RG: ${{ needs.LoadSecrets.outputs.stateRg }}
-          STATE_STORAGE_ACCOUNT: ${{ needs.LoadSecrets.outputs.stateStorageAccount }}
-          STATE_CONTAINER: ${{ needs.LoadSecrets.outputs.stateContainer }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
+          ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
+          ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
+          ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
+          STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
+          STATE_STORAGE_ACCOUNT: ${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
           ./iac.tf.validate.sh
