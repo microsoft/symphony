@@ -96,17 +96,19 @@ jobs:
           done
           IFS=$OIFS
 
-      - name: TMP-azlogin 
+      - name: TMP-azlogin
+        env:
+          ARM_TENANT_ID: "${{ steps.LoadSecrets.outputs.tenantId }}"
         run: |
-          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=${{ steps.LoadSecrets.outputs.tenantId }}
+          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$ARM_TENANT_ID
 
       - name: Run TF Validate
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
+          ARM_TENANT_ID: "${{ steps.LoadSecrets.outputs.tenantId }}"
+          ARM_CLIENT_ID: "${{ steps.LoadSecrets.outputs.clientId }}"
+          ARM_CLIENT_SECRET: "${{ steps.LoadSecrets.outputs.clientSecret }}"
           STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
           STATE_STORAGE_ACCOUNT: ${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
