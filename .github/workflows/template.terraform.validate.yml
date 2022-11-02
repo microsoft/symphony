@@ -94,9 +94,9 @@ jobs:
             secret=$(az keyvault secret show --name $secretname --vault-name $KEYVAULT_NAME --query "value")
             if [[ $secretname == "tenantId" ]]; then
               echo "---tenantID value"
-              echo $secret
-            else
-              echo "::add-mask::$secret"   
+              echo "mytestid=$secret" >> $GITHUB_OUTPUT
+            # else
+            #   echo "::add-mask::$secret"   
             fi
                     
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
@@ -107,7 +107,8 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
+          # ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
+          ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.mytestid  }}
           ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
           ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
           STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
