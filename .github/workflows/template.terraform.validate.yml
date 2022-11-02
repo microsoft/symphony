@@ -83,14 +83,12 @@ jobs:
       - name: Load KeyVault Secret(s)
         id: LoadSecrets
         env:
-          keyvault: ${{ github.event.inputs.keyVaultName }}
+          keyvault: ${{ inputs.keyVaultName }}
         run: |
           OIFS=$IFS
           IFS=', '
-
           for secretname in ${{ inputs.secrets }}
           do
-            
             echo $keyvault
             echo "----------------------- Loading secrets -----------------------------------------------------"
             echo $secretname
