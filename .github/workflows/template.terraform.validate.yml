@@ -98,9 +98,9 @@ jobs:
 
       - name: TMP-azlogin
         env:
-          ARM_TENANT_ID: "${{ steps.LoadSecrets.outputs.tenantId }}"
+          FOO: "${{ steps.LoadSecrets.outputs.tenantId }}"
         run: |
-          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$ARM_TENANT_ID
+          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$FOO
 
       - name: Run TF Validate
         env:
