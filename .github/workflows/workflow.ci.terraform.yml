@@ -33,6 +33,14 @@ on:
         default: "kv-symphony-env"
 
 jobs:
+  LoadSecrets:
+    uses: ./.github/workflows/template.keyvault.getsecrets.yml
+    with:
+      secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+      keyvault: ${{ github.event.inputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
   Validate:
     uses: ./.github/workflows/template.terraform.validate.yml
     with:
