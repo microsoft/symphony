@@ -82,7 +82,7 @@ jobs:
 
       - name: Load KeyVault Secret(s)
         id: LoadSecrets
-         env:
+        env:
           keyvault: ${{ github.event.inputs.keyVaultName }}
         run: |
           OIFS=$IFS
