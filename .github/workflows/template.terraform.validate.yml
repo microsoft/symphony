@@ -87,7 +87,7 @@ jobs:
           IFS=', '
           for secretname in ${{ inputs.secrets }}
           do
-            echo $keyvault
+            echo ${{ inputs.keyVaultName }}
             echo "----------------------- Loading secrets -----------------------------------------------------"
             echo $secretname
             secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
