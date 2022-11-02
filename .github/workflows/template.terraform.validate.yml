@@ -95,8 +95,10 @@ jobs:
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
           IFS=$OIFS
-      - run: |
-        az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=${{ steps.LoadSecrets.outputs.tenantId }}
+
+      - name: TMP-azlogin 
+        run: |
+          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=${{ steps.LoadSecrets.outputs.tenantId }}
 
       - name: Run TF Validate
         env:
