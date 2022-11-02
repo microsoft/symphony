@@ -42,6 +42,7 @@ jobs:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Validate:
+    needs: LoadSecrets
     uses: ./.github/workflows/template.terraform.validate.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
