@@ -36,7 +36,7 @@ jobs:
   LoadSecrets:
     uses: ./.github/workflows/template.keyvault.getsecrets.yml
     with:
-      secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+      secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, statestorageaccount"
       keyvault: ${{ github.event.inputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
