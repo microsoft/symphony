@@ -82,8 +82,6 @@ jobs:
 
       - name: Load KeyVault Secret(s)
         id: LoadSecrets
-        env:
-          keyvault: ${{ inputs.keyVaultName }}
         run: |
           OIFS=$IFS
           IFS=', '
@@ -92,7 +90,7 @@ jobs:
             echo $keyvault
             echo "----------------------- Loading secrets -----------------------------------------------------"
             echo $secretname
-            secret=$(az keyvault secret show --name $secretname --vault-name $keyvault --query "value")
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }}--query "value")
             echo $secret
             echo "::add-mask::$secret"            
             echo "$secretname=$secret" >> GITHUB_OUTPUT
