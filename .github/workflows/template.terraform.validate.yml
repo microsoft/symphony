@@ -111,6 +111,7 @@ jobs:
           STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
+          echo $ARM_TENANT_ID 
           ./iac.tf.validate.sh
         working-directory: scripts/orchestrators
         shell: bash
