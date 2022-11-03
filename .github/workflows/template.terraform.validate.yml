@@ -79,6 +79,7 @@ jobs:
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
           KEYVAULT_NAME: ${{ inputs.keyVaultName }}
         run: |
+          export G_OUTPUT=$GITHUB_OUTPUT
           ./iac.keyvault.sh
 
           # OIFS=$IFS
