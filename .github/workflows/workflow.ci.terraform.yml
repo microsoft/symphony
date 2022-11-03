@@ -54,7 +54,7 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      runLayerTest: ${{ github.event.inputs.runLayerTest }}
+      runLayerTest: ${{ github.event.inputs.runLayerTest == 'true' && 'true' || 'false' }}
       branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
