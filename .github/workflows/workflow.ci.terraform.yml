@@ -31,6 +31,11 @@ on:
         description: "Environment Key Vault Name"
         required: true
         default: "kv-symphony-env"
+      runLayerTest:
+        description: "Run Layers Tests"
+        type: boolean
+        required: true
+        default: true
 
 jobs:
   # LoadSecrets:
@@ -49,7 +54,7 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      runLayerTest: false
+      runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
