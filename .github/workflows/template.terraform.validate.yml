@@ -129,14 +129,14 @@ jobs:
         shell: bash
 
       - uses: actions/upload-artifact@v3
-        if: (success() || failure()) && ${{ inputs.runLayerTest }}
+        if: (success() || failure()) && ${{ inputs.runLayerTest == 'true' }}
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
 
       - name: Publish Module Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
-        if: ${{ inputs.runLayerTest }}
+        if: ${{ inputs.runLayerTest == 'true' }}
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "Modules tests Results"
