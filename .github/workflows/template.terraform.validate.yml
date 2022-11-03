@@ -107,16 +107,22 @@ jobs:
       - name: Run TF Validate
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
-          ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
+          # ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
           # ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
-          STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
-          STATE_STORAGE_ACCOUNT: ${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
+          # ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
+          # ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
+          # STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
+          # STATE_STORAGE_ACCOUNT: ${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          # STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
+          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
+          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
+          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
 
           ./iac.tf.validate.sh
         working-directory: scripts/orchestrators
