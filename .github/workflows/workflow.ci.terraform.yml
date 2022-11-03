@@ -23,11 +23,6 @@ on:
         description: "Terraform version"
         required: true
         default: "1.1.7"
-      backupStateFiles:
-        description: "Run Backup State Files"
-        type: boolean
-        required: true
-        default: true
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
@@ -37,6 +32,11 @@ on:
         type: boolean
         required: true
         default: false
+      backupStateFiles:
+        description: "Run Backup State Files"
+        type: boolean
+        required: true
+        default: true
 
 jobs:
   Validate:
