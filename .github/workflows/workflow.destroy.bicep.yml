@@ -25,7 +25,7 @@ on:
         default: "kv-symphony-env"
 
 jobs:
-  Validate:
+  Destroy:
     uses: ./.github/workflows/template.bicep.destroy.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
