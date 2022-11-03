@@ -77,16 +77,20 @@ jobs:
         id: LoadSecrets
         env:
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+          KEYVAULT_NAME: ${{ inputs.keyVaultName }}
         run: |
-          OIFS=$IFS
-          IFS=', '
-          for secretname in $SECRETS
-          do
-            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"        
-            echo "$secretname=$secret" >> $GITHUB_OUTPUT
-          done
-          IFS=$OIFS
+          ./iac.keyvault.sh
+
+          # OIFS=$IFS
+          # IFS=', '
+          # for secretname in $SECRETS
+          # do
+          #   secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
+          #   echo "::add-mask::$secret"        
+          #   echo "$secretname=$secret" >> $GITHUB_OUTPUT
+          # done
+          # IFS=$OIFS
+        working-directory: scripts/orchestrators
 
       - name: Run TF Validate
         env:
