@@ -76,7 +76,7 @@ jobs:
 
   Report:
     needs: PreviewDeploy
-    if: ${{ github.event.inputs.backupStateFiles == 'true' && 'true' || 'false' }}
+    if: ${{ github.event.inputs.backupStateFiles }}
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
