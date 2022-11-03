@@ -1,4 +1,5 @@
-// +build 01_init, module_test
+//go:build 01_init,module_test
+// +build 01_init,module_test
 
 package terraform
 
