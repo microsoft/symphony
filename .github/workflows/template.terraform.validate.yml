@@ -109,7 +109,7 @@ jobs:
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run Layer Tests
-        if: ${{ inputs.runLayerTest == 'true' && 'true' || 'false' }}
+        if: ${{ inputs.runLayerTest == 'true' }}
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
