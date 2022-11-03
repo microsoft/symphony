@@ -94,13 +94,14 @@ jobs:
             echo "::add-mask::$secret"        
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
+          echo "FOO=Testing" >> $GITHUB_OUTPUT
           IFS=$OIFS
 
       - name: TMP-azlogin
         env:
-          FOO: ${{ steps.LoadSecrets.outputs.tenantId }}
+          FOO: ${{ steps.LoadSecrets.outputs.FOO }}
         run: |
-          echo $FOO
+          echo ${FOO}
           az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$FOO
 
       - name: Run TF Validate
