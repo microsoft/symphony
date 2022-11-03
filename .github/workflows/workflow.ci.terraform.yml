@@ -35,7 +35,7 @@ on:
         description: "Run Layers Tests"
         type: boolean
         required: true
-        default: true
+        default: false
 
 jobs:
   # LoadSecrets:
@@ -54,7 +54,7 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
-      runLayerTest: ${{ github.event.inputs.runLayerTest == 'true' && 'true' || 'false' }}
+      runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

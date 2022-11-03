@@ -12,9 +12,9 @@ on:
         type: string
         required: true
       runLayerTest:
-        type: boolean
+        type: string
         required: true
-        default: true
+        default: 'true'
       keyVaultName:
         type: string
         required: true
@@ -109,7 +109,7 @@ jobs:
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run Layer Tests
-        if: ${{ inputs.runLayerTest }}
+        if: ${{ inputs.runLayerTest == 'true' && 'true' || 'false' }}
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
