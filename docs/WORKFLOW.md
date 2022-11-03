@@ -23,6 +23,64 @@ To run the workflows, you need to have the following installed on agents
 - [TFLint](https://github.com/terraform-linters/tflint) here is a script to auto [install](../scripts/orchestrators/setup-tflint.sh) it
 - [Go](https://go.dev/learn/) here is a script to auto [install](../scripts/orchestrators/setup-go.sh) it
 
+## Tools used in the pipelines
+
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
+
+  > Azure CLI is a command-line tool that provides a convenient way to manage Azure resources. It is available for Windows, macOS, and Linux. Azure CLI is a cross-platform tool that can be used to create and manage Azure resources from the command line or from scripts. Azure CLI is a great tool for automation and scripting. It is also a great tool for learning Azure services because it provides a consistent experience across all Azure services.
+
+  Pipelines using Azure CLI to interact with Azure resources
+
+- [Gitleaks](https://github.com/zricethezav/gitleaks)
+
+  > Gitleaks is a SAST tool for detecting hardcoded secrets like passwords, api keys, and tokens in git repos. Gitleaks is designed to be run on a git repo, and will iterate over the commit history, run regexes against the commit diffs, and report any hits.
+
+  Pipelines using Gitleaks to scan for secrets in the code
+
+  Some alternatives to Gitleaks are, [Aqua Vulnerability Scanning and Management](https://www.aquasec.com/products/container-vulnerability-scanning/), [GitHub Code Scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning), [Mend SAST](https://www.mend.io/sast/), [Oxeye](https://www.oxeye.io/solutions/appsec-devsecops), [Sonar Cloud](https://www.sonarsource.com/products/sonarcloud/features/)
+
+- [Powershell Core](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.2)
+
+  > PowerShell is a task-based command-line shell and scripting language built on .NET. PowerShell helps system administrators and power users manage Windows and Linux/Unix environments. PowerShell provides a consistent management interface for Windows, Linux, and macOS. PowerShell is open source and cross-platform (Windows, Linux, and macOS).
+
+  Pipelines using Powershell Core to execute powershell scripts, like [ARM-TTK](https://github.com/Azure/arm-ttk) scripts
+
+- [ARM-TTK](https://github.com/Azure/arm-ttk)
+
+  > ARM Template Testing Kit (ARM-TTK) is a collection of tests to validate Azure Resource Manager (ARM) templates. ARM-TTK is a PowerShell module that can be used to validate ARM templates locally or in a CI/CD pipeline.
+
+  Pipelines using ARM-TTK to validate ARM templates
+
+- [Shellspec](https://shellspec.info/)
+
+  > Shellspec is a BDD testing framework for shell scripts. It is a pure shell script implementation of RSpec, the Ruby BDD testing framework. Shellspec is a pure shell script implementation of RSpec, the Ruby BDD testing framework. Shellspec is a pure shell script implementation of RSpec, the Ruby BDD testing framework.
+
+  Pipeline using Shellspec to validate shell scripts
+
+- [Pester](https://pester.dev/)
+
+  > Pester is a Behavior-Driven Development (BDD) based unit test runner for PowerShell. Pester provides a framework for running unit tests to execute and validate PowerShell commands. Pester follows a file naming convention for naming tests to be discovered by pester at test time and a simple set of functions that expose a Testing DSL for isolating, running, evaluating and reporting the results of PowerShell commands.
+
+  Pipeline using Pester to validate powershell scripts
+
+- [Terraform](https://www.terraform.io/downloads)
+
+  > Terraform is an open-source infrastructure as code software tool that provides a consistent CLI workflow to manage hundreds of cloud services. Terraform codifies cloud APIs into declarative configuration files. Infrastructure is described using a high-level configuration syntax. This allows a blueprint of your datacenter to be versioned and treated as you would any other code. Additionally, infrastructure can be shared and re-used. Terraform can manage existing and popular service providers as well as custom in-house solutions.
+
+  Pipelines using Terraform to deploy infrastructure
+
+- [TFLint](https://github.com/terraform-linters/tflint)
+
+  > TFLint is a Terraform linter focused on possible errors, best practices, etc. It is designed for Terraform versions 0.12 and later. TFLint is a Terraform linter focused on possible errors, best practices, etc. It is designed for Terraform versions 0.12 and later. TFLint is a Terraform linter focused on possible errors, best practices, etc. It is designed for Terraform versions 0.12 and later.
+
+  Pipelines using TFLint to validate Terraform code
+
+- [Go](https://go.dev/learn/)
+
+  > Go is an open source programming language that makes it easy to build simple, reliable, and efficient software. Go is an open source programming language that makes it easy to build simple, reliable, and efficient software. Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
+
+  Pipelines using Go to execute terratest test codes
+
 ## Workflow steps
 
 To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
