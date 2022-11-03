@@ -1,5 +1,5 @@
-//go:build 02_sql,module_test
-// +build 02_sql,module_test
+//go:build 02_sql || module_test
+// +build 02_sql module_test
 
 package terraform
 
