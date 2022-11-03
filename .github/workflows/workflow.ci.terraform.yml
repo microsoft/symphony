@@ -25,8 +25,9 @@ on:
         default: "1.1.7"
       backupStateFiles:
         description: "Run Backup State Files"
+        type: boolean
         required: true
-        default: "true"
+        default: true
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
@@ -75,7 +76,7 @@ jobs:
 
   Report:
     needs: PreviewDeploy
-    if: ${{ github.event.inputs.backupStateFiles == 'true' }}
+    if: ${{ github.event.inputs.backupStateFiles == 'true' && 'true' || 'false' }}
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
