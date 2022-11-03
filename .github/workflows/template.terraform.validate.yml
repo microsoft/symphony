@@ -97,18 +97,18 @@ jobs:
           echo "FOO=Testing" >> $GITHUB_OUTPUT
           IFS=$OIFS
 
-      - name: TMP-azlogin
-        env:
-          FOO: ${{ steps.LoadSecrets.outputs.FOO }}
-        run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$ARM_TENANT_ID
+      # - name: TMP-azlogin
+      #   env:
+      #     FOO: ${{ steps.LoadSecrets.outputs.FOO }}
+      #   run: |
+      #     export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+      #     az login --service-principal --username=${{ steps.LoadSecrets.outputs.clientId }} --password=${{ steps.LoadSecrets.outputs.clientSecret }} --tenant=$ARM_TENANT_ID
 
       - name: Run TF Validate
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ARM_SUBSCRIPTION_ID: ${{ steps.LoadSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
+          # ARM_TENANT_ID: ${{ steps.LoadSecrets.outputs.tenantId }}
           ARM_CLIENT_ID: ${{ steps.LoadSecrets.outputs.clientId }}
           ARM_CLIENT_SECRET: ${{ steps.LoadSecrets.outputs.clientSecret }}
           STATE_RG: ${{ steps.LoadSecrets.outputs.stateRg }}
@@ -116,6 +116,7 @@ jobs:
           STATE_CONTAINER: ${{ steps.LoadSecrets.outputs.stateContainer }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
+          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
 
           ./iac.tf.validate.sh
         working-directory: scripts/orchestrators
