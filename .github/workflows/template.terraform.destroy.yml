@@ -1,0 +1,71 @@
+name: "Template-TF-Destroy"
+on:
+  workflow_call:
+    inputs:
+      environmentName:
+        type: string
+        required: true
+      terraformVersion:
+        type: string
+        required: true
+      keyVaultName:
+        type: string
+        required: true
+      branchName:
+        type: string
+        required: true
+    secrets:
+      azureEnviromentCredentials:
+        required: true
+
+jobs:
+  Destroy:
+    name: "Destroy"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branchName }}
+
+      - name: Setup Toolset
+        run: |
+          ./setup-azcli.sh
+          ./setup-terraform.sh ${{ inputs.terraformVersion }}
+        working-directory: scripts/orchestrators
+        shell: bash
+
+      - uses: Azure/login@v1
+        name: Run Azure Login
+        with:
+          creds: "${{ secrets.azureEnviromentCredentials }}"
+
+      - name: Get KeyVault Secret(s)
+        id: LoadSecrets
+        env:
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+        run: |
+          OIFS=$IFS
+          IFS=', '
+          for secretname in $SECRETS
+          do
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
+            echo "::add-mask::$secret"        
+            echo "$secretname=$secret" >> $GITHUB_OUTPUT
+          done
+          IFS=$OIFS
+
+      - name: Run TF Destroy
+        env:
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+        run: |
+          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
+          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
+          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
+          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          ./iac.tf.destroy.sh
+        working-directory: scripts/orchestrators
+        shell: bash
