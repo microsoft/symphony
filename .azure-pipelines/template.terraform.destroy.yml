@@ -18,8 +18,8 @@ jobs:
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
-          filePath: "orchestrators/scripts/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          filePath: "scripts/orchestrators/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
           bashEnvValue: "~/.profile"
           failOnStderr: true
 
@@ -43,6 +43,6 @@ jobs:
           STATE_CONTAINER: $(stateContainer)
           STATE_RG: $(stateRg)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/orchestrators/scripts"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
           targetType: "filePath"
-          filePath: "orchestrators/scripts/iac.tf.destroy.sh"
+          filePath: "scripts/orchestrators/iac.tf.destroy.sh"

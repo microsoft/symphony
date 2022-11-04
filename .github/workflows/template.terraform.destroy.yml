@@ -31,7 +31,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           ./setup-terraform.sh ${{ inputs.terraformVersion }}
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
         shell: bash
 
       - uses: Azure/login@v1
@@ -67,5 +67,5 @@ jobs:
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
           ./iac.tf.destroy.sh
-        working-directory: orchestrators/scripts
+        working-directory: scripts/orchestrators
         shell: bash
