@@ -1,11 +1,6 @@
 name: "Destroy Terraform"
 
 on:
-  # push:
-  #   branches: [main]
-  # pull_request:
-  #   branches: [main]
-
   #=============================================================#
   # The following Variables should be set on the workflow level #
   #=============================================================#
@@ -15,18 +10,10 @@ on:
         description: "Name of the Environment"
         required: true
         default: "dev"
-      goVersion:
-        description: "Go Lang version"
-        required: true
-        default: "1.18.1"
       terraformVersion:
         description: "Terraform version"
         required: true
         default: "1.1.7"
-      backupStateFiles:
-        description: "Run Backup State Files"
-        required: true
-        default: "true"
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
