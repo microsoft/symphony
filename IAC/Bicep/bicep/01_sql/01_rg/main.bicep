@@ -16,6 +16,7 @@ module resourceGroupNameGenerator './../../modules/nameGeneratorSubscription.bic
   params: {
     name: 'rg-sql'
     prefix: environment
+    uniqueToken: location
   }
 }
 
