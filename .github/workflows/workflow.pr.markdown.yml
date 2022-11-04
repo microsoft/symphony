@@ -9,7 +9,7 @@ jobs:
   markdown-lint-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
 
       - name: Run markdownlint
         id: markdownlint
@@ -66,7 +66,7 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
 
       - name: Run Markdown Link Checker
         uses: gaurav-nelson/github-action-markdown-link-check@v1

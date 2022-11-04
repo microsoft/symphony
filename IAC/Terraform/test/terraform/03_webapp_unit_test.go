@@ -1,4 +1,6 @@
-// +build 03_web, module_test
+//go:build 03_web || module_test
+// +build 03_web module_test
+
 package terraform
 
 import (
