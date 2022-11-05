@@ -90,8 +90,9 @@ bicep() {
 
   pester() {
     _information "run pester tests"
+    pwd
     pushd ../../IAC/Bicep/test/end_to_end
-    pwsh -Command "az account show"
+
     # if the test file is not specified, run for all files
     if [ -z "${1}" ]; then
       pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML"
