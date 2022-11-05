@@ -51,7 +51,9 @@ bicep_output_to_env() {
         rm -f "${dotenv_file_path}"
     fi
 
-    if [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
+    if [ -n "${GITHUB_ACTION}" ]; then
+        echo "bicepOutputJson=${bicep_output_json}" >>$GITHUB_OUTPUT
+    elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
         local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
         echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
     fi

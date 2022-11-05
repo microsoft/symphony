@@ -41,6 +41,12 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
 
+      - name: Export Bicep Output
+        run : |
+          source ./iac.bicep.sh
+          bicep_output_to_env "${{needs.PreviewDeploy.outputs.bicepOutputJson}}"
+        working-directory: scripts/orchestrators
+
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:

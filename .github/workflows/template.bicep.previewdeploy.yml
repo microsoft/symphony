@@ -22,6 +22,8 @@ on:
 jobs:
   PreviewDeploy:
     name: "Preview and Deploy"
+    outputs:
+      bicepOutputJson: ${{ steps.BicepDeploy.outputs.bicepOutputJson }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.1.0
@@ -53,6 +55,7 @@ jobs:
           IFS=$OIFS
 
       - name: Run Bicep Deploy
+        id: BicepDeploy
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
           LOCATION_NAME: ${{ github.event.inputs.locationName }}
