@@ -90,19 +90,20 @@ bicep() {
 
   pester() {
     _information "run pester tests"
-    pwd
-    pushd ../../IAC/Bicep/test/end_to_end
+    
+    # the parent bicep function does a pushd to IAC/Bicep/test
+    pushd ./end_to_end
 
-    # if the test file is not specified, run for all files
-    if [ -z "${1}" ]; then
-      pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML"
-    else
-      TEST_FILE=$(find ${1})
+      # if the test file is not specified, run for all files
+      if [ -z "${1}" ]; then
+        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML"
+      else
+        TEST_FILE=$(find ${1})
 
-      if [ ! -z "${TEST_FILE}" ]; then
-        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE}"
+        if [ ! -z "${TEST_FILE}" ]; then
+          pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE}"
+        fi
       fi
-    fi
 
     # return to the previous directory
     popd
