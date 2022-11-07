@@ -33,6 +33,7 @@ jobs:
           ./setup-azcli.sh
           ./setup-powershell.sh
           ./setup-pester.sh
+          ./setup-azpowershell.sh
           source ~/.bashrc
         working-directory: scripts/orchestrators
 
