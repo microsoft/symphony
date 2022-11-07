@@ -44,10 +44,12 @@ jobs:
 
       - name: Export Bicep Output
         run : |
-          # source ./iac.bicep.sh
-          #bicep_output_to_env "${{needs.PreviewDeploy.outputs.bicepOutputJson}}"
-          load_dotenv
-        working-directory: IAC/Bicep/bicep
+          source ./_helpers.sh
+          
+          pushd ../../IAC/Bicep/bicep
+            load_dotenv
+          popd
+        working-directory: scripts/orchestrators
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
