@@ -44,7 +44,7 @@ jobs:
 
       - name: Export Bicep Output
         run : |
-          source ./iac.bicep.sh
+          # source ./iac.bicep.sh
           #bicep_output_to_env "${{needs.PreviewDeploy.outputs.bicepOutputJson}}"
           load_dotenv
         working-directory: IAC/Bicep/bicep
