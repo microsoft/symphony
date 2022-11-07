@@ -22,8 +22,8 @@ on:
 jobs:
   PreviewDeploy:
     name: "Preview and Deploy"
-    outputs:
-      bicepOutputJson: ${{ steps.BicepDeploy.outputs.bicepOutputJson }}
+    # outputs:
+    #   bicepOutputJson: ${{ steps.BicepDeploy.outputs.bicepOutputJson }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.1.0
@@ -68,3 +68,10 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           ./iac.bicep.previewdeploy.sh
         working-directory: scripts/orchestrators
+
+      - name: Cache Environment
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: IAC/Bicep/bicep/.env
+          key: ${{ runner.os }}-primes

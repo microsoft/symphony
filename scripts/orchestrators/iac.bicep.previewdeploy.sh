@@ -80,7 +80,7 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
-    bicep_output_to_env "${output}" ".env" "true"
+    bicep_output_to_env "${output}" ".env" "false"
     echo "${output}"
     echo "------------------------"
 done

@@ -45,8 +45,9 @@ jobs:
       - name: Export Bicep Output
         run : |
           source ./iac.bicep.sh
-          bicep_output_to_env "${{needs.PreviewDeploy.outputs.bicepOutputJson}}"
-        working-directory: scripts/orchestrators
+          #bicep_output_to_env "${{needs.PreviewDeploy.outputs.bicepOutputJson}}"
+          load_dotenv
+        working-directory: IAC/Bicep/bicep
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
