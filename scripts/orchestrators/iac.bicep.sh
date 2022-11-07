@@ -46,16 +46,19 @@ parse_bicep_parameters() {
 bicep_output_to_env() {
     local bicep_output_json="${1}"
     local dotenv_file_path="${2:-".env"}"
-
+    local saveDeployOutput="${3:-"false"}"
+    
     if [[ -f "${dotenv_file_path}" ]]; then
         rm -f "${dotenv_file_path}"
     fi
 
-    if [ -n "${GITHUB_ACTION}" ]; then
-        echo "bicepOutputJson=${bicep_output_json}" >>$GITHUB_OUTPUT
-    elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
-        echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
+    if [ "$saveDeployOutput" == "true" ]; then
+        if [ -n "${GITHUB_ACTION}" ]; then
+            echo "bicepOutputJson=${bicep_output_json}" >>$GITHUB_OUTPUT
+        elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
+            local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
+            echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
+        fi
     fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
