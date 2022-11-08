@@ -97,7 +97,7 @@ bicep() {
       env
 
       echo "------------------------- ENV PWSH --------------------------"
-      pwsh "Get-ChildItem Env:"
+      pwsh -Command  "Get-ChildItem Env:"
       # if the test file is not specified, run for all files
       if [ -z "${1}" ]; then
         pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML –EnableExit"
