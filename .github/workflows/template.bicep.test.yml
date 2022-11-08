@@ -42,6 +42,13 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
 
+      - name: Cache Environment
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
+          key: ${{ runner.os }}-bicep-env
+          
       - name: Export Bicep Output
         run : |
           source ./_helpers.sh
