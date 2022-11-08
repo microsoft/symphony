@@ -48,16 +48,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
           key: ${{ runner.os }}-bicep-env
-          
-      - name: Export Bicep Output
-        run : |
-          source ./_helpers.sh
-          
-          pushd ../../IAC/Bicep/bicep
-            cat .env
-            load_dotenv
-          popd
-        working-directory: scripts/orchestrators
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
@@ -93,6 +83,11 @@ jobs:
 
           source ./tests.runner.sh
           
+          pushd ../../IAC/Bicep/bicep
+            cat .env
+            load_dotenv
+          popd
+
           bicep pester
         working-directory: scripts/orchestrators
 
