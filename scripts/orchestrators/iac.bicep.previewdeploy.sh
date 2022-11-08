@@ -80,7 +80,7 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
-    bicep_output_to_env "${output}" ".env" "false" "false"
+    bicep_output_to_env "${output}" ".env" "false" "true"
     echo " ------------ DOT ENV DIR   $(pwd) ------------"
     cat .env
 
