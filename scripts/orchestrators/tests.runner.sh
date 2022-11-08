@@ -93,7 +93,11 @@ bicep() {
     
     # the parent bicep function does a pushd to IAC/Bicep/test
     pushd ./end_to_end
+      echo "------------------------- ENV BASH --------------------------"
+      env
 
+      echo "------------------------- ENV PWSH --------------------------"
+      pwsh "env"
       # if the test file is not specified, run for all files
       if [ -z "${1}" ]; then
         pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML –EnableExit"

@@ -86,6 +86,7 @@ jobs:
           pushd ../../IAC/Bicep/bicep
             cat .env
             load_dotenv
+            env
           popd
 
           bicep pester
