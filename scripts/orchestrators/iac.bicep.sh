@@ -47,9 +47,12 @@ bicep_output_to_env() {
     local bicep_output_json="${1}"
     local dotenv_file_path="${2:-".env"}"
     local saveDeployOutput="${3:-"false"}"
+    local keepEnvFile="${4:-"false"}"
 
-    if [[ -f "${dotenv_file_path}" ]]; then
-        rm -f "${dotenv_file_path}"
+    if [ "$keepEnvFile" == "false" ]; then
+        if [[ -f "${dotenv_file_path}" ]]; then
+            rm -f "${dotenv_file_path}"
+        fi
     fi
 
     if [ "$saveDeployOutput" == "true" ]; then
