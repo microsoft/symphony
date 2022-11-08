@@ -74,4 +74,4 @@ jobs:
         uses: actions/cache@v3
         with:
           path: IAC/Bicep/bicep/.env
-          key: ${{ runner.os }}-primes
+          key: ${{ runner.os }}-bicep-env

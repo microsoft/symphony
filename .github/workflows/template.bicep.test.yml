@@ -47,6 +47,7 @@ jobs:
           source ./_helpers.sh
           
           pushd ../../IAC/Bicep/bicep
+            cat .env
             load_dotenv
           popd
         working-directory: scripts/orchestrators
