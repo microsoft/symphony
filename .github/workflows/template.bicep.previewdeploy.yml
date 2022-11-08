@@ -73,5 +73,5 @@ jobs:
         id: cache-env
         uses: actions/cache@v3
         with:
-          path: IAC/Bicep/bicep/.env
+          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
           key: ${{ runner.os }}-bicep-env

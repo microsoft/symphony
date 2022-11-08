@@ -67,7 +67,6 @@ bicep_output_to_env() {
             outputValue=$(echo "$c" | jq -r '.[1]')
 
             echo "${outputName}"="${outputValue}" >>"${dotenv_file_path}"
-            echo "appending ${outputName} to file ${dotenv_file_path}"
             eval export "${outputName}"="${outputValue}"
 
             if [ -n "${GITHUB_ACTION}" ]; then

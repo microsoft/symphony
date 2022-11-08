@@ -81,6 +81,8 @@ for deployment in "${modules[@]}"; do
     fi
 
     bicep_output_to_env "${output}" ".env" "false"
+    pwd
+
     echo "${output}"
     echo "------------------------"
 done
