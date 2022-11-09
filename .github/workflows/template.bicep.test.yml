@@ -84,9 +84,7 @@ jobs:
           source ./tests.runner.sh
           
           pushd ../../IAC/Bicep/bicep
-            cat .env
             load_dotenv
-            env
           popd
 
           bicep pester
@@ -96,4 +94,4 @@ jobs:
         if: success() || failure()
         with:
           name: pest-results
-          path: IAC/Bicep/test/pester
+          path: IAC/Bicep/test/end_to_end

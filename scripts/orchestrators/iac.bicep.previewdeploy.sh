@@ -81,8 +81,6 @@ for deployment in "${modules[@]}"; do
     fi
 
     bicep_output_to_env "${output}" ".env" "false" "true"
-    echo " ------------ DOT ENV DIR   $(pwd) ------------"
-    cat .env
 
     echo "${output}"
     echo "------------------------"
