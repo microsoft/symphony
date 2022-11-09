@@ -54,4 +54,4 @@ jobs:
       - task: Cache@2
         inputs:
           key: $(Build.BuildNumber)-bicep-env
-          path: "IAC/Bicep/bicep/.env"
+          path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep/.env"
