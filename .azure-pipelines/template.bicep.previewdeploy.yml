@@ -52,6 +52,7 @@ jobs:
           filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"
 
       - task: Cache@2
+        workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
         inputs:
           key: $(Build.BuildNumber)-bicep-env
-          path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep/.env"
+          path: ".env"

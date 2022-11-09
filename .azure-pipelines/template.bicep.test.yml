@@ -57,9 +57,10 @@ jobs:
           runAsPreJob: true
 
       - task: Cache@2
+        workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
         inputs:
           key: $(Build.BuildNumber)-bicep-env
-          path: "IAC/Bicep/bicep/.env"
+          path: ".env"
           
       - task: Bash@3
         displayName: "Run E2E tests"
