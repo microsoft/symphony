@@ -58,8 +58,11 @@ jobs:
 
       - task: Cache@2
         inputs:
-          key: '.env | $(Build.BuildNumber)'
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
+          key: '".env" | "$(Build.BuildId)"'
+          restoreKeys: |
+            .env | "$(Build.BuildId)"
+            .env
           
       - task: Bash@3
         displayName: "Run E2E tests"
