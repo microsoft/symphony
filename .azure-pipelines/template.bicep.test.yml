@@ -56,7 +56,12 @@ jobs:
           secretsFilter: "*"
           runAsPreJob: true
 
-      - task: AzurePowerShell@5
+      - task: Cache@2
+        inputs:
+          key: $(Build.BuildNumber)-bicep-env
+          path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep/.env"
+          
+      - task: Bash@3
         displayName: "Run E2E tests"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
@@ -67,43 +72,22 @@ jobs:
           ARM_TENANT_ID: $(tenantId)
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
-          SQLSERVER_RESOURCE_GROUP_NAME: $(sqlServerResourceGroupName)
-          SQLSERVER_NAME:  $(sqlServerName)
-          APPSERVICE_RESOURCE_GROUP_NAME:   $(resourceGroupName)
-          APPSERVICE_PLAN_NAME:  $(appServicePlanName)
-          APPSERVICE_NAME:  $(appServiceName)
+          sqlServerResourceGroupName: $(sqlServerResourceGroupName)
+          sqlServerName:  $(sqlServerName)
+          appServiceResourceGroupName:   $(resourceGroupName)
+          appServicePlanName:  $(appServicePlanName)
+          appServiceName:  $(appServiceName)
         inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/end_to_end"
-          azureSubscription: 'Symphony-KV'
-          ScriptType: 'InlineScript'
-          Inline: |
-            Write-Host "bicepJson: $(bicepJson)"
-            Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML
-          preferredAzurePowerShellVersion: '3.1.0'
-          pwsh: true
-          
-      # - task: Bash@3
-      #   displayName: "Run E2E tests"
-      #   env:
-      #     WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-      #     RUN_ID: $(Build.BuildId)
-      #     ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-      #     LOCATION_NAME: ${{ parameters.locationName }}
-      #     ARM_SUBSCRIPTION_ID: $(subscriptionId)
-      #     ARM_TENANT_ID: $(tenantId)
-      #     ARM_CLIENT_ID: $(clientId)
-      #     ARM_CLIENT_SECRET: $(clientSecret)
-      #     SQLSERVER_RESOURCE_GROUP_NAME: $(sqlServerResourceGroupName)
-      #     SQLSERVER_NAME:  $(sqlServerName)
-      #     APPSERVICE_RESOURCE_GROUP_NAME:   $(resourceGroupName)
-      #     APPSERVICE_PLAN_NAME:  $(appServicePlanName)
-      #     APPSERVICE_NAME:  $(appServiceName)
-      #   inputs:
-      #     workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-      #     targetType: "inline"
-      #     script: |
-      #       source ./tests.runner.sh
-      #       bicep pester
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          targetType: "inline"
+          script: |
+            source ./tests.runner.sh
+
+            pushd ../../IAC/Bicep/bicep
+              load_dotenv
+            popd
+
+            bicep pester
 
       - task: PublishTestResults@2
         displayName: "Publish E2E test results"
