@@ -10,10 +10,12 @@ function Connect-AzAccountFromEnv() {
     $clientSecret=Confirm-EnvironmentVariable("ARM_CLIENT_SECRET")
     $clientId=Confirm-EnvironmentVariable("ARM_CLIENT_ID")
     $tenantId=Confirm-EnvironmentVariable("ARM_TENANT_ID")
+    $subscriptionId=Confirm-EnvironmentVariable("ARM_SUBSCRIPTION_ID")
 
     $SecuredPassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential ($clientId, $SecuredPassword)
     Connect-AzAccount -ServicePrincipal -TenantId $tenantId -Credential $Credential
+    Set-AzContext -Subscription $subscriptionId
 }
 
 function Get-ResourceGroup([string]$resourceGroupName) {
