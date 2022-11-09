@@ -55,12 +55,11 @@ jobs:
           keyVaultName: ${{ parameters.keyVaultName }}
           secretsFilter: "*"
           runAsPreJob: true
-
+          
       - task: Cache@2
-        workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
         inputs:
           key: $(Build.BuildNumber)-bicep-env
-          path: ".env"
+          path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           
       - task: Bash@3
         displayName: "Run E2E tests"
