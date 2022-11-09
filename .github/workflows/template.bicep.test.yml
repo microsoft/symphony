@@ -98,9 +98,9 @@ jobs:
           path: IAC/Bicep/test/end_to_end
 
       - name: Publish E2E Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: "./IAC/Bicep/test/end_to_end/*.xml"
+          nunit_files: "./IAC/Bicep/test/end_to_end/*.xml"
           check_name: "E2E Tests Results"
 
