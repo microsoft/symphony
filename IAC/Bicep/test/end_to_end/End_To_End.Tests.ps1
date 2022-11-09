@@ -43,7 +43,7 @@ Describe "End to End Tests" {
             $defaultHostName = $webAppResource.DefaultHostName
             $defaultHostName | Should -Not -Be $Null
 
-            $response = Invoke-RestMethod -Uri "http://$defaultHostName" -Method Get;
+            $response = Invoke-RestMethod -Uri "http://$defaultHostName" -Method 'Get' -TimeoutSec 240
         }
     }
 }
