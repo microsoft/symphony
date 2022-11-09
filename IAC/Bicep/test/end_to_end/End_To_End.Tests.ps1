@@ -3,6 +3,8 @@ BeforeDiscovery {
 }
 
 BeforeAll {
+    Connect-AzAccountFromEnv
+
     $sqlServerResourceGroupName = $env:sqlServerResourceGroupName
     $sqlServerName = $env:sqlServerName
     $appServiceResourceGroupName = $env:appServiceResourceGroupName
