@@ -42,12 +42,12 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
 
-      - name: Cache Environment
+      - name: Fetch Cached Environment
         id: cache-env
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
-          key: ${{ runner.os }}-bicep-env
+          key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
