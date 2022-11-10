@@ -13,8 +13,8 @@ parameters:
 jobs:
   - job: PreviewDeploy
     displayName: "Preview and Deploy"
-    dependsOn:
-      - Validate
+    # dependsOn:
+    #   - Validate
 
     steps:
       - checkout: self
