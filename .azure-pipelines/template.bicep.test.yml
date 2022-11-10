@@ -26,28 +26,16 @@ jobs:
 
       - task: Bash@3
         displayName: "Install required tools"
-        inputs:
-          filePath: "scripts/orchestrators/setup-pester.sh"
+        inputs:         
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
-          targetType: "filePath"
-
-      - task: Bash@3
-        displayName: "Install Azure CLI"
-        inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
-
-      - task: Bash@3
-        displayName: "Install Azure CLI"
-        inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
+          targetType: "inline"
+          script: |
+            ./setup-azcli.sh
+            ./setup-powershell.sh
+            ./setup-pester.sh
+            ./setup-azpowershell.sh
 
       - task: AzureKeyVault@2
         inputs:
@@ -80,6 +68,7 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
+          failOnStderr: true
           script: |
             source ./tests.runner.sh
 
