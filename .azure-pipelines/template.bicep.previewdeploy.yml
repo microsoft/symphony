@@ -13,8 +13,8 @@ parameters:
 jobs:
   - job: PreviewDeploy
     displayName: "Preview and Deploy"
-    # dependsOn:
-    #   - Validate
+    dependsOn:
+      - Validate
 
     steps:
       - checkout: self
@@ -50,13 +50,6 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
           filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"
-
-      - script: |
-          cp .env bicep.env
-          ls
-          pwd
-          cat bicep.env
-        workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
 
       - task: Cache@2
         inputs:
