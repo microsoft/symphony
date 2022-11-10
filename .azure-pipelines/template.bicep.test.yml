@@ -83,7 +83,7 @@ jobs:
         inputs:
           testResultsFormat: "NUnit"
           testResultsFiles: "*.xml"
-          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/pester"
+          searchFolder: "$(System.DefaultWorkingDirectory)/IAC/Bicep/test/end_to_end"
           failTaskOnFailedTests: true
           testRunTitle: "E2E Test"
           publishRunAttachments: true
