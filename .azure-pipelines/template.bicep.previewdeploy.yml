@@ -50,3 +50,8 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
           filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"
+
+      - task: Cache@2
+        inputs:
+          path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
+          key: '"$(Build.BuildId)"'

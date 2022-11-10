@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Includes
-source ./_helpers.sh
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+source $SCRIPT_DIR/_helpers.sh
 
 usage() {
     _information "Usage: IAC Bicep commands helper"
@@ -45,14 +46,22 @@ parse_bicep_parameters() {
 bicep_output_to_env() {
     local bicep_output_json="${1}"
     local dotenv_file_path="${2:-".env"}"
+    local saveDeployOutput="${3:-"false"}"
+    local keepEnvFile="${4:-"false"}"
 
-    if [[ -f "${dotenv_file_path}" ]]; then
-        rm -f "${dotenv_file_path}"
+    if [ "$keepEnvFile" == "false" ]; then
+        if [[ -f "${dotenv_file_path}" ]]; then
+            rm -f "${dotenv_file_path}"
+        fi
     fi
 
-    if [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
-        echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
+    if [ "$saveDeployOutput" == "true" ]; then
+        if [ -n "${GITHUB_ACTION}" ]; then
+            echo "bicepOutputJson=\"${bicep_output_json}\"" >>$GITHUB_OUTPUT
+        elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
+            local bicepOutput="$(echo ${bicep_output_json} | jq -c)"
+            echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
+        fi
     fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |

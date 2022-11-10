@@ -25,6 +25,7 @@ module appSvcPlanNameGenerator './../../modules/nameGenerator.bicep' = {
   params: {
     name: 'app-svc-plan'
     prefix: environment
+    uniqueToken: location
   }
 }
 
@@ -47,6 +48,7 @@ module appSvcNameGenerator './../../modules/nameGenerator.bicep' = {
   params: {
     name: 'app-svc'
     prefix: environment
+    uniqueToken: location
   }
 }
 
@@ -68,3 +70,8 @@ module appSvc './modules/appSvc.bicep' = {
     appSvcPlan
   ]
 }
+
+output appServiceResourceGroupName string = resourceGroup().name
+output appServiceName string = appSvc.outputs.appServiceName
+output appServicePlanId string = appSvcPlan.outputs.appServicePlanId
+output appServicePlanName string = appSvcPlan.outputs.appServicePlanName
