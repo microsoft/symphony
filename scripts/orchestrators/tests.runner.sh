@@ -89,15 +89,10 @@ terraform() {
 bicep() {
 
   pester() {
-    _information "run pester tests"
+    _information "run end to end tests"
     
     # the parent bicep function does a pushd to IAC/Bicep/test
     pushd ./end_to_end
-      echo "------------------------- ENV BASH --------------------------"
-      env
-
-      echo "------------------------- ENV PWSH --------------------------"
-      pwsh -Command  "Get-ChildItem Env:"
       # if the test file is not specified, run for all files
       if [ -z "${1}" ]; then
         pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML –EnableExit"

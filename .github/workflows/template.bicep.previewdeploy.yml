@@ -22,8 +22,6 @@ on:
 jobs:
   PreviewDeploy:
     name: "Preview and Deploy"
-    # outputs:
-    #   bicepOutputJson: ${{ steps.BicepDeploy.outputs.bicepOutputJson }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.1.0

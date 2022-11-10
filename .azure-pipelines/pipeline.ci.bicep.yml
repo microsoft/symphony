@@ -33,13 +33,13 @@ pool:
   vmImage: $(agentImage)
 
 jobs:
-  - template: ./template.bicep.validate.yml
-    parameters:
-      environmentName: $(environmentName)
-      locationName: $(locationName)
-      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-      keyVaultName: $(keyVaultName)
-      excludedFolders: $(excludedFolders)
+  # - template: ./template.bicep.validate.yml
+  #   parameters:
+  #     environmentName: $(environmentName)
+  #     locationName: $(locationName)
+  #     keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+  #     keyVaultName: $(keyVaultName)
+  #     excludedFolders: $(excludedFolders)
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:

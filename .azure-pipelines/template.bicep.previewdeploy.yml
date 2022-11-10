@@ -51,10 +51,17 @@ jobs:
           targetType: "filePath"
           filePath: "scripts/orchestrators/iac.bicep.previewdeploy.sh"
 
+      - script: |
+          cp .env bicep.env
+          ls
+          pwd
+          cat bicep.env
+        workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
+
       - task: Cache@2
         inputs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
-          key: '".env" | "$(Build.BuildId)"'
+          key: '"bicep.env" | "$(Build.BuildId)"'
           restoreKeys: |
-            .env | "$(Build.BuildId)"
+            bicep.env | "$(Build.BuildId)"
             .env
