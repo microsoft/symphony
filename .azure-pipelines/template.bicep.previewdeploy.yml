@@ -61,7 +61,4 @@ jobs:
       - task: Cache@2
         inputs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
-          key: '"bicep.env" | "$(Build.BuildId)"'
-          restoreKeys: |
-            bicep.env | "$(Build.BuildId)"
-            .env
+          key: '"$(Build.BuildId)"'
