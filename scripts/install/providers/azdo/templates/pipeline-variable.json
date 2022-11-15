@@ -1,0 +1,5 @@
+"__PIPELINE_VAR_NAME__" : {
+    "value" : "__PIPELINE_VAR_VALUE__",
+    "isSecret" : __PIPELINE_VAR_IS_SECRET__,
+    "allowOverride" : __PIPELINE_ALLOW_OVERRIDE__
+}

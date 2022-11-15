@@ -1,0 +1,45 @@
+{
+    "process": {
+        "yamlFilename": "__ADO_PIPELINE_YAML_FILE_PATH__",
+        "type": 2,
+        "resources": {},
+        "target": null
+    },
+    "repository": {
+        "type": "TfsGit",
+        "name": "__ADO_PIPELINE_REPO_NAME__",
+        "defaultBranch": "refs/heads/__ADO_PIPELINE_REPO_BRANCH__"
+
+    },
+    "path": "__ADO_PIPELINE_FOLDER_PATH__",
+    "name": "__ADO_PIPELINE_NAME__",
+    "type": "build",
+    "queueStatus": "enabled",
+    "triggers": [
+        {
+            "batchChanges": false,
+            "maxConcurrentBuildsPerBranch": 1,
+            "pollingJobId": null,
+            "pollingInterval": 0,
+            "pathFilters": [],
+            "branchFilters": [
+                "+refs/heads/master"
+            ],
+            "defaultSettingsSourceType": 2,
+            "isSettingsSourceOptionSupported": true,
+            "settingsSourceType": 2,
+            "triggerType": 2
+        }
+    ],
+    "variables" : { __ADO_PIPELINE_VARIABLES__ },
+    "queue": {
+        "id": __ADO_POOL_ID__,
+        "name": "__ADO_POOL_NAME__",
+        "url": "__AZDO_ORG_URI__/_apis/build/Queues/__ADO_POOL_ID__",
+        "pool": {
+            "id": __ADO_POOL_ID__,
+            "name": "__ADO_POOL_NAME__",
+            "isHosted": true
+        }
+    }
+}

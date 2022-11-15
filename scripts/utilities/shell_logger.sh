@@ -52,3 +52,9 @@ _success() {
         echo "NOTICE: $@"
     fi
 }
+
+_debug_json() {
+    if [ -n ${DEBUG_FLAG} ]; then
+        echo "${@}" | jq
+    fi
+}
