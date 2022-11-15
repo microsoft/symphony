@@ -5,5 +5,6 @@
 # Git helpers for Symphony installation
 #
 ########################################################################################
-
-
+function git_push() {
+    git push -u origin --all
+}

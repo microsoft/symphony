@@ -2,6 +2,7 @@
 
 source scripts/utilities/shell_logger.sh
 source scripts/install/banner.sh
+source scripts/install/contents.sh
 
 _information "Symphony Install"
 
@@ -25,9 +26,13 @@ main() {
     
     if [ $IACTOOL == "bicep" ]; then
       create_pipelines_bicep
+      remove_tf_content
     else
       create_pipelines_terraform
+      remove_bicep_content
     fi
+
+    # todo push the code the repo
 }
 
 # Entry point

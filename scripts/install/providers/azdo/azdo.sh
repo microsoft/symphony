@@ -456,7 +456,3 @@ EOT
     git remote set-url origin $remoteWithCreds
 }
 
- 
-function git_push() {
-    git push -u origin --all
-}
