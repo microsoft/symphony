@@ -61,8 +61,7 @@ for deployment in "${modules[@]}"; do
     _information "Executing Bicep preview: 'preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
    
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
-    echo $output
-
+  
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
@@ -81,9 +80,7 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
-    bicep_output_to_env "${output}"
-    echo "${output}"
-    echo "------------------------"
+    bicep_output_to_env "${output}" ".env" "false" "true"
 done
 
 popd

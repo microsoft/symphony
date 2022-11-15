@@ -1,3 +1,23 @@
+function Confirm-EnvironmentVariable($name){
+    $value=[Environment]::GetEnvironmentVariable($name)
+    if([string]::IsNullOrEmpty($value)) {
+        Write-Error("Missing Required Environment Variable $name")
+        exit -1
+    }
+    return $value
+}
+function Connect-AzAccountFromEnv() {
+    $clientSecret=Confirm-EnvironmentVariable("ARM_CLIENT_SECRET")
+    $clientId=Confirm-EnvironmentVariable("ARM_CLIENT_ID")
+    $tenantId=Confirm-EnvironmentVariable("ARM_TENANT_ID")
+    $subscriptionId=Confirm-EnvironmentVariable("ARM_SUBSCRIPTION_ID")
+
+    $SecuredPassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ($clientId, $SecuredPassword)
+    Connect-AzAccount -ServicePrincipal -TenantId $tenantId -Credential $Credential
+    Set-AzContext -Subscription $subscriptionId
+}
+
 function Get-ResourceGroup([string]$resourceGroupName) {
     $resource = Get-AzResourceGroup $resourceGroupName
     return $resource
@@ -62,4 +82,5 @@ Export-ModuleMember -Function `
     Get-AppServicePlan, Get-AppServicePlanExists, `
     Get-WebApp, Get-WebAppExists, `
     Get-SqlServer, Get-SqlServerExists, `
-    Get-SqlDatabase, Get-SqlDatabaseExists
+    Get-SqlDatabase, Get-SqlDatabaseExists, `
+    Connect-AzAccountFromEnv

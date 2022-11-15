@@ -53,6 +53,7 @@ jobs:
           IFS=$OIFS
 
       - name: Run Bicep Deploy
+        id: BicepDeploy
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
           LOCATION_NAME: ${{ github.event.inputs.locationName }}
@@ -65,3 +66,10 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           ./iac.bicep.previewdeploy.sh
         working-directory: scripts/orchestrators
+
+      - name: Cache Environment
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
+          key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
