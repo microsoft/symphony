@@ -161,6 +161,13 @@ function create_pipelines_bicep() {
 
 }
 
+function push_repo_code(){
+    remote=$CODE_REPO_GIT_HTTP_URL
+    remoteWithCreds="${remote/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
+    git remote set-url origin $remoteWithCreds
+    git push origin --all
+}
+
 function _create_arm_svc_connection() {
     # https://docs.microsoft.com/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-rest-5.1#endpointauthorization
     # https://docs.microsoft.com/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-server-rest-5.0
@@ -442,17 +449,5 @@ function _get_agent_pool_queue() {
 }
 
 
-function config_local_git_credentials(){
 
-    cat <<EOT > /home/vscode/.gitconfig
-[credential]
-    helper = store
-EOT
-    
-    echo "https://${AZDO_ORG_NAME}:${AZDO_PAT}@dev.azure.com" >> ~/.git-credentials
-
-    declare remote=$(git config --get remote.origin.url)
-    declare remoteWithCreds="${remote/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
-    git remote set-url origin $remoteWithCreds
-}
 

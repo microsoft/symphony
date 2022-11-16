@@ -32,7 +32,8 @@ main() {
       remove_bicep_content
     fi
 
-    # todo push the code the repo
+    # push the code the repo
+    push_repo_code
 }
 
 # Entry point
