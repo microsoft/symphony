@@ -39,6 +39,10 @@ function remove_bicep_content(){
     rm -r $INSTALL_DIR/../../IAC/Bicep/*
     rm -r $INSTALL_DIR/../../IAC/Bicep
 
+    _information "Remove Bicep env"
+    rm -r $INSTALL_DIR/../../env/bicep/*
+    rm -r $INSTALL_DIR/../../env/bicep
+
     if [ "$ORCHESTRATOR" == "azdo" ]; then
         _information "Remove Bicep Azdo pipeline"
         rm $INSTALL_DIR/../../.azure-pipelines/*.bicep*.yml
