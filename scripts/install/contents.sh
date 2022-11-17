@@ -1,8 +1,15 @@
 #!/bin/bash
 
 INSTALL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-source $SCRIPT_DIR/../utilities/shell_logger.sh
+source $INSTALL_DIR/../utilities/shell_logger.sh
 
+function remove_yaml() {
+    if [ "$ORCHESTRATOR" == "azdo" ]; then
+        rm -r $INSTALL_DIR/../../.github/*
+    else
+        rm -r $INSTALL_DIR/../../.azure-pipelines/*
+    fi
+}
 function remove_tf_content(){
     _information "Remove Terraform IaC modules"
     rm -r $INSTALL_DIR/../../IAC/Terraform/*
@@ -12,11 +19,13 @@ function remove_tf_content(){
     rm -r $INSTALL_DIR/../../env/terraform/*
     rm -r $INSTALL_DIR/../../env/terraform
 
-    _information "Remove Terraform Azdo pipeline"
-    rm $INSTALL_DIR/../../.azure-pipelines/*.terraform*.yml
-
-    _information "Remove Terraform Github workflows"
-    rm $INSTALL_DIR/../../.github/workflows/*.terraform*.yml
+    if [ "$ORCHESTRATOR" == "azdo" ]; then
+        _information "Remove Terraform Azdo pipeline"
+        rm $INSTALL_DIR/../../.azure-pipelines/*.terraform*.yml
+    else
+        _information "Remove Terraform Github workflows"
+        rm $INSTALL_DIR/../../.github/workflows/*.terraform*.yml
+    fi
 
     _information "Remove Terraform orchestrators scripts"
     rm $INSTALL_DIR/../orchestrators/*.tf.*.sh
@@ -30,11 +39,13 @@ function remove_bicep_content(){
     rm -r $INSTALL_DIR/../../IAC/Bicep/*
     rm -r $INSTALL_DIR/../../IAC/Bicep
 
-    _information "Remove Bicep Azdo pipeline"
-    rm $INSTALL_DIR/../../.azure-pipelines/*.bicep*.yml
-
-    _information "Remove Bicep Github workflows"
-    rm $INSTALL_DIR/../../.github/workflows/*.bicep*.yml
+    if [ "$ORCHESTRATOR" == "azdo" ]; then
+        _information "Remove Bicep Azdo pipeline"
+        rm $INSTALL_DIR/../../.azure-pipelines/*.bicep*.yml
+    else
+        _information "Remove Bicep Github workflows"
+        rm $INSTALL_DIR/../../.github/workflows/*.bicep*.yml
+    fi
 
     _information "Remove Bicep orchestrators scripts"
     rm $INSTALL_DIR/../orchestrators/*bicep*.sh

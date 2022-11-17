@@ -29,6 +29,8 @@ main() {
     configure_repo
     configure_credentials
     
+    # cleanup
+    remove_yaml
     if [ $IACTOOL == "bicep" ]; then
       create_pipelines_bicep
       remove_tf_content
@@ -36,7 +38,9 @@ main() {
       create_pipelines_terraform
       remove_bicep_content
     fi
-
+    git add .
+    git commit -m "cleanup unused iac files"
+    
     # push the code the repo
     git push origin --all
 }
