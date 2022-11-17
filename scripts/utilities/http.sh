@@ -1,13 +1,10 @@
+#!/usr/bin/env bash
+
 _set_api_version(){
     uri=$1
-    paas_version=$2
-    server_version=$3
+    paas_version=$23
     
-    if [ "$INSTALL_TYPE" == "PAAS" ]; then
-        echo "$1$2"
-    else
-        echo "$1$3"
-    fi
+    echo "$1$2"
 }
 
 verify_response() {
@@ -16,25 +13,25 @@ verify_response() {
     local _token=$3
 
     if [[ "$_response" == *"innerException"* ]]; then
-        echo "----------------------------------------------" >> ./temp/http.error.log
-        echo "Inner Exception in Http Response " >> ./temp/http.error.log    
-        echo "_request_uri: $_request_uri" >> ./temp/http.error.log    
-        echo "_response: " >> ./temp/http.error.log    
-        echo $_response >> ./temp/http.error.log    
+        echo "----------------------------------------------" >> $SCRIPT_DIR/temp/http.error.log
+        echo "Inner Exception in Http Response " >> $SCRIPT_DIR/temp/http.error.log    
+        echo "_request_uri: $_request_uri" >> $SCRIPT_DIR/temp/http.error.log    
+        echo "_response: " >> $SCRIPT_DIR/temp/http.error.log    
+        echo $_response >> $SCRIPT_DIR/temp/http.error.log    
     fi
     if [[ "$_response" == *"Azure DevOps Services | Sign In"* ]]; then
-        echo "----------------------------------------------" >> ./temp/http.error.log
-        echo "Azure DevOps Services | Sign In Http Response (html login screen)" >> ./temp/http.error.log        
-        echo "_request_uri: $_request_uri" >> ./temp/http.error.log    
-        echo "_response: " >> ./temp/http.error.log    
-        echo $_response >> ./temp/http.error.log    
+        echo "----------------------------------------------" >> $SCRIPT_DIR/temp/http.error.log
+        echo "Azure DevOps Services | Sign In Http Response (html login screen)" >> $SCRIPT_DIR/temp/http.error.log        
+        echo "_request_uri: $_request_uri" >> $SCRIPT_DIR/temp/http.error.log    
+        echo "_response: " >> $SCRIPT_DIR/temp/http.error.log    
+        echo $_response >> $SCRIPT_DIR/temp/http.error.log    
     fi
     if [[ "$_response" == *"Access Denied: The Personal Access Token used has expired"* ]]; then
-        echo "----------------------------------------------" >> ./temp/http.error.log
-        echo "Access Denied: The Personal Access Token used has expired (html screen)" >> ./temp/http.error.log        
-        echo "_request_uri: $_request_uri" >> ./temp/http.error.log    
-        echo "_response: " >> ./temp/http.error.log    
-        echo $_response >> ./temp/http.error.log    
+        echo "----------------------------------------------" >> $SCRIPT_DIR/temp/http.error.log
+        echo "Access Denied: The Personal Access Token used has expired (html screen)" >> $SCRIPT_DIR/temp/http.error.log        
+        echo "_request_uri: $_request_uri" >> $SCRIPT_DIR/temp/http.error.log    
+        echo "_response: " >> $SCRIPT_DIR/temp/http.error.log    
+        echo $_response >> $SCRIPT_DIR/temp/http.error.log    
     fi    
 }
 _debug_log_patch() {
@@ -49,29 +46,16 @@ request_patch() {
     request_uri=$1
     payload=$2
 
-   if [ $INSTALL_TYPE == 'PAAS ' ]; then
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
+    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request PATCH ${request_uri} \
-            --data-raw "${payload}" \
-            --compressed)
-    else
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
-        
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request PATCH ${request_uri} \
-            --data-raw "${payload}" \
-            --compressed)
-    fi
+    _response=$(curl \
+        --silent \
+        --location \
+        --header 'Content-Type: application/json; charset=utf-8' \
+        --header "Authorization: Basic ${_token}" \
+        --request PATCH ${request_uri} \
+        --data-raw "${payload}" \
+        --compressed)
 
     verify_response "$request_uri" "$_response" "$_token"
     echo $_response 
@@ -89,27 +73,15 @@ request_post(){
     request_uri=${1}
     payload=${2}
 
-    if [ $INSTALL_TYPE == 'PAAS ' ]; then
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
+    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request POST ${request_uri} \
-            --data-raw "${payload}")
-    else
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
-
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request POST ${request_uri} \
-            --data-raw "${payload}")
-    fi
+    _response=$(curl \
+        --silent \
+        --location \
+        --header 'Content-Type: application/json; charset=utf-8' \
+        --header "Authorization: Basic ${_token}" \
+        --request POST ${request_uri} \
+        --data-raw "${payload}")
 
     verify_response "$request_uri" "$_response" "$_token"
     echo $_response 
@@ -119,27 +91,15 @@ request_put(){
     request_uri=${1}
     payload=${2}
 
-    if [ $INSTALL_TYPE == 'PAAS ' ]; then
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
+    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request PUT ${request_uri} \
-            --data-raw "${payload}")
-    else
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
-
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request PUT ${request_uri} \
-            --data-raw "${payload}")
-    fi
+    _response=$(curl \
+        --silent \
+        --location \
+        --header 'Content-Type: application/json; charset=utf-8' \
+        --header "Authorization: Basic ${_token}" \
+        --request PUT ${request_uri} \
+        --data-raw "${payload}")
 
     verify_response "$request_uri" "$_response" "$_token"
     echo $_response 
@@ -156,29 +116,14 @@ request_get(){
 
     local _response
 
-    if [ $INSTALL_TYPE == 'PAAS ' ]; then
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
+    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --header "Authorization: Basic ${_token}" \
-            --request GET ${request_uri} )
-
-
-    else
-
-        _token=$(echo -n "${AZDO_PAT}")
-        _user=${AZDO_USER}':'${_token}
-
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            -u  ${_user} \
-            --request GET ${request_uri} )
-    fi
+    _response=$(curl \
+        --silent \
+        --location \
+        --header 'Content-Type: application/json; charset=utf-8' \
+        --header "Authorization: Basic ${_token}" \
+        --request GET ${request_uri} )
 
     verify_response "$request_uri" "$_response" "$_token"
     echo $_response 
@@ -195,29 +140,16 @@ request_post_binary(){
     request_uri=${1}
     _sec_env_filename=${2}
 
-    if [ $INSTALL_TYPE == 'PAAS ' ]; then
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
+    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/octet-stream' \
-            --header "Authorization: Basic ${_token}" \
-            --request POST ${request_uri} \
-            --data-binary "@./${_sec_env_filename}" \
-            --compressed)
-    else
-        _token=$(echo -n ":${AZDO_PAT}" | base64)
-
-        _response=$(curl \
-            --silent \
-            --location \
-            --header 'Content-Type: application/octet-stream' \
-            --header "Authorization: Basic ${_token}" \
-            --request POST ${request_uri} \
-            --data-binary "@./${_sec_env_filename}" \
-            --compressed)
-    fi
+    _response=$(curl \
+        --silent \
+        --location \
+        --header 'Content-Type: application/octet-stream' \
+        --header "Authorization: Basic ${_token}" \
+        --request POST ${request_uri} \
+        --data-binary "@./${_sec_env_filename}" \
+        --compressed)
 
     verify_response "$request_uri" "$_response" "$_token"
     echo $_response 

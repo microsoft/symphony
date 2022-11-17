@@ -1,25 +1,30 @@
 #!/usr/bin/env bash
 
 source scripts/utilities/shell_logger.sh
+source scripts/utilities/shell_inputs.sh
+source scripts/utilities/service_principal.sh
 source scripts/install/banner.sh
 source scripts/install/contents.sh
 
-_information "Symphony Install"
+#script name
+declare me=`basename "$0"`
 
 declare ORCHESTRATOR=$1
 declare IACTOOL=$2
 
-#Bind command line arguments
-
 main() {
+    show_banner
+    _validate_inputs
     if [ $ORCHESTRATOR == "azdo" ]; then
       source scripts/install/providers/azdo/azdo.sh
-      mkdir scripts/install/providers/azdo/temp
+      mkdir -p scripts/install/providers/azdo/temp
     else
       source scripts/install/providers/github.sh
     fi
 
     # workflow
+    loadServicePrincipalCredentials
+    printEnvironment
     load_inputs
     configure_repo
     configure_credentials
@@ -33,7 +38,7 @@ main() {
     fi
 
     # push the code the repo
-    push_repo_code
+    git push origin --all
 }
 
 # Entry point
