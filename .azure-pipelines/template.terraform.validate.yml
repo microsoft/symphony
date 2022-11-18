@@ -107,7 +107,7 @@ jobs:
           filePath: "scripts/orchestrators/iac.tf.test.sh"
 
       - task: PublishTestResults@2
-        condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
+        condition: and(succeeded(), eq(variables.runLayerTest, 'true'))
         displayName: "Publish Layer tests results"
         inputs:
           testResultsFormat: "JUnit"
