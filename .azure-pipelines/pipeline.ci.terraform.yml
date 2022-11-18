@@ -42,7 +42,7 @@ variables:
   
   # Run Layer tests
   - name: runLayerTest
-    value:  $(runLayerTests)
+    value:  $(runLayerTest)
 
 pool:
   vmImage: $(agentImage)
