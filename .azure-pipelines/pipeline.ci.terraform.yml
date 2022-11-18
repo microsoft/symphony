@@ -41,7 +41,7 @@ variables:
     value: "1.1.7"
   
   # Run Layer tests
-  - name: runLayerTest
+  - name: runLayerTestyaml
     value:  $(runLayerTest)
 
 pool:
