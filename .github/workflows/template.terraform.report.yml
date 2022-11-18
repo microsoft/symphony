@@ -39,7 +39,7 @@ jobs:
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
         run: |
           OIFS=$IFS
           IFS=', '
@@ -63,6 +63,7 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          export STATE_STORAGE_ACCOUNT_BACKUP=${{ steps.LoadSecrets.outputs.stateStorageAccountBackup }}
           export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
           ./iac.tf.statebackup.sh
         working-directory: scripts/orchestrators
