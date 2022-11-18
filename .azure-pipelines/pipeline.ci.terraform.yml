@@ -12,6 +12,7 @@ variables:
 
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
+  
   - name: runBackupState
     value: true
 
@@ -41,7 +42,7 @@ variables:
   
   # Run Layer tests
   - name: runLayerTest
-    value: "false"
+    value: false
 
 pool:
   vmImage: $(agentImage)
