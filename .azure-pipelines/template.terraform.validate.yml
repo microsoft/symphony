@@ -89,7 +89,7 @@ jobs:
 
       - task: Bash@3
         #condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
-        condition: and(succeeded(), eq(variables.runLayerTest, 'true'))
+        condition: and(succeeded(), eq(variables['runLayerTest'], 'true'))
         displayName: "Run Layers tests"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
@@ -108,7 +108,7 @@ jobs:
 
       - task: PublishTestResults@2
         #condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
-        condition: and(succeeded(), eq(variables.runLayerTest, 'true'))
+        condition: and(succeeded(), eq(variables['runLayerTest'], 'true'))
         displayName: "Publish Layer tests results"
         inputs:
           testResultsFormat: "JUnit"
