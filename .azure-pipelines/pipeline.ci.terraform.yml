@@ -29,7 +29,7 @@ variables:
 
   # Environment Key Vault Name
   - name: keyVaultName
-    value: "kv-symphony-env"
+    value: "kv-symphony-environments"
 
   # Go Lang version
   - name: goVersion
