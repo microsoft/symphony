@@ -26,3 +26,9 @@ _information() {
 _success() {
     printf "\e[32m$@\n\e[0m"
 }
+
+_debug_json() {
+    if [ -n ${DEBUG_FLAG} ]; then
+        echo "${@}" | jq
+    fi
+}

@@ -12,6 +12,7 @@ variables:
 
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
+  
   - name: runBackupState
     value: true
 
@@ -29,7 +30,7 @@ variables:
 
   # Environment Key Vault Name
   - name: keyVaultName
-    value: "kv-symphony-env"
+    value: "kv-symphony-environments"
 
   # Go Lang version
   - name: goVersion
@@ -38,6 +39,10 @@ variables:
   # Terraform version
   - name: terraformVersion
     value: "1.1.7"
+  
+  # Run Layer tests
+  - name: runLayerTest
+    value: "true"
 
 pool:
   vmImage: $(agentImage)

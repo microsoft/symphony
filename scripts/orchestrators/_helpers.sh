@@ -2,13 +2,6 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $SCRIPT_DIR/../utilities/shell_logger.sh
 
-_debug_json() {
-    if [ -n ${DEBUG_FLAG} ]; then
-        echo "${@}" | jq
-    fi
-}
-
-
 azlogin() {
     local subscription_id="${1}"
     local tenant_id="${2}"

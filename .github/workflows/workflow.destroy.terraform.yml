@@ -17,7 +17,7 @@ on:
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
-        default: "kv-symphony-env"
+        default: "kv-symphony-environments"
 
 jobs:
   Destroy:

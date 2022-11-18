@@ -24,7 +24,7 @@ variables:
     value: "Symphony-KV"
 
   - name: keyVaultName
-    value: "kv-symphony-env"
+    value: "kv-symphony-environments"
 
   - name: excludedFolders
     value: ","

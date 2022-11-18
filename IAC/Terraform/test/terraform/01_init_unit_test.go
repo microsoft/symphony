@@ -4,9 +4,11 @@
 package terraform
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/azure"
+	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -14,11 +16,19 @@ import (
 
 func Test01_Init_Storage(t *testing.T) {
 	t.Parallel()
+
+	uniquePostfix := strings.ToLower(random.UniqueId())
+
 	// Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: "../../terraform/01_init",
 		VarFiles:     []string{"terraform.tfvars.json"},
+
+		Vars: map[string]interface{}{
+			"backup_storage_account_name": "remotestatebackup-" + uniquePostfix,
+			"storage_account_name":        "remotestate-" + uniquePostfix,
+		},
 	}
 
 	// Defer 'terraform Destroy'
@@ -38,7 +48,7 @@ func Test01_Init_Storage(t *testing.T) {
 	// assert the resource group, storage account, and container exists
 	assert.True(t, azure.ResourceGroupExists(t, resourceGroupName, ""), "Primary Resource group does not exist")
 	assert.True(t, azure.StorageAccountExists(t, storageAccountName, resourceGroupName, ""), "Storage Account does not exist")
-	assert.True(t, azure.StorageBlobContainerExists(t, containerName, storageAccountName, resourceGroupName, ""), "Container deos not exist")
+	assert.True(t, azure.StorageBlobContainerExists(t, containerName, storageAccountName, resourceGroupName, ""), "Container does not exist")
 
 	assert.True(t, azure.ResourceGroupExists(t, bkResourceGroupName, ""), "Backup Resource group does not exist")
 	assert.True(t, azure.StorageAccountExists(t, bkStorageAccoutName, bkResourceGroupName, ""), "Backup Storage Account does not exist")
