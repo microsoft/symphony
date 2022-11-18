@@ -7,9 +7,9 @@ parameters:
     type: string
   - name: keyVaultName
     type: string
-  - name: runLayerTest
-    type: boolean
-    default: true
+  # - name: runLayerTest
+  #   type: boolean
+  #   default: true
 jobs:
   - job: Validate
     displayName: "Validate"
@@ -88,7 +88,8 @@ jobs:
           filePath: "scripts/orchestrators/iac.tf.validate.sh"
 
       - task: Bash@3
-        condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
+        # condition: and(succeeded(), eq('${{ parameters.runLayerTest }}', 'true'))
+        condition: eq(variables.runLayerTest, 'true')
         displayName: "Run Layers tests"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
