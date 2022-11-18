@@ -38,6 +38,10 @@ variables:
   # Terraform version
   - name: terraformVersion
     value: "1.1.7"
+  
+  # Run Layer tests
+  - name: runLayerTest
+    value: "false"
 
 pool:
   vmImage: $(agentImage)
@@ -52,7 +56,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          runLayerTest: "false"
+          runLayerTest: "$(runLayerTest)"
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:
