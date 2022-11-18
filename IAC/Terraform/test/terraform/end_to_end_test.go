@@ -71,7 +71,7 @@ func Test_EndToEnd(t *testing.T) {
 	assert.True(t, azure.AppExists(t, appName, appResourceGroupName, ""))
 	assert.Equal(t, "Running", *azure.GetAppService(t, appName, appResourceGroupName, "").State)
 
-	httpOptions := &http_helper.HttpGetOptions{Url: "https://" + defaultHostName, TlsConfig: &tls.Config{}, Timeout: 240}
+	httpOptions := http_helper.HttpGetOptions{Url: "https://" + defaultHostName, TlsConfig: &tls.Config{}, Timeout: 240}
 	statusCode, _ := http_helper.HttpGetWithOptions(t, httpOptions)
 
 	assert.Equal(t, 200, statusCode)
