@@ -57,7 +57,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          runLayerTest: "$(runLayerTest)"
+          runLayerTest: "true"
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:
