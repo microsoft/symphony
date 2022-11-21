@@ -13,9 +13,6 @@ variables:
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
   
-  - name: runBackupState
-    value: true
-
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
@@ -41,8 +38,12 @@ variables:
     value: "1.1.7"
   
   # Run Layer tests
-  - name: runLayerTest
-    value: "true"
+  - name: layerTestEnabled
+    value:  $(runLayerTest)
+
+  # Backup remote state
+  - name: backupStateEnabled
+    value: $(runBackupState)
 
 pool:
   vmImage: $(agentImage)
@@ -57,7 +58,6 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          runLayerTest: "false"
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:

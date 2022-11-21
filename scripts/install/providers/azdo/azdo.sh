@@ -136,6 +136,8 @@ function create_pipelines_terraform() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName kv-symphony-environments true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)" 
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.1.7 true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runLayerTest false true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"   
     _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.terraform.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 
