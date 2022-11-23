@@ -20,7 +20,6 @@ main() {
       mkdir -p scripts/install/providers/azdo/temp
     else
       source scripts/install/providers/github/github.sh
-      mkdir -p scripts/install/providers/github/temp
     fi
 
     # workflow
