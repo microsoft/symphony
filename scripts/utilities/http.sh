@@ -83,8 +83,7 @@ request_post(){
         --header "Authorization: ${authorization}" \
         --request POST ${request_uri} \
         --data-raw "${payload}")
-    # 'Content-Type: application/json; charset=utf-8'
-    # "Authorization: Basic ${token}"
+
     verify_response "$request_uri" "$_response"
     echo $_response 
 }

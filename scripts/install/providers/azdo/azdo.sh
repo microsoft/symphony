@@ -44,10 +44,11 @@ function configure_repo {
     # AzDo Service     : Processes - Get https://docs.microsoft.com/rest/api/azure/devops/core/processes/get?view=azure-devops-rest-5.1
     # GET https://{instance}/{collection}/_apis/process/processes/{processId}?api-version=5.0
     _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/process/processes?api-version=" '5.1' '5.1')
-    
+
     _debug "Requesting process templates"
 
     _response=$(request_get "${_uri}")
+
 
     echo $_response > $SCRIPT_DIR/temp/pt.json
     
@@ -80,7 +81,7 @@ function configure_repo {
                    "${_uri}" \
                    "${_payload}" \
                    "application/json; charset=utf-8" \
-                   "Basic ${token}"
+                   "Basic ${_token}"
                )
     echo $_response > $SCRIPT_DIR/temp/cp.json    
     local _createProjectTypeKey=$(echo $_response | jq -r '.typeKey')
@@ -190,7 +191,7 @@ function _create_arm_svc_connection() {
         "${_uri}" \
         "${_payload}" \
         "application/json; charset=utf-8" \
-        "Basic ${token}"
+        "Basic ${_token}"
         )
 
     echo $_response > $SCRIPT_DIR/temp/casc.json
@@ -251,7 +252,7 @@ function _create_azdo_svc_connection() {
         "${_uri}" \
         "${_payload}" \
         "application/json; charset=utf-8" \
-        "Basic ${token}"
+        "Basic ${_token}"
     )
 
     echo $_response > $SCRIPT_DIR/temp/scado.json
@@ -319,7 +320,7 @@ function _create_pipeline {
                 | sed 's~__AZDO_ORG_URI__~'"${AZDO_ORG_URI}"'~' \
               )
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
-    local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${token}")
+    local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
 
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp.json
