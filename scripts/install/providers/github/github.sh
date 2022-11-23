@@ -12,8 +12,15 @@ source $SCRIPT_DIR/../../../utilities/http.sh
 ########################################################################################
 
 function load_inputs {
+    $(gh version>/dev/null 2>&1)
+    code=$?
+    if [ "$code" == "127" ]; then
+        _error "github cli is not installed! Please install the gh cli https://cli.github.com/"
+        exit 1
+    fi
+
     _information "Load GitHub Configurations"
-  
+
     if [ -z "$GH_ORG_NAME" ]; then
         _prompt_input "Enter GitHub Org Name" GH_ORG_NAME
     fi
@@ -26,49 +33,34 @@ function load_inputs {
         _prompt_input "IS GitHub Repo Private [true;false]" IS_Private_GH_Repo
     fi
 
-    if [ -z "$GH_PAT" ]; then
-        _prompt_input "Enter GitHub PAT" GH_PAT
+    $(gh auth status>/dev/null 2>&1)
+    code=$?
+    if [ "$code" == "0" ]; then
+        _information "GitHub Cli is already logged in. Bootstrap with existing authorization."
+    else
+        if [ -z "$GH_PAT" ]; then
+            _prompt_input "Enter GitHub PAT" GH_PAT
+        fi
+         echo $GH_PAT | gh auth login --with-token
     fi
-
 }
-
 
 function configure_repo { 
     _information "Starting project creation for project ${GH_Repo_NAME}"
 
-    # 1. Create repo request
-    # GH API Service     : https://docs.github.com/en/rest/repos/repos#create-an-organization-repository
-    # POST               : https://api.github.com/orgs/{org}/repos
-    _payload=$(cat "$SCRIPT_DIR/templates/repo-create.json" | sed 's~__GH_REPO_NAME__~'"${GH_Repo_NAME}"'~' | sed 's~__PRIVATE_GH_REPO__~'"$IS_Private_GH_Repo"'~' )
-    _uri="https://api.github.com/orgs/${GH_ORG_NAME}/repos"
-
-    _debug "Creating project"
-    
-    # 2. POST Create repo request
-    _response=$( request_post \
-                   "${_uri}" \
-                   "${_payload}" \
-                   "application/vnd.github+json" \
-                   "Bearer ${GH_PAT}"
-               )
-
-
-    echo $_response > $SCRIPT_DIR/temp/${GH_Repo_NAME}-cp.json 
-    local _createProjectMsg=$(echo $_response | jq -r '.message')
-    if [ "$_createProjectMsg" = "Repository creation failed." ]; then
-        echo "Repository creation failed."
-        _errorMsg=$(echo $_response | jq -r '.errors[].message')
-        _error "Error creating project in org '${_errorMsg}'. \n "
-        exit 1
+    visibility="--public"
+    if [ "$IS_Private_GH_Repo" == "true" ]; then
+      visibility="--private"
     fi
-    
-    _debug_log_post "$_uri" "$_response" "$_payload"
-    sleep 2
 
+    command="gh repo create $GH_ORG_NAME/$GH_Repo_NAME $visibility"
+    _information "running - $command"
+    eval $command 
          
     # 2. GET Repos Git Url and Repo Id's
-    CODE_REPO_GIT_HTTP_URL=$(cat $SCRIPT_DIR/temp/${GH_Repo_NAME}-cp.json | jq -r '.git_url')
-    CODE_REPO_ID=$(cat $SCRIPT_DIR/temp/${GH_Repo_NAME}-cp.json | jq -r '.id')
+    response=$(gh repo view $GH_ORG_NAME/$GH_Repo_NAME --json sshUrl,url,id)
+    CODE_REPO_GIT_HTTP_URL=$(echo $response | jq -r '.url')
+    CODE_REPO_ID=$(echo $response | jq -r '.id')
     _debug "$CODE_REPO_GIT_HTTP_URL"
     _debug "$CODE_REPO_ID"
 
@@ -79,24 +71,21 @@ function configure_repo {
     _success "Repo '${GH_Repo_NAME}' created."
 }
 
+function _build_az_secret {
+    echo "{\"clientId\": \"$SP_ID\",\"clientSecret\": \"$SP_SECRET\",\"subscriptionId\": \"$SP_SUBSCRIPTION_ID\",\"tenantId\": \"$SP_TENANT_ID\"}"
+}
+
 function configure_credentials {
     _information "Configure Github Secrets"
 
-    # 0- Build the secret content from the SP variables.
-    # 1- Get a repository public key
-    # 2- Download libsodium exe
-    # 3- Encript the secret
-    # 4- post the secret.
-
+    sp_json=$(_build_az_secret)
+    gh secret set "AZURE_CREDENTIALS" --repo ${GH_ORG_NAME}/${GH_Repo_NAME} --body "$sp_json"
 }
 
-function _build_az_secret {
+function create_pipelines_bicep {
+    _debug "skip create_pipelines_bicep"
+}
 
-    # {
-    # "clientId": "<GUID>",
-    # "clientSecret": "<GUID>",
-    # "subscriptionId": "<GUID>",
-    # "tenantId": "<GUID>",
-    # (...)}
-
+function create_pipelines_terraform {
+    _debug "skip create_pipelines_terraform"
 }
