@@ -33,7 +33,7 @@ function load_inputs {
 
 
 function configure_repo { 
-    echo "Create Project AzDo"
+    _information "Create Project AzDo"
 
     project_source_control='git'
     project_process_tempalte='Agile'
@@ -75,9 +75,12 @@ function configure_repo {
 
     _debug "Creating project"
     # 2. POST Create project
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     _response=$( request_post \
                    "${_uri}" \
-                   "${_payload}" 
+                   "${_payload}" \
+                   "application/json; charset=utf-8" \
+                   "Basic ${token}"
                )
     echo $_response > $SCRIPT_DIR/temp/cp.json    
     local _createProjectTypeKey=$(echo $_response | jq -r '.typeKey')
@@ -122,13 +125,13 @@ function configure_repo {
 }
 
 function configure_credentials {
-    echo "Configure Service Connections"
+    _information "Configure Service Connections"
     _create_arm_svc_connection
     _create_azdo_svc_connection
 
 }
 function create_pipelines_terraform() {
-    echo "Creating Azure Pipelines "
+    _information "Creating Azure Pipelines "
     local pipelineVariables
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
@@ -149,7 +152,7 @@ function create_pipelines_terraform() {
 }
 
 function create_pipelines_bicep() {
-    echo "Creating Azure Pipelines "
+    _information "Creating Azure Pipelines "
     local pipelineVariables
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
@@ -181,9 +184,13 @@ function _create_arm_svc_connection() {
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.2' '5.1-preview.2')
     _payload=$(_create_svc_connection_payload)
     echo "${_payload}" > $SCRIPT_DIR/temp/casc_payload.json
+
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     _response=$( request_post \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${token}"
         )
 
     echo $_response > $SCRIPT_DIR/temp/casc.json
@@ -238,10 +245,13 @@ function _create_azdo_svc_connection() {
     _debug_json "$_payload"            
 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.1' '5.1-preview.1')
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _response=$( request_post \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${token}"
     )
 
     echo $_response > $SCRIPT_DIR/temp/scado.json
@@ -275,7 +285,7 @@ function _create_azdo_svc_connection() {
 
 function _create_pipeline {
     
-    echo "Create Pipeline AzDo"
+    _information "Create Pipeline AzDo"
     
     # AzDo Service     : Definitions - Create https://docs.microsoft.com/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-5.1
     # POST https://dev.azure.com/{organization}/{project}/_apis/build/definitions?api-version=5.1
@@ -308,8 +318,8 @@ function _create_pipeline {
                 | sed 's~__ADO_POOL_NAME__~'"${_agent_pool_queue_name}"'~' \
                 | sed 's~__AZDO_ORG_URI__~'"${AZDO_ORG_URI}"'~' \
               )
-
-    local _response=$(request_post "${_uri}" "${_payload}")
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
+    local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${token}")
 
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp.json

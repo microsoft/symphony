@@ -19,7 +19,8 @@ main() {
       source scripts/install/providers/azdo/azdo.sh
       mkdir -p scripts/install/providers/azdo/temp
     else
-      source scripts/install/providers/github.sh
+      source scripts/install/providers/github/github.sh
+      mkdir -p scripts/install/providers/github/temp
     fi
 
     # workflow

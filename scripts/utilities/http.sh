@@ -10,7 +10,6 @@ _set_api_version(){
 verify_response() {
     local _request_uri=$1 
     local _response=$2
-    local _token=$3
 
     if [[ "$_response" == *"innerException"* ]]; then
         echo "----------------------------------------------" >> $SCRIPT_DIR/temp/http.error.log
@@ -43,8 +42,10 @@ _debug_log_patch() {
 }
 
 request_patch() {
-    request_uri=$1
-    payload=$2
+    request_uri=${1}
+    payload=${2}
+    content_type=${3}
+    authorization=${4}
 
     _token=$(echo -n ":${AZDO_PAT}" | base64)
 
@@ -52,12 +53,12 @@ request_patch() {
         --silent \
         --location \
         --header 'Content-Type: application/json; charset=utf-8' \
-        --header "Authorization: Basic ${_token}" \
-        --request PATCH ${request_uri} \
+        --header "Content-Type: ${content_type}" \
+        --header "Authorization: ${authorization}" \
         --data-raw "${payload}" \
         --compressed)
 
-    verify_response "$request_uri" "$_response" "$_token"
+    verify_response "$request_uri" "$_response"
     echo $_response 
 }
 
@@ -72,36 +73,39 @@ _debug_log_post() {
 request_post(){
     request_uri=${1}
     payload=${2}
-
-    _token=$(echo -n ":${AZDO_PAT}" | base64)
+    content_type=${3}
+    authorization=${4}
 
     _response=$(curl \
         --silent \
         --location \
-        --header 'Content-Type: application/json; charset=utf-8' \
-        --header "Authorization: Basic ${_token}" \
+        --header "Content-Type: ${content_type}" \
+        --header "Authorization: ${authorization}" \
         --request POST ${request_uri} \
         --data-raw "${payload}")
-
-    verify_response "$request_uri" "$_response" "$_token"
+    # 'Content-Type: application/json; charset=utf-8'
+    # "Authorization: Basic ${token}"
+    verify_response "$request_uri" "$_response"
     echo $_response 
 }
 
 request_put(){
     request_uri=${1}
     payload=${2}
+    content_type=${3}
+    authorization=${4}
 
     _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _response=$(curl \
         --silent \
         --location \
-        --header 'Content-Type: application/json; charset=utf-8' \
-        --header "Authorization: Basic ${_token}" \
+        --header "Content-Type: ${content_type}" \
+        --header "Authorization: ${authorization}" \
         --request PUT ${request_uri} \
         --data-raw "${payload}")
 
-    verify_response "$request_uri" "$_response" "$_token"
+    verify_response "$request_uri" "$_response"
     echo $_response 
 }
 
@@ -125,7 +129,7 @@ request_get(){
         --header "Authorization: Basic ${_token}" \
         --request GET ${request_uri} )
 
-    verify_response "$request_uri" "$_response" "$_token"
+    verify_response "$request_uri" "$_response"
     echo $_response 
 }
 
@@ -134,23 +138,4 @@ _debug_log_post_binary() {
     _debug "RES - "
     _debug_json "$2"
     _debug "FILE_NAME - " $3
-}
-
-request_post_binary(){
-    request_uri=${1}
-    _sec_env_filename=${2}
-
-    _token=$(echo -n ":${AZDO_PAT}" | base64)
-
-    _response=$(curl \
-        --silent \
-        --location \
-        --header 'Content-Type: application/octet-stream' \
-        --header "Authorization: Basic ${_token}" \
-        --request POST ${request_uri} \
-        --data-binary "@./${_sec_env_filename}" \
-        --compressed)
-
-    verify_response "$request_uri" "$_response" "$_token"
-    echo $_response 
 }
