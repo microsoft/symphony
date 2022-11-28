@@ -23,6 +23,51 @@ To run the workflows, you need to have the following installed on agents
 - [TFLint](https://github.com/terraform-linters/tflint) here is a script to auto [install](../scripts/orchestrators/setup-tflint.sh) it
 - [Go](https://go.dev/learn/) here is a script to auto [install](../scripts/orchestrators/setup-go.sh) it
 
+## Workflow steps
+
+To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
+
+![Workflow steps](images/workflow.png)
+
+### Validate
+
+This stage ensures code readiness. It runs validations and linting tools, scans code for possible cred leaks, and executes any unit tests. Stage steps are executed in the following sequential order.
+
+```mermaid
+flowchart LR
+  A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
+  C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
+  E -->F(Finalize/Publish reports)
+```
+
+### Preview & Deploy
+
+This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, then runs deploy commands to update the resources, and ensures successful resource updates.
+
+```mermaid
+flowchart LR
+  A(Init IAC tool) --> B(Run IAC cmds to preview changes) -->  C(Check for resources destroy operations) 
+  C-->D(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
+```
+
+### Test
+
+This stage executes the integration or end-to-end tests against the recent deployed/updated resources to ensure the configurations/changes are reflected and resources are working as expected. It then publishes the results of the tests and drops them as artifacts for future references.
+
+```mermaid
+flowchart LR
+  A(Init test framework) --> B(Execute e2e tests) -->E(Finalize/Publish reports)
+```
+
+### Report
+
+This stage generates the needed scripts to repro the deployments, publish the created reports, and backup state files if required.
+
+```mermaid
+flowchart LR
+  A(Generate deployment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
+```
+
 ## Tools used in the pipelines
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
@@ -80,48 +125,3 @@ To run the workflows, you need to have the following installed on agents
   > Go is an open source programming language that makes it easy to build simple, reliable, and efficient software. Go is an open source programming language that makes it easy to build simple, reliable, and efficient software. Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
   Pipelines using Go to execute terratest test codes
-
-## Workflow steps
-
-To ensure best practices in IAC code repos, pipeline workflows need to handle a set of validations on any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
-
-![Workflow steps](images/workflow.png)
-
-### Validate
-
-This stage ensures code readiness. It runs validations and linting tools, scans code for possible cred leaks, and executes any unit tests. Stage steps are executed in the following sequential order.
-
-```mermaid
-flowchart LR
-  A(Prep Env) --> B(Run Custom Scanners) --> C(Run IAC lint cmd)
-  C -->D(Run IAC validate cmd) --> E(Run IAC unit test)
-  E -->F(Finalize/Publish reports)
-```
-
-### Preview & Deploy
-
-This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, then runs deploy commands to update the resources, and ensures successful resource updates.
-
-```mermaid
-flowchart LR
-  A(Init IAC tool) --> B(Run IAC cmds to preview changes) -->  C(Check for resources destroy operations) 
-  C-->D(Run IAC Deploy cmds) -->E(Finalize/Publish reports)
-```
-
-### Test
-
-This stage executes the integration or end-to-end tests against the recent deployed/updated resources to ensure the configurations/changes are reflected and resources are working as expected. It then publishes the results of the tests and drops them as artifacts for future references.
-
-```mermaid
-flowchart LR
-  A(Init test framework) --> B(Execute e2e tests) -->E(Finalize/Publish reports)
-```
-
-### Report
-
-This stage generates the needed scripts to repro the deployments, publish the created reports, and backup state files if required.
-
-```mermaid
-flowchart LR
-  A(Generate deployment scripts) --> B(Publish created scripts) --> E(Backup deployment state)
-```
