@@ -35,8 +35,9 @@ function load_inputs {
 function configure_repo { 
     _information "Create Project AzDo"
 
-    project_source_control='git'
-    project_process_tempalte='Agile'
+    local project_source_control='git'
+    local project_process_tempalte='Agile'
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _information "Starting project creation for project ${AZDO_PROJECT_NAME}"
 
@@ -44,12 +45,8 @@ function configure_repo {
     # AzDo Service     : Processes - Get https://docs.microsoft.com/rest/api/azure/devops/core/processes/get?view=azure-devops-rest-5.1
     # GET https://{instance}/{collection}/_apis/process/processes/{processId}?api-version=5.0
     _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/process/processes?api-version=" '5.1' '5.1')
-
     _debug "Requesting process templates"
-
-    _response=$(request_get "${_uri}")
-
-
+    _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_response > $SCRIPT_DIR/temp/pt.json
     
     if [[ "$_response" == *"Access Denied: The Personal Access Token used has expired"* ]]; then
@@ -76,7 +73,6 @@ function configure_repo {
 
     _debug "Creating project"
     # 2. POST Create project
-    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     _response=$( request_post \
                    "${_uri}" \
                    "${_payload}" \
@@ -99,7 +95,7 @@ function configure_repo {
     # https://docs.microsoft.com/rest/api/azure/devops/core/Projects/List?view=azure-devops-server-rest-5.0
     # GET https://{instance}/{collection}/_apis/projects?api-version=5.0
     _uri="${AZDO_ORG_URI}/_apis/projects?api-version=5.0"
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
     echo $_response > "$SCRIPT_DIR/temp/get-project-id.json"
     AZDO_PROJECT_ID=$(cat "$SCRIPT_DIR/temp/get-project-id.json" | jq -r '.value[] | select (.name == "'"${AZDO_PROJECT_NAME}"'") | .id')
     
@@ -109,7 +105,7 @@ function configure_repo {
     
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/git/repositories/${AZDO_PROJECT_NAME}?api-version=" '5.1' '5.1')
     _debug "Fetching ${AZDO_PROJECT_NAME} repository information"
-    _response=$( request_get ${_uri}) 
+    _response=$(request_get ${_uri} "application/json; charset=utf-8" "Basic ${_token}") 
     _debug_log_get "$_uri" "$_response"
 
     echo $_response > "$SCRIPT_DIR/temp/${AZDO_PROJECT_NAME}-ri.json"
@@ -202,7 +198,7 @@ function _create_arm_svc_connection() {
     _debug "Service Connection ID: ${sc_id}"
     sleep 10
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints/${sc_id}?api-version=" '5.1-preview.2' '5.1-preview.1' )
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
 
     echo $_response > $SCRIPT_DIR/temp/isready.json
 
@@ -442,9 +438,9 @@ function _get_pipeline_var_defintion() {
 
 function _get_agent_pool_queue() {
     # https://docs.microsoft.com/rest/api/azure/devops/distributedtask/queues/get%20agent%20queues?view=azure-devops-rest-5.1
-    
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _uri="${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/distributedtask/queues?api-version=5.1-preview.1"
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
     _is_ubuntu=$(echo $_response | jq '.value[] | select( .name | contains("Ubuntu") )')
 
     if [ -z "${_is_ubuntu}" ]; then

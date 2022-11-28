@@ -47,14 +47,13 @@ request_patch() {
     content_type=${3}
     authorization=${4}
 
-    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _response=$(curl \
         --silent \
         --location \
-        --header 'Content-Type: application/json; charset=utf-8' \
         --header "Content-Type: ${content_type}" \
         --header "Authorization: ${authorization}" \
+        --request PATCH ${request_uri} \
         --data-raw "${payload}" \
         --compressed)
 
@@ -94,8 +93,6 @@ request_put(){
     content_type=${3}
     authorization=${4}
 
-    _token=$(echo -n ":${AZDO_PAT}" | base64)
-
     _response=$(curl \
         --silent \
         --location \
@@ -116,16 +113,16 @@ _debug_log_get() {
 
 request_get(){
     request_uri=${1}
+    content_type=${2}
+    authorization=${3}
 
     local _response
-
-    _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _response=$(curl \
         --silent \
         --location \
-        --header 'Content-Type: application/json; charset=utf-8' \
-        --header "Authorization: Basic ${_token}" \
+        --header "Content-Type: ${content_type}" \
+        --header "Authorization: ${authorization}" \
         --request GET ${request_uri} )
 
     verify_response "$request_uri" "$_response"
