@@ -2,6 +2,7 @@
 
 source scripts/utilities/shell_logger.sh
 source scripts/utilities/shell_inputs.sh
+source scripts/utilities/http.sh
 source scripts/utilities/service_principal.sh
 source scripts/install/banner.sh
 source scripts/install/contents.sh
@@ -19,7 +20,7 @@ main() {
       source scripts/install/providers/azdo/azdo.sh
       mkdir -p scripts/install/providers/azdo/temp
     else
-      source scripts/install/providers/github.sh
+      source scripts/install/providers/github/github.sh
     fi
 
     # workflow
@@ -43,6 +44,8 @@ main() {
     
     # push the code the repo
     git push origin --all
+
+    check_error_log
 }
 
 # Entry point

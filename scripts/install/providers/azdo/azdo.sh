@@ -33,10 +33,11 @@ function load_inputs {
 
 
 function configure_repo { 
-    echo "Create Project AzDo"
+    _information "Create Project AzDo"
 
-    project_source_control='git'
-    project_process_tempalte='Agile'
+    local project_source_control='git'
+    local project_process_tempalte='Agile'
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _information "Starting project creation for project ${AZDO_PROJECT_NAME}"
 
@@ -44,11 +45,8 @@ function configure_repo {
     # AzDo Service     : Processes - Get https://docs.microsoft.com/rest/api/azure/devops/core/processes/get?view=azure-devops-rest-5.1
     # GET https://{instance}/{collection}/_apis/process/processes/{processId}?api-version=5.0
     _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/process/processes?api-version=" '5.1' '5.1')
-    
     _debug "Requesting process templates"
-
-    _response=$(request_get "${_uri}")
-
+    _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_response > $SCRIPT_DIR/temp/pt.json
     
     if [[ "$_response" == *"Access Denied: The Personal Access Token used has expired"* ]]; then
@@ -77,7 +75,9 @@ function configure_repo {
     # 2. POST Create project
     _response=$( request_post \
                    "${_uri}" \
-                   "${_payload}" 
+                   "${_payload}" \
+                   "application/json; charset=utf-8" \
+                   "Basic ${_token}"
                )
     echo $_response > $SCRIPT_DIR/temp/cp.json    
     local _createProjectTypeKey=$(echo $_response | jq -r '.typeKey')
@@ -95,7 +95,7 @@ function configure_repo {
     # https://docs.microsoft.com/rest/api/azure/devops/core/Projects/List?view=azure-devops-server-rest-5.0
     # GET https://{instance}/{collection}/_apis/projects?api-version=5.0
     _uri="${AZDO_ORG_URI}/_apis/projects?api-version=5.0"
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
     echo $_response > "$SCRIPT_DIR/temp/get-project-id.json"
     AZDO_PROJECT_ID=$(cat "$SCRIPT_DIR/temp/get-project-id.json" | jq -r '.value[] | select (.name == "'"${AZDO_PROJECT_NAME}"'") | .id')
     
@@ -105,7 +105,7 @@ function configure_repo {
     
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/git/repositories/${AZDO_PROJECT_NAME}?api-version=" '5.1' '5.1')
     _debug "Fetching ${AZDO_PROJECT_NAME} repository information"
-    _response=$( request_get ${_uri}) 
+    _response=$(request_get ${_uri} "application/json; charset=utf-8" "Basic ${_token}") 
     _debug_log_get "$_uri" "$_response"
 
     echo $_response > "$SCRIPT_DIR/temp/${AZDO_PROJECT_NAME}-ri.json"
@@ -122,13 +122,13 @@ function configure_repo {
 }
 
 function configure_credentials {
-    echo "Configure Service Connections"
+    _information "Configure Service Connections"
     _create_arm_svc_connection
     _create_azdo_svc_connection
-
 }
+
 function create_pipelines_terraform() {
-    echo "Creating Azure Pipelines "
+    _information "Creating Azure Pipelines "
     local pipelineVariables
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
@@ -149,7 +149,7 @@ function create_pipelines_terraform() {
 }
 
 function create_pipelines_bicep() {
-    echo "Creating Azure Pipelines "
+    _information "Creating Azure Pipelines "
     local pipelineVariables
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
@@ -181,9 +181,13 @@ function _create_arm_svc_connection() {
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.2' '5.1-preview.2')
     _payload=$(_create_svc_connection_payload)
     echo "${_payload}" > $SCRIPT_DIR/temp/casc_payload.json
+
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     _response=$( request_post \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
         )
 
     echo $_response > $SCRIPT_DIR/temp/casc.json
@@ -194,7 +198,7 @@ function _create_arm_svc_connection() {
     _debug "Service Connection ID: ${sc_id}"
     sleep 10
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints/${sc_id}?api-version=" '5.1-preview.2' '5.1-preview.1' )
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
 
     echo $_response > $SCRIPT_DIR/temp/isready.json
 
@@ -213,7 +217,9 @@ function _create_arm_svc_connection() {
 
     _response=$( request_patch \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
         )
     
     _debug_log_patch "$_uri" "$_response" "$_payload"
@@ -238,10 +244,13 @@ function _create_azdo_svc_connection() {
     _debug_json "$_payload"            
 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.1' '5.1-preview.1')
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
 
     _response=$( request_post \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
     )
 
     echo $_response > $SCRIPT_DIR/temp/scado.json
@@ -260,7 +269,9 @@ function _create_azdo_svc_connection() {
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/endpoint/${_scId}?api-version=" '5.1-preview' '5.1-preview' )
     _response=$( request_patch \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
     )
     echo $_response > $SCRIPT_DIR/temp/sc-ado-auth.json
 
@@ -275,7 +286,7 @@ function _create_azdo_svc_connection() {
 
 function _create_pipeline {
     
-    echo "Create Pipeline AzDo"
+    _information "Create Pipeline AzDo"
     
     # AzDo Service     : Definitions - Create https://docs.microsoft.com/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-5.1
     # POST https://dev.azure.com/{organization}/{project}/_apis/build/definitions?api-version=5.1
@@ -308,8 +319,8 @@ function _create_pipeline {
                 | sed 's~__ADO_POOL_NAME__~'"${_agent_pool_queue_name}"'~' \
                 | sed 's~__AZDO_ORG_URI__~'"${AZDO_ORG_URI}"'~' \
               )
-
-    local _response=$(request_post "${_uri}" "${_payload}")
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
+    local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
 
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp.json
@@ -331,7 +342,7 @@ function _create_pipeline {
     _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
                 | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
-    _response=$(request_patch "${_uri}" "${_payload}")
+    _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize.json
 
@@ -349,40 +360,11 @@ function _create_pipeline {
     _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
                 | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
-    _response=$(request_patch "${_uri}" "${_payload}")
+    _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo.json
-    
 
-    # Authorize Terraform-Pipeline Repo Access for Pipeline
-    _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${PIPELINE_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
-    _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
-              )
-    _response=$(request_patch "${_uri}" "${_payload}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-pipeline-repo-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-pipeline-repo.json
-
-    # Authorize Terraform-Environments Repo Access for Pipeline
-    _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${ENV_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
-    _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
-              )
-    _response=$(request_patch "${_uri}" "${_payload}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-env-repo-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-env-repo.json
-
-    if [ "$_pipeId" != null ]; then
-        if [ "${_name}" == "env.compile" ]; then
-            envCompilePipelineId=$_pipeId
-        fi
-        if [ "${_name}" == "pr" ]; then
-            prPipelineId=$_pipeId
-        fi        
-        _success "Created Pipeline ${_name} - id:${_pipeId}"
-    fi
+    _success "Created Pipeline ${_name} - id:${_pipeId}"
 }
 
 function _create_svc_connection_payload() {
@@ -431,9 +413,9 @@ function _get_pipeline_var_defintion() {
 
 function _get_agent_pool_queue() {
     # https://docs.microsoft.com/rest/api/azure/devops/distributedtask/queues/get%20agent%20queues?view=azure-devops-rest-5.1
-    
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _uri="${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/distributedtask/queues?api-version=5.1-preview.1"
-    _response=$(request_get $_uri)
+    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
     _is_ubuntu=$(echo $_response | jq '.value[] | select( .name | contains("Ubuntu") )')
 
     if [ -z "${_is_ubuntu}" ]; then
