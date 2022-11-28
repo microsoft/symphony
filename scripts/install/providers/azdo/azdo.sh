@@ -125,8 +125,8 @@ function configure_credentials {
     _information "Configure Service Connections"
     _create_arm_svc_connection
     _create_azdo_svc_connection
-
 }
+
 function create_pipelines_terraform() {
     _information "Creating Azure Pipelines "
     local pipelineVariables
@@ -217,7 +217,9 @@ function _create_arm_svc_connection() {
 
     _response=$( request_patch \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
         )
     
     _debug_log_patch "$_uri" "$_response" "$_payload"
@@ -267,7 +269,9 @@ function _create_azdo_svc_connection() {
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/endpoint/${_scId}?api-version=" '5.1-preview' '5.1-preview' )
     _response=$( request_patch \
         "${_uri}" \
-        "${_payload}"
+        "${_payload}" \
+        "application/json; charset=utf-8" \
+        "Basic ${_token}"
     )
     echo $_response > $SCRIPT_DIR/temp/sc-ado-auth.json
 
@@ -338,7 +342,7 @@ function _create_pipeline {
     _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
                 | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
-    _response=$(request_patch "${_uri}" "${_payload}")
+    _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize.json
 
@@ -356,40 +360,11 @@ function _create_pipeline {
     _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
                 | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
-    _response=$(request_patch "${_uri}" "${_payload}")
+    _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
     echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo-payload.json
     echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo.json
-    
 
-    # Authorize Terraform-Pipeline Repo Access for Pipeline
-    _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${PIPELINE_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
-    _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
-              )
-    _response=$(request_patch "${_uri}" "${_payload}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-pipeline-repo-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-pipeline-repo.json
-
-    # Authorize Terraform-Environments Repo Access for Pipeline
-    _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${ENV_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
-    _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
-              )
-    _response=$(request_patch "${_uri}" "${_payload}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-env-repo-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-env-repo.json
-
-    if [ "$_pipeId" != null ]; then
-        if [ "${_name}" == "env.compile" ]; then
-            envCompilePipelineId=$_pipeId
-        fi
-        if [ "${_name}" == "pr" ]; then
-            prPipelineId=$_pipeId
-        fi        
-        _success "Created Pipeline ${_name} - id:${_pipeId}"
-    fi
+    _success "Created Pipeline ${_name} - id:${_pipeId}"
 }
 
 function _create_svc_connection_payload() {

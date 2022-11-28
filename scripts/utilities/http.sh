@@ -7,6 +7,13 @@ _set_api_version(){
     echo "$1$2"
 }
 
+check_error_log() {
+  if [[ -f "$SCRIPT_DIR/temp/http.error.log" ]]; then
+    echo ""
+    _error "Please check $SCRIPT_DIR/temp/http.error.log for install errors"
+  fi
+}
+
 verify_response() {
     local _request_uri=$1 
     local _response=$2
