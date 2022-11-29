@@ -52,7 +52,7 @@ flowchart LR
 
 To ensure best practices in IAC code repos when development is in progress, Pull Request workflow handle a set of validations the pull request branch to test any code change. Note that the details of stages execution may vary based on features available on the orchestrator's IAC tool.
 
-![Workflow steps](images/PR_workflow.drawio)
+![Workflow steps](images/pr_workflow.png)
 
 ## Required tools
 
