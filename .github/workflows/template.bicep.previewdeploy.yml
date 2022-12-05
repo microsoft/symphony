@@ -24,7 +24,7 @@ jobs:
     name: "Preview and Deploy"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
         with:
           ref: ${{ inputs.branchName }}
 
@@ -37,22 +37,39 @@ jobs:
         with:
           creds: ${{ secrets.azureEnviromentCredentials }}
 
-      - uses: Azure/get-keyvault-secrets@v1
-        with:
-          keyvault: ${{ github.event.inputs.keyVaultName }}
-          secrets: "clientId, clientSecret, subscriptionId, tenantId"
-        id: kvSecrets
+      - name: Get KeyVault Secret(s)
+        id: LoadSecrets
+        env:
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+        run: |
+          OIFS=$IFS
+          IFS=', '
+          for secretname in $SECRETS
+          do
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ github.event.inputs.keyVaultName }} --query "value")
+            echo "::add-mask::$secret"        
+            echo "$secretname=$secret" >> $GITHUB_OUTPUT
+          done
+          IFS=$OIFS
 
       - name: Run Bicep Deploy
+        id: BicepDeploy
         env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
           LOCATION_NAME: ${{ github.event.inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
+          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
+          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           ./iac.bicep.previewdeploy.sh
         working-directory: scripts/orchestrators
+
+      - name: Cache Environment
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
+          key: ${{ runner.os }}-${{ github.run_id }}-bicep-env

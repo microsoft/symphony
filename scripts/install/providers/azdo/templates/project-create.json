@@ -1,0 +1,12 @@
+{
+    "name": "__AZDO_PROJECT_NAME__",
+    "description": "IaC project created by CSE DevOps",
+    "capabilities": {
+      "versioncontrol": {
+        "sourceControlType": "__AZDO_PROJECT_SOURCE_CONTROL__"
+      },
+      "processTemplate": {
+        "templateTypeId": "__AZDO_PROCESS_TEMPLATE_ID__"
+      }
+    }
+  }

@@ -22,10 +22,10 @@ on:
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
-        default: "kv-symphony-env"
+        default: "kv-symphony-environments"
 
 jobs:
-  Validate:
+  Destroy:
     uses: ./.github/workflows/template.bicep.destroy.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}

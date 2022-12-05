@@ -24,7 +24,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
         with:
           ref: ${{ inputs.branchName }}
 
@@ -33,6 +33,7 @@ jobs:
           ./setup-azcli.sh
           ./setup-powershell.sh
           ./setup-pester.sh
+          ./setup-azpowershell.sh
           source ~/.bashrc
         working-directory: scripts/orchestrators
 
@@ -41,12 +42,27 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
 
-      - uses: Azure/get-keyvault-secrets@v1
-        name: Get KeyVault Secrets
+      - name: Fetch Cached Environment
+        id: cache-env
+        uses: actions/cache@v3
         with:
-          keyvault: ${{ github.event.inputs.keyVaultName }}
-          secrets: "clientId, clientSecret, subscriptionId, tenantId"
-        id: kvSecrets
+          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
+          key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
+
+      - name: Get KeyVault Secret(s)
+        id: LoadSecrets
+        env:
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+        run: |
+          OIFS=$IFS
+          IFS=', '
+          for secretname in $SECRETS
+          do
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ github.event.inputs.keyVaultName }} --query "value")
+            echo "::add-mask::$secret"        
+            echo "$secretname=$secret" >> $GITHUB_OUTPUT
+          done
+          IFS=$OIFS
 
       - name: Run global pre-deploy script
         run: |
@@ -55,21 +71,36 @@ jobs:
 
       - name: Run e2e tests
         env:
-          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
           LOCATION_NAME: ${{ github.event.inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
+          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
+          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+
           source ./tests.runner.sh
+          
+          pushd ../../IAC/Bicep/bicep
+            load_dotenv
+          popd
+
           bicep pester
         working-directory: scripts/orchestrators
 
-      - uses: actions/upload-artifact@v3
-        if: success() || failure()
+      - name: Upload E2E Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
         with:
-          name: pest-results
-          path: IAC/Bicep/test/pester
+          name: e2e-test--results
+          path: IAC/Bicep/test/end_to_end
+
+      - name: Publish E2E Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: "./IAC/Bicep/test/end_to_end/*.xml"
+          check_name: "E2E Tests Results"
+

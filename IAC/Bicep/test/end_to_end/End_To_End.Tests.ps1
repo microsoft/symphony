@@ -3,11 +3,13 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    $sqlServerResourceGroupName = $env:SQLSERVER_RESOURCE_GROUP_NAME
-    $sqlServerName = $env:SQLSERVER_NAME
-    $resourceGroupName = $env:APPSERVICE_RESOURCE_GROUP_NAME
-    $appServicePlanName = $env:APPSERVICE_PLAN_NAME
-    $appServiceName = $env:APPSERVICE_NAME
+    Connect-AzAccountFromEnv
+
+    $sqlServerResourceGroupName = $env:sqlServerResourceGroupName
+    $sqlServerName = $env:sqlServerName
+    $appServiceResourceGroupName = $env:appServiceResourceGroupName
+    $appServicePlanName = $env:appServicePlanName
+    $appServiceName = $env:appServiceName
 }
 
 Describe "End to End Tests" {
@@ -32,16 +34,16 @@ Describe "End to End Tests" {
             $catalogdbResource = Get-SqlDatabase "catalogdb" $sqlServerName $sqlServerResourceGroupName
             $catalogdbResource.Status | Should -Be "Online"
 
-            $appServicePlanResource = Get-AppServicePlan $appServicePlanName $resourceGroupName
+            $appServicePlanResource = Get-AppServicePlan $appServicePlanName $appServiceResourceGroupName
             $appServicePlanResource.Status | Should -Be "Ready"
             
-            $webAppResource = Get-WebApp $appServiceName $resourceGroupName
+            $webAppResource = Get-WebApp $appServiceName $appServiceResourceGroupName
             $webAppResource.State | Should -Be "Running"
 
             $defaultHostName = $webAppResource.DefaultHostName
             $defaultHostName | Should -Not -Be $Null
 
-            $response = Invoke-RestMethod -Uri "http://$defaultHostName/swagger/index.html" -Method Get;
+            $response = Invoke-RestMethod -Uri "http://$defaultHostName" -Method 'Get' -TimeoutSec 240
         }
     }
 }

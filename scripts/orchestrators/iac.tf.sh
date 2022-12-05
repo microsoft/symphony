@@ -94,9 +94,10 @@ deploy() {
 }
 
 destroy() {
-    _information "Execute terraform destroy"
-    terraform destroy -input=false -auto-approve
+    var_file=$1
 
+    _information "Execute terraform destroy"
+    terraform destroy -input=false -auto-approve -var-file=${var_file}
     return $?
 }
 

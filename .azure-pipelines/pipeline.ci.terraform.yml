@@ -12,9 +12,7 @@ variables:
 
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
-  - name: runBackupState
-    value: true
-
+  
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
@@ -29,7 +27,7 @@ variables:
 
   # Environment Key Vault Name
   - name: keyVaultName
-    value: "kv-symphony-env"
+    value: "kv-symphony-environments"
 
   # Go Lang version
   - name: goVersion
@@ -38,6 +36,14 @@ variables:
   # Terraform version
   - name: terraformVersion
     value: "1.1.7"
+  
+  # Run Layer tests
+  - name: layerTestEnabled
+    value:  $(runLayerTest)
+
+  # Backup remote state
+  - name: backupStateEnabled
+    value: $(runBackupState)
 
 pool:
   vmImage: $(agentImage)
@@ -52,7 +58,6 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          runLayerTest: "false"
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:

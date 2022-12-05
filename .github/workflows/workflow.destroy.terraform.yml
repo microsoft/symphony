@@ -1,0 +1,31 @@
+name: "Destroy Terraform"
+
+on:
+  #=============================================================#
+  # The following Variables should be set on the workflow level #
+  #=============================================================#
+  workflow_dispatch:
+    inputs:
+      environmentName:
+        description: "Name of the Environment"
+        required: true
+        default: "dev"
+      terraformVersion:
+        description: "Terraform version"
+        required: true
+        default: "1.1.7"
+      keyVaultName:
+        description: "Environment Key Vault Name"
+        required: true
+        default: "kv-symphony-environments"
+
+jobs:
+  Destroy:
+    uses: ./.github/workflows/template.terraform.destroy.yml
+    with:
+      environmentName: ${{ github.event.inputs.environmentName }}
+      terraformVersion: ${{ github.event.inputs.terraformVersion }}
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
+      branchName: ${{ github.ref_name }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

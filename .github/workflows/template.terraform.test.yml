@@ -27,7 +27,7 @@ jobs:
     name: "E2E Test"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
         with:
           ref: ${{ inputs.branchName }}
 
@@ -43,12 +43,20 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
 
-      - uses: Azure/get-keyvault-secrets@v1
-        name: Get KeyVault Secrets
-        with:
-          keyvault: ${{ github.event.inputs.keyVaultName }}
-          secrets: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
-        id: kvSecrets
+      - name: Get KeyVault Secret(s)
+        id: LoadSecrets
+        env:
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
+        run: |
+          OIFS=$IFS
+          IFS=', '
+          for secretname in $SECRETS
+          do
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
+            echo "::add-mask::$secret"        
+            echo "$secretname=$secret" >> $GITHUB_OUTPUT
+          done
+          IFS=$OIFS
 
       - uses: actions/setup-go@v3
         with:
@@ -56,16 +64,15 @@ jobs:
       - name: Run E2E Tests
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
-          ARM_SUBSCRIPTION_ID: ${{ steps.kvSecrets.outputs.subscriptionId }}
-          ARM_TENANT_ID: ${{ steps.kvSecrets.outputs.tenantId }}
-          ARM_CLIENT_ID: ${{ steps.kvSecrets.outputs.clientId }}
-          ARM_CLIENT_SECRET: ${{ steps.kvSecrets.outputs.clientSecret }}
-          STATE_STORAGE_ACCOUNT: ${{ steps.kvSecrets.outputs.stateStorageAccount }}
-          STATE_CONTAINER: ${{ steps.kvSecrets.outputs.stateContainer }}
-          STATE_RG: ${{ steps.kvSecrets.outputs.stateRg }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          # TEST_TAG: e2e_test
         run: |
+          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
+          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
+          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
+          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
+          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
+          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
           ./iac.tf.test.sh
 
         working-directory: scripts/orchestrators

@@ -1,0 +1,11 @@
+{
+    "resource": {
+      "type": "endpoint",
+      "id": "__SC_ADO_ID__"
+    },
+    "allPipelines": {
+      "authorized": true,
+      "authorizedBy": null,
+      "authorizedOn": null
+    }
+  }
