@@ -57,8 +57,6 @@ To ensure best practices in IAC code repos when development is in progress, Pull
 
 To run the workflows, you need to have the following tools installed on agents
 
-### Shared tools
-
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) here is a script to auto [install](../scripts/orchestrators/setup-azcli.sh) it.
   > Azure CLI is a command-line tool that provides a convenient way to manage Azure resources. It is available for Windows, macOS, and Linux. Azure CLI is a cross-platform tool that can be used to create and manage Azure resources from the command line or from scripts. Azure CLI is a great tool for automation and scripting. It is also a great tool for learning Azure services because it provides a consistent experience across all Azure services.
 
