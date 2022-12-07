@@ -10,28 +10,36 @@ function _prompt_input {
 }
 
 function _validate_inputs {
-    if [ -z "$ORCHESTRATOR" ]; then
-      _error "Please specify an orchestrator "
-      usage
-    elif [ "$ORCHESTRATOR" == "-h" ] || [ "$ORCHESTRATOR" == "--help" ]; then
-      usage
-    fi
+  code=0
+  if [ -z "$ORCHESTRATOR" ]; then
+    _error "Please specify an orchestrator "
+    code=1
+  fi
 
-    if [ -z "$IACTOOL" ]; then
-      _error "Please specify an iac tool "
-      usage
-    fi
+  if [ -z "$IACTOOL" ]; then
+    _error "Please specify an iac tool "
+    code=2
+  fi
+
+  echo ""
+  return $code
 }
 
 
 function usage() {
-
-    _helpText=" Usage: $me <provider> <iac_tool>
- arguments:
-    provider   (required)    azdo|github       specify the desired orchestrator
-    iac_tool   (required)    terraform|bicep   specify the desired iac tool to configure
-
-environment variables can be configured to store 
+    _helpText=" Usage: $me <command> <sub command> <parameters>
+  commands:
+    provision  Set up the required infrastructure needed for symphony
+    pipeline   
+      sub commands:
+        config 
+          arguments:
+            provider   (required)    azdo|github       specify the desired orchestrator
+            iac_tool   (required)    terraform|bicep   specify the desired iac tool to configure
+        example:
+          symphony pipeline config azdo terraform
+          symphony pipeline config github bicep
+ 
 "      
     _information "$_helpText" 1>&2
     exit 0  
