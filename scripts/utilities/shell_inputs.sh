@@ -35,6 +35,7 @@ function usage() {
     _helpText=" Usage: $me <command> <sub command> <parameters>
   commands:
     provision  Set up the required infrastructure needed for symphony
+    destroy    Remove the required infrastructure needed for symphony
     pipeline   
       sub commands:
         config 
