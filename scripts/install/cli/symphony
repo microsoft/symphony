@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-
-source scripts/utilities/shell_logger.sh
-source scripts/utilities/shell_inputs.sh
-source scripts/utilities/http.sh
-source scripts/utilities/service_principal.sh
-source scripts/install/banner.sh
-source scripts/install/contents.sh
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+REPO_DIR=$SCRIPT_DIR/../../../
+source $SCRIPT_DIR/../../utilities/shell_logger.sh
+source $SCRIPT_DIR/../../utilities/shell_inputs.sh
+source $SCRIPT_DIR/../../utilities/http.sh
+source $SCRIPT_DIR/../../utilities/service_principal.sh
+source $SCRIPT_DIR/../../install/banner.sh
+source $SCRIPT_DIR/../../install/contents.sh
 
 #script name
 declare me=`basename "$0"`
@@ -20,8 +21,22 @@ main() {
     process_command
 }
 
+# Provision resources and service principals needed by Symphony
 provision() {
-    echo "deploy stuff!"
+    _information "Deploying Symphony Dependencies"
+    source scripts/install/provision.sh
+    loadServicePrincipalCredentials
+    printEnvironment
+    deploy_dependencies
+}
+
+# Destroy resources and service principals needed by Symphony. Note this is a destructive operation
+destroy(){
+    _information "Removing Symphony Dependencies"
+    source scripts/install/provision.sh
+    loadServicePrincipalCredentials
+    printEnvironment
+    remove_dependencies
 }
 
 configure_orchestrator() {
@@ -35,10 +50,10 @@ configure_orchestrator() {
     fi
 
     if [ $ORCHESTRATOR == "azdo" ]; then
-        source scripts/install/providers/azdo/azdo.sh
-        mkdir -p scripts/install/providers/azdo/temp
+        source $REPO_DIR/scripts/install/providers/azdo/azdo.sh
+        mkdir -p $REPO_DIR/scripts/install/providers/azdo/temp
     else
-        source scripts/install/providers/github/github.sh
+        source $REPO_DIR/scripts/install/providers/github/github.sh
     fi
 
     # workflow
@@ -51,11 +66,11 @@ configure_orchestrator() {
     # cleanup
     remove_yaml
     if [ $IACTOOL == "bicep" ]; then
-    create_pipelines_bicep
-    remove_tf_content
+        create_pipelines_bicep
+        remove_tf_content
     else
-    create_pipelines_terraform
-    remove_bicep_content
+        create_pipelines_terraform
+        remove_bicep_content
     fi
     git add .
     git commit -m "cleanup unused iac files"
@@ -82,7 +97,11 @@ parse_args() {
         case "${1}" in
             provision)
                 shift 1
-                export command="workspace"
+                export command="provision"
+                ;;
+            destroy)
+                shift 1
+                export command="destroy"
                 ;;
             pipeline)
                 shift 1
@@ -112,6 +131,9 @@ process_command() {
     case "$command" in
         provision)
             provision
+            ;;
+        destroy)
+            destroy
             ;;
         pipeline)
             pipeline

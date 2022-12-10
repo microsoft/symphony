@@ -30,8 +30,11 @@ function loadServicePrincipalCredentials() {
 function printEnvironment() {
     echo ""
     _information "********************************************************************"
-    _information "      Orchestrator:   $ORCHESTRATOR"
-    _information "          IAC Tool:   $IACTOOL"
+    _information "           Command:   $command"
+    if [[ "$command" == "pipeline" ]]; then
+        _information "      Orchestrator:   $ORCHESTRATOR"
+        _information "          IAC Tool:   $IACTOOL"
+    fi
     _information " Subscription Name:   $SP_SUBSCRIPTION_NAME"
     _information "   Subscription Id:   $SP_SUBSCRIPTION_ID"
     _information "            Tenant:   $SP_TENANT_ID"

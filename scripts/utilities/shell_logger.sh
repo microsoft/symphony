@@ -3,6 +3,11 @@ _error() {
     printf " \e[31mError: $@\n\e[0m"
 }
 
+
+_danger() {
+    printf " \e[31m$@\n\e[0m"
+}
+
 _debug() {
     #Only print debug lines if debugging is turned on.
     if [ "$DEBUG_FLAG" == true ]; then

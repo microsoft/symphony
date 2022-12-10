@@ -3,9 +3,14 @@
 function _prompt_input {
     input_description=${1}
     input_name=${2}
+    is_danger=${3}
 
     echo ""
-    echo -n "> $input_description : "
+    if [[ "$is_danger" == "true" ]]; then
+      printf " \e[31m> $input_description : \e[0m"
+    else
+      echo -n "> $input_description : "
+    fi
     read $input_name
 }
 
