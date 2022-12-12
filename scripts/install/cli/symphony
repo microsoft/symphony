@@ -57,28 +57,39 @@ configure_orchestrator() {
     fi
 
     # workflow
-    loadServicePrincipalCredentials
-    printEnvironment
-    load_inputs
-    configure_repo
-    configure_credentials
-    
-    # cleanup
-    remove_yaml
-    if [ $IACTOOL == "bicep" ]; then
-        create_pipelines_bicep
-        remove_tf_content
-    else
-        create_pipelines_terraform
-        remove_bicep_content
-    fi
-    git add .
-    git commit -m "cleanup unused iac files"
-    
-    # push the code the repo
-    git push origin --all
+    TARGET_ROOT=$(mktemp -d)
+    cp -R . $TARGET_ROOT
 
-    check_error_log
+    pushd $TARGET_ROOT
+        rm -rf .git
+        loadServicePrincipalCredentials
+        printEnvironment
+        load_inputs
+        
+        # remove unused files
+        remove_yaml
+        if [ $IACTOOL == "bicep" ]; then
+            remove_tf_content
+        else
+            remove_bicep_content
+        fi
+        
+        configure_repo
+        configure_credentials
+        
+        if [ $IACTOOL == "bicep" ]; then
+            create_pipelines_bicep
+        else
+            create_pipelines_terraform
+        fi
+
+        # commit & push the code the repo
+        git add .
+        git commit -m "initial commit"
+        git push origin --all
+
+        check_error_log
+    popd
 }
 
 pipeline() {

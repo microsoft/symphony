@@ -3,58 +3,60 @@
 INSTALL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $INSTALL_DIR/../utilities/shell_logger.sh
 
+# TARGET_ROOT should be fined in the calling script that sources this utilities file.
+
 function remove_yaml() {
     if [ "$ORCHESTRATOR" == "azdo" ]; then
-        rm -r $INSTALL_DIR/../../.github/*
+        rm -r $TARGET_ROOT/.github/*
     else
-        rm -r $INSTALL_DIR/../../.azure-pipelines/*
+        rm -r $TARGET_ROOT/.azure-pipelines/*
     fi
 }
 function remove_tf_content(){
     _information "Remove Terraform IaC modules"
-    rm -r $INSTALL_DIR/../../IAC/Terraform/*
-    rm  -r $INSTALL_DIR/../../IAC/Terraform
+    rm -r $TARGET_ROOT/IAC/Terraform/*
+    rm -r $TARGET_ROOT/IAC/Terraform
 
     _information "Remove Terraform env"
-    rm -r $INSTALL_DIR/../../env/terraform/*
-    rm -r $INSTALL_DIR/../../env/terraform
+    rm -r $TARGET_ROOT/env/terraform/*
+    rm -r $TARGET_ROOT/env/terraform
 
     if [ "$ORCHESTRATOR" == "azdo" ]; then
         _information "Remove Terraform Azdo pipeline"
-        rm $INSTALL_DIR/../../.azure-pipelines/*.terraform*.yml
+        rm $TARGET_ROOT/.azure-pipelines/*.terraform*.yml
     else
         _information "Remove Terraform Github workflows"
-        rm $INSTALL_DIR/../../.github/workflows/*.terraform*.yml
+        rm $TARGET_ROOT/.github/workflows/*.terraform*.yml
     fi
 
     _information "Remove Terraform orchestrators scripts"
-    rm $INSTALL_DIR/../orchestrators/*.tf.*.sh
-    rm $INSTALL_DIR/../orchestrators/*terraform*.sh
-    rm $INSTALL_DIR/../orchestrators/*tflint.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*.tf.*.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*terraform*.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*tflint.sh
 } 
 
 function remove_bicep_content(){
 
     _information "Remove Bicep IaC modules"
-    rm -r $INSTALL_DIR/../../IAC/Bicep/*
-    rm -r $INSTALL_DIR/../../IAC/Bicep
+    rm -r $TARGET_ROOT/IAC/Bicep/*
+    rm -r $TARGET_ROOT/IAC/Bicep
 
     _information "Remove Bicep env"
-    rm -r $INSTALL_DIR/../../env/bicep/*
-    rm -r $INSTALL_DIR/../../env/bicep
+    rm -r $TARGET_ROOT/env/bicep/*
+    rm -r $TARGET_ROOT/env/bicep
 
     if [ "$ORCHESTRATOR" == "azdo" ]; then
         _information "Remove Bicep Azdo pipeline"
-        rm $INSTALL_DIR/../../.azure-pipelines/*.bicep*.yml
+        rm $TARGET_ROOT/.azure-pipelines/*.bicep*.yml
     else
         _information "Remove Bicep Github workflows"
-        rm $INSTALL_DIR/../../.github/workflows/*.bicep*.yml
+        rm $TARGET_ROOT/.github/workflows/*.bicep*.yml
     fi
 
     _information "Remove Bicep orchestrators scripts"
-    rm $INSTALL_DIR/../orchestrators/*bicep*.sh
-    rm $INSTALL_DIR/../orchestrators/*powershell*.sh
-    rm $INSTALL_DIR/../orchestrators/*shellspec*.sh
-    rm $INSTALL_DIR/../orchestrators/*pester.sh
-    rm $INSTALL_DIR/../orchestrators/setup-armttk.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*bicep*.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*powershell*.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*shellspec*.sh
+    rm $TARGET_ROOT/scripts/orchestrators/*pester.sh
+    rm $TARGET_ROOT/scripts/orchestrators/setup-armttk.sh
 }
