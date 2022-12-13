@@ -86,8 +86,8 @@ deploy_dependencies() {
     create_rg
 
     # Create CR
-    # echo "Creating CR: ${CR_NAME}"
-    # create_cr
+    echo "Creating CR: ${CR_NAME}"
+    create_cr
 
     # Create Owner SP and assing to subscription level
     echo "Creating Owner SP: ${SP_OWNER_NAME}"
