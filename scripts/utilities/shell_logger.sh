@@ -1,6 +1,11 @@
 
 _error() {
-    printf "\e[31mERROR: $@\n\e[0m"
+    printf " \e[31mError: $@\n\e[0m"
+}
+
+
+_danger() {
+    printf " \e[31m$@\n\e[0m"
 }
 
 _debug() {

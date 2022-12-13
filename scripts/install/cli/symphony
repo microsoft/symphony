@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+REPO_DIR=$SCRIPT_DIR/../../../
+source $SCRIPT_DIR/../../utilities/shell_logger.sh
+source $SCRIPT_DIR/../../utilities/shell_inputs.sh
+source $SCRIPT_DIR/../../utilities/http.sh
+source $SCRIPT_DIR/../../utilities/service_principal.sh
+source $SCRIPT_DIR/../../install/banner.sh
+source $SCRIPT_DIR/../../install/contents.sh
+
+#script name
+declare me=`basename "$0"`
+declare ORCHESTRATOR=""
+declare IACTOOL=""
+declare command=""
+declare sub_command=""
+
+main() {
+    show_banner
+    parse_args "$@"
+    process_command
+}
+
+# Provision resources and service principals needed by Symphony
+provision() {
+    _information "Deploying Symphony Dependencies"
+    source scripts/install/provision.sh
+    loadServicePrincipalCredentials
+    printEnvironment
+    deploy_dependencies
+}
+
+# Destroy resources and service principals needed by Symphony. Note this is a destructive operation
+destroy(){
+    _information "Removing Symphony Dependencies"
+    source scripts/install/provision.sh
+    loadServicePrincipalCredentials
+    printEnvironment
+    remove_dependencies
+}
+
+configure_orchestrator() {
+    ORCHESTRATOR=${args[0]}      
+    IACTOOL=${args[1]}  
+    _validate_inputs
+    code=$?
+    if [[ $code > 0 ]]; then
+        usage
+        exit $code
+    fi
+
+    if [ $ORCHESTRATOR == "azdo" ]; then
+        source $REPO_DIR/scripts/install/providers/azdo/azdo.sh
+        mkdir -p $REPO_DIR/scripts/install/providers/azdo/temp
+    else
+        source $REPO_DIR/scripts/install/providers/github/github.sh
+    fi
+
+    # workflow
+    loadServicePrincipalCredentials
+    printEnvironment
+    load_inputs
+    configure_repo
+    configure_credentials
+    
+    # cleanup
+    remove_yaml
+    if [ $IACTOOL == "bicep" ]; then
+        create_pipelines_bicep
+        remove_tf_content
+    else
+        create_pipelines_terraform
+        remove_bicep_content
+    fi
+    git add .
+    git commit -m "cleanup unused iac files"
+    
+    # push the code the repo
+    git push origin --all
+
+    check_error_log
+}
+
+pipeline() {
+    case $sub_command in
+        "config")
+            configure_orchestrator
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
+parse_args() {
+    while (( "$#" )); do
+        case "${1}" in
+            provision)
+                shift 1
+                export command="provision"
+                ;;
+            destroy)
+                shift 1
+                export command="destroy"
+                ;;
+            pipeline)
+                shift 1
+                export command="pipeline"
+                export sub_command="$1"
+                shift 1
+                ;;
+            -h|--help)
+                shift 1
+                export command="help"
+                usage
+                ;;
+            *) # preserve positional arguments
+                PARAMS+="${1} "
+                shift
+                ;;
+        esac
+    done
+    args=( $PARAMS )
+
+    if [[ -z "$command" ]]; then
+        usage
+    fi
+}
+
+process_command() {
+    case "$command" in
+        provision)
+            provision
+            ;;
+        destroy)
+            destroy
+            ;;
+        pipeline)
+            pipeline
+            ;;
+    esac
+}
+
+# main
+main "$@"
+
