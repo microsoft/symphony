@@ -14,23 +14,23 @@ get_prefix(){
 
 get_suffix(){
     if [[ ! -f $REPO_DIR/.symphony/config/.suffix ]];then
-        NNN="${3:-"$(echo $RANDOM | fold -w 3 | head -n 1)"}"
-        echo $NNN >  $REPO_DIR/.symphony/config/.suffix
+        suffix="${3:-"$(echo $RANDOM | fold -w 3 | head -n 1)"}"
+        echo $suffix >  $REPO_DIR/.symphony/config/.suffix
     fi
     suffix=$(cat $REPO_DIR/.symphony/config/.suffix)
     echo $suffix
 }
 
 remove_dependencies() {
-    NAME=$(get_prefix)
+    prefix=$(get_prefix)
     LOCATION="${2:-"westus"}"
-    NNN=$(get_suffix)
+    suffix=$(get_suffix)
 
-    RG_NAME="rg-${NAME}-${NNN}"
-    CR_NAME="cr${NAME}${NNN}"
-    KV_NAME="kv-${NAME}-${NNN}"
-    SP_READER_NAME="sp-reader-${NAME}-${NNN}"
-    SP_OWNER_NAME="sp-owner-${NAME}-${NNN}"
+    RG_NAME="rg-${prefix}-${suffix}"
+    CR_NAME="cr${prefix}${suffix}"
+    KV_NAME="kv-${prefix}-${suffix}"
+    SP_READER_NAME="sp-reader-${prefix}-${suffix}"
+    SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
     
     SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
@@ -70,15 +70,15 @@ remove_dependencies() {
 }
 # provision entrypoint
 deploy_dependencies() {
-    NAME=$(get_prefix)
+    prefix=$(get_prefix)
     LOCATION="${2:-"westus"}"
-    NNN=$(get_suffix)
+    suffix=$(get_suffix)
 
-    RG_NAME="rg-${NAME}-${NNN}"
-    CR_NAME="cr${NAME}${NNN}"
-    KV_NAME="kv-${NAME}-${NNN}"
-    SP_READER_NAME="sp-reader-${NAME}-${NNN}"
-    SP_OWNER_NAME="sp-owner-${NAME}-${NNN}"
+    RG_NAME="rg-${prefix}-${suffix}"
+    CR_NAME="cr${prefix}${suffix}"
+    KV_NAME="kv-${prefix}-${suffix}"
+    SP_READER_NAME="sp-reader-${prefix}-${suffix}"
+    SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
 
 
     # Create RG
