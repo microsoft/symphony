@@ -116,7 +116,9 @@ function configure_repo {
 
     # Configure remote for local git repo
     remoteWithCreds="${CODE_REPO_GIT_HTTP_URL/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
-    git remote set-url origin $remoteWithCreds
+    git init
+    git branch -m main
+    git remote add origin $remoteWithCreds
 
     _success "Project '${AZDO_PROJECT_NAME}' created."
 }
