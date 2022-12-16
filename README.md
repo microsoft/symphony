@@ -1,14 +1,30 @@
-# Project
+# Symphony
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+Symphony is a framework and set of patterns and best practices for deploying infrastructure on Azure using Infrastructure as Code (IAC.)
 
-As the maintainer of this project, please make a few updates:
+Symphony supports the following IAC tools:
+- Terraform
+- Bicep
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+Symphony supports the following Build Orchestrators:
+- Azure DevOps
+- GitHub
+
+## Getting Started
+
+Note symphony's local bootstrapping was build specifically for use in a bash/zsh shell. 
+
+- Clone this repo.
+- Configure the symphony cli `source setup.sh`
+- Deploy dependent resources `symphony provision`
+  - note: this only needs to be run once.
+- Deploy and Configure an orchestrator:
+  - `symphony pipeline config <azdo|github> <terraform|bicep>` 
+
+## Docs:
+- [Workflow](./docs/WORKFLOW.md)
+- [Environments](./docs/ENVIRONMENT.md)
+  
 
 ## Contributing
 

@@ -14,38 +14,9 @@ declare ORCHESTRATOR=$1
 declare IACTOOL=$2
 
 main() {
-    show_banner
-    _validate_inputs
-    if [ $ORCHESTRATOR == "azdo" ]; then
-      source scripts/install/providers/azdo/azdo.sh
-      mkdir -p scripts/install/providers/azdo/temp
-    else
-      source scripts/install/providers/github/github.sh
-    fi
-
-    # workflow
-    loadServicePrincipalCredentials
-    printEnvironment
-    load_inputs
-    configure_repo
-    configure_credentials
-    
-    # cleanup
-    remove_yaml
-    if [ $IACTOOL == "bicep" ]; then
-      create_pipelines_bicep
-      remove_tf_content
-    else
-      create_pipelines_terraform
-      remove_bicep_content
-    fi
-    git add .
-    git commit -m "cleanup unused iac files"
-    
-    # push the code the repo
-    git push origin --all
-
-    check_error_log
+   _information "This install script deprecated, please source setup.sh and use the symphony cli"
+   source ./setup.sh
+   symphony pipeline config $ORCHESTRATOR $IACTOOL
 }
 
 # Entry point

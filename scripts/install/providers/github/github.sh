@@ -66,7 +66,9 @@ function configure_repo {
 
     # Configure remote for local git repo
     remoteWithCreds="https://${GH_PAT}@github.com/${GH_ORG_NAME}/${GH_Repo_NAME}.git"
-    git remote set-url origin $remoteWithCreds
+    git init
+    git branch -m main
+    git remote add origin $remoteWithCreds
 
     _success "Repo '${GH_Repo_NAME}' created."
 }
