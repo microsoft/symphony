@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=SC2229
 # shell helpers to read and validate input
 
 function _prompt_input {
@@ -7,10 +10,11 @@ function _prompt_input {
 
     echo ""
     if [[ "$is_danger" == "true" ]]; then
-      printf " \e[31m> $input_description : \e[0m"
+      printf " \e[31m> %s : \e[0m" "$input_description"
     else
       echo -n "> $input_description : "
     fi
+    #shellcheck disable=SC2162,SC2086
     read $input_name
 }
 
@@ -32,6 +36,9 @@ function _validate_inputs {
 
 
 function usage() {
+  # shellcheck disable=SC2154
+  # me is defined in the entry point script that sources this file.
+
     _helpText=" Usage: $me <command> <sub command> <parameters>
   commands:
     provision  Set up the required infrastructure needed for symphony

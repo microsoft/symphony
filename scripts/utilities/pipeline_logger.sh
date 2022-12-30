@@ -1,54 +1,56 @@
+#!/usr/bin/env bash
+
 # Logger Functions with colors for Bash Shell
 
 _debug() {
     # Only print debug lines if debugging is turned on.
-    if [ -n ${DEBUG_FLAG} ]; then
+    if [ -n "${DEBUG_FLAG}" ]; then
         if [ -n "${GITHUB_ACTION}" ]; then
-            echo "::debug::$@"
+            echo "::debug::" "$@"
         elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-            echo -e "##[debug]$@"
+            echo -e "##[debug]" "$@"
         else
-            echo "DEBUG: $@"
+            echo "DEBUG: " "$@"
         fi
     fi
 }
 
 _error() {
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo "::error::$@"
+        echo "::error::" "$@"
     elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        echo -e "##[error]$@"
+        echo -e "##[error]" "$@"
     else
-        echo "ERROR: $@"
+        echo "ERROR: " "$@"
     fi
 }
 
 _warning() {
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo "::warning::$@"
+        echo "::warning::" "$@"
     elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        echo -e "##[warning]$@"
+        echo -e "##[warning]" "$@"
     else
-        echo "WARNING: $@"
+        echo "WARNING: " "$@"
     fi
 }
 
 _information() {
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo "::notice::$@"
+        echo "::notice::" "$@"
     elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        echo -e "##[command]$@"
+        echo -e "##[command]" "$@"
     else
-        echo "NOTICE: $@"
+        echo "NOTICE: " "$@"
     fi
 }
 
 _success() {
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo "::notice::$@"
+        echo "::notice::" "$@"
     elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        echo -e "##[section]$@"
+        echo -e "##[section]" "$@"
     else
-        echo "NOTICE: $@"
+        echo "NOTICE: " "$@"
     fi
 }

@@ -5,7 +5,7 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
-cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
+cd "${WORKSPACE_PATH}/IAC/Bicep/bicep" || exit
 
 SAVEIFS=${IFS}
 IFS=$'\n'
@@ -29,4 +29,4 @@ for deployment in "${modules[@]}"; do
     echo "------------------------"
 done
 
-popd
+popd || exit

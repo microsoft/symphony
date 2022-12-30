@@ -7,14 +7,14 @@ pushd .
 
 looking_path="${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
-cd "${looking_path}"
+cd "${looking_path}" || exit
 
 SAVEIFS=${IFS}
 IFS=$'\n'
 modules=($(find . -type f -name '*.bicep' | sort -u))
 IFS=${SAVEIFS}
 
-popd
+popd || exit
 
 # LINT
 for deployment in "${modules[@]}"; do

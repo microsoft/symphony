@@ -27,6 +27,8 @@ function loadServicePrincipalCredentials() {
     
 }
 
+# shellcheck disable=SC2154
+# command is a global variable declared in the entrypoint script.
 function printEnvironment() {
     echo ""
     _information "********************************************************************"

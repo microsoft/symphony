@@ -2,7 +2,7 @@
 
 # Includes
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-source $SCRIPT_DIR/_helpers.sh
+source "$SCRIPT_DIR"/_helpers.sh
 
 usage() {
     _information "Usage: IAC Bicep commands helper"
@@ -12,7 +12,7 @@ usage() {
 _target_scope() {
     local bicep_file_path="${1}"
 
-    target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' ${bicep_file_path} | sed -e 's/[\"\`]//g')
+    target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
     target_scope=${target_scope//\'/}
 
     echo "${target_scope}"
@@ -36,8 +36,8 @@ parse_bicep_parameters() {
     if [[ -f "${bicep_parameters_file_path}" ]]; then
         _information "Parsing parameter file with Envs: ${bicep_parameters_file_path}"
 
-        if [ -n "$(cat "${bicep_parameters_file_path}" | jq '.parameters' | grep "\\$")" ]; then
-            new_content=$(cat "${bicep_parameters_file_path}" | jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
+        if [ -n "$(< "${bicep_parameters_file_path}"  jq '.parameters' | grep "\\$")" ]; then
+            new_content=$(< "${bicep_parameters_file_path}" jq '.parameters |= map_values(if .value | (startswith("$") and env[.[1:]]) then .value |= env[.[1:]] else . end)')
             echo -e "${new_content}" >|"${bicep_parameters_file_path}"
         fi
     fi
@@ -55,6 +55,7 @@ bicep_output_to_env() {
         fi
     fi
 
+    #shellcheck disable=SC2086
     if [ "$saveDeployOutput" == "true" ]; then
         if [ -n "${GITHUB_ACTION}" ]; then
             echo "bicepOutputJson=\"${bicep_output_json}\"" >>$GITHUB_OUTPUT
@@ -65,7 +66,7 @@ bicep_output_to_env() {
     fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
-        while IFS=$"\n" read -r c; do
+        while IFS=$'\n' read -r c; do
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
@@ -105,7 +106,8 @@ validate() {
     _information "deployment_id: ${deployment_id}"
     _information "location: ${location}"
     _information "layerName: ${layerName}"
-    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}"
+    #shellcheck disable=SC2128
+    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}" 
 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
