@@ -17,11 +17,11 @@ _debug() {
 
 _error() {
     if [ -n "${GITHUB_ACTION}" ]; then
-        echo "::error::" "$@"
+        echo "::error:: $*"
     elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-        echo -e "##[error]" "$@"
+        echo -e "##[error] $*"
     else
-        echo "ERROR: " "$@"
+        echo "ERROR: $*"
     fi
 }
 
