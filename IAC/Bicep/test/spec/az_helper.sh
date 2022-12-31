@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154,SC2320
 # Above check is disabled since ShellSpec passes in a special parameter with the function name
 
 # This callback function will be invoked after core modules has been loaded.
