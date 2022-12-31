@@ -22,6 +22,7 @@ get_os_architecture "x64" "arm64" "armv7" "x32"
 find_version_from_git_tags VERSION 'https://github.com/zricethezav/gitleaks'
 
 _information "Downloading Gitleaks..."
+#shellcheck disable=SC2154
 filename="gitleaks_${VERSION}_linux_${os_architecture}.tar.gz"
 curl -sSL -o "${filename}" "https://github.com/zricethezav/gitleaks/releases/download/v${VERSION}/${filename}"
 tar -xf "${filename}" gitleaks

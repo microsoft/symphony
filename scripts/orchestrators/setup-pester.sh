@@ -15,4 +15,5 @@ source _setup_helpers.sh
 
 _information "Downloading Pester..."
 
+# shellcheck disable=SC2016
 pwsh -noprofile -nologo -command 'Install-Module -Name Pester -AllowClobber -Force -Confirm:$False -SkipPublisherCheck; Import-Module Pester'

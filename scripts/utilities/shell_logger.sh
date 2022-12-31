@@ -1,4 +1,5 @@
-
+#!/usr/bin/env bash
+#shellcheck disable=SC2145,SC2070,SC2124,SC2059,SC2317
 _error() {
     printf " \e[31mError: $@\n\e[0m"
 }
