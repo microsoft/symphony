@@ -1,29 +1,30 @@
 #!/bin/bash
 
-mkdir -p $REPO_DIR/.symphony/logs
-mkdir -p $REPO_DIR/.symphony/config
+mkdir -p "$REPO_DIR/.symphony/logs"
+mkdir -p "$REPO_DIR/.symphony/config"
 
 get_prefix(){
-    if [[ ! -f $REPO_DIR/.symphony/config/.prefix ]];then
-        NAME="${1:-"$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n 1)"}"
-        echo $NAME >  $REPO_DIR/.symphony/config/.prefix
+     NAME=$(< /dev/urandom env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n 1)
+     
+    if [[ ! -f "$REPO_DIR/.symphony/config/.prefix" ]];then
+        echo "$NAME" >  "$REPO_DIR/.symphony/config/.prefix"
     fi
-    prefix=$(cat $REPO_DIR/.symphony/config/.prefix)
-    echo $prefix
+    
+    prefix=$(cat "$REPO_DIR/.symphony/config/.prefix")
+    echo "$prefix"
 }
 
 get_suffix(){
     if [[ ! -f $REPO_DIR/.symphony/config/.suffix ]];then
-        suffix="${3:-"$(echo $RANDOM | fold -w 3 | head -n 1)"}"
-        echo $suffix >  $REPO_DIR/.symphony/config/.suffix
+        suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
+        echo "$suffix" >  "$REPO_DIR/.symphony/config/.suffix"
     fi
-    suffix=$(cat $REPO_DIR/.symphony/config/.suffix)
-    echo $suffix
+    suffix=$(cat "$REPO_DIR/.symphony/config/.suffix")
+    echo "$suffix"
 }
 
 remove_dependencies() {
     prefix=$(get_prefix)
-    LOCATION="${2:-"westus"}"
     suffix=$(get_suffix)
 
     RG_NAME="rg-${prefix}-${suffix}"
@@ -46,7 +47,7 @@ remove_dependencies() {
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
     echo ""
 
-
+    local selection=""
     _prompt_input "Destroy Resources (yes/no)?" selection "true"
     echo ""
 
@@ -57,10 +58,10 @@ remove_dependencies() {
         az group delete --resource-group "${RG_NAME}" --yes --no-wait
 
         _information "Removing Service Principal (Reader) $SP_READER_APPID"
-        az ad sp delete --id $SP_READER_APPID
+        az ad sp delete --id "$SP_READER_APPID"
 
         _information "Service Principal (Owner) $SP_OWNER_APPID"
-        az ad sp delete --id $SP_OWNER_APPID
+        az ad sp delete --id "$SP_OWNER_APPID"
 
         _information "Resources Removed"
         _information "Note the keyvault $KV_NAME has been soft deleted. In order to reprovision, either purge or restore the keyvault."
@@ -68,10 +69,11 @@ remove_dependencies() {
         _danger "Destroy Aborted!"
     fi
 }
+
 # provision entrypoint
 deploy_dependencies() {
     prefix=$(get_prefix)
-    LOCATION="${2:-"westus"}"
+    LOCATION="$2"
     suffix=$(get_suffix)
 
     RG_NAME="rg-${prefix}-${suffix}"
@@ -92,7 +94,7 @@ deploy_dependencies() {
     # Create Owner SP and assing to subscription level
     echo "Creating Owner SP: ${SP_OWNER_NAME}"
     sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
-    sp_owner_appid=$(echo $sp_owner_obj | jq -r '.appId')
+    sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
 
     # Create KV
     echo "Creating KV: ${KV_NAME}"
@@ -117,7 +119,7 @@ deploy_dependencies() {
     # Create Reader SP and assing to KV only
     echo "Creating Reader SP: ${SP_READER_NAME}"
     sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
-    sp_reader_appid=$(echo $sp_reader_obj | jq -r '.appId')
+    sp_reader_appid=$(echo "$sp_reader_obj" | jq -r '.appId')
 
     # Save Reader SP details to KV
     echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
@@ -152,11 +154,11 @@ create_cr() {
     az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
 
     git clone "${APP_REPO}" "_app"
-    pushd "_app"
-    git checkout "${APP_COMMIT}"
-    az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
-    az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
-    popd
+    pushd "_app" || exit
+        git checkout "${APP_COMMIT}"
+        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
+        az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+    popd || exit
     rm -r -f "_app"
 }
 

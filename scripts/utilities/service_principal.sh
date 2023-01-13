@@ -27,6 +27,7 @@ function loadServicePrincipalCredentials() {
     
 }
 
+# command is a global variable declared in the entrypoint script.
 function printEnvironment() {
     echo ""
     _information "********************************************************************"

@@ -23,8 +23,8 @@ git_diff() {
         cmd_options="${cmd_options} ${path}"
     fi
 
-    echo "git diff ${cmd_options} | xargs -L1 dirname | uniq"
-    res=$(git diff ${cmd_options} | xargs -L1 dirname | uniq)
+    echo "git diff $cmd_options | xargs -L1 dirname | uniq"
+    res=$(git diff "$cmd_options" | xargs -L1 dirname | uniq)
 
     SAVEIFS=${IFS}
     IFS=$'\n'
@@ -35,10 +35,10 @@ git_diff() {
     len=${#array[@]}
 
     _information "Changes Detected in ${len} layers"
-    _information $res
+    _information "$res"
 
     if [[ "$4" ]]; then
-        eval $result="'$res'"
+        eval "$result"="'$res'"
     else
         echo "$res"
     fi

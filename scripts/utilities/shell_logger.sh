@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 _error() {
     printf " \e[31mError: $@\n\e[0m"

@@ -23,6 +23,7 @@ find_version_from_git_tags VERSION 'https://github.com/mozilla/sops'
 
 _information "Downloading SOPS..."
 
+
 filename="sops-v${VERSION}.linux.${os_architecture}"
 echo "${filename}"
 curl -sSL -o "${filename}" "https://github.com/mozilla/sops/releases/download/v${VERSION}/${filename}"

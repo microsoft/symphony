@@ -50,6 +50,7 @@ mkdir -p "${GOROOT}" "${GOPATH}"
 if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     _information "Downloading Go ${VERSION}..."
     set +e
+
     curl -fsSL -o tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
     exit_code=$?
     set -e
@@ -113,7 +114,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
     go_install_command=install
     if [[ "1.16" > "$(go version | grep -oP 'go\K[0-9]+\.[0-9]+(\.[0-9]+)?')" ]]; then
         export GO111MODULE=on
-        go_install_command=get
+        go_install_command="get"
         _information "Go version < 1.16, using go get."
     fi
 

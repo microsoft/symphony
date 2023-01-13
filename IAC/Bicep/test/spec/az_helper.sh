@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# Above check is disabled since ShellSpec passes in a special parameter with the function name
 
 # This callback function will be invoked after core modules has been loaded.
 spec_helper_configure() {
@@ -47,10 +47,11 @@ query_equals() {
     local query="$1"
     local expected="$2"
     local json="$query_equals"
-    if [[ "$#" > 2 ]]; then
+    if [[ "$#" -gt 2 ]]; then
         json="$3"
     fi
-    local actual=$(echo "$json" | jq -r "$query")
+    local actual
+    actual=$(echo "$json" | jq -r "$query")
 
     if [[ "$actual" == "$expected" ]]; then
         return 0
@@ -77,15 +78,15 @@ location_equals() {
 
 # LOGGER functions
 error() {
-    printf "\e[31mERROR: $@\n\e[0m"
+    printf "\e[31mERROR: %s\n\e[0m" "$@"
 }
 
 information() {
-    printf "  \e[36m$@\n\e[0m"
+    printf "  \e[36m%s\n\e[0m" "$@"
 }
 
 success() {
-    printf "  \e[32m$@\n\e[0m"
+    printf "  \e[32m%s\n\e[0m" "$@"
 }
 
 clear_print_log() {
