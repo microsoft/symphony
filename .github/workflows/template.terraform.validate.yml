@@ -46,7 +46,7 @@ jobs:
       - name: Run Gitleaks
         run: |
           source ./scanners.sh
-          run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true'
+          run_gitleaks './../../IAC/Terraform' 'sarif' 'info' 'true' ''
         working-directory: scripts/orchestrators
 
       - uses: actions/upload-artifact@v3
