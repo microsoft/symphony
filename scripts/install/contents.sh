@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1091
 INSTALL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$INSTALL_DIR"/../utilities/shell_logger.sh
 

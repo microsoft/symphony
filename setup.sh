@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091,SC2128
 declare INSTALL_PATH=$(pwd)/scripts/install/cli
 declare SCRIPTS_PATH=$(pwd)/scripts
 source "$SCRIPTS_PATH/utilities/shell_logger.sh"
