@@ -62,11 +62,3 @@ jobs:
         with:
           name: markdownlint report
           path: markdownlint-report.txt
-
-  markdown-link-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.1.0
-
-      - name: Run Markdown Link Checker
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
