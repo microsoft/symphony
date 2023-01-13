@@ -1,3 +1,5 @@
+#!/bin/bash
+
 get_os_architecture() {
     local arch_amd64="${1:-"amd64"}"
     local arch_arm64="${2:-"arm64"}"
@@ -40,12 +42,12 @@ find_version_from_git_tags() {
             last_part="${escaped_separator}[0-9]+"
         fi
         local regex="${prefix}\\K[0-9]+${escaped_separator}[0-9]+${last_part}$"
-        local version_list="$(git ls-remote --tags ${repository} | grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
+        local version_list="$(git ls-remote --tags "${repository}" | grep -oP "${regex}" | tr -d ' ' | tr "${separator}" "." | sort -rV)"
         if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "current" ] || [ "${requested_version}" = "lts" ]; then
-            declare -g ${variable_name}="$(echo "${version_list}" | head -n 1)"
+            declare -g "${variable_name}"="$(echo "${version_list}" | head -n 1)"
         else
             set +e
-            declare -g ${variable_name}="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+            declare -g "${variable_name}"="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
             set -e
         fi
     fi

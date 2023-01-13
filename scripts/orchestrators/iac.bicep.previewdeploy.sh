@@ -5,7 +5,7 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
-cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
+cd "${WORKSPACE_PATH}/IAC/Bicep/bicep" || exit
 
 SAVEIFS=${IFS}
 IFS=$'\n'
@@ -58,7 +58,8 @@ for deployment in "${modules[@]}"; do
 
     load_dotenv
 
-    _information "Executing Bicep preview: 'preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
+    # resourceGroupName is a bicep output that is store in an environment variable.
+    _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
    
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
   
@@ -69,7 +70,7 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
-    _information "Executing Bicep deploy: 'deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}"'"
+    _information "Executing Bicep deploy: 'deploy \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
 
     output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
 
@@ -83,4 +84,4 @@ for deployment in "${modules[@]}"; do
     bicep_output_to_env "${output}" ".env" "false" "true"
 done
 
-popd
+popd || exit

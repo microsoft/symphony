@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
+
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 REPO_DIR=$SCRIPT_DIR/../../../
-source $SCRIPT_DIR/../../utilities/shell_logger.sh
-source $SCRIPT_DIR/../../utilities/shell_inputs.sh
-source $SCRIPT_DIR/../../utilities/http.sh
-source $SCRIPT_DIR/../../utilities/service_principal.sh
-source $SCRIPT_DIR/../../install/banner.sh
-source $SCRIPT_DIR/../../install/contents.sh
+
+source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
+source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
+source "$SCRIPT_DIR/../../utilities/http.sh"
+source "$SCRIPT_DIR/../../utilities/service_principal.sh"
+source "$SCRIPT_DIR/../../install/banner.sh"
+source "$SCRIPT_DIR/../../install/contents.sh"
 
 #script name
-declare me=`basename "$0"`
+declare me=$(basename "$0")
 declare ORCHESTRATOR=""
 declare IACTOOL=""
 declare command=""
 declare sub_command=""
+declare default_location="westus"
+declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
+declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 
 main() {
     show_banner
@@ -21,17 +26,29 @@ main() {
     process_command
 }
 
+verify_az_logged_in() {
+  az account show
+  code=$?
+  if [[ "$code" -gt 0 ]]; then
+    exit $code
+  fi
+}
+
 # Provision resources and service principals needed by Symphony
 provision() {
+    verify_az_logged_in
+
     _information "Deploying Symphony Dependencies"
     source scripts/install/provision.sh
     loadServicePrincipalCredentials
     printEnvironment
-    deploy_dependencies
+    deploy_dependencies "$default_location"
 }
 
 # Destroy resources and service principals needed by Symphony. Note this is a destructive operation
 destroy(){
+    verify_az_logged_in
+
     _information "Removing Symphony Dependencies"
     source scripts/install/provision.sh
     loadServicePrincipalCredentials
@@ -40,27 +57,30 @@ destroy(){
 }
 
 configure_orchestrator() {
+    verify_az_logged_in
+
     ORCHESTRATOR=${args[0]}      
     IACTOOL=${args[1]}  
+
     _validate_inputs
     code=$?
-    if [[ $code > 0 ]]; then
+    if [[ $code -gt 0 ]]; then
         usage
         exit $code
     fi
 
-    if [ $ORCHESTRATOR == "azdo" ]; then
-        source $REPO_DIR/scripts/install/providers/azdo/azdo.sh
-        mkdir -p $REPO_DIR/scripts/install/providers/azdo/temp
+    if [ "$ORCHESTRATOR" == "azdo" ]; then
+        source "$REPO_DIR/scripts/install/providers/azdo/azdo.sh"
+        mkdir -p "$AZDO_TEMP_LOG_PATH"
     else
-        source $REPO_DIR/scripts/install/providers/github/github.sh
+        source "$REPO_DIR/scripts/install/providers/github/github.sh"
     fi
 
     # workflow
     TARGET_ROOT=$(mktemp -d)
-    cp -R . $TARGET_ROOT
+    cp -R . "$TARGET_ROOT"
 
-    pushd $TARGET_ROOT
+    pushd "$TARGET_ROOT" || exit
         rm -rf .git
         loadServicePrincipalCredentials
         printEnvironment
@@ -68,7 +88,7 @@ configure_orchestrator() {
         
         # remove unused files
         remove_yaml
-        if [ $IACTOOL == "bicep" ]; then
+        if [ "$IACTOOL" == "bicep" ]; then
             remove_tf_content
         else
             remove_bicep_content
@@ -77,7 +97,7 @@ configure_orchestrator() {
         configure_repo
         configure_credentials
         
-        if [ $IACTOOL == "bicep" ]; then
+        if [ "$IACTOOL" == "bicep" ]; then
             create_pipelines_bicep
         else
             create_pipelines_terraform
@@ -89,7 +109,7 @@ configure_orchestrator() {
         git push origin --all
 
         check_error_log
-    popd
+    popd || exit
 }
 
 pipeline() {
@@ -131,6 +151,7 @@ parse_args() {
                 ;;
         esac
     done
+
     args=( $PARAMS )
 
     if [[ -z "$command" ]]; then

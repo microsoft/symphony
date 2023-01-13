@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # shell helpers to read and validate input
 
 function _prompt_input {
@@ -7,10 +9,11 @@ function _prompt_input {
 
     echo ""
     if [[ "$is_danger" == "true" ]]; then
-      printf " \e[31m> $input_description : \e[0m"
+      printf " \e[31m> %s : \e[0m" "$input_description"
     else
       echo -n "> $input_description : "
     fi
+
     read $input_name
 }
 
@@ -32,6 +35,8 @@ function _validate_inputs {
 
 
 function usage() {
+  # me is defined in the entry point script that sources this file.
+
     _helpText=" Usage: $me <command> <sub command> <parameters>
   commands:
     provision  Set up the required infrastructure needed for symphony

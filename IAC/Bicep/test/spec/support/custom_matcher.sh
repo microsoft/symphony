@@ -1,4 +1,5 @@
 # imported by "spec_helper.sh"
+# shellcheck shell=sh
 
 shellspec_syntax 'shellspec_matcher_include_name'
 shellspec_matcher_include_name() {

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-source $SCRIPT_DIR/../../../utilities/shell_logger.sh
-source $SCRIPT_DIR/../../../utilities/shell_inputs.sh
-source $SCRIPT_DIR/../../../utilities/http.sh
+source "$SCRIPT_DIR"/../../../utilities/shell_logger.sh
+source "$SCRIPT_DIR"/../../../utilities/shell_inputs.sh
+source "$SCRIPT_DIR"/../../../utilities/http.sh
 
 ########################################################################################
 #
@@ -41,7 +41,7 @@ function load_inputs {
         if [ -z "$GH_PAT" ]; then
             _prompt_input "Enter GitHub PAT" GH_PAT
         fi
-         echo $GH_PAT | gh auth login --with-token
+         echo "$GH_PAT" | gh auth login --with-token
     fi
 }
 
@@ -55,12 +55,12 @@ function configure_repo {
 
     command="gh repo create $GH_ORG_NAME/$GH_Repo_NAME $visibility"
     _information "running - $command"
-    eval $command 
+    eval "$command" 
          
     # 2. GET Repos Git Url and Repo Id's
-    response=$(gh repo view $GH_ORG_NAME/$GH_Repo_NAME --json sshUrl,url,id)
-    CODE_REPO_GIT_HTTP_URL=$(echo $response | jq -r '.url')
-    CODE_REPO_ID=$(echo $response | jq -r '.id')
+    response=$(gh repo view "$GH_ORG_NAME/$GH_Repo_NAME" --json sshUrl,url,id)
+    CODE_REPO_GIT_HTTP_URL=$(echo "$response" | jq -r '.url')
+    CODE_REPO_ID=$(echo "$response" | jq -r '.id')
     _debug "$CODE_REPO_GIT_HTTP_URL"
     _debug "$CODE_REPO_ID"
 
@@ -68,7 +68,7 @@ function configure_repo {
     remoteWithCreds="https://${GH_PAT}@github.com/${GH_ORG_NAME}/${GH_Repo_NAME}.git"
     git init
     git branch -m main
-    git remote add origin $remoteWithCreds
+    git remote add origin "$remoteWithCreds"
 
     _success "Repo '${GH_Repo_NAME}' created."
 }
@@ -81,7 +81,7 @@ function configure_credentials {
     _information "Configure Github Secrets"
 
     sp_json=$(_build_az_secret)
-    gh secret set "AZURE_CREDENTIALS" --repo ${GH_ORG_NAME}/${GH_Repo_NAME} --body "$sp_json"
+    gh secret set "AZURE_CREDENTIALS" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$sp_json"
 }
 
 function create_pipelines_bicep {

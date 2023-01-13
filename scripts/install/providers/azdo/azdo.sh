@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-source $SCRIPT_DIR/../../../utilities/shell_logger.sh
-source $SCRIPT_DIR/../../../utilities/shell_inputs.sh
-source $SCRIPT_DIR/../../../utilities/http.sh
+source "$SCRIPT_DIR"/../../../utilities/shell_logger.sh
+source "$SCRIPT_DIR"/../../../utilities/shell_inputs.sh
+source "$SCRIPT_DIR"/../../../utilities/http.sh
 
 ########################################################################################
 #
@@ -47,7 +47,7 @@ function configure_repo {
     _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/process/processes?api-version=" '5.1' '5.1')
     _debug "Requesting process templates"
     _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}")
-    echo $_response > $SCRIPT_DIR/temp/pt.json
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/pt.json"
     
     if [[ "$_response" == *"Access Denied: The Personal Access Token used has expired"* ]]; then
       _error "Authentication Error Personal Access Token used has expired!"
@@ -63,12 +63,12 @@ function configure_repo {
         _error "Error Requesting process templates. Please ensure the PAT is valid and has not expired."
         exit 1
     fi
-    _processTemplateId=$(cat $SCRIPT_DIR/temp/pt.json | jq -r '.value[] | select(.name == "'"$project_process_tempalte"'") | .id')
+    _processTemplateId=$(< "$AZDO_TEMP_LOG_PATH/pt.json"  jq -r '.value[] | select(.name == "'"$project_process_tempalte"'") | .id')
 
     # 2. Create Project
     # AzDo Service     : Projects - Create https://docs.microsoft.com/rest/api/azure/devops/core/projects/create?view=azure-devops-rest-5.1
     # POST https://{{coreServer}}/{{organization}}/_apis/projects?api-version={{api-version}}
-    _payload=$(cat "$SCRIPT_DIR/templates/project-create.json" | sed 's~__AZDO_PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' | sed 's~__AZDO_PROJECT_SOURCE_CONTROL__~'"$project_source_control"'~' | sed 's~__AZDO_PROCESS_TEMPLATE_ID__~'"${_processTemplateId}"'~')
+    _payload=$(< "$SCRIPT_DIR/templates/project-create.json" sed 's~__AZDO_PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' | sed 's~__AZDO_PROJECT_SOURCE_CONTROL__~'"$project_source_control"'~' | sed 's~__AZDO_PROCESS_TEMPLATE_ID__~'"${_processTemplateId}"'~')
     _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/projects?api-version=" '5.1' '5.1')
 
     _debug "Creating project"
@@ -79,8 +79,8 @@ function configure_repo {
                    "application/json; charset=utf-8" \
                    "Basic ${_token}"
                )
-    echo $_response > $SCRIPT_DIR/temp/cp.json    
-    local _createProjectTypeKey=$(echo $_response | jq -r '.typeKey')
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/cp.json"   
+    local _createProjectTypeKey=$(echo "$_response" | jq -r '.typeKey')
     if [ "$_createProjectTypeKey" = "ProjectAlreadyExistsException" ]; then
         _error "Error creating project in org '${AZDO_ORG_URI}. \nProject repo '${AZDO_PROJECT_NAME}' already exists."
         exit 1
@@ -95,9 +95,9 @@ function configure_repo {
     # https://docs.microsoft.com/rest/api/azure/devops/core/Projects/List?view=azure-devops-server-rest-5.0
     # GET https://{instance}/{collection}/_apis/projects?api-version=5.0
     _uri="${AZDO_ORG_URI}/_apis/projects?api-version=5.0"
-    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
-    echo $_response > "$SCRIPT_DIR/temp/get-project-id.json"
-    AZDO_PROJECT_ID=$(cat "$SCRIPT_DIR/temp/get-project-id.json" | jq -r '.value[] | select (.name == "'"${AZDO_PROJECT_NAME}"'") | .id')
+    _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/get-project-id.json"
+    AZDO_PROJECT_ID=$(< "$AZDO_TEMP_LOG_PATH/get-project-id.json"  jq -r '.value[] | select (.name == "'"${AZDO_PROJECT_NAME}"'") | .id')
     
     # 3. GET Repos Git Url and Repo Id's
     # AzDo Service     : Repositories - Get Repository https://docs.microsoft.com/rest/api/azure/devops/git/repositories/get%20repository?view=azure-devops-rest-5.1
@@ -105,20 +105,20 @@ function configure_repo {
     
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/git/repositories/${AZDO_PROJECT_NAME}?api-version=" '5.1' '5.1')
     _debug "Fetching ${AZDO_PROJECT_NAME} repository information"
-    _response=$(request_get ${_uri} "application/json; charset=utf-8" "Basic ${_token}") 
+    _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}") 
     _debug_log_get "$_uri" "$_response"
 
-    echo $_response > "$SCRIPT_DIR/temp/${AZDO_PROJECT_NAME}-ri.json"
-    CODE_REPO_GIT_HTTP_URL=$(cat "$SCRIPT_DIR/temp/${AZDO_PROJECT_NAME}-ri.json" | jq -c -r '.remoteUrl')
-    CODE_REPO_ID=$(cat "$SCRIPT_DIR/temp/${AZDO_PROJECT_NAME}-ri.json" | jq -c -r '.id')
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/${AZDO_PROJECT_NAME}-ri.json"
+    CODE_REPO_GIT_HTTP_URL=$(< "$AZDO_TEMP_LOG_PATH/${AZDO_PROJECT_NAME}-ri.json"  jq -c -r '.remoteUrl')
+    CODE_REPO_ID=$(< "$AZDO_TEMP_LOG_PATH/${AZDO_PROJECT_NAME}-ri.json"  jq -c -r '.id')
     _debug "$CODE_REPO_GIT_HTTP_URL"
-    echo "${AZDO_PROJECT_NAME} Git Repo remote URL: "$CODE_REPO_GIT_HTTP_URL
+    echo "${AZDO_PROJECT_NAME} Git Repo remote URL: $CODE_REPO_GIT_HTTP_URL"
 
     # Configure remote for local git repo
     remoteWithCreds="${CODE_REPO_GIT_HTTP_URL/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
     git init
     git branch -m main
-    git remote add origin $remoteWithCreds
+    git remote add origin "$remoteWithCreds"
 
     _success "Project '${AZDO_PROJECT_NAME}' created."
 }
@@ -182,7 +182,7 @@ function _create_arm_svc_connection() {
 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.2' '5.1-preview.2')
     _payload=$(_create_svc_connection_payload)
-    echo "${_payload}" > $SCRIPT_DIR/temp/casc_payload.json
+    echo "${_payload}" > "$AZDO_TEMP_LOG_PATH/casc_payload.json"
 
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     _response=$( request_post \
@@ -192,20 +192,20 @@ function _create_arm_svc_connection() {
         "Basic ${_token}"
         )
 
-    echo $_response > $SCRIPT_DIR/temp/casc.json
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/casc.json"
     _debug_log_post "$_uri" "$_response" "$_payload"
 
-    sc_id=`cat $SCRIPT_DIR/temp/casc.json | jq -r .id`
+    sc_id=$(< "$AZDO_TEMP_LOG_PATH/casc.json" jq -r .id)
 
     _debug "Service Connection ID: ${sc_id}"
     sleep 10
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints/${sc_id}?api-version=" '5.1-preview.2' '5.1-preview.1' )
-    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
+    _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
 
-    echo $_response > $SCRIPT_DIR/temp/isready.json
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/isready.json"
 
-    _isReady=$(cat $SCRIPT_DIR/temp/isready.json | jq -r '.isReady')
-    if [ $_isReady != true ]; then    
+    _isReady=$(< "$AZDO_TEMP_LOG_PATH"/isready.json jq -r '.isReady')
+    if [ "$_isReady" != true ]; then    
         _error "Error creating AzureRM service connection"
     fi
 
@@ -214,7 +214,7 @@ function _create_arm_svc_connection() {
     # Authorize the service connection for all pipelines.
     _information "Authorizing service connection for all pipelines."
 
-    _payload=$(cat "$SCRIPT_DIR/templates/authorized-resources.json" | sed 's~__SERVICE_CONNECTION_ID__~'"${sc_id}"'~')
+    _payload=$(< "$SCRIPT_DIR/templates/authorized-resources.json" sed 's~__SERVICE_CONNECTION_ID__~'"${sc_id}"'~')
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/build/authorizedresources?api-version=" '5.1-preview.1' '5.1-preview.1')
 
     _response=$( request_patch \
@@ -240,7 +240,7 @@ function _create_azdo_svc_connection() {
     
     _debug "starting payload $_templateFile"
                  
-    _payload=$( cat "$_templateFile" | sed 's~__ADO_ORG_NAME__~'"${AZDO_ORG_NAME}"'~' | sed 's~__ADO_ORG_URI__~'"${AZDO_ORG_URI}"'~' | sed 's~__ADO_PAT__~'"${AZDO_PAT}"'~' )
+    _payload=$(< "$_templateFile" sed 's~__ADO_ORG_NAME__~'"${AZDO_ORG_NAME}"'~' | sed 's~__ADO_ORG_URI__~'"${AZDO_ORG_URI}"'~' | sed 's~__ADO_PAT__~'"${AZDO_PAT}"'~' )
 
     _debug "done payload"
     _debug_json "$_payload"            
@@ -255,19 +255,19 @@ function _create_azdo_svc_connection() {
         "Basic ${_token}"
     )
 
-    echo $_response > $SCRIPT_DIR/temp/scado.json
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/scado.json"
     _debug_log_post "$_uri" "$_response" "$_payload"
 
-    _scId=$(cat $SCRIPT_DIR/temp/scado.json | jq -r '.id')
-    _isReady=$(cat $SCRIPT_DIR/temp/scado.json | jq -r '.isReady')
+    _scId=$(< "$AZDO_TEMP_LOG_PATH/scado.json" jq -r '.id')
+    _isReady=$(< "$AZDO_TEMP_LOG_PATH/scado.json" jq -r '.isReady')
 
-    if [ $_isReady != true ]; then    
+    if [ "$_isReady" != true ]; then    
         _error "Error creating azdo service connection"
     fi
 
     _success "azdo service connection created.  service connection id: ${_scId}"
 
-    _payload=$(cat "$SCRIPT_DIR/templates/sc-ado-auth.json" | sed 's~__SC_ADO_ID__~'"${_scId}"'~')
+    _payload=$(< "$SCRIPT_DIR/templates/sc-ado-auth.json"  sed 's~__SC_ADO_ID__~'"${_scId}"'~')
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/endpoint/${_scId}?api-version=" '5.1-preview' '5.1-preview' )
     _response=$( request_patch \
         "${_uri}" \
@@ -275,13 +275,13 @@ function _create_azdo_svc_connection() {
         "application/json; charset=utf-8" \
         "Basic ${_token}"
     )
-    echo $_response > $SCRIPT_DIR/temp/sc-ado-auth.json
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/sc-ado-auth.json"
 
     _debug_log_patch "$_uri" "$_response" "$_payload"
 
-    _allPipelinesAuthorized=$(cat $SCRIPT_DIR/temp/sc-ado-auth.json | jq -r '.allPipelines.authorized')
+    _allPipelinesAuthorized=$(< "$AZDO_TEMP_LOG_PATH/sc-ado-auth.json" jq -r '.allPipelines.authorized')
 
-    if [ $_allPipelinesAuthorized == true ]; then    
+    if [ "$_allPipelinesAuthorized" == true ]; then    
         _success "azdo service connection authorized for all pipelines"
     fi
 }
@@ -303,15 +303,14 @@ function _create_pipeline {
     local _pipelineRepoName=${5}
 
     local _agent_queue=$(_get_agent_pool_queue)
-    local _agent_pool_queue_id=$(echo $_agent_queue | jq -c -r '.agent_pool_queue_id')
-    local _agent_pool_queue_name=$(echo $_agent_queue | jq -c -r '.agent_pool_queue_name')
+    local _agent_pool_queue_id=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_id')
+    local _agent_pool_queue_name=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_name')
 
     #Ensure the agent pool is setup correctly.
     local _branch_name="main"
     local _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/build/definitions?api-version=" '5.1' '5.1')
 
-    local _payload=$( cat "${_template_file}" \
-                | sed 's~__ADO_PIPELINE_NAME__~'"${_name}"'~' \
+    local _payload=$( < "${_template_file}" sed 's~__ADO_PIPELINE_NAME__~'"${_name}"'~' \
                 | sed 's~__ADO_PIPELINE_FOLDER_PATH__~'"${_folder_path}"'~' \
                 | sed 's~__ADO_PIPELINE_REPO_BRANCH__~'"${_branch_name}"'~' \
                 | sed 's~__ADO_PIPELINE_REPO_NAME__~'"${_pipelineRepoName}"'~' \
@@ -324,29 +323,29 @@ function _create_pipeline {
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
 
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp.json
+    echo "$_payload" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-payload.json"
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/${_name}-cp.json"
 
     _debug_log_post "$_uri" "$_response" "$_payload"
 
-    local _createPipelineTypeKey=$(cat $SCRIPT_DIR/temp/${_name}-cp.json | jq -r '.typeKey')
+    local _createPipelineTypeKey=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.typeKey')
 
     if [ "$_createPipelineTypeKey" == "DefinitionExistsException" ]; then
         _error "Pipeline ${_name} already exists."
     fi
 
-    local _pipeId=$(cat $SCRIPT_DIR/temp/${_name}-cp.json | jq -r '.id')
+    local _pipeId=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.id')
 
     
     # Authorize Pipeline 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/queue/${_agent_pool_queue_id}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
+    _payload=$( < "$SCRIPT_DIR/templates/pipeline-authorize.json" \
+                sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
     _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize.json
+    echo "$_payload" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-authorize-payload.json"
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-authorize.json"
 
     if [ "$_pipeId" != null ]; then
         if [ "${_name}" == "env.compile" ]; then
@@ -359,12 +358,12 @@ function _create_pipeline {
     # Authorize Terraform-Code Repo Access for Pipeline
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${CODE_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
-    _payload=$( cat "$SCRIPT_DIR/templates/pipeline-authorize.json" \
-                | sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
+    _payload=$(< "$SCRIPT_DIR/templates/pipeline-authorize.json" \
+                  sed 's~__PIPELINE_ID__~'"${_pipeId}"'~' \
               )
     _response=$(request_patch "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
-    echo $_payload > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo-payload.json
-    echo $_response > $SCRIPT_DIR/temp/${_name}-cp-authorize-code-repo.json
+    echo "$_payload" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-authorize-code-repo-payload.json"
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-authorize-code-repo.json"
 
     _success "Created Pipeline ${_name} - id:${_pipeId}"
 }
@@ -374,8 +373,8 @@ function _create_svc_connection_payload() {
 
     local AZDO_SC_AZURERM_NAME='Symphony-KV'
     
-     _payload=$(cat "$SCRIPT_DIR/templates/service-connection-create.json" \
-    | sed 's~__SERVICE_PRINCIPAL_ID__~'"${SP_ID}"'~' \
+     _payload=$(< "$SCRIPT_DIR/templates/service-connection-create.json" \
+      sed 's~__SERVICE_PRINCIPAL_ID__~'"${SP_ID}"'~' \
     | sed 's@__SERVICE_PRINCIPAL_KEY__@'"${SP_SECRET}"'@' \
     | sed 's~__SERVICE_PRINCIPAL_TENANT_ID__~'"${SP_TENANT_ID}"'~' \
     | sed 's~__CLOUD_ENVIRONMENT__~'"${SP_CLOUD_ENVIRONMENT}"'~' \
@@ -386,13 +385,13 @@ function _create_svc_connection_payload() {
     | sed 's~__PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' \
     | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
     ) 
-    echo $_payload
+    echo "$_payload"
 }
 
 function _get_management_endpoint() {
-    local _response=$(az cloud show -n ${SP_CLOUD_ENVIRONMENT})
-    echo $_response > "$SCRIPT_DIR/temp/az-cloud-show-response.json"
-    MANAGEMENT_URI=`echo $_response | jq .endpoints.management | sed "s/^\([\"']\)\(.*\)\1\$/\2/g"`
+    local _response=$(az cloud show -n "${SP_CLOUD_ENVIRONMENT}")
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/az-cloud-show-response.json"
+    MANAGEMENT_URI=$(echo "$_response" | jq .endpoints.management | sed "s/^\([\"']\)\(.*\)\1\$/\2/g")
 
     _debug "MANAGEMENT_URI: ${MANAGEMENT_URI}"
     
@@ -403,30 +402,29 @@ function _get_pipeline_var_defintion() {
     local _var_value=${2}
     local _allowOverride=${3}
     local _template_file="$SCRIPT_DIR/templates/pipeline-variable.json"
-    local _payload=$(
-        cat "${_template_file}" |
-            sed 's~__PIPELINE_VAR_NAME__~'"${_var_key}"'~' |
+
+    local _payload=$(< "${_template_file}" sed 's~__PIPELINE_VAR_NAME__~'"${_var_key}"'~' |
             sed 's~__PIPELINE_VAR_VALUE__~'"${_var_value}"'~' |
             sed 's~__PIPELINE_VAR_IS_SECRET__~'false'~' |
             sed 's~__PIPELINE_ALLOW_OVERRIDE__~'"${_allowOverride}"'~'
     )
+
     echo $_payload
 }
-
 function _get_agent_pool_queue() {
     # https://docs.microsoft.com/rest/api/azure/devops/distributedtask/queues/get%20agent%20queues?view=azure-devops-rest-5.1
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _uri="${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/distributedtask/queues?api-version=5.1-preview.1"
-    _response=$(request_get $_uri "application/json; charset=utf-8" "Basic ${_token}")
-    _is_ubuntu=$(echo $_response | jq '.value[] | select( .name | contains("Ubuntu") )')
+    _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
+    _is_ubuntu=$(echo "$_response" | jq '.value[] | select( .name | contains("Ubuntu") )')
 
     if [ -z "${_is_ubuntu}" ]; then
-        _default_pool=$(echo $_response | jq '.value[] | select( .name | contains("Default") )')
-        agent_pool_queue_id=$(echo $_default_pool | jq -r '.id')
-        agent_pool_queue_name=$(echo $_default_pool | jq -r '.name')
+        _default_pool=$(echo "$_response" | jq '.value[] | select( .name | contains("Default") )')
+        agent_pool_queue_id=$(echo "$_default_pool" | jq -r '.id')
+        agent_pool_queue_name=$(echo "$_default_pool" | jq -r '.name')
     else
-        agent_pool_queue_id=$(echo $_is_ubuntu | jq -r '.id')
-        agent_pool_queue_name=$(echo $_is_ubuntu | jq -r '.name')
+        agent_pool_queue_id=$(echo "$_is_ubuntu" | jq -r '.id')
+        agent_pool_queue_name=$(echo "$_is_ubuntu" | jq -r '.name')
     fi
 
     echo "{\"agent_pool_queue_id\":\"$agent_pool_queue_id\",\"agent_pool_queue_name\":\"$agent_pool_queue_name\"}"
