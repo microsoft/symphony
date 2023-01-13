@@ -55,7 +55,6 @@ bicep_output_to_env() {
         fi
     fi
 
-    #shellcheck disable=SC2086
     if [ "$saveDeployOutput" == "true" ]; then
         if [ -n "${GITHUB_ACTION}" ]; then
             echo "bicepOutputJson=\"${bicep_output_json}\"" >>$GITHUB_OUTPUT
@@ -106,7 +105,6 @@ validate() {
     _information "deployment_id: ${deployment_id}"
     _information "location: ${location}"
     _information "layerName: ${layerName}"
-    #shellcheck disable=SC2128
     _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}" 
 
     target_scope=$(_target_scope "${bicep_file_path}")

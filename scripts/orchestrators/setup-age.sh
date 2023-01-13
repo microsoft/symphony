@@ -22,7 +22,7 @@ get_os_architecture
 find_version_from_git_tags VERSION 'https://github.com/FiloSottile/age'
 
 _information "Downloading Age..."
-#shellcheck disable=SC2154
+
 filename="age-v${VERSION}-linux-${os_architecture}.tar.gz"
 curl -sSL -o "${filename}" "https://github.com/FiloSottile/age/releases/download/v${VERSION}/${filename}"
 tar -xf "${filename}" age

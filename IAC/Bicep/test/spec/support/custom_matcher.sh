@@ -1,6 +1,6 @@
 # imported by "spec_helper.sh"
 # shellcheck shell=sh
-# shellcheck disable=SC3014,SC2317
+
 shellspec_syntax 'shellspec_matcher_include_name'
 shellspec_matcher_include_name() {
     shellspec_matcher__match() {

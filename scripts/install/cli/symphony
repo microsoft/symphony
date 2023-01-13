@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 REPO_DIR=$SCRIPT_DIR/../../../
@@ -153,8 +152,6 @@ parse_args() {
         esac
     done
 
-    # shellcheck disable=SC2206
-    # globbing is intentional here to create the array
     args=( $PARAMS )
 
     if [[ -z "$command" ]]; then

@@ -22,7 +22,7 @@ get_os_architecture
 find_version_from_git_tags VERSION 'https://github.com/terraform-linters/tflint'
 
 _information "Downloading Tflint v${VERSION} ..."
-#shellcheck disable=SC2154
+
 filename="tflint_linux_${os_architecture}.zip"
 curl -sSL -o "${filename}" "https://github.com/terraform-linters/tflint/releases/download/v${VERSION}/${filename}"
 unzip "${filename}"

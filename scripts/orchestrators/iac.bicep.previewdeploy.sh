@@ -58,7 +58,6 @@ for deployment in "${modules[@]}"; do
 
     load_dotenv
 
-    # shellcheck disable=SC2154 
     # resourceGroupName is a bicep output that is store in an environment variable.
     _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
    

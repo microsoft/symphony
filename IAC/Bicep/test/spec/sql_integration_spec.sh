@@ -1,4 +1,3 @@
-# shellcheck disable=all
 Describe 'SQL Integration Tests'
     setup(){
       export SQL_SERVER_RG_NAME="${sqlServerResourceGroupName}"

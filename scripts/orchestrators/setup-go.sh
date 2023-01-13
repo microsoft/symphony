@@ -50,7 +50,7 @@ mkdir -p "${GOROOT}" "${GOPATH}"
 if [ "${VERSION}" != "none" ] && ! type go >/dev/null 2>&1; then
     _information "Downloading Go ${VERSION}..."
     set +e
-    #shellcheck disable=SC2154
+
     curl -fsSL -o tmp/go.tar.gz "https://golang.org/dl/go${VERSION}.linux-${os_architecture}.tar.gz"
     exit_code=$?
     set -e

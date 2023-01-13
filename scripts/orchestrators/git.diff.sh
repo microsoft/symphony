@@ -19,7 +19,6 @@ git_diff() {
 
     cmd_options="--diff-filter=d --name-only ${base_branch}..${new_branch} "
 
-    # shellcheck disable=SC2236
     if [[ ! -z "$3" ]]; then
         cmd_options="${cmd_options} ${path}"
     fi
@@ -30,7 +29,6 @@ git_diff() {
     SAVEIFS=${IFS}
     IFS=$'\n'
 
-    #shellcheck disable=SC2206
     array=($res)
     IFS=${SAVEIFS}
 

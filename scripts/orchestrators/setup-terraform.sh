@@ -16,7 +16,7 @@ get_os_architecture
 find_version_from_git_tags VERSION 'https://github.com/hashicorp/terraform'
 
 _information "Downloading Terraform..."
-#shellcheck disable=SC2154
+
 filename="terraform_${VERSION}_linux_${os_architecture}.zip"
 curl -sSL -o "${filename}" "https://releases.hashicorp.com/terraform/${VERSION}/${filename}"
 unzip "${filename}"

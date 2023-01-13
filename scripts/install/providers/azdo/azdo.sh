@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#shellcheck disable=SC1091
+
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$SCRIPT_DIR"/../../../utilities/shell_logger.sh
 source "$SCRIPT_DIR"/../../../utilities/shell_inputs.sh
@@ -402,15 +402,13 @@ function _get_pipeline_var_defintion() {
     local _var_value=${2}
     local _allowOverride=${3}
     local _template_file="$SCRIPT_DIR/templates/pipeline-variable.json"
-    #shellcheck disable=SC2026
+
     local _payload=$(< "${_template_file}" sed 's~__PIPELINE_VAR_NAME__~'"${_var_key}"'~' |
             sed 's~__PIPELINE_VAR_VALUE__~'"${_var_value}"'~' |
             sed 's~__PIPELINE_VAR_IS_SECRET__~'false'~' |
             sed 's~__PIPELINE_ALLOW_OVERRIDE__~'"${_allowOverride}"'~'
     )
-    # shellcheck disable=SC2086
-    # globbing causes an error for this specific instance
-    
+
     echo $_payload
 }
 function _get_agent_pool_queue() {

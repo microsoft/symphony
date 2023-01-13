@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2229
 # shell helpers to read and validate input
 
 function _prompt_input {
@@ -14,7 +13,7 @@ function _prompt_input {
     else
       echo -n "> $input_description : "
     fi
-    #shellcheck disable=SC2162,SC2086
+
     read $input_name
 }
 
@@ -36,7 +35,6 @@ function _validate_inputs {
 
 
 function usage() {
-  # shellcheck disable=SC2154
   # me is defined in the entry point script that sources this file.
 
     _helpText=" Usage: $me <command> <sub command> <parameters>

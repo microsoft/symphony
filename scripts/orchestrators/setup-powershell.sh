@@ -23,7 +23,7 @@ get_os_architecture "x64" "arm64" "arm32"
 find_version_from_git_tags VERSION 'https://github.com/PowerShell/PowerShell'
 
 _information "Downloading PowerShell..."
-#shellcheck disable=SC2154
+
 filename="powershell-${VERSION}-linux-${os_architecture}.tar.gz"
 target_path="$(pwd)/powershell/$(echo ${VERSION} | grep -oE '[^\.]+' | head -n 1)"
 mkdir -p tmp/pwsh "${target_path}"

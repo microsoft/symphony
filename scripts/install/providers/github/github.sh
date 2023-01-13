@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091
+
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$SCRIPT_DIR"/../../../utilities/shell_logger.sh
 source "$SCRIPT_DIR"/../../../utilities/shell_inputs.sh
@@ -11,7 +11,6 @@ source "$SCRIPT_DIR"/../../../utilities/http.sh
 #
 ########################################################################################
 
-# shellcheck disable=SC2091
 function load_inputs {
     $(gh version>/dev/null 2>&1)
     code=$?
