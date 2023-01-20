@@ -152,7 +152,7 @@ create_cr() {
     APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
 
     az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
-
+    sleep 60
     git clone "${APP_REPO}" "_app"
     pushd "_app" || exit
         git checkout "${APP_COMMIT}"
