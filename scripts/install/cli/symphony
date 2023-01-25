@@ -3,6 +3,7 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 REPO_DIR=$SCRIPT_DIR/../../../
 
+
 source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
 source "$SCRIPT_DIR/../../utilities/http.sh"
@@ -19,6 +20,7 @@ declare sub_command=""
 declare default_location="westus"
 declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
+declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
 
 main() {
     show_banner

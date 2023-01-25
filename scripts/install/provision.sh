@@ -3,10 +3,11 @@
 mkdir -p "$REPO_DIR/.symphony/logs"
 mkdir -p "$REPO_DIR/.symphony/config"
 
+
 get_prefix(){
      NAME=$(< /dev/urandom env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n 1)
      
-    if [[ ! -f "$REPO_DIR/.symphony/config/.prefix" ]];then
+    if [[ ! -f "$SYMPHONY_ENV_FILE_PATH" ]];then
         echo "$NAME" >  "$REPO_DIR/.symphony/config/.prefix"
     fi
     
@@ -82,60 +83,102 @@ deploy_dependencies() {
     SP_READER_NAME="sp-reader-${prefix}-${suffix}"
     SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
 
+    _information "The following resources will be Created :"
+    _information ""
+    _information "                     Resource Group:  $RG_NAME"
+    _information "                          Key Vault:  $KV_NAME"
+    _information "                 Container Registry:  $CR_NAME"
+    _information "    Service Principal Name (Reader):  $SP_READER_NAME"
+    _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+    echo ""
 
-    # Create RG
-    echo "Creating RG: ${RG_NAME}"
-    create_rg
+    local selection=""
+    _prompt_input "Create Resources (yes/no)?" selection "true"
+    echo ""
 
-    # Create CR
-    echo "Creating CR: ${CR_NAME}"
-    create_cr
+    if [[ "$selection" == "yes" ]]; then
+        _information "Starting creation of resources"
+        
+         # Create RG
+        echo "Creating RG: ${RG_NAME}"
+        create_rg
 
-    # Create Owner SP and assing to subscription level
-    echo "Creating Owner SP: ${SP_OWNER_NAME}"
-    sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
-    sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
+        # Create CR
+        echo "Creating CR: ${CR_NAME}"
+        create_cr
 
-    # Create KV
-    echo "Creating KV: ${KV_NAME}"
-    kv_id=$(create_kv | jq -r .id)
+        # Create KV
+        echo "Creating KV: ${KV_NAME}"
+        kv_id=$(create_kv | jq -r .id)
 
-    # Save Owner SP details to KV
-    echo "Saving Owner SP (${SP_OWNER_NAME}) clientId to KV"
-    clientId=$(echo "${sp_owner_obj}" | jq -r .appId)
-    set_kv_secret 'clientId' "${clientId}" "${KV_NAME}"
+        local create_owner_sp=""
+        _prompt_input "Create Owner SP (yes/no)?" create_owner_sp "true"
+        echo ""
 
-    echo "Saving Owner SP (${SP_OWNER_NAME}) clientSecret to KV"
-    clientSecret=$(echo "${sp_owner_obj}" | jq -r .password)
-    set_kv_secret 'clientSecret' "${clientSecret}" "${KV_NAME}"
+        local sp_owner_client_id=""
+        local sp_owner_client_secret=""
+        local sp_owner_tenant_id=""
+        local sp_owner_sub_id=""
+        local 
+        if [[ "$create_owner_sp" == "yes" ]]; then
+       
+            # Create Owner SP and assing to subscription level
+            echo "Creating Owner SP: ${SP_OWNER_NAME}"
+            sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
+            sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
 
-    echo "Saving Owner SP (${SP_OWNER_NAME}) subscriptionId to KV"
-    set_kv_secret 'subscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
+            # Save Owner SP details to KV
+            sp_owner_client_id=$(echo "${sp_owner_obj}" | jq -r .appId)     
+            sp_owner_client_secret=$(echo "${sp_owner_obj}" | jq -r .password)
+            sp_owner_sub_id=${SP_SUBSCRIPTION_ID}
+            sp_owner_tenant_id=$(echo "${sp_owner_obj}" | jq -r .tenant)       
+        else
+            echo "Use Existing Service Principal for Owner"            
+            _prompt_input "Enter Owner Service Principal Subscription Id" sp_owner_sub_id
+            _prompt_input "Enter Owner Service Principal tenant Id" sp_owner_tenant_id
+            _prompt_input "Enter Owner Service Principal Id" sp_owner_client_id
+            _prompt_input "Enter Owner Service Principal secret" sp_owner_client_secret
+        fi
 
-    echo "Saving Owner SP (${SP_OWNER_NAME}) tenantId to KV"
-    tenantId=$(echo "${sp_owner_obj}" | jq -r .tenant)
-    set_kv_secret 'tenantId' "${tenantId}" "${KV_NAME}"
+        # Save Owner SP details to KV
+        echo "Saving Owner SP (${SP_OWNER_NAME}) clientId to KV"
+        set_kv_secret 'clientId' "${sp_owner_client_id}" "${KV_NAME}"
 
-    # Create Reader SP and assing to KV only
-    echo "Creating Reader SP: ${SP_READER_NAME}"
-    sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
-    sp_reader_appid=$(echo "$sp_reader_obj" | jq -r '.appId')
+        echo "Saving Owner SP (${SP_OWNER_NAME}) clientSecret to KV"
+        set_kv_secret 'clientSecret' "${sp_owner_client_secret}" "${KV_NAME}"
 
-    # Save Reader SP details to KV
-    echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
-    clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
-    set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
+        echo "Saving Owner SP (${SP_OWNER_NAME}) subscriptionId to KV"
+        set_kv_secret 'subscriptionId' "${sp_owner_sub_id}" "${KV_NAME}"
 
-    echo "Saving Reader SP (${SP_READER_NAME}) readerClientSecret to KV"
-    clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
-    set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
+        echo "Saving Owner SP (${SP_OWNER_NAME}) tenantId to KV"
+        set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"       
 
-    echo "Saving Reader SP (${SP_READER_NAME}) readerSubscriptionId to KV"
-    set_kv_secret 'readerSubscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
+        # Create Reader SP and assing to KV only
+        echo "Creating Reader SP: ${SP_READER_NAME}"
+        sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
+        sp_reader_appid=$(echo "$sp_reader_obj" | jq -r '.appId')
 
-    echo "Saving Reader SP (${SP_READER_NAME}) readerTenantId to KV"
-    tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
-    set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
+        # Save Reader SP details to KV
+        echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
+        clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
+        set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
+
+        echo "Saving Reader SP (${SP_READER_NAME}) readerClientSecret to KV"
+        clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
+        set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
+
+        echo "Saving Reader SP (${SP_READER_NAME}) readerSubscriptionId to KV"
+        set_kv_secret 'readerSubscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
+
+        echo "Saving Reader SP (${SP_READER_NAME}) readerTenantId to KV"
+        tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
+        set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
+
+        #Store values in Symphonyenv.json
+
+    else
+        _information "Provision Aborted!"
+    fi
 
 }
 
