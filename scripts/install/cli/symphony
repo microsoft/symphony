@@ -7,6 +7,7 @@ REPO_DIR=$SCRIPT_DIR/../../../
 source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
 source "$SCRIPT_DIR/../../utilities/http.sh"
+source "$SCRIPT_DIR/../../utilities/json.sh" 
 source "$SCRIPT_DIR/../../utilities/service_principal.sh"
 source "$SCRIPT_DIR/../../install/banner.sh"
 source "$SCRIPT_DIR/../../install/contents.sh"

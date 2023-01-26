@@ -5,22 +5,20 @@ mkdir -p "$REPO_DIR/.symphony/config"
 
 
 get_prefix(){
-     NAME=$(< /dev/urandom env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n 1)
-     
-    if [[ ! -f "$SYMPHONY_ENV_FILE_PATH" ]];then
-        echo "$NAME" >  "$REPO_DIR/.symphony/config/.prefix"
+    prefix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "prefix")
+    if [ "$prefix" == "null" ]; then
+        prefix=$(< /dev/urandom env LC_ALL=C tr -dc 'a-z' | fold -w 8 | head -n 1)
+        set_json_value  "$SYMPHONY_ENV_FILE_PATH" "prefix" "$prefix"
     fi
-    
-    prefix=$(cat "$REPO_DIR/.symphony/config/.prefix")
     echo "$prefix"
 }
 
 get_suffix(){
-    if [[ ! -f $REPO_DIR/.symphony/config/.suffix ]];then
-        suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
-        echo "$suffix" >  "$REPO_DIR/.symphony/config/.suffix"
+    suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
+    if [ "$suffix" == "null" ]; then
+      suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
+      set_json_value  "$SYMPHONY_ENV_FILE_PATH" "suffix" "$suffix"
     fi
-    suffix=$(cat "$REPO_DIR/.symphony/config/.suffix")
     echo "$suffix"
 }
 
@@ -56,7 +54,10 @@ remove_dependencies() {
         _information "Starting removal of resources"
         
         _information "Removing Resource Group (${RG_NAME}), Azure Container Registry ($CR_NAME) and Keyvault ($KV_NAME)"
-        az group delete --resource-group "${RG_NAME}" --yes --no-wait
+        az group delete --resource-group "${RG_NAME}" --yes 
+
+        _information "Purging Key Vault (${KV_NAME})"
+        az keyvault purge -n "$KV_NAME"
 
         _information "Removing Service Principal (Reader) $SP_READER_APPID"
         az ad sp delete --id "$SP_READER_APPID"
@@ -65,7 +66,6 @@ remove_dependencies() {
         az ad sp delete --id "$SP_OWNER_APPID"
 
         _information "Resources Removed"
-        _information "Note the keyvault $KV_NAME has been soft deleted. In order to reprovision, either purge or restore the keyvault."
     else
         _danger "Destroy Aborted!"
     fi
@@ -74,7 +74,7 @@ remove_dependencies() {
 # provision entrypoint
 deploy_dependencies() {
     prefix=$(get_prefix)
-    LOCATION="$2"
+    LOCATION="$1"
     suffix=$(get_suffix)
 
     RG_NAME="rg-${prefix}-${suffix}"
@@ -119,7 +119,7 @@ deploy_dependencies() {
         local sp_owner_client_secret=""
         local sp_owner_tenant_id=""
         local sp_owner_sub_id=""
-        local 
+ 
         if [[ "$create_owner_sp" == "yes" ]]; then
        
             # Create Owner SP and assing to subscription level
@@ -153,7 +153,7 @@ deploy_dependencies() {
         echo "Saving Owner SP (${SP_OWNER_NAME}) tenantId to KV"
         set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"       
 
-        # Create Reader SP and assing to KV only
+        # Create Reader SP and assign to KV only
         echo "Creating Reader SP: ${SP_READER_NAME}"
         sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
         sp_reader_appid=$(echo "$sp_reader_obj" | jq -r '.appId')
@@ -175,7 +175,14 @@ deploy_dependencies() {
         set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
 
         #Store values in Symphonyenv.json
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
 
+        _success "Symphony resources have been provisioned! Details on resources are in $SYMPHONY_ENV_FILE_PATH "
     else
         _information "Provision Aborted!"
     fi
@@ -195,7 +202,10 @@ create_cr() {
     APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
 
     az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
-    sleep 60
+
+    _information "Waiting for ACR creation before pushing images"
+    sleep 60   
+    
     git clone "${APP_REPO}" "_app"
     pushd "_app" || exit
         git checkout "${APP_COMMIT}"
