@@ -56,8 +56,8 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/scripts"
           targetType: "filePath"
-          filePath: "pre.sh"
-              
+          filePath: "IAC/Bicep/scripts/pre.sh"
+
       - task: Bash@3
         displayName: "Run E2E tests"
         env:
