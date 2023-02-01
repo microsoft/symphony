@@ -48,7 +48,16 @@ jobs:
         inputs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           key: '"$(Build.BuildId)"'
-          
+
+      - task: Bash@3
+        displayName: "Run global pre-deploy script"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/scripts"
+          targetType: "filePath"
+          filePath: "pre.sh"
+              
       - task: Bash@3
         displayName: "Run E2E tests"
         env:
