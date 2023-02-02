@@ -7,7 +7,7 @@ if [ -n "${GITHUB_ACTION}" ]; then
     echo "sqlServerAdministratorLogin=${sqlServerAdministratorLogin}" >> "$GITHUB_ENV"
     echo "sqlServerAdministratorPassword=${sqlServerAdministratorPassword}" >> "$GITHUB_ENV"
 elif [ -n "${SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}" ]; then
-    echo " TMP : SET sql ueser name and password"
-    echo "##vso[task.setvariable variable=sqlServerAdministratorLogin;isOutput=true;issecret=true]${sqlServerAdministratorLogin}"
-    echo "##vso[task.setvariable variable=sqlServerAdministratorPassword;isOutput=true;issecret=true]${sqlServerAdministratorPassword}"
+    echo " TMP : SET sql ueser name and password : ${sqlServerAdministratorLogin} - ${sqlServerAdministratorPassword}"
+    echo "##vso[task.setvariable variable=sqlServerAdministratorLogin;isOutput=true;issecret=false]${sqlServerAdministratorLogin}"
+    echo "##vso[task.setvariable variable=sqlServerAdministratorPassword;isOutput=true;issecret=false]${sqlServerAdministratorPassword}"
 fi
