@@ -56,7 +56,9 @@ for deployment in "${modules[@]}"; do
             params_path+=("${param_path_tmp}")
         fi
     done
-
+    _information " TMP----------------"
+    env
+    _information " TMP----------------"
     load_dotenv
 
     # resourceGroupName is a bicep output that is store in an environment variable.
