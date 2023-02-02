@@ -14,11 +14,11 @@ variables:
   - name: agentImage
     value: "ubuntu-latest"
 
-  - name: environmentName
-    value: "dev"
+  # - name: environmentName
+  #   value: "dev"
 
-  - name: locationName
-    value: "westus"
+  # - name: locationName
+  #   value: "westus"
 
   - name: keyVaultArmSvcConnectionName
     value: "Symphony-KV"
