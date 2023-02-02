@@ -7,6 +7,9 @@
     },
     "location": {
       "value": "westus"
+    },
+    "layerName": {
+      "value": "$layerName"
     }
   }
 }
