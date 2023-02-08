@@ -22,9 +22,27 @@ get_suffix(){
     echo "$suffix"
 }
 
+get_suffix() {
+    suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
+    if [ "$suffix" == "null" ]; then
+      suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
+      set_json_value  "$SYMPHONY_ENV_FILE_PATH" "suffix" "$suffix"
+    fi
+    echo "$suffix"
+}
+
+is_terraform() {
+    is_terraform=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account")
+    if [ "$is_terraform" == "null" ]; then
+      is_terraform="false"
+    fi
+    echo "$is_terraform"
+}
+
 remove_dependencies() {
     prefix=$(get_prefix)
     suffix=$(get_suffix)
+    is_terraform=$(is_terraform)
 
     RG_NAME="rg-${prefix}-${suffix}"
     CR_NAME="cr${prefix}${suffix}"
@@ -35,6 +53,11 @@ remove_dependencies() {
     SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
 
+    #Terraform Symphony Resources
+    SA_STATE_NAME="sastate${prefix}${suffix}"
+    SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
+    SA_CONTAINER_NAME="tfstate"
+
     _danger "The following resources will be permanently deleted:"
     echo ""
     _danger "                     Resource Group:  $RG_NAME"
@@ -44,6 +67,10 @@ remove_dependencies() {
     _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
     _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
+    if [[ "$is_terraform" != "false" ]]; then
+        _information "             Storage account(State):  $SA_STATE_NAME"
+        _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
+    fi
     echo ""
 
     local selection=""
@@ -76,12 +103,18 @@ deploy_dependencies() {
     prefix=$(get_prefix)
     LOCATION="$1"
     suffix=$(get_suffix)
+    IS_Terraform=$2
 
     RG_NAME="rg-${prefix}-${suffix}"
     CR_NAME="cr${prefix}${suffix}"
     KV_NAME="kv-${prefix}-${suffix}"
     SP_READER_NAME="sp-reader-${prefix}-${suffix}"
     SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+
+    #Terraform Symphony Resources
+    SA_STATE_NAME="sastate${prefix}${suffix}"
+    SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
+    SA_CONTAINER_NAME="tfstate"
 
     _information "The following resources will be Created :"
     _information ""
@@ -90,6 +123,10 @@ deploy_dependencies() {
     _information "                 Container Registry:  $CR_NAME"
     _information "    Service Principal Name (Reader):  $SP_READER_NAME"
     _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+    if [[ IS_Terraform ]]; then
+        _information "             Storage account(State):  $SA_STATE_NAME"
+        _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
+    fi
     echo ""
 
     local selection=""
@@ -110,6 +147,36 @@ deploy_dependencies() {
         # Create KV
         echo "Creating KV: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
+
+        if [[ IS_Terraform ]]; then
+            # Create State SA
+            echo "Creating SA: ${SA_STATE_NAME}"
+            create_sa "${SA_STATE_NAME}" "Standard_LRS" "SystemAssigned"
+
+            # Create State SA container
+            echo "Creating SA Container: ${SA_CONTAINER_NAME} for SA:${SA_STATE_NAME}"
+            create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_NAME}"
+
+            # Create backup State SA
+            echo "Creating SA: ${SA_STATE_BACKUP_NAME}"
+            create_sa "${SA_STATE_BACKUP_NAME}" "Standard_LRS" "SystemAssigned"
+            
+            # Create Backup State SA container
+            echo "Creating SA Container: ${SA_CONTAINER_NAME} for SA:${SA_STATE_BACKUP_NAME}"
+            create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
+            
+            # Save State SA details to KV
+            echo "Saving State SA (${SA_STATE_NAME}) stateStorageAccount to KV"
+            set_kv_secret 'stateStorageAccount' "${SA_STATE_NAME}" "${KV_NAME}"
+
+            # Save State Backup SA details to KV
+            echo "Saving State Backup SA (${SA_STATE_BACKUP_NAME}) stateStorageAccountBackup to KV"
+            set_kv_secret 'stateStorageAccountBackup' "${SA_STATE_BACKUP_NAME}" "${KV_NAME}"
+
+            # Save Container name to KV
+            echo "Saving SA State Container(${SA_CONTAINER_NAME}) stateContainer to KV"
+            set_kv_secret 'stateContainer' "${SA_CONTAINER_NAME}" "${KV_NAME}"
+        fi
 
         local create_owner_sp=""
         _prompt_input "Create Owner SP (yes/no)?" create_owner_sp "true"
@@ -174,13 +241,17 @@ deploy_dependencies() {
         tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
         set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
 
-        #Store values in Symphonyenv.json
+        # Store values in Symphonyenv.json
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
-        set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
+        if [[ IS_Terraform ]]; then
+            set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_STATE_NAME"
+            set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"
+            set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container" "$SA_CONTAINER_NAME"
+        fi
 
         _success "Symphony resources have been provisioned! Details on resources are in $SYMPHONY_ENV_FILE_PATH "
     else
@@ -228,6 +299,21 @@ create_sp() {
     sp_object=$(az ad sp create-for-rbac --display-name "${_display_name}" --role "${_role}" --scopes "${_scope}")
 
     echo "${sp_object}"
+}
+
+create_sa() {
+    local _display_name="${1}"
+    local _sku="${2}"
+    local _identity="${3}"
+    sleep 60
+    az storage account create --name "${_display_name}" --resource-group "${RG_NAME}" --location "${LOCATION}" --sku "${_sku}" --identity-type "${_identity}"  
+}
+
+create_sa_container() {
+    local _display_name="${1}"
+    local _account_name="${2}"
+
+    az storage container create --name "${_display_name}" --account-name "${_account_name}"
 }
 
 set_kv_secret() {

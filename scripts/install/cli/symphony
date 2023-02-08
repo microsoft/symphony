@@ -30,7 +30,7 @@ main() {
 }
 
 verify_az_logged_in() {
-  az account show
+  SP_SUBSCRIPTION_ID=$(az account show | jq -r '.id')
   code=$?
   if [[ "$code" -gt 0 ]]; then
     exit $code
@@ -43,9 +43,18 @@ provision() {
 
     _information "Deploying Symphony Dependencies"
     source scripts/install/provision.sh
-    loadServicePrincipalCredentials
-    printEnvironment
-    deploy_dependencies "$default_location"
+    _prompt_input "Enter Location to deploy resources to" default_location
+    echo ""
+
+    local is_terraform=""
+    _prompt_input "Provision for Terraform  (yes/no)?" is_terraform "true"
+    echo ""
+ 
+    if [[ "$is_terraform" == "yes" ]]; then
+        deploy_dependencies "$default_location" true
+    else
+        deploy_dependencies "$default_location" false
+    fi
 }
 
 # Destroy resources and service principals needed by Symphony. Note this is a destructive operation
