@@ -68,8 +68,8 @@ remove_dependencies() {
     _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
     if [[ "$is_terraform" != "false" ]]; then
-        _information "             Storage account(State):  $SA_STATE_NAME"
-        _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
+        _danger "             Storage account(State):  $SA_STATE_NAME"
+        _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
     fi
     echo ""
 

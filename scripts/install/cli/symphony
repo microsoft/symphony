@@ -63,8 +63,7 @@ destroy(){
 
     _information "Removing Symphony Dependencies"
     source scripts/install/provision.sh
-    loadServicePrincipalCredentials
-    printEnvironment
+
     remove_dependencies
 }
 
