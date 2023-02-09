@@ -11,4 +11,5 @@ pre_deploy() {
 # post_deploy method is called after the deployment
 post_deploy() {
   # placeholder for post deploy logic
+  return 0
 }
