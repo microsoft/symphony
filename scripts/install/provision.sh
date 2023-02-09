@@ -223,12 +223,14 @@ deploy_dependencies() {
         # Create Reader SP and assign to KV only
         echo "Creating Reader SP: ${SP_READER_NAME}"
         sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
-        sp_reader_appid=$(echo "$sp_reader_obj" | jq -r '.appId')
 
         # Save Reader SP details to KV
         echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
         clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
         set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
+
+        echo "Assign access policies for Reader SP (${SP_READER_NAME}) to KV ${KV_NAME}"
+        set_kv_secret_policies "${KV_NAME}" "${clientId}"
 
         echo "Saving Reader SP (${SP_READER_NAME}) readerClientSecret to KV"
         clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
@@ -322,4 +324,11 @@ set_kv_secret() {
     local _vault_name="${3}"
 
     az keyvault secret set --name "${_name}" --value "${_value}" --vault-name "${_vault_name}"
+}
+
+set_kv_secret_policies() {
+    local _vault_name="${1}"
+    local _sp_app_id="${2}"
+    
+    az keyvault set-policy --name "${_vault_name}" --secret-permissions get list backup restore --spn "${_sp_app_id}"
 }
