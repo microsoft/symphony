@@ -5,6 +5,8 @@ set -eu
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$SCRIPT_DIR"/_helpers.sh
 
+declare EXCLUDED_FOLDERS=""
+
 usage() {
     _information "Usage: IAC Bicep commands helper"
     exit 1
