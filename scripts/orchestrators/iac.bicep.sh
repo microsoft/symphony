@@ -184,10 +184,10 @@ deploy() {
 
     if [ -f "${layer_folder_path}/_events.sh" ]; then
       source "${layer_folder_path}/_events.sh"
+    fi
 
-      if [ "$(type -t pre_deploy)" == "function" ]; then
+    if [ "$(type -t pre_deploy)" == "function" ]; then
         pre_deploy
-      fi
     fi
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
@@ -204,13 +204,9 @@ deploy() {
     exit_code=$?
 
     if [ ${exit_code} -eq 0 ]; then
-      if [ -f "${layer_folder_path}/_events.sh" ]; then
-        source "${layer_folder_path}/_events.sh"
-
         if [ "$(type -t post_deploy)" == "function" ]; then
-          post_deploy
+            post_deploy
         fi
-      fi
     fi
 
     unset -f pre_deploy

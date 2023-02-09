@@ -55,10 +55,11 @@ for deployment in "${modules[@]}"; do
             params_path+=("${param_path_tmp}")
         fi
     done
-
+    
+    declare resourceGroupName
     load_dotenv
 
-    # resourceGroupName is a bicep output that is store in an environment variable.
+    # resourceGroupName is a bicep output that is stored in an environment variable.
     _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
    
     output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")

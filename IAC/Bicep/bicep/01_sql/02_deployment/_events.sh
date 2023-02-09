@@ -6,10 +6,11 @@ pre_deploy() {
 
   export sqlServerAdministratorLogin="testadmin"
   export sqlServerAdministratorPassword="Test#@rdP@ssw0rd123!"
+  return $?
 }
 
 # post_deploy method is called after the deployment
 post_deploy() {
   # placeholder for post deploy logic
-  return 0
+  return $?
 }
