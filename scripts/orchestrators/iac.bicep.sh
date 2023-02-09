@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -e
 
 # Includes
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)

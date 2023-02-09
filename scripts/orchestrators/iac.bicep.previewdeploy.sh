@@ -56,7 +56,6 @@ for deployment in "${modules[@]}"; do
         fi
     done
 
-    declare resourceGroupName=""
     load_dotenv
 
     # resourceGroupName is a bicep output that is stored in an environment variable.

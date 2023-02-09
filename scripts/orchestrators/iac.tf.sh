@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -e
 
 # Includes
 source _helpers.sh
