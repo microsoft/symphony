@@ -64,15 +64,6 @@ jobs:
           filePath: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/iac.bicep.lint.sh"
 
       - task: Bash@3
-        displayName: "Run global pre-deploy script"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/IAC/Bicep/scripts"
-          targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/IAC/Bicep/scripts/pre.sh"
-
-      - task: Bash@3
         displayName: "Run bicep validate"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
