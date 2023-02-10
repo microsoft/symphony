@@ -15,10 +15,6 @@ on:
         description: "Name of the Environment"
         required: true
         default: "dev"
-      locationName:
-        description: "Name of the deployment Location"
-        required: true
-        default: "westus"
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
@@ -29,7 +25,6 @@ jobs:
     uses: ./.github/workflows/template.bicep.destroy.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
-      locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
     secrets:

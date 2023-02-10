@@ -6,9 +6,6 @@ on:
       environmentName:
         type: string
         required: true
-      locationName:
-        type: string
-        required: true
       keyVaultName:
         type: string
         required: true
@@ -57,7 +54,6 @@ jobs:
       - name: Run Bicep Destroy
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
-          LOCATION_NAME: ${{ github.event.inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
