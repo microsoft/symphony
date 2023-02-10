@@ -3,7 +3,7 @@
 # pre_deploy method is called before the deployment
 pre_deploy() {
   # placeholder for pre deploy logic
-
+  echo "----- Running Pre Deploy Event -----------"
   export sqlServerAdministratorLogin="testadmin"
   export sqlServerAdministratorPassword="Test#@rdP@ssw0rd123!"
   return $?

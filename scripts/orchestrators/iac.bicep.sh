@@ -182,14 +182,6 @@ deploy() {
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
-    if [ -f "${layer_folder_path}/_events.sh" ]; then
-      source "${layer_folder_path}/_events.sh"
-    fi
-
-    if [ "$(type -t pre_deploy)" == "function" ]; then
-        pre_deploy
-    fi
-
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg create --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"
     elif [[ "${target_scope}" == "subscription" ]]; then
@@ -202,15 +194,6 @@ deploy() {
 
     output=$(eval "${command}")
     exit_code=$?
-
-    if [ ${exit_code} -eq 0 ]; then
-        if [ "$(type -t post_deploy)" == "function" ]; then
-            post_deploy
-        fi
-    fi
-
-    unset -f pre_deploy
-    unset -f post_deploy
 
     echo "${output}"
 

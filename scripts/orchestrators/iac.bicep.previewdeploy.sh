@@ -48,6 +48,15 @@ for deployment in "${modules[@]}"; do
     fi
     IFS=${SAVEIFS}
 
+    layer_folder_path=$(dirname "${deployment}")
+    if [ -f "${layer_folder_path}/_events.sh" ]; then
+      source "${layer_folder_path}/_events.sh"
+    fi
+
+    if [ "$(type -t pre_deploy)" == "function" ]; then
+        pre_deploy
+    fi
+    
     params_path=()
     for param_path_tmp in "${params[@]}"; do
         if [[ -f "${param_path_tmp}" ]]; then
@@ -69,6 +78,12 @@ for deployment in "${modules[@]}"; do
         _error "Bicep preview failed - returned code ${exit_code}"
         exit ${exit_code}
     fi
+
+    if [ "$(type -t post_deploy)" == "function" ]; then
+        post_deploy
+    fi
+    unset -f pre_deploy
+    unset -f post_deploy
 
     _information "Executing Bicep deploy: 'deploy \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
 
