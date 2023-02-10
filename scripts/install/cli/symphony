@@ -22,6 +22,7 @@ declare default_location="westus"
 declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
+declare SP_CLOUD_ENVIRONMENT="AzureCloud"
 
 main() {
     show_banner
@@ -93,6 +94,7 @@ configure_orchestrator() {
 
     pushd "$TARGET_ROOT" || exit
         rm -rf .git
+        #Load the reader sp credentails
         loadServicePrincipalCredentials
         printEnvironment
         load_inputs
@@ -155,6 +157,11 @@ parse_args() {
                 shift 1
                 export command="help"
                 usage
+                ;;
+            -c|--cloud)
+                shift 1
+                export SP_CLOUD_ENVIRONMENT="${1}"
+                shift 1
                 ;;
             *) # preserve positional arguments
                 PARAMS+="${1} "

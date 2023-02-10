@@ -23,7 +23,7 @@
             "pollingInterval": 0,
             "pathFilters": [],
             "branchFilters": [
-                "+refs/heads/master"
+                "+refs/heads/main"
             ],
             "defaultSettingsSourceType": 2,
             "isSettingsSourceOptionSupported": true,
