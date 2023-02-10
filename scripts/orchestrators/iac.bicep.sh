@@ -5,8 +5,6 @@ set -e
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$SCRIPT_DIR"/_helpers.sh
 
-declare EXCLUDED_FOLDERS=""
-
 usage() {
     _information "Usage: IAC Bicep commands helper"
     exit 1
@@ -177,7 +175,6 @@ deploy() {
     local deployment_id=$3
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
-    local layer_folder_path=$(dirname "${bicep_file_path}")
 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)

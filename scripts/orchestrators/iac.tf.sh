@@ -86,34 +86,12 @@ preview() {
 
 deploy() {
     plan_file_name=$1
-    local layer_folder_path=$(dirname "${plan_file_name}")
-
-    if [ -f "${layer_folder_path}/_events.sh" ]; then
-      source "${layer_folder_path}/_events.sh"
-
-      if [ "$(type -t pre_deploy)" == "function" ]; then
-        pre_deploy
-      fi
-    fi
 
     _information "Execute terraform apply"
     echo "terraform apply -input=false -auto-approve ${plan_file_name}"
     terraform apply -input=false -auto-approve ${plan_file_name}
 
     exit_code=$?
-
-    if [ ${exit_code} -eq 0 ]; then
-      if [ -f "${layer_folder_path}/_events.sh" ]; then
-        source "${layer_folder_path}/_events.sh"
-
-        if [ "$(type -t post_deploy)" == "function" ]; then
-          post_deploy
-        fi
-      fi
-    fi
-
-    unset -f pre_deploy
-    unset -f post_deploy
 
     return $exit_code
 }

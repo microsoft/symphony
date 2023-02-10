@@ -56,7 +56,6 @@ for deployment in "${modules[@]}"; do
     if [ "$(type -t pre_deploy)" == "function" ]; then
         pre_deploy
     fi
-    echo "------------- sqlServerAdministratorLogin:$sqlServerAdministratorLogin"
 
     params_path=()
     for param_path_tmp in "${params[@]}"; do
