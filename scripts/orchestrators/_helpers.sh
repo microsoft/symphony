@@ -29,7 +29,7 @@ azlogin() {
     elif [ "${cloud_name}" == 'AzureUSGovernment' ]; then
         export ARM_ENVIRONMENT="usgovernment"
     elif [ "${cloud_name}" == 'AzureChinaCloud' ]; then
-        export ARM_ENVIRONMENT="usgovernment"
+        export ARM_ENVIRONMENT="china"
     elif [ "${cloud_name}" == 'AzureGermanCloud' ]; then
         export ARM_ENVIRONMENT="german"
     else
