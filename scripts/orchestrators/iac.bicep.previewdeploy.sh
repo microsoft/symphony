@@ -65,9 +65,6 @@ for deployment in "${modules[@]}"; do
             params_path+=("${param_path_tmp}")
         fi
     done
-    echo "------------------------ sqlServerAdministratorLogin:$sqlServerAdministratorLogin"
-    cat "${param_path_tmp}"
-    echo "---------------------------------------------------------------------------------------"
 
     load_dotenv
 
