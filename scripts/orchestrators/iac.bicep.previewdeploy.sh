@@ -59,15 +59,11 @@ for deployment in "${modules[@]}"; do
 
     params_path=()
     for param_path_tmp in "${params[@]}"; do
-        _information "param_path_tmp ${param_path_tmp}"
         if [[ -f "${param_path_tmp}" ]]; then
             parse_bicep_parameters "${param_path_tmp}"
             params_path+=("${param_path_tmp}")
         fi
     done
-    _information " TMP----------------"
-    env
-    _information " TMP----------------"
     load_dotenv
 
     # resourceGroupName is a bicep output that is stored in an environment variable.

@@ -13,7 +13,7 @@ variables:
 
   - name: agentImage
     value: "ubuntu-latest"
-
+  # Commented out to use the values from the Azdo pipeline variables
   # - name: environmentName
   #   value: "dev"
 
