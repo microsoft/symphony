@@ -46,7 +46,7 @@ jobs:
           targetType: "inline"
           script: |
             source ./scanners.sh
-            run_gitleaks './../../IAC/Bicep' 'sarif' 'info' 'true' ''
+            run_gitleaks './../../' 'sarif' 'info' 'true' 'true'
 
       - task: PublishPipelineArtifact@1
         inputs:

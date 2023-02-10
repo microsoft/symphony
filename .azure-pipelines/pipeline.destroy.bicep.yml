@@ -38,6 +38,5 @@ jobs:
   - template: ./template.bicep.destroy.yml
     parameters:
       environmentName: $(environmentName)
-      locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)

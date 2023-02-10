@@ -19,6 +19,16 @@ for deployment in "${array[@]}"; do
         # Preview deployment
         envfile=${deployment/'./'/''}
         envfile=${envfile/'/'/'_'}
+
+        layer_folder_path=$(dirname "${deployment}")
+        if [ -f "${layer_folder_path}/_events.sh" ]; then
+        source "${layer_folder_path}/_events.sh"
+        fi
+
+        if [ "$(type -t pre_deploy)" == "function" ]; then
+            pre_deploy
+        fi
+
         preview "terraform.tfplan" "${WORKSPACE_PATH}/env/terraform/${ENVIRONMENT_NAME}/${envfile}.tfvars.json"
         code=$?
 
@@ -36,6 +46,13 @@ for deployment in "${array[@]}"; do
             echo "terraform apply - returned code ${code}"
             exit $code
         fi
+
+        if [ "$(type -t post_deploy)" == "function" ]; then
+            post_deploy
+        fi
+        unset -f pre_deploy
+        unset -f post_deploy
+
         popd
 
     fi
