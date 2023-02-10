@@ -56,7 +56,8 @@ for deployment in "${modules[@]}"; do
     if [ "$(type -t pre_deploy)" == "function" ]; then
         pre_deploy
     fi
-    
+    echo "------------- sqlServerAdministratorLogin:$sqlServerAdministratorLogin"
+
     params_path=()
     for param_path_tmp in "${params[@]}"; do
         if [[ -f "${param_path_tmp}" ]]; then
@@ -64,6 +65,9 @@ for deployment in "${modules[@]}"; do
             params_path+=("${param_path_tmp}")
         fi
     done
+    echo "------------------------ sqlServerAdministratorLogin:$sqlServerAdministratorLogin"
+    cat "${param_path_tmp}"
+    echo "---------------------------------------------------------------------------------------"
 
     load_dotenv
 
