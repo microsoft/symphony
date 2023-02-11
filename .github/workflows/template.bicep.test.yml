@@ -64,11 +64,6 @@ jobs:
           done
           IFS=$OIFS
 
-      - name: Run global pre-deploy script
-        run: |
-          ./pre.sh
-        working-directory: IAC/Bicep/scripts
-
       - name: Run e2e tests
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
