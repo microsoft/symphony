@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-verify_json_file_exists(){
+ensure_json_file_exists(){
     local file=$1
     if [ ! -f "$file" ]; then
         echo "{}" > "$file"
@@ -10,7 +10,7 @@ verify_json_file_exists(){
 get_json_value(){
     local file=$1
     local key=$2
-    verify_json_file_exists "$file"
+    ensure_json_file_exists "$file"
     < "$file" jq -r ".$key"
 }
 
@@ -18,7 +18,7 @@ set_json_value(){
     local file=$1
     local key=$2
     local value=$3
-    verify_json_file_exists "$file"
+    ensure_json_file_exists "$file"
    
     updated_json=$(< $file jq --arg value "$value" --arg key "$key" '.[$key] = $value')
     echo -n "$updated_json" > "$file" 

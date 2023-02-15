@@ -94,7 +94,7 @@ configure_orchestrator() {
 
     pushd "$TARGET_ROOT" || exit
         rm -rf .git
-        #Load the reader sp credentails
+        #Load the reader sp credentials
         loadServicePrincipalCredentials
         printEnvironment
         load_inputs

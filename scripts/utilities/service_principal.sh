@@ -16,7 +16,7 @@ function loadServicePrincipalCredentials() {
     SP_SUBSCRIPTION_NAME="Azure"
     vault_name=$(get_keyvault_name)
     if [ "$vault_name" != "null" ]; then
-        _information "Symphony.json Found! Loading needed credentails from ${vault_name}"
+        _information "$SYMPHONY_ENV_FILE_PATH Found! Loading needed credentials from ${vault_name}"
         SP_SUBSCRIPTION_ID=$(read_kv_secret "${vault_name}" 'readerSubscriptionId')
         SP_TENANT_ID=$(read_kv_secret "${vault_name}" 'readerTenantId')
         SP_ID=$(read_kv_secret "${vault_name}" 'readerClientId')
