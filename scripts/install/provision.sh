@@ -176,6 +176,10 @@ deploy_dependencies() {
             # Save Container name to KV
             echo "Saving SA State Container(${SA_CONTAINER_NAME}) stateContainer to KV"
             set_kv_secret 'stateContainer' "${SA_CONTAINER_NAME}" "${KV_NAME}"
+            
+            # Save state RG name to KV
+            echo "Saving stateRg Name (${RG_NAME}) stateRg to KV"
+            set_kv_secret 'stateRg' "${RG_NAME}" "${KV_NAME}"
         fi
 
         local create_owner_sp=""
