@@ -3,9 +3,11 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 REPO_DIR=$SCRIPT_DIR/../../../
 
+
 source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
 source "$SCRIPT_DIR/../../utilities/http.sh"
+source "$SCRIPT_DIR/../../utilities/json.sh" 
 source "$SCRIPT_DIR/../../utilities/service_principal.sh"
 source "$SCRIPT_DIR/../../install/banner.sh"
 source "$SCRIPT_DIR/../../install/contents.sh"
@@ -19,6 +21,8 @@ declare sub_command=""
 declare default_location="westus"
 declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
+declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
+declare SP_CLOUD_ENVIRONMENT="AzureCloud"
 
 main() {
     show_banner
@@ -27,7 +31,7 @@ main() {
 }
 
 verify_az_logged_in() {
-  az account show
+  SP_SUBSCRIPTION_ID=$(az account show | jq -r '.id')
   code=$?
   if [[ "$code" -gt 0 ]]; then
     exit $code
@@ -40,9 +44,18 @@ provision() {
 
     _information "Deploying Symphony Dependencies"
     source scripts/install/provision.sh
-    loadServicePrincipalCredentials
-    printEnvironment
-    deploy_dependencies "$default_location"
+    _prompt_input "Enter Location to deploy resources to" default_location
+    echo ""
+
+    local is_terraform=""
+    _prompt_input "Provision for Terraform  (yes/no)?" is_terraform "true"
+    echo ""
+ 
+    if [[ "$is_terraform" == "yes" ]]; then
+        deploy_dependencies "$default_location" true
+    else
+        deploy_dependencies "$default_location" false
+    fi
 }
 
 # Destroy resources and service principals needed by Symphony. Note this is a destructive operation
@@ -51,8 +64,7 @@ destroy(){
 
     _information "Removing Symphony Dependencies"
     source scripts/install/provision.sh
-    loadServicePrincipalCredentials
-    printEnvironment
+
     remove_dependencies
 }
 
@@ -82,6 +94,7 @@ configure_orchestrator() {
 
     pushd "$TARGET_ROOT" || exit
         rm -rf .git
+        #Load the reader sp credentials
         loadServicePrincipalCredentials
         printEnvironment
         load_inputs
@@ -144,6 +157,11 @@ parse_args() {
                 shift 1
                 export command="help"
                 usage
+                ;;
+            -c|--cloud)
+                shift 1
+                export SP_CLOUD_ENVIRONMENT="${1}"
+                shift 1
                 ;;
             *) # preserve positional arguments
                 PARAMS+="${1} "

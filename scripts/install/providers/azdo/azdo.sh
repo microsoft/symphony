@@ -89,7 +89,7 @@ function configure_repo {
     _debug_log_post "$_uri" "$_response" "$_payload"
 
     #When going through rest apis, there is a timing issue from project create to querying the repo properties.
-    sleep 10
+    sleep 15
 
     # Fetch The list of projects to get this project's id
     # https://docs.microsoft.com/rest/api/azure/devops/core/Projects/List?view=azure-devops-server-rest-5.0
@@ -126,7 +126,6 @@ function configure_repo {
 function configure_credentials {
     _information "Configure Service Connections"
     _create_arm_svc_connection
-    _create_azdo_svc_connection
 }
 
 function create_pipelines_terraform() {
