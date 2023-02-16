@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Includes
 source _helpers.sh
@@ -90,7 +91,9 @@ deploy() {
     echo "terraform apply -input=false -auto-approve ${plan_file_name}"
     terraform apply -input=false -auto-approve ${plan_file_name}
 
-    return $?
+    exit_code=$?
+
+    return $exit_code
 }
 
 destroy() {

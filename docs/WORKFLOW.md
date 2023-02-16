@@ -21,7 +21,7 @@ flowchart LR
 
 ### Preview & Deploy
 
-This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, then runs deploy commands to update the resources, and ensures successful resource updates.
+This stage plans the execution of the IAC code and estimates the scope of the changes. It initializes the IAC tool selected, runs plan/what-if commands to detect the changing scope, executes pre_deploy events, then runs deploy commands to update the resources, executes post_deploy events, and eventually ensures successful resource updates.
 
 ```mermaid
 flowchart LR

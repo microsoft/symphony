@@ -48,7 +48,7 @@ jobs:
         inputs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           key: '"$(Build.BuildId)"'
-          
+
       - task: Bash@3
         displayName: "Run E2E tests"
         env:
