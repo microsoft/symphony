@@ -20,11 +20,11 @@ variables:
   # - name: locationName
   #   value: "westus"
 
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
 
-  - name: keyVaultName
-    value: "kv-symphony-environments"
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
 
   - name: excludedFolders
     value: ","

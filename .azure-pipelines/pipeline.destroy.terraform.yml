@@ -10,14 +10,15 @@ variables:
   - name: agentImage
     value: "ubuntu-latest"
 
-  - name: environmentName
-    value: "dev"
+  # Commented out to use the values from the Azdo pipeline variables
+  # - name: environmentName
+  #   value: "dev"
 
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
 
-  - name: keyVaultName
-    value: "kv-symphony-environments"
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
 
 pool:
   vmImage: $(agentImage)

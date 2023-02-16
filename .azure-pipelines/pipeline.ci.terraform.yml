@@ -17,25 +17,26 @@ variables:
   # The following Variables should be set on the pipeline level #
   #=============================================================#
 
+  # Commented out to use the values from the Azdo pipeline variables
   # Name of the Environment
-  - name: environmentName
-    value: "dev"
+  # - name: environmentName
+  #   value: "dev"
 
   # ARM Service Connection Name used for environment Key Vault access
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
 
   # Environment Key Vault Name
-  - name: keyVaultName
-    value: "kv-symphony-environments"
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
 
   # Go Lang version
-  - name: goVersion
-    value: "1.18.1"
+  # - name: goVersion
+  #   value: "1.18.1"
 
   # Terraform version
-  - name: terraformVersion
-    value: "1.1.7"
+  # - name: terraformVersion
+  #   value: "1.1.7"
   
   # Run Layer tests
   - name: layerTestEnabled

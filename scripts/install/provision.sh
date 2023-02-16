@@ -123,7 +123,8 @@ deploy_dependencies() {
     _information "                 Container Registry:  $CR_NAME"
     _information "    Service Principal Name (Reader):  $SP_READER_NAME"
     _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
-    if [[ IS_Terraform ]]; then
+
+    if [[ $IS_Terraform == true ]]; then
         _information "             Storage account(State):  $SA_STATE_NAME"
         _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
     fi
@@ -148,7 +149,7 @@ deploy_dependencies() {
         echo "Creating KV: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
 
-        if [[ IS_Terraform ]]; then
+        if [[ $IS_Terraform == true ]]; then
             # Create State SA
             echo "Creating SA: ${SA_STATE_NAME}"
             create_sa "${SA_STATE_NAME}" "Standard_LRS" "SystemAssigned"
@@ -249,7 +250,7 @@ deploy_dependencies() {
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
-        if [[ IS_Terraform ]]; then
+        if [[ $IS_Terraform == true ]]; then
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_STATE_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container" "$SA_CONTAINER_NAME"
@@ -282,8 +283,14 @@ create_cr() {
     git clone "${APP_REPO}" "_app"
     pushd "_app" || exit
         git checkout "${APP_COMMIT}"
-        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
+        
+        _information "Creating App Web Container"
         az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+            
+        sleep 5
+        _information "Creating App Api Container"
+        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
+
     popd || exit
     rm -r -f "_app"
 }
