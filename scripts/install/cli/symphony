@@ -8,6 +8,7 @@ source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
 source "$SCRIPT_DIR/../../utilities/http.sh"
 source "$SCRIPT_DIR/../../utilities/json.sh" 
+source "$SCRIPT_DIR/../../utilities/os.sh" 
 source "$SCRIPT_DIR/../../utilities/service_principal.sh"
 source "$SCRIPT_DIR/../../install/banner.sh"
 source "$SCRIPT_DIR/../../install/contents.sh"
@@ -23,6 +24,11 @@ declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
 declare SP_CLOUD_ENVIRONMENT="AzureCloud"
+declare SP_SUBSCRIPTION_NAME="Azure"
+declare SYMPHONY_KV_NAME=""
+declare SYMPHONY_RG_NAME=""
+declare SYMPHONY_ACR_NAME=""
+declare SYMPHONY_SA_STATE_NAME=""
 
 main() {
     show_banner
@@ -70,9 +76,8 @@ destroy(){
 
 configure_orchestrator() {
     verify_az_logged_in
-
     ORCHESTRATOR=${args[0]}      
-    IACTOOL=${args[1]}  
+    IACTOOL=${args[1]} 
 
     _validate_inputs
     code=$?
@@ -96,6 +101,7 @@ configure_orchestrator() {
         rm -rf .git
         #Load the reader sp credentials
         loadServicePrincipalCredentials
+        load_symphony_env
         printEnvironment
         load_inputs
         
@@ -110,15 +116,33 @@ configure_orchestrator() {
         configure_repo
         configure_credentials
         
+        # Update the resource names KV, ACR, RG
+        git add .
+        git commit -m "Initial commit"
+
+        check_mac_os
+        is_mac=$?
+
+        # The default sed command behaves differently on macos
+        sedCommand="sed -i"
+        if [[ $is_mac == 0 ]]; then
+            sedCommand="sed -i '' -e "
+        fi
+        eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
+        eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
+        eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\"" 
+
         if [ "$IACTOOL" == "bicep" ]; then
             create_pipelines_bicep
         else
+            # Update SA state Name
+            eval "git grep -l 'symphonyremotestate360' | xargs $sedCommand \"s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g\""
             create_pipelines_terraform
         fi
 
         # commit & push the code the repo
         git add .
-        git commit -m "initial commit"
+        git commit -m "Update resource names"
         git push origin --all
 
         check_error_log
