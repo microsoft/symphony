@@ -115,38 +115,25 @@ configure_orchestrator() {
         configure_repo
         configure_credentials
         
-        # update the resources names:
-        # Key vault name : kv-symphony-environments
-        _information "************************************* Update Configurations*********************"
-        pwd
+        # update the resources names KV, ACR, RG
         git add .
-        git commit -m "add files"
+        git commit -m "Initial commit"
 
-        _information " KV NAME : ${SYMPHONY_KV_NAME}"
         git grep -l 'kv-symphony-environments' | xargs sed -i "s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g"
-        
-        # ACR RG Name: devops-symphony-362 -- SYMPHONY_RG_NAME
-        _information " RG NAME : ${SYMPHONY_RG_NAME}"
         git grep -l 'devops-symphony-362' | xargs sed -i "s/devops-symphony-362/${SYMPHONY_RG_NAME}/g" 
-        
-        # ACR Name: crsymphony360 --ACR NAME
-        _information " ACR NAME : ${SYMPHONY_ACR_NAME}"
         git grep -l 'crsymphony360' | xargs sed -i "s/crsymphony360/${SYMPHONY_ACR_NAME}/g" 
-
-        # Terraform specific updates:
-        # remote state storage account name: symphonyremotestate360
-        git grep -l 'symphonyremotestate360' | xargs sed -i "s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g"
-        _information "******************************************************************************************"
 
         if [ "$IACTOOL" == "bicep" ]; then
             create_pipelines_bicep
         else
+            # Update SA state Name
+            git grep -l 'symphonyremotestate360' | xargs sed -i "s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g"
             create_pipelines_terraform
         fi
 
         # commit & push the code the repo
         git add .
-        git commit -m "initial commit"
+        git commit -m "Update resource names"
         git push origin --all
 
         check_error_log
