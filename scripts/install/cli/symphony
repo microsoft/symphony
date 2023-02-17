@@ -23,6 +23,11 @@ declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
 declare SP_CLOUD_ENVIRONMENT="AzureCloud"
+declare SP_SUBSCRIPTION_NAME="Azure"
+declare SYMPHONY_KV_NAME=""
+declare SYMPHONY_RG_NAME=""
+declare SYMPHONY_ACR_NAME=""
+declare SYMPHONY_SA_STATE_NAME=""
 
 main() {
     show_banner
@@ -70,9 +75,8 @@ destroy(){
 
 configure_orchestrator() {
     verify_az_logged_in
-
     ORCHESTRATOR=${args[0]}      
-    IACTOOL=${args[1]}  
+    IACTOOL=${args[1]} 
 
     _validate_inputs
     code=$?
@@ -96,6 +100,7 @@ configure_orchestrator() {
         rm -rf .git
         #Load the reader sp credentials
         loadServicePrincipalCredentials
+        load_symphony_env
         printEnvironment
         load_inputs
         
@@ -110,6 +115,29 @@ configure_orchestrator() {
         configure_repo
         configure_credentials
         
+        # update the resources names:
+        # Key vault name : kv-symphony-environments
+        _information "************************************* Update Configurations*********************"
+        pwd
+        git add .
+        git commit -m "add files"
+
+        _information " KV NAME : ${SYMPHONY_KV_NAME}"
+        git grep -l 'kv-symphony-environments' | xargs sed -i "s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g"
+        
+        # ACR RG Name: devops-symphony-362 -- SYMPHONY_RG_NAME
+        _information " RG NAME : ${SYMPHONY_RG_NAME}"
+        git grep -l 'devops-symphony-362' | xargs sed -i "s/devops-symphony-362/${SYMPHONY_RG_NAME}/g" 
+        
+        # ACR Name: crsymphony360 --ACR NAME
+        _information " ACR NAME : ${SYMPHONY_ACR_NAME}"
+        git grep -l 'crsymphony360' | xargs sed -i "s/crsymphony360/${SYMPHONY_ACR_NAME}/g" 
+
+        # Terraform specific updates:
+        # remote state storage account name: symphonyremotestate360
+        git grep -l 'symphonyremotestate360' | xargs sed -i "s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g"
+        _information "******************************************************************************************"
+
         if [ "$IACTOOL" == "bicep" ]; then
             create_pipelines_bicep
         else

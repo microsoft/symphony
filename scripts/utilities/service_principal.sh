@@ -5,22 +5,20 @@ get_keyvault_name() {
     echo "$keyvault_name"
 }
 read_kv_secret() {
-    local _keyvault_name="${1}"
-    local _secret_name="${2}"
+    local _secret_name="${1}"
 
-    secret_value=$(az keyvault secret show --name "${_secret_name}" --vault-name "${_keyvault_name}" | jq -r '.value')
+    secret_value=$(az keyvault secret show --name "${_secret_name}" --vault-name "${SYMPHONY_KV_NAME}" | jq -r '.value')
     echo "${secret_value}"
 }
 
 function loadServicePrincipalCredentials() {
-    SP_SUBSCRIPTION_NAME="Azure"
-    vault_name=$(get_keyvault_name)
-    if [ "$vault_name" != "null" ]; then
-        _information "$SYMPHONY_ENV_FILE_PATH Found! Loading needed credentials from ${vault_name}"
-        SP_SUBSCRIPTION_ID=$(read_kv_secret "${vault_name}" 'readerSubscriptionId')
-        SP_TENANT_ID=$(read_kv_secret "${vault_name}" 'readerTenantId')
-        SP_ID=$(read_kv_secret "${vault_name}" 'readerClientId')
-        SP_SECRET=$(read_kv_secret "${vault_name}" 'readerClientSecret')
+    SYMPHONY_KV_NAME=$(get_keyvault_name)
+    if [ "$SYMPHONY_KV_NAME" != "null" ]; then
+        _information "$SYMPHONY_ENV_FILE_PATH Found! Loading needed credentials from ${SYMPHONY_KV_NAME}"
+        SP_SUBSCRIPTION_ID=$(read_kv_secret 'readerSubscriptionId')
+        SP_TENANT_ID=$(read_kv_secret 'readerTenantId')
+        SP_ID=$(read_kv_secret 'readerClientId')
+        SP_SECRET=$(read_kv_secret 'readerClientSecret')
     fi  
 
     if [ -z "$SP_SUBSCRIPTION_ID" ];  then
@@ -60,4 +58,28 @@ function printEnvironment() {
     _information "Client Environment:   $SP_CLOUD_ENVIRONMENT"
     _information "********************************************************************"
     echo ""
+}
+
+function load_symphony_env(){
+    SYMPHONY_KV_NAME=$(get_keyvault_name)
+    if [ -z "$SYMPHONY_KV_NAME" ];  then
+        _prompt_input "Enter Symphony KeyVault Name" SYMPHONY_KV_NAME
+    fi
+    
+    SYMPHONY_RG_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group")
+    if [ -z "$SYMPHONY_RG_NAME" ];  then
+        _prompt_input "Enter Symphony Resource Group Name" SYMPHONY_RG_NAME
+    fi
+
+    SYMPHONY_ACR_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry")
+    if [ -z "$SYMPHONY_ACR_NAME" ];  then
+        _prompt_input "Enter Symphony Container Registry Name" SYMPHONY_ACR_NAME
+    fi
+
+    if [ "$IACTOOL" != "bicep" ]; then
+        SYMPHONY_SA_STATE_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account")
+        if [ -z "$SYMPHONY_SA_STATE_NAME" ];  then
+            _prompt_input "Enter Symphony State Storage Account Name" SYMPHONY_SA_STATE_NAME
+        fi
+    fi
 }
