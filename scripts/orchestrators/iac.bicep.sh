@@ -13,7 +13,17 @@ usage() {
 _target_scope() {
     local bicep_file_path="${1}"
 
-    target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
+    check_mac_os
+    is_mac=$?
+
+    # The default grep command behaves differently on macos
+    # please ensure ggrep is installed https://formulae.brew.sh/formula/grep#default
+    if [[ $is_mac == 0 ]]; then
+        target_scope=$(ggrep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
+    else
+        target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
+    fi
+    
     target_scope=${target_scope//\'/}
 
     echo "${target_scope}"
@@ -78,6 +88,12 @@ bicep_output_to_env() {
                 echo "##vso[task.setvariable variable=${outputName};isOutput=true]${outputValue}"
             fi
         done
+
+        exit_code=${PIPESTATUS[1]}
+        if [[ $exit_code != 0 ]]; then
+            _error "Bicep validate failed, bicep_output_to_env  - returned code ${exit_code}"
+            exit "$exit_code"
+        fi
 }
 
 lint() {
@@ -100,17 +116,9 @@ validate() {
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
     export layerName=$6
-
-    _information "bicep_file_path: ${bicep_file_path}"
-    _information "deployment_id: ${deployment_id}"
-    _information "location: ${location}"
-    _information "layerName: ${layerName}"
-    _information "bicep_parameters_file_path_array: ${bicep_parameters_file_path_array}" 
-
+ 
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
-
-    _information "Bicep parameters: ${bicep_parameters}"
 
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} ${bicep_parameters}"

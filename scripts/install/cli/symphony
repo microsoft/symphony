@@ -95,7 +95,7 @@ configure_orchestrator() {
 
     # workflow
     TARGET_ROOT=$(mktemp -d)
-    cp -R . "$TARGET_ROOT"
+    cp -R "$REPO_DIR" "$TARGET_ROOT"
 
     pushd "$TARGET_ROOT" || exit
         rm -rf .git
