@@ -1,30 +1,48 @@
 # Create your own Symphony Repository and workflows
 
-Symphony offers a CLI to provision all needed resources, and creates the code repository on the orchestrator of your choice. **Note : symphony commands are build specifically for use in a bash/zsh shell.**
+Symphony offers a CLI to perform several actions that bootstraps a new IAC project on the orchestrator of your choice. Symphony relies on several backing resources that are needed to facilitate deployment workflows/pipelines. These resources can be provisioned via the CLI and the tool can also create and configure the code repository.
+**Note : symphony commands are build specifically for use in a bash/zsh shell.**
 
 ## Symphony CLI commands
 
-### Symphony provision cmd
+### Symphony provision
 
-This command deploys a set of azure resources and identities required by Symphony for the sample app, the workflows, and resource state management. It also creates a Symphony.json in ./.symphony/ to store the names of the deployed resources. Resources list below
+This command deploys following:
+ 
+ - A set of azure resources and identities required by Symphony for the sample app.
+ - Workflows, and resource state management.
+ 
+It also creates a Symphony.json in ./.symphony/ to store the names of the deployed resources.
+The following resources will be deployed as dependencies for Symphony:
 
 | Resource           | Description                                                                                         | IaC tool|
 | -----------        | --------------------------------------------------------------------------------------------------  | --------|
 | Resource Group     | Container for all needed Symphony deployed resources.                                               | Terraform /Bicep|
-| Key Vault          | Store the created identities secrets to be used by workflows.                                       | Terraform /Bicep|
+| Key Vault          | Stores the credential secrets to be used by workflows.                                       | Terraform /Bicep|
 | Container Registry | Stores the Symphony sample app 'eshop on web' docker images.                                        | Terraform /Bicep|
 | Service Principal  | Reader Service principal used by the CI to access the Key Vault.                                    | Terraform /Bicep|
 | Service Principal  | [Create/Bring your own] Owner Service Principal used to access the target azure subscription used to deploy by IaC modules. | Terraform /Bicep|
-| Storage Account    | Storage account with containers to be used as terraform remote state backend.                       | Terraform|
-| Storage Account    | Storage account with containers to store backup copies of terraform modules state files.            | Terraform|
+| Storage Account    | Storage account with Azure Blob Containers that are used for terraform remote state backend.                       | Terraform|
+| Storage Account    | Storage account with Azure Blob Containers that are used to store backup copies of terraform modules state files.            | Terraform|
 
-### Symphony destroy cmd
+### Symphony Destroy
 
-This command deletes the previously deployed symphony resources form executing the `symphony provision` using the Symphony.json in ./.symphony/ folder. **Note : Configured Symphony Repository workflow can no longer run after the symphony resources are deleted.**
+This command deletes symphony resources that were deployed by executing the `symphony provision` command. It utilizes the Symphony.json file in ./.symphony/ folder.
 
-### Symphony pipeline config cmd
+**Note : Configured Symphony Repository workflow can no longer run after the symphony resources are deleted.**
 
-- This command creates and configure a Symphony code repository, workflow pipelines, workflow secrets, and push the code to the newly created repository on the selected orchestrator. It also creates set of json logs files in ./.symphony/logs/<YYYY-MM-DD-HH-MM-SS-ORCH> to store responses from all the orchestrator calls for easier debug. Configured resources below.
+### Symphony Pipeline Config
+
+```bash
+
+$> symphony pipeline config <orchestrator> <iac tool>
+
+eg.
+
+$> symphony pipeline config github terraform
+```
+
+- This command creates and configures a Symphony project that includes a code repository, workflow pipelines, workflow secrets. It then pushes the code to the newly created repository on the selected scm provider. It also creates set of json logs files in ./.symphony/logs/<YYYY-MM-DD-HH-MM-SS-ORCH> to store responses from all the orchestrator calls for easier debug. The following resources will be Configured:.
 
 | Resource                      | Description                                                                                         | orchestrator tool   |
 | ----------------------------- | --------------------------------------------------------------------------------------------------  | ------------------- |
