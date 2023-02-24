@@ -1,6 +1,6 @@
 # Symphony
 
-Symphony is a framework and set of patterns and best practices for deploying infrastructure on Azure using Infrastructure as Code (IAC.)
+Symphony is a framework and set a of patterns and best practices for developing, testing, and deploying infrastructure on Azure using Infrastructure as Code (IAC.) It includes modern DevOps practices for IAC  such as Main and Pull Request workflows , IaC Code Validation & Linting, Automated Testing, Security Scanning, Multi-environment deployments, modules dependencies and more.
 
 Symphony supports the following IAC tools:
 
@@ -14,14 +14,7 @@ Symphony supports the following Build Orchestrators:
 
 ## Getting Started
 
-Note symphony's local bootstrapping was build specifically for use in a bash/zsh shell.
-
-- Clone this repo.
-- Configure the symphony cli `source setup.sh`
-- Deploy dependent resources `symphony provision`
-  - note: this only needs to be run once.
-- Deploy and Configure an orchestrator:
-  - `symphony pipeline config <azdo|github> <terraform|bicep>`
+Follow step by step instructions in the [Getting Started Document](./docs/GETTING_STARTED.md)
 
 ## Docs
 

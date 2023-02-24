@@ -32,8 +32,25 @@ declare SYMPHONY_SA_STATE_NAME=""
 
 main() {
     show_banner
+    check_dependencies
+    verify_az_logged_in
     parse_args "$@"
     process_command
+}
+
+check_dependencies(){
+    if [[ -x "$(command -v jq)" ]]; then
+        _information "JQ already installed!"
+    else
+        _error "Required tool JQ not installed!. Please install JQ and retry."
+        exit $?
+    fi    
+    if [[ -x "$(command -v sed)" ]]; then
+        _information "Sed already installed!"
+    else
+        _error "Required tool sed not installed!. Please install sed and retry."
+        exit $?
+    fi   
 }
 
 verify_az_logged_in() {
@@ -46,8 +63,6 @@ verify_az_logged_in() {
 
 # Provision resources and service principals needed by Symphony
 provision() {
-    verify_az_logged_in
-
     _information "Deploying Symphony Dependencies"
     source scripts/install/provision.sh
     _prompt_input "Enter Location to deploy resources to" default_location
@@ -66,8 +81,6 @@ provision() {
 
 # Destroy resources and service principals needed by Symphony. Note this is a destructive operation
 destroy(){
-    verify_az_logged_in
-
     _information "Removing Symphony Dependencies"
     source scripts/install/provision.sh
 
@@ -75,7 +88,6 @@ destroy(){
 }
 
 configure_orchestrator() {
-    verify_az_logged_in
     ORCHESTRATOR=${args[0]}      
     IACTOOL=${args[1]} 
 
