@@ -18,11 +18,22 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
 
 ## Getting started
 
-- Clone this repo.
-- Login to AZ CLi `az login`
-- Configure the symphony cli `source setup.sh`
-- Deploy dependent resources `symphony provision`
-- Deploy and Configure an orchestrator `symphony pipeline config <azdo|github> <terraform|bicep>`
+```bash
+# Clone this repo.
+git clone https://github.com/microsoft/symphony.git
+
+# Login to AZ CLi 
+az login
+
+# Configure the symphony cli 
+source setup.sh
+
+# Deploy dependent resources.
+symphony provision
+
+# Deploy and Configure an orchestrator.
+symphony pipeline config <azdo|github> <terraform|bicep>
+```
 
 ## Symphony CLI commands
 
