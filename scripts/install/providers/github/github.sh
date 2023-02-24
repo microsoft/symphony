@@ -33,14 +33,15 @@ function load_inputs {
         _prompt_input "IS GitHub Repo Private [true;false]" IS_Private_GH_Repo
     fi
 
+    if [ -z "$GH_PAT" ]; then
+        _prompt_input "Enter GitHub PAT" GH_PAT
+    fi
+
     $(gh auth status>/dev/null 2>&1)
     code=$?
     if [ "$code" == "0" ]; then
         _information "GitHub Cli is already logged in. Bootstrap with existing authorization."
     else
-        if [ -z "$GH_PAT" ]; then
-            _prompt_input "Enter GitHub PAT" GH_PAT
-        fi
          echo "$GH_PAT" | gh auth login --with-token
     fi
 }
