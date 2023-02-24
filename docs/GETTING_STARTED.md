@@ -7,11 +7,15 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
 
 ### Symphony provision
 
+```bash
+$> symphony provision
+```
+
 This command deploys following:
- 
- - A set of azure resources and identities required by Symphony for the sample app.
- - Workflows, and resource state management.
- 
+
+- A set of azure resources and identities required by Symphony for the sample app.
+- Workflows, and resource state management.
+
 It also creates a Symphony.json in ./.symphony/ to store the names of the deployed resources.
 The following resources will be deployed as dependencies for Symphony:
 
@@ -27,6 +31,10 @@ The following resources will be deployed as dependencies for Symphony:
 
 ### Symphony Destroy
 
+```bash
+$> symphony destroy
+```
+
 This command deletes symphony resources that were deployed by executing the `symphony provision` command. It utilizes the Symphony.json file in ./.symphony/ folder.
 
 **Note : Configured Symphony Repository workflow can no longer run after the symphony resources are deleted.**
@@ -34,11 +42,12 @@ This command deletes symphony resources that were deployed by executing the `sym
 ### Symphony Pipeline Config
 
 ```bash
-
 $> symphony pipeline config <orchestrator> <iac tool>
+```
 
-eg.
+Example
 
+```bash
 $> symphony pipeline config github terraform
 ```
 
@@ -60,6 +69,7 @@ $> symphony pipeline config github terraform
   For GitHub:
   - Install [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli).
   - Create a [GitHub PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with **"admin:org" "read:org"** setting enabled on the organization to be used to provision Symphony.
+  - Ensure that [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli) is logged out prior to running the `Symphony pipeline config` cmd.
 
   for AZure DevOps:
   - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
