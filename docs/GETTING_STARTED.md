@@ -3,6 +3,27 @@
 Symphony offers a CLI to perform several actions that bootstraps a new IAC project on the orchestrator of your choice. Symphony relies on several backing resources that are needed to facilitate deployment workflows/pipelines. These resources can be provisioned via the CLI and the tool can also create and configure the code repository.
 **Note : symphony commands are build specifically for use in a bash/zsh shell.**
 
+## Prerequisites tools
+
+- Install [Azure Cli](https://docs.microsoft.com/cli/azure).
+- Install [JQ](https://stedolan.github.io/jq).
+
+  For GitHub:
+  - Install [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli).
+  - Create a [GitHub PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with **"admin:org" "read:org"** setting enabled on the organization to be used to provision Symphony.
+  - Ensure that [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli) is logged out prior to running the `Symphony pipeline config` cmd.
+
+  for AZure DevOps:
+  - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
+
+## Getting started
+
+- Clone this repo.
+- Login to AZ CLi `az login`
+- Configure the symphony cli `source setup.sh`
+- Deploy dependent resources `symphony provision`
+- Deploy and Configure an orchestrator `symphony pipeline config <azdo|github> <terraform|bicep>`
+
 ## Symphony CLI commands
 
 ### Symphony provision
@@ -61,23 +82,3 @@ $> symphony pipeline config github terraform
 |AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault | GitHub |
 |Symphony-KV Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault | Azure DevOps |
 
-## Prerequisites tools
-
-- Install [Azure Cli](https://docs.microsoft.com/cli/azure).
-- Install [JQ](https://stedolan.github.io/jq).
-
-  For GitHub:
-  - Install [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli).
-  - Create a [GitHub PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with **"admin:org" "read:org"** setting enabled on the organization to be used to provision Symphony.
-  - Ensure that [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli) is logged out prior to running the `Symphony pipeline config` cmd.
-
-  for AZure DevOps:
-  - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
-
-## Getting started
-
-- Clone this repo.
-- Login to AZ CLi `az login`
-- Configure the symphony cli `source setup.sh`
-- Deploy dependent resources `symphony provision`
-- Deploy and Configure an orchestrator `symphony pipeline config <azdo|github> <terraform|bicep>`
