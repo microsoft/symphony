@@ -92,4 +92,3 @@ jobs:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "E2E Tests Results"
           action_fail: true
-          fail_on: "test failures"

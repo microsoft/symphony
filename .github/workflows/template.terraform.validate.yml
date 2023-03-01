@@ -141,4 +141,3 @@ jobs:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "Modules tests Results"
           action_fail: true
-          fail_on: "test failures"
