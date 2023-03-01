@@ -135,8 +135,10 @@ jobs:
           path: ./IAC/Terraform/test/terraform/*.xml
 
       - name: Publish Module Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ inputs.runLayerTest == 'true' }}
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "Modules tests Results"
+          action_fail: true
+          fail_on: "test failures"

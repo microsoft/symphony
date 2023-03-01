@@ -98,4 +98,6 @@ jobs:
         with:
           nunit_files: "./IAC/Bicep/test/end_to_end/*.xml"
           check_name: "E2E Tests Results"
+          action_fail: true
+          fail_on: "test failures"
 

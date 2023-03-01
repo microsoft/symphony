@@ -86,8 +86,10 @@ jobs:
           path: ./IAC/Terraform/test/terraform/*.xml
 
       - name: Publish E2E Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "./IAC/Terraform/test/terraform/*.xml"
           check_name: "E2E Tests Results"
+          action_fail: true
+          fail_on: "test failures"
