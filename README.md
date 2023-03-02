@@ -18,10 +18,10 @@ Symphony offers the workflows needed to implement IaC automation. Symphony provi
 
 | Feature            | Description                                                                                           | Tool     |
 | ------------------ | --------------------------------------------------------------------------------------------------    | -------- |
-| Security Scanning | Symphony ensures no credentials leaked in the IAC code by running security scanners in the workflows. | GitLeaks |
-| Linting & Validation | Symphony ensures to invalid IaC code early and reduces the development iteration loop. |TFLint/Bicep Validate|
+| Security Scanning | Symphony helps preventing credential leaking in the IAC code by running security scanners in the workflows. | GitLeaks |
+| Linting & Validation | Symphony ensures no invalid IaC code early and reduces the development iteration loop. |TFLint/Bicep Validate|
 | IaC Modules Dependency | Symphony offers a clear structure to organize modules based on dependency, while allowing for the flexibility of automatically passing outputs from one module to the next. | NA|
-|Modules & End to end testing | Symphony  provides a samples to write, execute, and report on module tests and end to end tests for the IaC modules. | Terratest / pester |
+|Modules & End to end testing | Symphony  provides samples to write, execute, and report on module tests and end to end tests for the IaC modules. | Terratest / pester |
 | Multi Environment support | Symphony offers a clear pattern to store different IaC modules configurations per environment allowing the workflows can swap configs based on target environment | NA |
 
 ## Getting Started
