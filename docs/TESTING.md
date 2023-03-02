@@ -1,4 +1,24 @@
-# Testing
+# IaC Testing
+
+Like any code, IaC changes can introduce errors, failures, or breaking changes. Having automated tests for IaC improves the quality, reduce the failures/downtime and all the costs that comes of it, speedup deployments resources readiness and ensure better services stability.
+
+Symphony offers samples to write and execute both modules and end to end tests for the IaC module code and how the tests are integrated into the symphony workflows
+
+## Module tests
+
+Module tests ensures module code/configuration will create the resources configured resources successfully when executed.
+
+* [X] It deploys the module resources, then validate the deployed resources & configurations, and finally tear down any deployed resources.
+* [X] Slow to execute, but can be executed in parallel.
+* [X] Have no dependency on any resource other than the module under test resources.
+
+## End to End tests
+
+End to End tests ensures an entire system resources deployed by one or more modules deployments are working as expected.
+
+* [X] It validates already deployed resources for a long-lived environment e.g. development or production
+* [X] Fast to execute, and can be executed in parallel.
+* [X] Depends on multiple modules, sometimes the entire system resources.
 
 ## Bicep
 
@@ -32,7 +52,7 @@ Test-AzTemplate -TemplatePath ../bicep/01_sql/02_deployment/main.json
 Remove-Item -Force -Path ../bicep/01_sql/02_deployment/main.json
 ```
 
-### Integration Tests with Pester
+### End to End Tests with Pester
 
 [Pester](https://pester.dev/docs/quick-start) is a testing and mocking framework for PowerShell.
 
@@ -54,7 +74,7 @@ Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1
 Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -OutputFormat JUnitXml
 ```
 
-### Integration Tests with ShellSpec
+### End to End test with ShellSpec
 
 [ShellSpec](https://github.com/shellspec/shellspec) is a full-featured BDD unit testing framework for dash, bash, ksh, zsh and all POSIX shells that provides first-class features such as code coverage, mocking, parameterized test, parallel execution and more.
 
@@ -80,7 +100,7 @@ shellspec -f j > tests.xml
 
 All below test examples have assumption for working directory - should be [IAC/Terraform/test/terraform](./../IAC/Terraform/test/terraform/)
 
-### Terratest
+### End to End tests with Terratest
 
 [Terratest](https://github.com/gruntwork-io/terratest)  is a Go library that makes it easier to write automated tests for your infrastructure code. It provides a variety of helper functions and patterns for common infrastructure testing tasks,and offers a good
 support for the most commonly used Azure resources.
@@ -91,8 +111,6 @@ support for the most commonly used Azure resources.
 
 ```bash
 
-go build 01_storage_integration_test.go
-
-go test -v -run Test01_Init_Storage
+go test -v -timeout 1000s --tags=e2e_test 
 
 ```
