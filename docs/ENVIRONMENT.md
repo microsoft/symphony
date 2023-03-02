@@ -26,8 +26,4 @@ There are multiple options to consider when storing the environment cloud config
 
 ## Adding a new environment
 
-To add a new environment to Symphony, you need to add the cofing json files representing that env details to the env section in the code repo, and add the needed cloud subscription details/secrets to the orchestrator tool.
-
-## Code propagation across environments
-
-TBD
+To add a new environment to Symphony, you need to add the configurations json files representing that env details to the env section in the code repo, and add the needed cloud subscription details/secrets to the orchestrator tool.
