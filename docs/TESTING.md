@@ -1,8 +1,8 @@
 # IaC Testing
 
-Like any code, IaC changes can introduce errors, failures, or breaking changes. Having automated tests for IaC improves the quality, reduce the failures/downtime and all the costs that comes of it, speedup deployments resources readiness and ensure better services stability.
+Like any code, IaC changes can introduce errors, failures, or breaking changes. Automated tests are an essential component of IaC to ensure code quality and reduce the risk of deployment failures, downtime, and associated costs. By detecting errors, failures, or breaking changes early in the process, automated tests can improve the readiness of deployed resources and ensure better service stability.
 
-Symphony offers samples to write and execute both modules and end to end tests for the IaC module code and how the tests are integrated into the symphony workflows
+Symphony offers samples that help to write and execute both module and end to end tests for IaC module code and demonstrate how the tests can be integrated into the symphony workflows.
 
 ## Module tests
 
