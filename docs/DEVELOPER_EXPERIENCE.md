@@ -1,10 +1,14 @@
 # Developer Experience
 
+DevContainers provide developers with a consistent, isolated, and reproducible development environment. They eliminate the need for manual configuration and management of the environment, making it easy to set up and maintain. By enabling developers to define their environment as code, DevContainers streamline the development process, reduce setup time, and improve overall code quality and consistency.
+
+Symphony uses DevContainers to streamline the developer experience substantially, by configuring all the software requriements detailed below:
+
 ## DevContainer
 
-[DevContainer configuration](./../.devcontainer/devcontainer.json) uses [Dockerfile](./../.devcontainer/Dockerfile) to build the _DevContainer_.
+The [DevContainer configuration](./../.devcontainer/devcontainer.json) uses a [Dockerfile](./../.devcontainer/Dockerfile) to build the _DevContainer_.
 
-_DevContainer_ image is based on _Ubuntu:bullseye_ image and has the following packages installed:
+The _DevContainer_ is based on the _Ubuntu:bullseye_ image and has the following packages installed:
 
 - [golang 1.17.8](https://go.dev/)
 - [Terraform 1.1.7](https://www.terraform.io/)
@@ -17,7 +21,7 @@ _DevContainer_ image is based on _Ubuntu:bullseye_ image and has the following p
 - [PowerShell 7.2.1](https://github.com/PowerShell/PowerShell)
 - [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet)
 
-_DevContainer_ also has the following _VSCode_ extensions installed to make the development experience better:
+The _DevContainer_ also has the following _VSCode_ extensions installed to improve the overall development experience :
 
 - [hashicorp.terraform](https://marketplace.visualstudio.com/items?itemName=hashicorp.terraform)
 - [ms-azuretools.vscode-azureterraform](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureterraform)
@@ -45,7 +49,9 @@ _DevContainer_ also has the following _VSCode_ extensions installed to make the 
 
 ## Initial Setup
 
-Under [IAC](./../IAC/), you can find the initial setup bash script. This script deploys required Azure Services for Symphony for development and testing:
+The initial setup bash script can be located in the  [IAC](./../IAC/) directory. This script deploys required Azure Services for Symphony for development and testing.
+
+For more information about the sample application that is deployed with Symphony, please take a look a the links below:
 
 - [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry)
 - [eShop Web docker image](https://github.com/dotnet-architecture/eShopOnWeb/tree/main/src/Web)
@@ -53,8 +59,20 @@ Under [IAC](./../IAC/), you can find the initial setup bash script. This script 
 
 ## Deploy
 
-Each IAC configuration (Terraform and Bicep) contains `deploy.sh` script. This straightforward script allows you to run and test your code quickly.
+The [IAC](./../IAC/) directory, has two subdirectories which represent options that support either a Terraform or Bicep configuration. The contained `deploy.sh` file offers a straightforward script which enables you to run and test your code quickly.
 
 ## Input Variables
 
-For local development experience, you can use predefined input variables files (_{env}_.tfvars.json for Terraform, parameters._{env}_.json for Bicep). Files contains hardcoded values. Feel free to adjust to your needs.
+For the local development experience, you can use predefined input variable files that represent a configurable environment like: 
+
+```bash
+(_{env}_.tfvars.json 
+```
+for Terrafom or, 
+
+```bash
+parameters._{env}_.json
+```
+for Bicep.
+
+The included files contain hardcoded values, which need to be adjusted to support your needs.
