@@ -30,7 +30,7 @@ function load_inputs {
     fi
 
     if [ -z "$IS_Private_GH_Repo" ]; then
-        _prompt_input "IS GitHub Repo Private [true;false]" IS_Private_GH_Repo
+        _prompt_input "IS GitHub Repo Private [yes;no]" IS_Private_GH_Repo
     fi
 
     if [ -z "$GH_PAT" ]; then
@@ -50,7 +50,7 @@ function configure_repo {
     _information "Starting project creation for project ${GH_Repo_NAME}"
 
     visibility="--public"
-    if [ "$IS_Private_GH_Repo" == "true" ]; then
+    if [ "$IS_Private_GH_Repo" == "yes" ]; then
       visibility="--private"
     fi
 
