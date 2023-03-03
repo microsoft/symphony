@@ -10,7 +10,7 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
 
   For GitHub:
   - Install [GitHub Cli](https://docs.github.com/en/github-cli/github-cli/about-github-cli).
-  - Create a [GitHub PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with **"admin:org" "read:org"** setting enabled on the organization to be used to provision Symphony.
+  - Create a [GitHub PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with **repo**,**workflow**,**"admin:org"-"read:org"** setting enabled on the organization to be used to provision Symphony.
 
   For Azure DevOps:
   - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
