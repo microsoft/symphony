@@ -19,7 +19,7 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
 
 ```bash
 # Clone this repo.
-$> git clone https://github.com/microsoft/symphony.git
+$> git clone https://github.com/microsoft/symphony.git && cd symphony
 
 # Login to AZ CLi 
 $> az login
