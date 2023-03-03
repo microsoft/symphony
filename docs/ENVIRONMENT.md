@@ -6,7 +6,7 @@ An environment in Symphony is represented by a set of configuration files, each 
 
 ## Environment resources configurations
 
-Environment resources configurations are files that stores input values used by IAC modules to configure the resources. There are different file formats to consider based on the IAC tool used e.g., Terraform vs Bicep vs Arm. For terraform .tfvars, json files can be used to pass values to the IAC modules while in Bicep Json files are the only available option. Thus a common format for all could be using JSON files to pass the input values to all.
+Environment resources configurations are files that store input values used by IAC modules to configure the resources. There are different file formats to consider based on the IAC tool used e.g., Terraform vs Bicep vs Arm. For terraform .tfvars, json files can be used to pass values to the IAC modules while in Bicep Json files are the only available option. Thus a common format for all could be using JSON files to pass the input values to all.
 
 IAC modules resources might need different configuration values based on the environment type. Resources configurations used for development purposes might use less tiers/capabilities compared to production environment resources to maintain cost. Hence the need to store resources configurations per environment in files as part of the code repos. This will also provide changes trackability like any through the used source control tool.
 
