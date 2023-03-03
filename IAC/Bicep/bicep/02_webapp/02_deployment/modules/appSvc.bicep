@@ -15,7 +15,7 @@ param containerRegistryResourceGroupName string
 param containerRegistryName string
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites?tabs=bicep
-resource appSvc 'Microsoft.Web/sites@2021-03-01' = {
+resource appSvc 'Microsoft.Web/sites@2022-03-01' = {
   name: name
   location: location
   identity: {
