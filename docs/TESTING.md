@@ -6,7 +6,7 @@ Symphony offers samples to write and execute both modules and end to end tests f
 
 ## Module tests
 
-Module tests ensures module code/configuration will create the resources configured resources successfully when executed.
+Module tests ensure module code/configuration will create the resources configured resources successfully when executed.
 
 * [X] It deploys the module resources, then validate the deployed resources & configurations, and finally tear down any deployed resources.
 * [X] Slow to execute, but can be executed in parallel.
