@@ -29,6 +29,7 @@ declare SYMPHONY_KV_NAME=""
 declare SYMPHONY_RG_NAME=""
 declare SYMPHONY_ACR_NAME=""
 declare SYMPHONY_SA_STATE_NAME=""
+declare AZURE_REGIONS=""
 
 main() {
     show_banner
@@ -65,13 +66,13 @@ verify_az_logged_in() {
 provision() {
     _information "Deploying Symphony Dependencies"
     source scripts/install/provision.sh
-    _prompt_input "Enter Location to deploy resources to" default_location
-    echo ""
+
+    AZURE_REGIONS=$(az account list-locations -o json | jq -r '.[].name' | sort)
+    _select_list_no_display default_location "Enter an Azure Location to deploy resources to (enter 'show' to see all available locations)" "$AZURE_REGIONS" "location"
 
     local is_terraform=""
-    _prompt_input "Provision for Terraform  (yes/no)?" is_terraform "true"
-    echo ""
- 
+    _select_yes_no is_terraform "Provision for Terraform:"
+
     if [[ "$is_terraform" == "yes" ]]; then
         deploy_dependencies "$default_location" true
     else

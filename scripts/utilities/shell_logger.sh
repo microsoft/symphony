@@ -9,6 +9,10 @@ _danger() {
     printf " \e[31m$@\n\e[0m"
 }
 
+_prompt() {
+    printf "\n\e[35m>$@\n\e[0m"
+}
+
 _debug() {
     #Only print debug lines if debugging is turned on.
     if [ "$DEBUG_FLAG" == true ]; then
