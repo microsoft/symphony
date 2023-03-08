@@ -1,22 +1,30 @@
-# Symphony Environment
+# Symphony Environment Considerations
 
-An environment in Symphony is represented by a set of configuration files, each represents the input values for the IAC modules used, and set of credentials used to authenticate to the cloud related environment subscription at which resources are deployed.
+In Symphony, an environment is defined by a set of configuration files that specify the input values for IAC modules and credentials required to authenticate to the relevant cloud environment where resources will be be deployed for your subscription.
+
+IAC modules resources might need different configuration values based on the environment it is targeting. Resource configurations used for development purposes may be substantially different when compared to what is required to operate a production environment. Symphony supports the storage of multiple resources configurations per environment in files as part of the code repo. This also provides traceability because configuration changes can be tracked in your source control tool.
 
 ![Workflow steps](./images/environment.PNG)
 
 ## Environment resources configurations
 
-Environment resources configurations are files that store input values used by IAC modules to configure the resources. There are different file formats to consider based on the IAC tool used e.g., Terraform vs Bicep vs Arm. For terraform .tfvars, json files can be used to pass values to the IAC modules while in Bicep Json files are the only available option. Thus a common format for all could be using JSON files to pass the input values to all.
+Environment resources configurations are files that store input values used by IAC modules to configure the resources that are provisioned. There are different file formats to consider based on the IAC tool used as depicted in the table below:
 
-IAC modules resources might need different configuration values based on the environment type. Resources configurations used for development purposes might use less tiers/capabilities compared to production environment resources to maintain cost. Hence the need to store resources configurations per environment in files as part of the code repos. This will also provide changes trackability like any through the used source control tool.
+|**Infrastructure as Code Tool** |**Config file options**|
+|----------------------------|-------------------|
+|Terraform|*.tfvars or *.json|
+|Bicep|*.json|
+|Arm|*.json|
+
+Based on the above, it is quite common for teams that need to support multiple IAC tools to standardize on the **JSON** format across projects. Thus a common format for all could be using JSON files to pass the input values to all.
 
 ## Environment cloud configurations
 
-Environment cloud configurations are credentials used to authenticate to the cloud environment's subscription at which resources are deployed. Those environment configurations are stored at the orchestrator tool. They are used by the IAC CI/CD pipelines for the deployments.
+Environment cloud configurations are used to authenticate to a subscription in the cloud environment targeted for resource deployment. Those environment configurations are stored and configured at the orchestrator tool level so that it can be readily used by the IAC CI/CD pipelines used for resource deployments.
 
 ### Implementations options
 
-There are multiple options to consider when storing the environment cloud configurations. While values can be stored as service connections, and secrets in the orchestrator tool directly, It can also be stored in a central azure key vault and have give the pipelines access to it.
+There are multiple options to consider when storing the environment cloud configurations. While values can be stored as service connections and secrets in the orchestrator tool directly, It can also be stored in a central Azure key vault, which pipelines can be configured to have access to.
 
 | **Option**                 | **Azure Key vault**                                                                                                                                            | **Orchestrators Secrets/SVC**                                                              |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
@@ -26,4 +34,4 @@ There are multiple options to consider when storing the environment cloud config
 
 ## Adding a new environment
 
-To add a new environment to Symphony, you need to add the configurations json files representing that env details to the env section in the code repo, and add the needed cloud subscription details/secrets to the orchestrator tool.
+To add a new environment to Symphony, you need to add the configurations json files representing that environment in the code repo, and add the needed cloud subscription details/secrets to the orchestrator tool. Navigate to the **env** directory in the repo and create a new folder under either the Bicep or Terraform directory ( choice dependent ) for you new environment.

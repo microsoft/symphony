@@ -63,16 +63,18 @@ The [IAC](./../IAC/) directory, has two subdirectories which represent options t
 
 ## Input Variables
 
-For the local development experience, you can use predefined input variable files that represent a configurable environment like: 
+For the local development experience, you can use predefined input variable files that represent a configurable environment like:
 
 ```bash
 (_{env}_.tfvars.json 
 ```
-for Terrafom or, 
+
+for Terrafom or,
 
 ```bash
 parameters._{env}_.json
 ```
+
 for Bicep.
 
 The included files contain hardcoded values, which need to be adjusted to support your needs.
