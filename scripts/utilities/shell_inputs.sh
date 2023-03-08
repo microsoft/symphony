@@ -13,7 +13,7 @@ function _select_list_no_display(){
   do
     printf "\e[35m> %s : \e[0m" "$message"
     read -r input
-    if [[ " show " =~ " ${input} " ]]; then
+    if [[ " list " =~ " ${input} " ]]; then
       PS3="$(printf '\e[0m')?> "
       printf "\n\e[35m"
       select input in "${list[@]}"
