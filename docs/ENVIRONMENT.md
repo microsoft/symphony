@@ -8,7 +8,7 @@ IAC modules resources might need different configuration values based on the env
 
 ## Environment resources configurations
 
-Environment resources configurations are files that store input values used by IAC modules to configure the resources that are provisioned. There are different file formats to consider based on the IAC tool used as depicted in teh table below:
+Environment resources configurations are files that store input values used by IAC modules to configure the resources that are provisioned. There are different file formats to consider based on the IAC tool used as depicted in the table below:
 
 |**Infrastructure as Code Tool** |**Config file options**|
 |----------------------------|-------------------|
@@ -16,7 +16,7 @@ Environment resources configurations are files that store input values used by I
 |Bicep|*.json|
 |Arm|*.json|
 
-Based on the above, it is quite common for teams that need to support multiple IAC tools to standardize on teh **JSON** format across projects. Thus a common format for all could be using JSON files to pass the input values to all.
+Based on the above, it is quite common for teams that need to support multiple IAC tools to standardize on the **JSON** format across projects. Thus a common format for all could be using JSON files to pass the input values to all.
 
 ## Environment cloud configurations
 
