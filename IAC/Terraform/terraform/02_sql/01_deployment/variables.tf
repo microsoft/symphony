@@ -4,6 +4,6 @@ variable "location" {
 }
 
 variable "env" {
-  description = "The name of the evnironemnt to be deployed"
+  description = "The name of the environment to be deployed"
   type = string
 }
