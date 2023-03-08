@@ -12,7 +12,7 @@ Environment resources configurations are files that store input values used by I
 
 |**Infrastructure as Code Tool** |**Config file options**|
 |----------------------------|-------------------|
-|Terraform|*.tfvars or *.json|
+|Terraform|*.tfvars or*.json|
 |Bicep|*.json|
 |Arm|*.json|
 
