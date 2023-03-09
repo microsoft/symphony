@@ -4,6 +4,7 @@ set -e
 # Includes
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$SCRIPT_DIR"/_helpers.sh
+source "$SCRIPT_DIR"/../utilities/os.sh
 
 usage() {
     _information "Usage: IAC Bicep commands helper"
