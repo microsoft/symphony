@@ -30,7 +30,7 @@ function load_inputs {
     fi
 
     if [ -z "$IS_Private_GH_Repo" ]; then
-        _prompt_input "IS GitHub Repo Private [yes;no]" IS_Private_GH_Repo
+        _select_yes_no IS_Private_GH_Repo "IS GitHub Repo Private (yes/no)" "false"
     fi
 
     if [ -z "$GH_PAT" ]; then

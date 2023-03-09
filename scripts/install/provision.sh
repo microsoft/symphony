@@ -74,8 +74,7 @@ remove_dependencies() {
     echo ""
 
     local selection=""
-    _prompt_input "Destroy Resources (yes/no)?" selection "true"
-    echo ""
+    _select_yes_no selection "Destroy Resources (yes/no)?" "true"
 
     if [[ "$selection" == "yes" ]]; then
         _information "Starting removal of resources"
@@ -131,8 +130,7 @@ deploy_dependencies() {
     echo ""
 
     local selection=""
-    _prompt_input "Create Resources (yes/no)?" selection "true"
-    echo ""
+    _select_yes_no selection "Create Resources (yes/no)?" "true"
 
     if [[ "$selection" == "yes" ]]; then
         _information "Starting creation of resources"
@@ -184,8 +182,7 @@ deploy_dependencies() {
         fi
 
         local create_owner_sp=""
-        _prompt_input "Create Owner SP (yes/no)?" create_owner_sp "true"
-        echo ""
+        _select_yes_no create_owner_sp "Create Owner SP (yes/no)?" "true"
 
         local sp_owner_client_id=""
         local sp_owner_client_secret=""
