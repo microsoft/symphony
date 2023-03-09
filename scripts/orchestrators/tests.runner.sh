@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
 # include helpers
 source _helpers.sh
 
@@ -87,6 +84,8 @@ terraform() {
 # @usage <to run {FILENAME} tests only for pester>; source ${0} && bicep pester SqlIntegration.Tests.ps1
 # @usage <to run all the tests for shellspec>: source ${0} && bicep shellspec
 bicep() {
+  source ./iac.bicep.sh
+  azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 
   pester() {
     _information "run end to end tests"
