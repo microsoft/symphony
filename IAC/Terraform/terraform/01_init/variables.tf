@@ -4,7 +4,7 @@ variable "location" {
 }
 
 variable "env" {
-  description = "The name of the evnironemnt to be deployed"
+  description = "The name of the environment to be deployed"
   type = string
 }
 
@@ -53,6 +53,6 @@ variable "backup_storage_account_name" {
 }
 
 variable "env_version" {
-  description = "The version of the evnironemnt to be deployed"
+  description = "The version of the environment to be deployed"
   type = string
 }
