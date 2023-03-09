@@ -1,6 +1,8 @@
-# Orchestrates workflow
+# Orchestrators workflow
 
 Creating pipelines for Infrastructure as code seems easy to build task, but in a mature system, things can get complicated as it needs to handle many changing dynamics parts. A mature workflow for IAC not only automates the deployment of the IAC resources but also incorporates engineering fundamentals, resources validation, dependency management, test execution, security scanning, and more.
+
+Symphony offers multiple workflows to ensure engineering excellence at every stage of the IaC process. The workflows are designed to be orchestrator independent by relaying on the logic implemented in bash scripts and the pipelines being a thin shim layers that execute the logic scripts. This design makes it easy to update the workflows or port on new tools regardless of the SCM by adding those tools to the [workflow scripts](./../scripts/orchestrators/).
 
 ## Main Deploy Workflow
 
