@@ -24,6 +24,9 @@ $> git clone https://github.com/microsoft/symphony.git && cd symphony
 # Login to AZ CLi 
 $> az login
 
+# Ensure the target subscription is set
+$> az account set --subscription <TargetSubscriptionId>
+
 # Configure the symphony cli 
 $> source setup.sh
 
@@ -34,6 +37,10 @@ $> symphony provision
 $> symphony pipeline config <azdo|github> <terraform|bicep>
 ```
 
+Now that you have successfully completed the provision process. Go you created Symphony on the SCM you selected when you ran `Symphony pipeline config` command. You can browse the code, tests, and run the pipelines as well to deploy the sample app.
+
+Also take a look at the Symphony resources deployed when you ran the `Symphony provision` command. you can find the resources names in the ./.symphony/symphony.json
+
 ## Symphony CLI commands
 
 ### Symphony provision
@@ -42,10 +49,7 @@ $> symphony pipeline config <azdo|github> <terraform|bicep>
 $> symphony provision
 ```
 
-This command deploys following:
-
-- A set of azure resources and identities required by Symphony for the sample app.
-- Workflows, and resource state management.
+This command deploys a set of azure resources and identities required by Symphony for the sample app, Workflows, and managing the IaC resources state. It prompts input a target azure location to deploy the resources to.
 
 It also creates a symphony.json in ./.symphony/ to store the names of the deployed resources.
 The following resources will be deployed as dependencies for Symphony:
@@ -68,7 +72,7 @@ $> symphony destroy
 
 This command deletes symphony resources that were deployed by executing the `symphony provision` command. It utilizes the symphony.json file in ./.symphony/ folder.
 
-**Note : Configured Symphony Repository workflow can no longer run after the symphony resources are deleted.**
+**Note : Configured Symphony Repository workflow can no longer run after the symphony resources are deleted. You need to manually delete the code repo on the SCM.**
 
 ### Symphony Pipeline Config
 
@@ -82,7 +86,7 @@ Example
 $> symphony pipeline config github terraform
 ```
 
-- This command creates and configures a Symphony project that includes a code repository, workflow pipelines, workflow secrets. It then pushes the code to the newly created repository on the selected scm provider. It also creates set of json logs files in ./.symphony/logs/YYYY-MM-DD-HH-MM-SS-ORCH to store responses from all the orchestrator calls for easier debug. The following resources will be Configured:.
+This command creates and configures a Symphony project that includes a code repository, workflow pipelines, workflow secrets. It then pushes the code to the newly created repository on the selected scm provider. It also creates set of json logs files in ./.symphony/logs/YYYY-MM-DD-HH-MM-SS-ORCH to store responses from all the orchestrator calls for easier debug. The following resources will be Configured:
 
 | Resource                      | Description                                                                                         | orchestrator tool   |
 | ----------------------------- | --------------------------------------------------------------------------------------------------  | ------------------- |
