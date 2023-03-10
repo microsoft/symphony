@@ -135,54 +135,54 @@ deploy_dependencies() {
     if [[ "$selection" == "yes" ]]; then
         _information "Starting creation of resources"
         
-         # Create RG
-        echo "Creating RG: ${RG_NAME}"
+        # Create RG
+        _information "Creating Resource Group: ${RG_NAME}"
         create_rg
 
         # Create CR
-        echo "Creating CR: ${CR_NAME}"
+        _information "Creating Container Registry: ${CR_NAME}"
         create_cr
 
         # Create KV
-        echo "Creating KV: ${KV_NAME}"
+        _information "Creating Key Vault: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
 
         if [[ $IS_Terraform == true ]]; then
             # Create State SA
-            echo "Creating SA: ${SA_STATE_NAME}"
+            _information "Creating Storage Account: ${SA_STATE_NAME}"
             create_sa "${SA_STATE_NAME}" "Standard_LRS" "SystemAssigned"
 
             # Create State SA container
-            echo "Creating SA Container: ${SA_CONTAINER_NAME} for SA:${SA_STATE_NAME}"
+            _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_NAME}"
             create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_NAME}"
 
             # Create backup State SA
-            echo "Creating SA: ${SA_STATE_BACKUP_NAME}"
+            _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
             create_sa "${SA_STATE_BACKUP_NAME}" "Standard_LRS" "SystemAssigned"
             
             # Create Backup State SA container
-            echo "Creating SA Container: ${SA_CONTAINER_NAME} for SA:${SA_STATE_BACKUP_NAME}"
+            _information "Creating Backup Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_BACKUP_NAME}"
             create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
             
             # Save State SA details to KV
-            echo "Saving State SA (${SA_STATE_NAME}) stateStorageAccount to KV"
+            echo "Saving State Storage Account (${SA_STATE_NAME}) to Key Vault secret 'stateStorageAccount'."
             set_kv_secret 'stateStorageAccount' "${SA_STATE_NAME}" "${KV_NAME}"
 
             # Save State Backup SA details to KV
-            echo "Saving State Backup SA (${SA_STATE_BACKUP_NAME}) stateStorageAccountBackup to KV"
+            echo "Saving State Backup Storage Account (${SA_STATE_BACKUP_NAME}) to Key Vault secret 'stateStorageAccountBackup'."
             set_kv_secret 'stateStorageAccountBackup' "${SA_STATE_BACKUP_NAME}" "${KV_NAME}"
 
             # Save Container name to KV
-            echo "Saving SA State Container(${SA_CONTAINER_NAME}) stateContainer to KV"
+            echo "Saving Storage Account State Container(${SA_CONTAINER_NAME}) to Key Vault secret 'stateContainer'."
             set_kv_secret 'stateContainer' "${SA_CONTAINER_NAME}" "${KV_NAME}"
             
             # Save state RG name to KV
-            echo "Saving stateRg Name (${RG_NAME}) stateRg to KV"
+            echo "Saving state Resource Group Name (${RG_NAME}) to Key Vault secret 'stateRg'."
             set_kv_secret 'stateRg' "${RG_NAME}" "${KV_NAME}"
         fi
 
         local create_owner_sp=""
-        _select_yes_no create_owner_sp "Create Owner SP (yes/no)?" "true"
+        _select_yes_no create_owner_sp "Create Owner Service Principal (yes/no)?" "true"
 
         local sp_owner_client_id=""
         local sp_owner_client_secret=""
@@ -192,7 +192,7 @@ deploy_dependencies() {
         if [[ "$create_owner_sp" == "yes" ]]; then
        
             # Create Owner SP and assing to subscription level
-            echo "Creating Owner SP: ${SP_OWNER_NAME}"
+            _information "Creating Owner Service Principal: ${SP_OWNER_NAME}"
             sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
             sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
 
@@ -210,38 +210,38 @@ deploy_dependencies() {
         fi
 
         # Save Owner SP details to KV
-        echo "Saving Owner SP (${SP_OWNER_NAME}) clientId to KV"
+        _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientId'."
         set_kv_secret 'clientId' "${sp_owner_client_id}" "${KV_NAME}"
 
-        echo "Saving Owner SP (${SP_OWNER_NAME}) clientSecret to KV"
+        _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientSecret'."
         set_kv_secret 'clientSecret' "${sp_owner_client_secret}" "${KV_NAME}"
 
-        echo "Saving Owner SP (${SP_OWNER_NAME}) subscriptionId to KV"
+        _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'subscriptionId'."
         set_kv_secret 'subscriptionId' "${sp_owner_sub_id}" "${KV_NAME}"
 
-        echo "Saving Owner SP (${SP_OWNER_NAME}) tenantId to KV"
+        _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'tenantId'."
         set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"       
 
         # Create Reader SP and assign to KV only
-        echo "Creating Reader SP: ${SP_READER_NAME}"
+        _information "Creating Reader Service Principal: ${SP_READER_NAME}"
         sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
 
         # Save Reader SP details to KV
-        echo "Saving Reader SP (${SP_READER_NAME}) readerClientId to KV"
+        _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientId'."
         clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
         set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
 
-        echo "Assign access policies for Reader SP (${SP_READER_NAME}) to KV ${KV_NAME}"
+        _information "Assign access policies for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
         set_kv_secret_policies "${KV_NAME}" "${clientId}"
 
-        echo "Saving Reader SP (${SP_READER_NAME}) readerClientSecret to KV"
+        _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientSecret'."
         clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
         set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
 
-        echo "Saving Reader SP (${SP_READER_NAME}) readerSubscriptionId to KV"
+        _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerSubscriptionId'."
         set_kv_secret 'readerSubscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
 
-        echo "Saving Reader SP (${SP_READER_NAME}) readerTenantId to KV"
+        _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerTenantId'."
         tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
         set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
 
@@ -258,10 +258,16 @@ deploy_dependencies() {
         fi
 
         _success "Symphony resources have been provisioned! Details on resources are in $SYMPHONY_ENV_FILE_PATH "
+        rgLink="$(get_resource_group_link)"
+        _success "You can view the resources created in the Azure Portal $rgLink"
     else
         _information "Provision Aborted!"
     fi
 
+}
+
+get_resource_group_link(){
+    echo "https://portal.azure.com/#@/resource/subscriptions/$SP_SUBSCRIPTION_ID/resourceGroups/$RG_NAME/overview"
 }
 
 create_rg() {

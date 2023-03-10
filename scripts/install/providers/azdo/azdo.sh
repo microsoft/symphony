@@ -18,11 +18,11 @@ function load_inputs {
     fi
    
     if [ -z "$AZDO_ORG_NAME" ]; then
-        _prompt_input "Enter Azure Devops Org Name" AZDO_ORG_NAME
+        _prompt_input "Enter existing Azure Devops Org Name" AZDO_ORG_NAME
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then
-        _prompt_input "Enter Azure Devops Project Name" AZDO_PROJECT_NAME
+        _prompt_input "Enter the name of a new Azure Devops Project to create" AZDO_PROJECT_NAME
     fi
 
     if [ -z "$AZDO_PAT" ]; then

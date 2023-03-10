@@ -22,15 +22,15 @@ function load_inputs {
     _information "Load GitHub Configurations"
 
     if [ -z "$GH_ORG_NAME" ]; then
-        _prompt_input "Enter GitHub Org Name" GH_ORG_NAME
+        _prompt_input "Enter existing GitHub Org Name" GH_ORG_NAME
     fi
 
     if [ -z "$GH_Repo_NAME" ]; then
-        _prompt_input "Enter GitHub Repo Name" GH_Repo_NAME
+        _prompt_input "Enter the name of a new GitHub Repo to be created" GH_Repo_NAME
     fi
 
     if [ -z "$IS_Private_GH_Repo" ]; then
-        _select_yes_no IS_Private_GH_Repo "IS GitHub Repo Private (yes/no)" "false"
+        _select_yes_no IS_Private_GH_Repo "Is GitHub Repo Private (yes/no)" "false"
     fi
 
     if [ -z "$GH_PAT" ]; then
