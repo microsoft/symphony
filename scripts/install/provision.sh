@@ -135,7 +135,7 @@ deploy_dependencies() {
     if [[ "$selection" == "yes" ]]; then
         _information "Starting creation of resources"
         
-         # Create RG
+        # Create RG
         _information "Creating Resource Group: ${RG_NAME}"
         create_rg
 
@@ -259,7 +259,7 @@ deploy_dependencies() {
 
         _success "Symphony resources have been provisioned! Details on resources are in $SYMPHONY_ENV_FILE_PATH "
         rgLink="$(get_resource_group_link)"
-        echo "You can view the resources created in the Azure Portal $rgLink"
+        _success "You can view the resources created in the Azure Portal $rgLink"
     else
         _information "Provision Aborted!"
     fi
