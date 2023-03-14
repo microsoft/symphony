@@ -32,6 +32,8 @@ There are multiple options to consider when storing the environment cloud config
 | **Pro(s)**                 | - Central storage for all env secrets, easier to maintain, rotate and recover in case of leak or breach.<br />- No Credentials stored at the orchestrator tools. | - No added cost.                                                                           |
 | **Con(s)**                 | - Added cost.                                                                                                                                                  | - Lists of secrets permanently stored in orchestrators are harder to maintain, and rotate. |
 
+Symphony uses an Azure Key Vault to store the credentials needed to access the target environment Azure subscription. The Symphony Key Vault is created as step when you execute `symphony provision` command and the required credentials are being stored as Key Vault Secrets as part of the same process as well. Pipelines access the Key Vault to read the environment subscription credentials and use them to run the deployments of the IaC code though a service connection/GitHub secret that have read access to the Symphony Key Vault. These service connection/Github secrets are created a step when you execute `symphony pipeline config` command.
+
 ## Adding a new environment
 
 To add a new environment to Symphony, you need to add the configurations json files representing that environment in the code repo, and add the needed cloud subscription details/secrets to the orchestrator tool. Navigate to the **env** directory in the repo and create a new folder under either the Bicep or Terraform directory ( choice dependent ) for you new environment.
