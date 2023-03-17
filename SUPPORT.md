@@ -6,9 +6,9 @@ Symphony is a multi-IAC, multi-orchestrator framework that encapsulates best pra
 
 ## How to file issues and get help
 
-This project uses GitHub Issues to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new Issue.
+This project uses GitHub Issues to track bugs and feature requests. Bugs and feature requests should be documented in a new issue. Before filing a new issue, please search the existing issues list to avoid duplication.
 
-For more details about Symphony, please take a look at our [docs](./docs/) and review the [Contributing](./CONTRIBUTING.md) doc if you want to contribute.
+To learn more about Symphony, please check the projects[docs](./docs/) and review the [Contribution Guide](./CONTRIBUTING.md).
 
 ## Microsoft Support Policy
 
