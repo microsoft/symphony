@@ -4,6 +4,14 @@ _error() {
     printf " \e[31mError: $@\n\e[0m"
 }
 
+_fail(){
+    step=$1
+    printf "\e[31mFailed $step\n\e[0m"
+    printf "\e[31mError: $2\n\e[0m"
+    printf "\e[31mResources may have been deployed. Please run symphony destroy to clean up orphaned resources.\n\e[0m"
+    exit 1
+}
+
 
 _danger() {
     printf " \e[31m$@\n\e[0m"
