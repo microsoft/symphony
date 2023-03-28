@@ -284,9 +284,31 @@ create_cr() {
 
     az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
 
+    max=5
+    counter=0
+    ready=1
+    sleepInterval=22
+    sleepTime=$(($sleepInterval * $counter))
+
     _information "Waiting for ACR creation before pushing images"
-    sleep 60   
-    
+    while [ $ready -ne 0 ]
+    do
+        _information "Checking Provisioning Status for Azure Container Registry $CR_NAME - ($(($counter+1)) of $max)"
+        status=$(az acr show -n "${CR_NAME}" | jq -r '.provisioningState')
+        if [ "$status" == "Succeeded" ]; then
+            ready=0
+            _information "Azure Container Registry $CR_NAME created successfully!"
+        else
+            ((counter++))
+
+            if [ $counter == $max ]; then
+                _fail "provision" "Azure Container Registry $CR_NAME provision timeout."
+            fi
+            sleepTime=$(($sleepInterval * $counter))
+            sleep $sleepTime
+        fi
+    done
+
     git clone "${APP_REPO}" "_app"
     pushd "_app" || exit
         git checkout "${APP_COMMIT}"
