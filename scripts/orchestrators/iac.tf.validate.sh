@@ -10,7 +10,7 @@ array=($modules)
 IFS=$SAVEIFS
 len=${#array[@]}
 
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureUSGovernment'
 for deployment in "${array[@]}"; do
     if [[ ${deployment} != *"01_init"* ]]; then
         echo "tf init ${deployment}"

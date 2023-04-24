@@ -117,6 +117,8 @@ function configure_repo {
     # Configure remote for local git repo
     remoteWithCreds="${CODE_REPO_GIT_HTTP_URL/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
     git init
+    git add -A
+    git commit -m "Initial commit"
     git branch -m main
     git remote add origin "$remoteWithCreds"
 
@@ -324,6 +326,12 @@ function _create_pipeline {
 
     echo "$_payload" > "$AZDO_TEMP_LOG_PATH/${_name}-cp-payload.json"
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/${_name}-cp.json"
+
+    echo "$_uri"
+    
+    echo "$_response"
+    
+    echo "$_payload"
 
     _debug_log_post "$_uri" "$_response" "$_payload"
 

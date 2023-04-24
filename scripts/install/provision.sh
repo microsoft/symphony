@@ -334,7 +334,7 @@ create_sp() {
     local _scope="${3}"
 
     sleep 60
-    sp_object=$(az ad sp create-for-rbac --display-name "${_display_name}" --role "${_role}" --scopes "${_scope}")
+    sp_object=$(az ad sp create-for-rbac -n "${_display_name}" --role "${_role}" --scopes "${_scope}")
 
     echo "${sp_object}"
 }

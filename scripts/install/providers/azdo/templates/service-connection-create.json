@@ -11,7 +11,7 @@
     },
     "createdBy": null,
     "data": {
-      "environment": "__CLOUD_ENVIRONMENT__",
+      "environment": "AzureUSGovernment",
       "subscriptionId": "__SUBSCRIPTION_ID__",
       "subscriptionName": "__SUBSCRIPTION_NAME__",
       "scopeLevel": "Subscription",
