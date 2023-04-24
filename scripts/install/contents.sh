@@ -9,6 +9,7 @@ function remove_yaml() {
         rm -r "$TARGET_ROOT"/.github/*
     else
         rm -r "$TARGET_ROOT"/.azure-pipelines/*
+        rm "$TARGET_ROOT"/.github/CODEOWNERS
     fi
 }
 function remove_tf_content(){
