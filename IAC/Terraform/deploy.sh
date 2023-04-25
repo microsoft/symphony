@@ -1,5 +1,7 @@
 #!/bin/bash
 
+### THIS SCRIPT IS NO LONGER NEEDED AND USED IN THE AUTOMATED PIPELINE ####
+
 declare environment="dev"
 
 # 01_init
