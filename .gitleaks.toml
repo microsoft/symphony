@@ -18,13 +18,13 @@ regex = '''.'''
 path = '''\.keystore$'''
 
 [[rules]]
-id = "CSCAN0020"
+id = "CSCAN0020 1"
 description = "Base64EncodedCertificateInCode"
 regex = '''['">;=]MII[a-z0-9/+]{200}'''
 path = '''\.(?:cs|ini|json|ps1|publishsettings|template|trd|ts|xml)$'''
 
 [[rules]]
-id = "CSCAN0020"
+id = "CSCAN0020 2"
 description = "Base64EncodedCertificateInFile"
 regex = '''MII[A-Za-z0-9/+]{60}'''
 path = '''\.(?:cert|cer)$'''
