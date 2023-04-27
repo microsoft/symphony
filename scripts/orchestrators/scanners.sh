@@ -18,7 +18,7 @@ run_gitleaks() {
 
     _information "Run Gitleaks detect cmd"
 
-    cmd_options="--source ${source_path} --report-path ./gitleaks-report.${report_format} --report-format ${report_format} --log-level ${log_level}"
+    cmd_options="--config ${source_path}/.gitleaks.toml --source ${source_path} --report-path ./gitleaks-report.${report_format} --report-format ${report_format} --log-level ${log_level}"
 
     if [[ ! -z "${redact}" ]]; then
         cmd_options+=" --redact"
