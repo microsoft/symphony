@@ -9,7 +9,7 @@ jobs:
   markdown-lint-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3
 
       - name: Run markdownlint
         id: markdownlint

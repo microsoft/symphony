@@ -24,7 +24,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branchName }}
 
@@ -59,7 +59,7 @@ jobs:
           for secretname in $SECRETS
           do
             secret=$(az keyvault secret show --name $secretname --vault-name ${{ github.event.inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"        
+            echo "::add-mask::$secret"
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
           IFS=$OIFS
@@ -77,7 +77,7 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
 
           source ./tests.runner.sh
-          
+
           pushd ../../IAC/Bicep/bicep
             load_dotenv
           popd

@@ -27,7 +27,7 @@ jobs:
     name: "E2E Test"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branchName }}
 
@@ -53,7 +53,7 @@ jobs:
           for secretname in $SECRETS
           do
             secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"        
+            echo "::add-mask::$secret"
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
           IFS=$OIFS
