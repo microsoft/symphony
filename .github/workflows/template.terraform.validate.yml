@@ -30,7 +30,7 @@ jobs:
     name: "Validate"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branchName }}
 
@@ -38,7 +38,7 @@ jobs:
         run: |
           ./setup-azcli.sh
           ./setup-gitleaks.sh
-          ./setup-terraform.sh ${{ inputs.terraformVersion }}        
+          ./setup-terraform.sh ${{ inputs.terraformVersion }}
           ./setup-tflint.sh
           source ~/.bashrc
         working-directory: scripts/orchestrators
@@ -83,7 +83,7 @@ jobs:
           for secretname in $SECRETS
           do
             secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"        
+            echo "::add-mask::$secret"
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
           IFS=$OIFS
