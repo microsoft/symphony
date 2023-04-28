@@ -62,6 +62,12 @@ verify_az_logged_in() {
   fi
 }
 
+get_acr_login_endpoint() {
+   cloud_name=$(az cloud show | jq -r '.name')
+   login_endpoint=$(az cloud show -n "${cloud_name}" | jq -r '.suffixes.acrLoginServerEndpoint')
+   echo "${login_endpoint}"
+}
+
 # Provision resources and service principals needed by Symphony
 provision() {
     _information "Deploying Symphony Dependencies"
@@ -143,6 +149,9 @@ configure_orchestrator() {
         fi
         eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
         eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
+        
+        server_endpoint="$(get_acr_login_endpoint)"
+        eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\"" 
         eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\"" 
 
         if [ "$IACTOOL" == "bicep" ]; then
