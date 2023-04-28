@@ -28,6 +28,7 @@ declare SP_SUBSCRIPTION_NAME="Azure"
 declare SYMPHONY_KV_NAME=""
 declare SYMPHONY_RG_NAME=""
 declare SYMPHONY_ACR_NAME=""
+declare SYMPHONY_ACR_SERVER=""
 declare SYMPHONY_SA_STATE_NAME=""
 declare AZURE_REGIONS=""
 
@@ -143,6 +144,7 @@ configure_orchestrator() {
         fi
         eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
         eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
+        eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_SERVER}/g\""
         eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\"" 
 
         if [ "$IACTOOL" == "bicep" ]; then

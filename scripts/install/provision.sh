@@ -249,6 +249,7 @@ deploy_dependencies() {
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry_server" "$(get_cr_loginserver)"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
         if [[ $IS_Terraform == true ]]; then
@@ -322,6 +323,12 @@ create_cr() {
 
     popd || exit
     rm -r -f "_app"
+}
+
+get_cr_loginserver(){
+    login_server=$(az acr show --name "${CR_NAME}" | jq -r .loginServer)
+    
+    echo "${login_server}"
 }
 
 create_kv() {

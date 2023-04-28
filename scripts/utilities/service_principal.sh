@@ -67,6 +67,7 @@ function load_symphony_env(){
         SYMPHONY_KV_NAME=$(get_keyvault_name)
         SYMPHONY_RG_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group")
         SYMPHONY_ACR_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry")
+        SYMPHONY_ACR_SERVER=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry_server")
         SYMPHONY_SA_STATE_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account")
     fi
 
@@ -81,6 +82,10 @@ function load_symphony_env(){
    
     if [ -z "$SYMPHONY_ACR_NAME" ];  then
         _prompt_input "Enter Symphony Container Registry Name" SYMPHONY_ACR_NAME
+    fi
+
+    if [ -z "$SYMPHONY_ACR_SERVER" ];then
+        _prompt_input "Enter Symphony Container Registry Login Server" SYMPHONY_ACR_SERVER
     fi
 
     if [ "$IACTOOL" != "bicep" ]; then
