@@ -332,29 +332,29 @@ create_kv() {
 }
 
 create_sp() {
-    local _display_name="${1}"
+    local _name="${1}"
     local _role="${2}"
     local _scope="${3}"
 
     sleep 60
-    sp_object=$(az ad sp create-for-rbac --display-name "${_display_name}" --role "${_role}" --scopes "${_scope}")
+    sp_object=$(az ad sp create-for-rbac --name "${_name}" --role "${_role}" --scopes "${_scope}")
 
     echo "${sp_object}"
 }
 
 create_sa() {
-    local _display_name="${1}"
+    local _name="${1}"
     local _sku="${2}"
     local _identity="${3}"
     sleep 60
-    az storage account create --name "${_display_name}" --resource-group "${RG_NAME}" --location "${LOCATION}" --sku "${_sku}" --identity-type "${_identity}"  
+    az storage account create --name "${_name}" --resource-group "${RG_NAME}" --location "${LOCATION}" --sku "${_sku}" --identity-type "${_identity}"  
 }
 
 create_sa_container() {
-    local _display_name="${1}"
+    local _name="${1}"
     local _account_name="${2}"
 
-    az storage container create --name "${_display_name}" --account-name "${_account_name}"
+    az storage container create --name "${_name}" --account-name "${_account_name}"
 }
 
 set_kv_secret() {
