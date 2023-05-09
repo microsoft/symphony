@@ -31,7 +31,7 @@ declare SYMPHONY_SA_STATE_NAME=""
 declare AZURE_REGIONS=""
 
 SP_CLOUD_ENVIRONMENT=$(az cloud list --query '[?isActive].name' --output tsv)
-declare -r SP_CLOUD_ENVIRONMENT
+declare SP_CLOUD_ENVIRONMENT
 
 main() {
     show_banner
