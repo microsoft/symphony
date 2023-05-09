@@ -267,8 +267,7 @@ deploy_dependencies() {
 }
 
 get_resource_group_link(){
-    cloud_name=$(az cloud show | jq -r '.name')
-    portal_link=$(az cloud show -n "${cloud_name}" | jq -r '.endpoints.portal')
+    portal_link=$(az cloud show -n "${SP_CLOUD_ENVIRONMENT}" | jq -r '.endpoints.portal')
 
     echo "${portal_link}/#@/resource/subscriptions/$SP_SUBSCRIPTION_ID/resourceGroups/$RG_NAME/overview"
 }
