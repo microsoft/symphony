@@ -163,7 +163,11 @@ deploy_dependencies() {
             # Create Backup State SA container
             _information "Creating Backup Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_BACKUP_NAME}"
             create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
-            
+
+            # Save State SA details to KV
+            echo "Saving Cloud Environment (${SP_CLOUD_ENVIRONMENT}) to Key Vault secret 'cloudEnvironment'."
+            set_kv_secret 'cloudEnvironment' "${SP_CLOUD_ENVIRONMENT}" "${KV_NAME}"
+
             # Save State SA details to KV
             echo "Saving State Storage Account (${SA_STATE_NAME}) to Key Vault secret 'stateStorageAccount'."
             set_kv_secret 'stateStorageAccount' "${SA_STATE_NAME}" "${KV_NAME}"
