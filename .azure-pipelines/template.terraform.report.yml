@@ -20,7 +20,7 @@ jobs:
         inputs:
           azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
           keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
+          secretsFilter: "clientId, clientSecret, cloudEnvironment, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
           runAsPreJob: true
 
       - task: Bash@3
