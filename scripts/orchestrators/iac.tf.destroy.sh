@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ./iac.tf.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+azlogin "$ARM_SUBSCRIPTION_ID" "$ARM_TENANT_ID" "$ARM_CLIENT_ID" "$ARM_CLIENT_SECRET" "$CLOUD_ENVIRONMENT"
 
 pushd "${WORKSPACE_PATH}/IAC/Terraform/terraform"
 

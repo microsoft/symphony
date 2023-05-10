@@ -2,7 +2,7 @@
 
 source ./tests.runner.sh
 pushd "${WORKSPACE_PATH}/IAC/Terraform/test/terraform"
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+azlogin "$ARM_SUBSCRIPTION_ID" "$ARM_TENANT_ID" "$ARM_CLIENT_ID" "$ARM_CLIENT_SECRET" "$CLOUD_ENVIRONMENT"
 
 # install junit
 echo "install go-junit-report"

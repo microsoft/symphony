@@ -85,7 +85,7 @@ terraform() {
 # @usage <to run all the tests for shellspec>: source ${0} && bicep shellspec
 bicep() {
   source ./iac.bicep.sh
-  azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+  azlogin "$ARM_SUBSCRIPTION_ID" "$ARM_TENANT_ID" "$ARM_CLIENT_ID" "$ARM_CLIENT_SECRET" "$CLOUD_ENVIRONMENT"
 
   pester() {
     _information "run end to end tests"

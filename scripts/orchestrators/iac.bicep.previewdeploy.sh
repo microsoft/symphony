@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+azlogin "$ARM_SUBSCRIPTION_ID" "$ARM_TENANT_ID" "$ARM_CLIENT_ID" "$ARM_CLIENT_SECRET" "$CLOUD_ENVIRONMENT"
 
 pushd .
 
