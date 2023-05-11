@@ -28,4 +28,5 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
     secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironmentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironment: ${{ secrets.AZURE_ENVIRONMENT }}

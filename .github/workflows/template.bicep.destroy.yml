@@ -13,7 +13,9 @@ on:
         required: true
         type: string
     secrets:
-      azureEnviromentCredentials:
+      azureEnvironmentCredentials:
+        required: true
+      azureEnvironment:
         required: true
 
 jobs:
@@ -34,12 +36,13 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
+          creds: "${{ secrets.azureEnvironmentCredentials }}"
+          environment: "${{ secrets.azureEnvironment }}"
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+          SECRETS: "clientId, clientSecret, cloudEnvironment, subscriptionId, tenantId"
         run: |
           OIFS=$IFS
           IFS=', '
@@ -61,5 +64,6 @@ jobs:
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export CLOUD_ENVIRONMENT=${{ steps.LoadSecrets.outputs.cloudEnvironment}}
           ./iac.bicep.destroy.sh
         working-directory: scripts/orchestrators

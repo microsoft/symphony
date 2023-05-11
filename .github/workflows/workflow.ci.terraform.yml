@@ -49,7 +49,8 @@ jobs:
       runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
     secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironmentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironment: ${{ secrets.AZURE_ENVIRONMENT }}
 
   PreviewDeploy:
     needs: Validate
@@ -60,7 +61,8 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
     secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironmentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironment: ${{ secrets.AZURE_ENVIRONMENT }}
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -72,7 +74,8 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
     secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironmentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironment: ${{ secrets.AZURE_ENVIRONMENT }}
 
   Report:
     needs: PreviewDeploy
@@ -83,4 +86,5 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
     secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironmentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      azureEnvironment: ${{ secrets.AZURE_ENVIRONMENT }}
