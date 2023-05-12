@@ -68,8 +68,8 @@ set_cloud_env() {
 }
 
 get_acr_login_endpoint() {
-   cloud_name=$(az cloud show | jq -r '.name')
-   login_endpoint=$(az cloud show -n "${cloud_name}" | jq -r '.suffixes.acrLoginServerEndpoint')
+   login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
+   
    echo "${login_endpoint}"
 }
 
