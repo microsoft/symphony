@@ -135,6 +135,7 @@ function create_pipelines_terraform() {
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion cloudEnvironment "$SP_CLOUD_ENVIRONMENT" true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)" 
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.1.7 true)" 
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runLayerTest false true)"
@@ -157,6 +158,7 @@ function create_pipelines_bicep() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)" 
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"  
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion cloudEnvironment "$SP_CLOUD_ENVIRONMENT" true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)" 
     _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.bicep.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
