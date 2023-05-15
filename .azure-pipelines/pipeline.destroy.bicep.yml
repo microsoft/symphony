@@ -37,3 +37,4 @@ jobs:
       environmentName: $(environmentName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
+      cloudEnvironment: $(cloudEnvironment)

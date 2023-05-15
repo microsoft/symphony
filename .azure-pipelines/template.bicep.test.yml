@@ -9,6 +9,8 @@ parameters:
     type: string
   - name: excludedFolders
     type: string
+  - name: cloudEnvironment
+    type: string
 
 jobs:
   - job: Test
@@ -65,6 +67,7 @@ jobs:
           appServiceResourceGroupName:   $(resourceGroupName)
           appServicePlanName:  $(appServicePlanName)
           appServiceName:  $(appServiceName)
+          CLOUD_ENVIRONMENT: ${{ parameters.cloudEnvironment }}
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"

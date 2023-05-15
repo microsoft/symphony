@@ -40,6 +40,7 @@ jobs:
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
+      cloudEnvironment: $(cloudEnvironment)
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
@@ -48,6 +49,7 @@ jobs:
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
+      cloudEnvironment: $(cloudEnvironment)
 
   - template: ./template.bicep.test.yml
     parameters:
@@ -56,3 +58,4 @@ jobs:
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
+      cloudEnvironment: $(cloudEnvironment)

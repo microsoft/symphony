@@ -5,6 +5,8 @@ parameters:
     type: string
   - name: keyVaultName
     type: string
+  - name: cloudEnvironment
+    type: string
 
 jobs:
   - job: Destroy
@@ -42,6 +44,7 @@ jobs:
           STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
           STATE_CONTAINER: $(stateContainer)
           STATE_RG: $(stateRg)
+          CLOUD_ENVIRONMENT: ${{ parameters.cloudEnvironment }}
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
           targetType: "filePath"
