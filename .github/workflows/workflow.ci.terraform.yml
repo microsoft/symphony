@@ -48,6 +48,7 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
+      azureCloudEnvironment: ${{ vars.AZURE_CLOUD_ENVIRONMENT}}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -59,6 +60,7 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      azureCloudEnvironment: ${{ vars.AZURE_CLOUD_ENVIRONMENT}}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -71,6 +73,7 @@ jobs:
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      azureCloudEnvironment: ${{ vars.AZURE_CLOUD_ENVIRONMENT}}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -82,5 +85,6 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      azureCloudEnvironment: ${{ vars.AZURE_CLOUD_ENVIRONMENT}}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
