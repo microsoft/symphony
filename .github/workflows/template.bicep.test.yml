@@ -15,6 +15,9 @@ on:
       branchName:
         required: true
         type: string
+      azureCloudEnvironment:
+        type: string
+        required: true
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -41,6 +44,7 @@ jobs:
         name: Run Azure Login
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
+          environment: ${{ inputs.azureCloudEnvironment }}
 
       - name: Fetch Cached Environment
         id: cache-env
@@ -75,7 +79,7 @@ jobs:
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-
+          export AZURE_CLOUD_ENVIRONMENT=${{ inputs.azureCloudEnvironment }}
           source ./tests.runner.sh
 
           pushd ../../IAC/Bicep/bicep
