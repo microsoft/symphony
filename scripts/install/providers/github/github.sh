@@ -83,6 +83,7 @@ function configure_credentials {
 
     sp_json=$(_build_az_secret)
     gh secret set "AZURE_CREDENTIALS" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$sp_json"
+    gh variable set "AZURE_CLOUD_ENVIRONMENT" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_CLOUD_ENVIRONMENT"
 }
 
 function create_pipelines_bicep {
