@@ -15,9 +15,6 @@ on:
       branchName:
         required: true
         type: string
-      azureCloudEnvironment:
-        type: string
-        required: true
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -39,7 +36,6 @@ jobs:
       - uses: Azure/login@v1
         with:
           creds: ${{ secrets.azureEnviromentCredentials }}
-          environment: ${{ inputs.azureCloudEnvironment }}
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
@@ -68,7 +64,6 @@ jobs:
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          export AZURE_CLOUD_ENVIRONMENT=${{ inputs.azureCloudEnvironment }}
           ./iac.bicep.previewdeploy.sh
         working-directory: scripts/orchestrators
 
