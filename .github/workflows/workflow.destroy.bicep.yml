@@ -27,6 +27,5 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-      azureCloudEnvironment: ${{ vars.AZURE_CLOUD_ENVIRONMENT}}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
