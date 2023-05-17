@@ -7,7 +7,7 @@ parameters:
     type: string
   - name: keyVaultName
     type: string
-  - name: cloudEnvironment
+  - name: azureCloudEnvironment
     type: string
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
           STATE_CONTAINER: $(stateContainer)
           ENVIRONMENT_NAME: $(environmentName)
           TEST_TAG: ''
-          CLOUD_ENVIRONMENT: ${{ parameters.cloudEnvironment }}
+          AZURE_CLOUD_ENVIRONMENT: ${{ parameters.azureCloudEnvironment }}
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"

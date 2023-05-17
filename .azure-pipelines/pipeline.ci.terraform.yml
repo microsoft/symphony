@@ -59,7 +59,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          cloudEnvironment: $(cloudEnvironment)
+          azureCloudEnvironment: $(azureCloudEnvironment)
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:
@@ -67,7 +67,7 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          cloudEnvironment: $(cloudEnvironment)
+          azureCloudEnvironment: $(azureCloudEnvironment)
 
       - template: ./template.terraform.test.yml
         parameters:
@@ -75,10 +75,10 @@ stages:
           terraformVersion: "$(terraformVersion)"
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          cloudEnvironment: $(cloudEnvironment)
+          azureCloudEnvironment: $(azureCloudEnvironment)
 
       - template: ./template.terraform.report.yml
         parameters:
           keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
           keyVaultName: "$(keyVaultName)"
-          cloudEnvironment: $(cloudEnvironment)
+          azureCloudEnvironment: $(azureCloudEnvironment)
