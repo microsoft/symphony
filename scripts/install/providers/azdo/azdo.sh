@@ -146,6 +146,7 @@ function create_pipelines_terraform() {
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion azureCloudEnvironment "$SP_CLOUD_ENVIRONMENT" true)"
     _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.terraform.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
@@ -166,7 +167,8 @@ function create_pipelines_bicep() {
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)" 
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"    
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion azureCloudEnvironment "$SP_CLOUD_ENVIRONMENT" true)"   
     _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.bicep.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
