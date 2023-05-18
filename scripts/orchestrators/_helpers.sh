@@ -26,12 +26,16 @@ azlogin() {
 
     if [ "${cloud_name}" == 'AzureCloud' ]; then
         export ARM_ENVIRONMENT="public"
+        export AZURE_ENVIRONMENT="AzurePublicCloud"
     elif [ "${cloud_name}" == 'AzureUSGovernment' ]; then
         export ARM_ENVIRONMENT="usgovernment"
+        export AZURE_ENVIRONMENT="AzureUSGovernmentCloud"
     elif [ "${cloud_name}" == 'AzureChinaCloud' ]; then
-        export ARM_ENVIRONMENT="china"
+        export ARM_ENVIRONMENT="AzureChinaCloud"
+        export AZURE_ENVIRONMENT="AzurePublicCloud"
     elif [ "${cloud_name}" == 'AzureGermanCloud' ]; then
         export ARM_ENVIRONMENT="german"
+        export AZURE_ENVIRONMENT="AzureGermanCloud"
     else
         _error "Unknown cloud. Check documentation https://www.terraform.io/docs/providers/azurerm/index.html#environment"
         return 1
