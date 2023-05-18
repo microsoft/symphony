@@ -41,6 +41,7 @@ jobs:
         name: Run Azure Login
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
+          environment: "AzureCloud"
 
       - name: Fetch Cached Environment
         id: cache-env
