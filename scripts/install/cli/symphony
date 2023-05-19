@@ -23,7 +23,7 @@ declare default_location="westus"
 declare today="$(date '+%Y-%m-%d-%H-%M-%s')"
 declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
-declare SP_CLOUD_ENVIRONMENT="AzureCloud"
+declare SP_CLOUD_ENVIRONMENT=""
 declare SP_SUBSCRIPTION_NAME="Azure"
 declare SYMPHONY_KV_NAME=""
 declare SYMPHONY_RG_NAME=""
@@ -35,6 +35,7 @@ main() {
     show_banner
     check_dependencies
     verify_az_logged_in
+    set_cloud_env
     parse_args "$@"
     process_command
 }
@@ -62,9 +63,13 @@ verify_az_logged_in() {
   fi
 }
 
+set_cloud_env() {
+    SP_CLOUD_ENVIRONMENT=$(az cloud show | jq -r '.name')
+}
+
 get_acr_login_endpoint() {
-   cloud_name=$(az cloud show | jq -r '.name')
-   login_endpoint=$(az cloud show -n "${cloud_name}" | jq -r '.suffixes.acrLoginServerEndpoint')
+   login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
+   
    echo "${login_endpoint}"
 }
 
