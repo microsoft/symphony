@@ -1,0 +1,40 @@
+{
+    "administratorsGroup": null,
+    "authorization": {
+      "scheme": "ServicePrincipal",
+      "parameters": {
+        "serviceprincipalid": "__SERVICE_PRINCIPAL_ID__",
+        "authenticationType": "spnKey",
+        "serviceprincipalkey": "__SERVICE_PRINCIPAL_KEY__",
+        "tenantid": "__SERVICE_PRINCIPAL_TENANT_ID__"
+      }
+    },
+    "createdBy": null,
+    "data": {
+      "environment": "__CLOUD_ENVIRONMENT__",
+      "subscriptionId": "__SUBSCRIPTION_ID__",
+      "subscriptionName": "__SUBSCRIPTION_NAME__",
+      "scopeLevel": "Subscription",
+      "creationMode": "Manual"
+    },
+    "description": "",
+    "groupScopeId": null,
+    "name": "__SERVICE_CONNECTION_NAME__",
+    "operationStatus": null,
+    "readersGroup": null,
+    "serviceEndpointProjectReferences": [
+      {
+        "description": "",
+        "name": "__SERVICE_CONNECTION_NAME__",
+        "projectReference": {
+          "id": "__PROJECT_ID__",
+          "name": "__PROJECT_NAME__"
+        }
+      }
+    ],
+    "type": "azurerm",
+    "url": "__MANAGEMENT_URI__",
+    "isShared": false,
+    "owner": "library"
+  }
+  

@@ -1,0 +1,18 @@
+{
+  "id": null,
+  "name": "sc-ado",
+  "type": "AZDOAPI",
+  "url": "__ADO_ORG_URI__",
+  "createdBy": null,
+  "description": "",
+  "authorization": {
+    "parameters": {
+      "apitoken": "__ADO_PAT__"
+    },
+    "scheme": "Token"
+  },
+  "isShared": false,
+  "isReady": true,
+  "owner": "library",
+  "serviceEndpointProjectReferences": null
+}
