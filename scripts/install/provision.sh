@@ -316,11 +316,11 @@ create_cr() {
         git checkout "${APP_COMMIT}"
         
         _information "Creating App Web Container"
-        az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+        az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
             
         sleep 5
         _information "Creating App Api Container"
-        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
+        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
 
     popd || exit
     rm -r -f "_app"
