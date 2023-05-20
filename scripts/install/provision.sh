@@ -296,7 +296,7 @@ create_cr() {
     while [ $ready -ne 0 ]
     do
         _information "Checking Provisioning Status for Azure Container Registry $CR_NAME - ($(($counter+1)) of $max)"
-        status=$(az acr show -n "${CR_NAME}" | jq -r '.provisioningState')
+        status=$(az acr show -n "${CR_NAME}" -g "${RG_NAME}" | jq -r '.provisioningState')
         if [ "$status" == "Succeeded" ]; then
             ready=0
             _information "Azure Container Registry $CR_NAME created successfully!"
