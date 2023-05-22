@@ -41,6 +41,7 @@ $> symphony pipeline config <azdo|github> <terraform|bicep>
 
 > **Note**: 
 > When completing `symphony pipeline config`,
+> 
 > - Ensure there are no spaces in the project name and it adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).
 > - Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are both accepted. The `ORG` name is used for the service and `Project Collection` name for server hosts. 
 
