@@ -35,7 +35,8 @@ jobs:
 
       - uses: Azure/login@v1
         with:
-          creds: ${{ secrets.azureEnviromentCredentials }}
+          creds: "${{ secrets.azureEnviromentCredentials }}"
+          environment: "AzureCloud"
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
