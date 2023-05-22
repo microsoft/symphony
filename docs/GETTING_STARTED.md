@@ -39,11 +39,14 @@ $> symphony provision
 $> symphony pipeline config <azdo|github> <terraform|bicep>
 ```
 
-**Note: When naming the azdo project, during `symphony pipeline config`, ensure there is no spaces in the project name. Also make sure project name adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).**
+> **Note**: 
+> When completing `symphony pipeline config`,
+> - Ensure there are no spaces in the project name and it adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).
+> - Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are both accepted. The `ORG` name is used for the service and `Project Collection` name for server hosts. 
 
-Now that you have successfully completed the provision process. Go you created Symphony on the SCM you selected when you ran `Symphony pipeline config` command. You can browse the code, tests, and run the pipelines as well to deploy the sample app.
+Now that you have successfully completed the provision process. Go to the created Symphony repo on the SCM you selected when you ran the `symphony pipeline config` command. You can browse the code, tests, and run the pipelines as well to deploy the sample app.
 
-Also take a look at the Symphony resources deployed when you ran the `Symphony provision` command. you can find the resources names in the ./.symphony/symphony.json
+Also take a look at the Symphony resources deployed when you ran the `symphony provision` command. you can find the resources names in the ./.symphony/symphony.json
 
 ## Symphony CLI commands
 
