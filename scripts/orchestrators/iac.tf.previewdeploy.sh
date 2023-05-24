@@ -1,8 +1,11 @@
 #!/bin/bash
 
-source ./iac.tf.sh
+if [[ "$IS_TEST" == "" ]]; then
+    source ./iac.tf.sh
+fi
+
 pushd ${WORKSPACE_PATH}/IAC/Terraform/terraform
-modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
+modules=$(find . -type d -not -path "*.terraform*" | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
 
 SAVEIFS=$IFS
 IFS=$'\n'
@@ -12,6 +15,7 @@ len=${#array[@]}
 echo "Az login"
 azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
 for deployment in "${array[@]}"; do
+    echo "deployment=$deployment"
     if [[ ${deployment} != *"01_init"* ]]; then
         echo "tf init ${deployment}"
         pushd $deployment
