@@ -7,7 +7,7 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
 
 **Note : Make Sure your versions are updated to the latest. Having an older git version can cause errors!**
 
-- Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) 
+- Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 - Install [Azure Cli](https://docs.microsoft.com/cli/azure).
 - Install [JQ](https://stedolan.github.io/jq).
 
