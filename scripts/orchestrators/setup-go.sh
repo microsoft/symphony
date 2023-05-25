@@ -112,7 +112,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
 
     # Use go get for versions of go under 1.16
     go_install_command=install
-    if [[ $(echo "'1.16' > '$(go version | grep -oP 'go\K[0-9]+\.[0-9]+(\.[0-9]+)?')'" | bc) == 1 ]]; then
+    if [[ "1.16.0" > "$(go version | grep -oP 'go\K[0-9]+\.[0-9]+(\.[0-9]+)?')" ]]; then
         export GO111MODULE=on
         go_install_command="get"
         _information "Go version < 1.16, using go get."
