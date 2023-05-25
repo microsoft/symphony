@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _error() {
-    printf " \e[31mError: $@\n\e[0m"
+    printf " \e[31mError: %s\n\e[0m" "$@"
 }
 
 _fail(){
@@ -14,11 +14,11 @@ _fail(){
 
 
 _danger() {
-    printf " \e[31m$@\n\e[0m"
+    printf " \e[31m%s\n\e[0m" "$@"
 }
 
 _prompt() {
-    printf "\n\e[35m>$@\n\e[0m"
+    printf "\n\e[35m>%s\n\e[0m" "$@"
 }
 
 _debug() {
@@ -31,22 +31,16 @@ _debug() {
     fi
 }
 
-_debug_json() {
-    if [ "$DEBUG_FLAG" == true ]; then
-        echo $1 | jq
-    fi
-}
-
 _information() {
-    printf "\e[36m$@\n\e[0m"
+    printf "\e[36m%s\n\e[0m" "$@"
 }
 
 _success() {
-    printf "\e[32m$@\n\e[0m"
-}
+    printf "\e[32m%s\n\e[0m" "$@"
+} 
 
 _debug_json() {
-    if [ -n ${DEBUG_FLAG} ]; then
-        echo "${@}" | jq
+    if [ -n "$DEBUG_FLAG" ]; then
+        echo "$@" | jq
     fi
 }

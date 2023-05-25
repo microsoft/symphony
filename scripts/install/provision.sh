@@ -13,15 +13,6 @@ get_prefix(){
     echo "$prefix"
 }
 
-get_suffix(){
-    suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
-    if [ "$suffix" == "null" ]; then
-      suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
-      set_json_value  "$SYMPHONY_ENV_FILE_PATH" "suffix" "$suffix"
-    fi
-    echo "$suffix"
-}
-
 get_suffix() {
     suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
     if [ "$suffix" == "null" ]; then
