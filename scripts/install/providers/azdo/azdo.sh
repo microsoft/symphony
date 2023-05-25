@@ -12,9 +12,9 @@ source "$SCRIPT_DIR"/../../../utilities/http.sh
 ########################################################################################
 function load_inputs {
     _information "Load AzDo Configurations"
-
+    
     if [ -z "$AZDO_ORG_URI" ]; then
-        _prompt_input "Enter Azure Devops URL 'e.g. https://dev.azure.com/MYORG' or 'https://myazdoserver.com/COLLECTION'" AZDO_ORG_URI
+        _prompt_input "Enter Azure Devops URL 'e.g. https://dev.azure.com/MYORG' or 'https://<CUSTOM_SERVER_URL>/MYCOLLECTION'" AZDO_ORG_URI
     fi
 
     if [[ $AZDO_ORG_URI == *".azure.com"* ]] || [[ $AZDO_ORG_URI == *".visualstudio.com"* ]]; then
@@ -26,7 +26,8 @@ function load_inputs {
     _information "AzDo Install Type: $INSTALL_TYPE"
        
     if [ -z "$AZDO_ORG_NAME" ]; then
-        _prompt_input "Enter existing Azure Devops Org/Collection Name" AZDO_ORG_NAME
+        local _host_type_group_name=$([[ $INSTALL_TYPE == 'PAAS' ]] && echo "Organization" || echo "Project Collection")
+        _prompt_input "Enter the existing Azure Devops $_host_type_group_name name" AZDO_ORG_NAME
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then
