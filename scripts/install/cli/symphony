@@ -157,7 +157,7 @@ configure_orchestrator() {
         
         server_endpoint="$(get_acr_login_endpoint)"
         eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\"" 
-        eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\"" 
+        eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\""
 
         if [ "$IACTOOL" == "bicep" ]; then
             create_pipelines_bicep
@@ -170,7 +170,7 @@ configure_orchestrator() {
         # commit & push the code the repo
         git add .
         git commit -m "Update resource names"
-        git push origin --all
+        push_repo
 
         check_error_log
     popd || exit

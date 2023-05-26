@@ -12,22 +12,25 @@ source "$SCRIPT_DIR"/../../../utilities/http.sh
 ########################################################################################
 function load_inputs {
     _information "Load AzDo Configurations"
-    
+
+    local _host_type_group_name=''
+
     if [ -z "$AZDO_ORG_URI" ]; then
         _prompt_input "Enter Azure Devops URL 'e.g. https://dev.azure.com/MYORG' or 'https://<CUSTOM_SERVER_URL>/MYCOLLECTION'" AZDO_ORG_URI
     fi
 
     if [[ $AZDO_ORG_URI == *".azure.com"* ]] || [[ $AZDO_ORG_URI == *".visualstudio.com"* ]]; then
         export INSTALL_TYPE='PAAS'
+        _host_type_group_name='Organization name (i.e. MYORG)'
     else
         export INSTALL_TYPE='Server'
+        _host_type_group_name='Project Collection name (i.e. MYCOLLECTION)'
     fi
 
     _information "AzDo Install Type: $INSTALL_TYPE"
        
     if [ -z "$AZDO_ORG_NAME" ]; then
-        local _host_type_group_name=$([[ $INSTALL_TYPE == 'PAAS' ]] && echo "Organization" || echo "Project Collection")
-        _prompt_input "Enter the existing Azure Devops $_host_type_group_name name" AZDO_ORG_NAME
+        _prompt_input "Enter the existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then
@@ -37,9 +40,7 @@ function load_inputs {
     if [ -z "$AZDO_PAT" ]; then
         _prompt_input "Enter Azure Devops PAT" AZDO_PAT
     fi
-
 }
-
 
 function configure_repo { 
     _information "Create Project AzDo"
@@ -124,10 +125,9 @@ function configure_repo {
     echo "${AZDO_PROJECT_NAME} Git Repo remote URL: $CODE_REPO_GIT_HTTP_URL"
 
     # Configure remote for local git repo
-    remoteWithCreds="${CODE_REPO_GIT_HTTP_URL/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
     git init
     git branch -m main
-    git remote add origin "$remoteWithCreds"
+    git remote add origin "$CODE_REPO_GIT_HTTP_URL"
 
     _success "Project '${AZDO_PROJECT_NAME}' created."
 }
@@ -318,7 +318,16 @@ function _create_pipeline {
     local _agent_pool_queue_id=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_id')
     local _agent_pool_queue_name=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_name')
 
-    #Ensure the agent pool is setup correctly.
+    # Update the Agent for AzDO Server
+    if [ "$INSTALL_TYPE" == "Server" ]; then
+        local _yaml_file="${_yaml_path:1}"
+
+        sed -i 's/agentImage/agentName/g' $_yaml_file
+        sed -i 's/value: "ubuntu-latest"/value: "Default"/g' $_yaml_file
+        sed -i 's/vmImage:/name:/g' $_yaml_file
+    fi
+
+    # Ensure the Agent Pool is setup correctly 
     local _branch_name="main"
     local _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/build/definitions?api-version=" '5.1' '5.1')
 
@@ -348,7 +357,6 @@ function _create_pipeline {
 
     local _pipeId=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.id')
 
-    
     # Authorize Pipeline 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/queue/${_agent_pool_queue_id}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
@@ -460,6 +468,7 @@ function _get_agent_pool_queue() {
     echo "{\"agent_pool_queue_id\":\"$agent_pool_queue_id\",\"agent_pool_queue_name\":\"$agent_pool_queue_name\"}"
 }
 
-
-
-
+function push_repo {
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
+    git -c http.extraHeader="Authorization: Basic ${_token}" push -u origin --all
+}
