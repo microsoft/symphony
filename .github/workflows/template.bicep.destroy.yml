@@ -35,6 +35,7 @@ jobs:
         name: Run Azure Login
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
+          environment: "AzureCloud"
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
