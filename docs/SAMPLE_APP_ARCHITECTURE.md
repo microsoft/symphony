@@ -35,7 +35,7 @@ _01_init_ layer is a _special_ layer, that provisions the symphony infrastructur
 
 ### Database layer (Terraform)
 
-_02_sql_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app:
+_02_sql_ layer has only one deployment: _01_deployment_, which provisions the following resources for the sample app:
 
 - SQL Server
 - SQL Server database for catalogs
@@ -44,7 +44,7 @@ _02_sql_ layer has only one deployment: _01_deployment_, that provisions the fol
 
 ### WebApp layer (Terraform)
 
-_03_webapp_ layer has only one deployment: _01_deployment_, that provisions the following resources for the sample app.
+_03_webapp_ layer has only one deployment: _01_deployment_, which provisions the following resources for the sample app.
 
 - App Service plan
   - Web App for Containers
@@ -68,7 +68,7 @@ graph TD
 _01_sql_ layer has two deployments:
 
 - _01_rg_, that provisions resource group
-- _02_deployment_, that provisions the following resources:
+- _02_deployment_, which provisions the following resources:
   - SQL Server
   - SQL Server database for catalogs
   - SQL Server database for identities
@@ -79,6 +79,6 @@ _01_sql_ layer has two deployments:
 _02_webapp_ layer has two deployments:
 
 - _01_rg_, that provisions resource group
-- _02_deployment_, that provisions the following resources:
+- _02_deployment_, which provisions the following resources:
   - App Service plan
     - Web App for Containers
