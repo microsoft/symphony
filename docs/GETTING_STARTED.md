@@ -99,3 +99,24 @@ This command creates and configures a Symphony project that includes a code repo
 | CI-Destroy main workflow      | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
 |AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault | GitHub |
 |Symphony-KV Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault | Azure DevOps |
+
+## Using Existing Resources
+
+Existing resources can be used with Symphony. The resources, however will need to follow a specific naming convention. To do so you will need to create a `symphony.json` in a top level `.symphony` folder. A prefix and suffix value is required. Below is an basic example of that file:
+
+``` json
+{
+  "prefix": "{prefix}",
+  "suffix": "{suffix}" 
+}
+```
+
+The pre-created resources must follow the current naming convention.
+
+| Resource | naming convention |
+| ----------------------------- | ------------------- |
+| Resource Group | rg-{prefix}-{suffix} |
+| Keyvault | kv-{prefix}-{suffix} |
+| state storage account | sastate{prefix}{suffix} |
+| backup state storage account | sastatebkup{prefix}{suffix} |
+| container registry | cr{prefix}{suffix} |
