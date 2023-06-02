@@ -1,25 +1,15 @@
 # Contributing Guide
 
-We appreciate your interest in contributing to the project! This document outlines how to contribute to the project, including the contribution process, code style, and testing.
+This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to and actually do, grant us the rights to use your contribution. For details, visit [Microsoft Contributor License Agreement](https://cla.opensource.microsoft.com).
 
-## Contribution process
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
-To contribute, please follow these steps:
-
-1. Fork the project repository on GitHub.
-1. Create a new branch for your feature or bug fix.
-1. Make sure the `README.md` and any other relevant [documentation](./docs/) are kept up-to-date.
-1. Make your changes and commit them with descriptive commit messages.
-1. Push to your forked repository.
-1. Create a new pull request from your fork to this project.
-1. Please ensure that your pull request includes a detailed description of your changes.
-
-## Code of Conduct
-
-All contributors are expected to adhere to the project code of conduct. Therefore, please review it before contributing [`Code of Conduct`](CODE_OF_CONDUCT.md).
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## License
 
-By contributing to this project, you agree that your contributions will be licensed under the project license.
+This project is under an [MIT License](LICENSE).
 
-Thank you for contributing!
+## Trademarks
+
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-party's policies.
