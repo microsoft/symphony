@@ -102,7 +102,7 @@ This command creates and configures a Symphony project that includes a code repo
 
 ## Using Existing Resources
 
-Existing resources can be used with Symphony. The resources, however will need to follow a specific naming convention. To do so you will need to create a `symphony.json` in a top level `.symphony` folder. A prefix and suffix value is required. Below is an basic example of that file:
+Existing resources can be used with Symphony. The resources, however will need to follow a specific naming convention. To use existing resources you will need to create a `symphony.json` in a top level `.symphony` folder. A prefix and suffix value is required. Below is an basic example of that file:
 
 ``` json
 {
