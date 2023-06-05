@@ -22,5 +22,3 @@ main() {
 
 # Entry point
 main
-
-# Exit cleanly
