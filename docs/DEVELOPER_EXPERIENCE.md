@@ -2,7 +2,7 @@
 
 DevContainers provide developers with a consistent, isolated, and reproducible development environment. They eliminate the need for manual configuration and management of the environment, making it easy to set up and maintain. By enabling developers to define their environment as code, DevContainers streamline the development process, reduce setup time, and improve overall code quality and consistency.
 
-Symphony uses DevContainers to streamline the developer experience substantially, by configuring all the software requriements detailed below:
+Symphony uses DevContainers to streamline the developer experience substantially, by configuring all the software requirements detailed below:
 
 ## DevContainer
 
@@ -59,17 +59,17 @@ For more information about the sample application that is deployed with Symphony
 
 ## Deploy
 
-The [IAC](./../IAC/) directory, has two subdirectories which represent options that support either a Terraform or Bicep configuration. The contained `deploy.sh` file offers a straightforward script which enables you to run and test your code quickly.
+The [IAC](./../IAC/) directory has two subdirectories that represent options that support either a Terraform or Bicep configuration. The contained `deploy.sh` file offers a straightforward script that enables you to run and test your code quickly.
 
 ## Input Variables
 
 For the local development experience, you can use predefined input variable files that represent a configurable environment like:
 
 ```bash
-(_{env}_.tfvars.json 
+(_{env}_.tfvars.json
 ```
 
-for Terrafom or,
+for Terraform or,
 
 ```bash
 parameters._{env}_.json

@@ -13,15 +13,6 @@ get_prefix(){
     echo "$prefix"
 }
 
-get_suffix(){
-    suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
-    if [ "$suffix" == "null" ]; then
-      suffix=$(echo $RANDOM | fold -w 3 | head -n 1)
-      set_json_value  "$SYMPHONY_ENV_FILE_PATH" "suffix" "$suffix"
-    fi
-    echo "$suffix"
-}
-
 get_suffix() {
     suffix=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "suffix")
     if [ "$suffix" == "null" ]; then
@@ -296,7 +287,7 @@ create_cr() {
     while [ $ready -ne 0 ]
     do
         _information "Checking Provisioning Status for Azure Container Registry $CR_NAME - ($(($counter+1)) of $max)"
-        status=$(az acr show -n "${CR_NAME}" | jq -r '.provisioningState')
+        status=$(az acr show -n "${CR_NAME}" -g "${RG_NAME}" | jq -r '.provisioningState')
         if [ "$status" == "Succeeded" ]; then
             ready=0
             _information "Azure Container Registry $CR_NAME created successfully!"
@@ -316,11 +307,11 @@ create_cr() {
         git checkout "${APP_COMMIT}"
         
         _information "Creating App Web Container"
-        az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+        az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
             
         sleep 5
         _information "Creating App Api Container"
-        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --file "${APP_API_DOCKERFILE}" .
+        az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
 
     popd || exit
     rm -r -f "_app"
