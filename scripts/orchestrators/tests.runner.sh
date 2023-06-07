@@ -121,8 +121,8 @@ bicep() {
   pushd ../../IAC/Bicep/test
 
   if [ -z "${1}" ]; then
-    pester $@
-    shellspec $@
+    pester "$@"
+    shellspec "$@"
   elif [ "${1}" == "pester" ]; then
     pester ${2}
   elif [ "${1}" == "shellspec" ]; then
