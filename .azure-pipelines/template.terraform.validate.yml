@@ -25,6 +25,7 @@ jobs:
           failOnStderr: true
           targetType: "inline"
           script: |
+            ./setup-azcli.sh
             ./setup-terraform.sh ${{ parameters.terraformVersion }}
             ./setup-tflint.sh
             ./setup-gitleaks.sh

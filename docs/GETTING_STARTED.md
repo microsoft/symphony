@@ -15,9 +15,17 @@ Symphony offers a CLI to perform several actions that bootstraps a new IAC proje
   - As part of the Symphony infrastructure deployment workflow, [GitLeaks](https://github.com/gitleaks/gitleaks) is run to check for any potential leaked credential. The results of the scan is saved in a **Sarif** report formatted document. To be able to publish the report for visualization and GitHub integration, your GitHub organization needs to have access to  **Advanced Security Features**. GitHub Advanced Security features are enabled for all public repositories on GitHub.com. If your Organization uses GitHub Enterprise Cloud with Advanced Security, and you plan to use Symphony with private or internal repositories, **Advanced Security Features** must be enabled. To read more about availability for this feature please see  [The official Github Documentation for GitHub Advanced Security.](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security).
 
   For Azure DevOps:
-  - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
-  - If you are provisioning for AzDO Server, an Agent Pool named `Default` is required for the `syphony pipeline` generated pipelines to run on the target server. To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
+  - Azure DevOps Services (Hosted)
+    - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
 
+  - Azure DevOps Server:
+    - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
+    - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server. To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
+    - Ensure that the following dependencies are installed on the self hosted agent
+       ```bash
+       sudo apt update
+       sudo apt install build-essential unzip
+       ```
 ## Getting started
 
 ```bash
