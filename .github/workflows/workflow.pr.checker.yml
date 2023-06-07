@@ -210,6 +210,7 @@ jobs:
         with:
           jobResults: |
             ${{ needs.markdownlint.result }}
+            ${{ needs.lychee.result }}
             ${{ needs.shellcheck.result }}
           authToken: ${{ github.token }}
           checkName: PR QUALITY
