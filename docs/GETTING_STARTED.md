@@ -1,10 +1,11 @@
 # Create your own Symphony Repository and workflows
 
 Symphony offers a CLI to perform several actions that bootstraps a new IAC project on the orchestrator of your choice. Symphony relies on several backing resources that are needed to facilitate deployment workflows/pipelines. These resources can be provisioned via the CLI and the tool can also create and configure the code repository.
-**Note : symphony commands are build specifically for use in a bash/zsh shell.**
+**Note : symphony commands are built specifically for use in a bash/zsh shell.**
 
 ## Prerequisites tools
 
+- Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). **Note : Make sure your git version is 2.40.0 or newer. Having an older git version can cause errors!**
 - Install [Azure Cli](https://docs.microsoft.com/cli/azure).
 - Install [JQ](https://stedolan.github.io/jq).
 
