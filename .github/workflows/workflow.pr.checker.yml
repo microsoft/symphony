@@ -1,0 +1,221 @@
+name: PR Quality Checker
+
+on:
+  pull_request:
+    types:
+      -  opened
+      -  converted_to_draft
+      -  ready_for_review
+      -  synchronize
+      -  reopened
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      markdown: ${{ steps.changes.outputs.markdown }}
+      markdown_files: ${{ steps.changes.outputs.markdown_files }}
+      shell: ${{ steps.changes.outputs.shell }}
+      shell_files: ${{ steps.changes.outputs.shell_files }}
+      changed: ${{ steps.changes.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Detect Changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          list-files: json
+          filters: |
+            markdown:
+              - added|modified: '**/*.md'
+            shell:
+              - added|modified: '**/*.sh'
+            changed:
+              - '**'
+
+  markdownlint:
+    name: MarkdownLint
+    if: ${{ always() && needs.changes.outputs.markdown == 'true' }}
+    needs:
+      - changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Parse Files
+        id: files
+        run: |
+          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(",")')
+          echo "result=${result}" >> "${GITHUB_OUTPUT}"
+        env:
+          INPUT_FILES: ${{ needs.changes.outputs.markdown_files }}
+
+      - name: Run MarkdownLint
+        id: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v10
+        with:
+          command: config
+          globs: .github/linters/.markdownlint.yml,${{ steps.files.outputs.result }}
+          separator: ','
+
+  lychee:
+    name: Lychee
+    if: ${{ always() && needs.changes.outputs.markdown == 'true' }}
+    needs:
+      - changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Parse Files
+        id: files
+        run: |
+          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(" ")')
+          echo "result=${result}" >> "${GITHUB_OUTPUT}"
+        env:
+          INPUT_FILES: ${{ needs.changes.outputs.markdown_files }}
+
+      - name: Run Lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --config ".github/linters/.lychee.toml" --no-progress ${{ steps.files.outputs.result }}
+          format: detailed
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  shellcheck:
+    name: ShellCheck
+    if: ${{ always() && needs.changes.outputs.shell == 'true' }}
+    needs:
+      - changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Parse Files
+        id: files
+        run: |
+          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(" ")')
+          echo "result=${result}" >> "${GITHUB_OUTPUT}"
+        env:
+          INPUT_FILES: ${{ needs.changes.outputs.shell_files }}
+
+      - name: Setup ShellCheck Problem Matcher
+        uses: lumaxis/shellcheck-problem-matchers@v2
+        with:
+          format: tty
+
+      # - name: Run ShellCheck
+      #   uses: ludeeus/action-shellcheck@2.0.0
+      #   with:
+      #     additional_files: ${{ steps.files.outputs.result }}
+      #     format: tty
+      #     scandir: ${{ github.workspace }}
+      #     ignore_paths: '**/*.sh'
+
+      - name: Run Shell Checker (shellcheck, checkbashisms)
+        uses: luizm/action-sh-checker@v0.7.0
+        with:
+          sh_checker_comment: false
+          sh_checker_only_diff: true
+          sh_checker_shfmt_disable: true
+          sh_checker_shellcheck_disable: false
+          sh_checker_checkbashisms_enable: true
+        env:
+          SHELLCHECK_OPTS: --severity=error
+          GITHUB_TOKEN: ${{ github.token }}
+
+  summary:
+    name: Summary
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs:
+      - markdownlint
+      - lychee
+      - shellcheck
+    permissions:
+      pull-requests: write
+      checks: write
+      statuses: write
+    env:
+      COMMENT_IDENTIFIER: ${{ format('<!-- workflow="{0}" job="{1}" -->', github.workflow, github.job) }}
+    steps:
+      - name: Debug
+        uses: raven-actions/debug@v1
+
+      - name: Bot Details
+        id: bot-details
+        uses: raven-actions/bot-details@v1
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: ${{ steps.bot-details.outputs.name }}
+          body-includes: ${{ env.COMMENT_IDENTIFIER }}
+
+      - name: Set Comment
+        if: ${{ contains(needs.*.result, 'failure') }}
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            Hey @${{ github.actor }}
+
+            🛑 `PR QUALITY` has detected some issues with the files in this PR.
+
+            - MarkdownLint ${{ (needs.markdownlint.result == 'success' && '✅') || '❌' }}
+            - Lychee (Markdown Links) ${{ (needs.lychee.result == 'success' && '✅') || '❌' }}
+            - ShellCheck: ${{ (needs.shellcheck.result == 'success' && '✅') || '❌' }}
+
+            > Please review the file annotations and make the necessary changes.
+            > See [files changed](${{ format('{0}/files', github.event.pull_request.html_url) }})
+
+            ${{ env.COMMENT_IDENTIFIER }}
+          reactions: eyes
+
+      - name: Delete Comment
+        if: ${{ steps.find-comment.outputs.comment-id != '' && !contains(needs.*.result, 'failure') }}
+        uses: sandeshjangam/comment-actions@v1
+        with:
+          type: delete
+          comment_id: ${{ steps.find-comment.outputs.comment-id }}
+
+      - name: Set Check Status
+        uses: maxisam/create-summary-check-status@v1.1.0
+        with:
+          jobResults: |
+            ${{ needs.markdownlint.result }}
+            ${{ needs.lychee.result }}
+            ${{ needs.shellcheck.result }}
+          authToken: ${{ github.token }}
+          checkName: PR QUALITY
+          failureStates: |
+            failure
+            cancelled
+          sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          targetUrl: ${{ format('{0}/actions/runs/{1}', github.event.pull_request.base.repo.html_url, github.run_id) }}

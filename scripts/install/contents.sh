@@ -25,7 +25,7 @@ function remove_tf_content(){
         _information "Remove Terraform Azdo pipeline"
         rm "$TARGET_ROOT"/.azure-pipelines/*.terraform*.yml
     else
-        _information "Remove Terraform Github workflows"
+        _information "Remove Terraform GitHub workflows"
         rm "$TARGET_ROOT"/.github/workflows/*.terraform*.yml
     fi
 
@@ -33,7 +33,7 @@ function remove_tf_content(){
     rm "$TARGET_ROOT"/scripts/orchestrators/*.tf.*.sh
     rm "$TARGET_ROOT"/scripts/orchestrators/*terraform*.sh
     rm "$TARGET_ROOT"/scripts/orchestrators/*tflint.sh
-} 
+}
 
 function remove_bicep_content(){
 
@@ -49,7 +49,7 @@ function remove_bicep_content(){
         _information "Remove Bicep Azdo pipeline"
         rm "$TARGET_ROOT"/.azure-pipelines/*.bicep*.yml
     else
-        _information "Remove Bicep Github workflows"
+        _information "Remove Bicep GitHub workflows"
         rm "$TARGET_ROOT"/.github/workflows/*.bicep*.yml
     fi
 
