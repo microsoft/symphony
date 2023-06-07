@@ -41,3 +41,15 @@ An environment in Symphony is represented by a set of configuration files, each 
 ## Symphony Testing
 
 Symphony offers samples to write and execute both modules and end-to-end tests for the IaC module code and how the tests are integrated into the symphony workflows. Find more in the [Symphony Testing Document](./docs/TESTING.md)
+
+## Contributing
+
+Contributions to the project are welcome! Please follow [Contributing Guide](CONTRIBUTING.md).
+
+## License
+
+This project is under an [MIT License](LICENSE).
+
+## Trademarks
+
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-party's policies.
