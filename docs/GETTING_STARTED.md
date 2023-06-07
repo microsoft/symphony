@@ -24,10 +24,12 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
     - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
     - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server. To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
     - Ensure that the following dependencies are installed on the self hosted agent
+
        ```bash
        sudo apt update
        sudo apt install build-essential unzip
        ```
+
 ## Getting started
 
 ```bash
@@ -51,6 +53,7 @@ $> symphony pipeline config <azdo|github> <terraform|bicep>
 ```
 
 **Notes**:
+
 - When naming the azdo project, during `symphony pipeline config`, ensure there are no spaces in the project name. Also, make sure the project name adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).
 - Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are both accepted. The `ORG` name is used for the service and `Project Collection` name for server hosts. The terminal may prompt for AzDO Server login credientials if not accessible.
 
