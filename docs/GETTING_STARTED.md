@@ -120,3 +120,50 @@ The pre-created resources must follow the current naming convention.
 | state storage account | sastate{prefix}{suffix} |
 | backup state storage account | sastatebkup{prefix}{suffix} |
 | container registry | cr{prefix}{suffix} |
+
+### Existing Keyvault
+
+When using an existing keyvault the following secrets must be present.
+
+| Name | description |
+| ----------------------------- | ------------------- |
+| stateStorageAccount | name of the storage account that contains the tfstate |
+| stateStorageAccountBackup | name of the backup storage account that contains the tfstate |
+| stateContainer | name of the container that contains the tfstate file |
+| stateRg | resource group containing the storage account |
+| clientId | service principal client id |
+| clientSecret | service principal client secret |
+| subscriptionId | service principal subscription ID |
+| tenantId | service principal tenant ID |
+| readerClientId | reader service principal client id |
+| readerClientSecret | reader service principal client id |
+| readerSubscriptionId | reader service principal client id |
+| readerTenantId | reader service principal client id |
+
+### Existing Storage Accounts
+
+When using an existing State Storage Account or Backup State Storage Account, a container name tfstate must be present.
+
+### Existing Container Registry
+
+When the acr is deployed using symphony, eshop images will be pushed. One for the API and one for the Web. The repo can be cloned from here: `https://github.com/dotnet-architecture/eShopOnWeb.git`. You can then build and push the containers to your acr. Below are some commands to start with:
+
+```bash
+RG_NAME=${Enter your resource group name}
+CR_NAME=${Enter your container registry name}
+
+APP_REPO="https://github.com/dotnet-architecture/eShopOnWeb.git"
+APP_COMMIT="a72dd77"
+APP_WEB_NAME="eshopwebmvc"
+APP_WEB_DOCKERFILE="src/Web/Dockerfile"
+APP_API_NAME="eshoppublicapi"
+APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
+
+git clone "${APP_REPO}" "_app"
+
+git checkout "${APP_COMMIT}"
+
+az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+
+az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
+```
