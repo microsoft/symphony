@@ -22,7 +22,7 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
 
   - Azure DevOps Server:
     - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
-    - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server. To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
+    - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server. To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough. Make sure when creating the agent that it has at least a 2 core CPU and 7GB ram to properly run symphony pipelines.
     - Ensure that the following dependencies are installed on the self hosted agent
 
        ```bash
