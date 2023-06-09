@@ -30,7 +30,7 @@ function load_inputs {
     _information "AzDo Install Type: $INSTALL_TYPE"
        
     if [ -z "$AZDO_ORG_NAME" ]; then
-        _prompt_input "Enter the existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
+        _prompt_input "Enter existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then

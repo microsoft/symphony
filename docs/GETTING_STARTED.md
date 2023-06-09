@@ -57,7 +57,7 @@ $> symphony pipeline config <azdo|github> <terraform|bicep>
 **Notes**:
 
 - When naming the azdo project, during `symphony pipeline config`, ensure there are no spaces in the project name. Also, make sure the project name adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).
-- Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are both accepted. The `ORG` name is used for the service and `Project Collection` name for server hosts. The terminal may prompt for AzDO Server login credientials if not accessible.
+- Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are supported. The `ORG` name is used for the service and `Project Collection` name for server hosts. The terminal may prompt for AzDO Server login credentials if not accessible.
 
 Now that you have completed the provisioning process. Go you created Symphony on the SCM you selected when you ran `Symphony pipeline config` command. You can browse the code, tests, and run the pipelines as well to deploy the sample app.
 
