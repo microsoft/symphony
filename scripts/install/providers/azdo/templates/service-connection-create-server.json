@@ -1,0 +1,31 @@
+{
+  "description": "",
+  "administratorsGroup": null,
+  "authorization": {
+    "parameters": {
+      "tenantid": "__SERVICE_PRINCIPAL_TENANT_ID__",
+      "serviceprincipalid": "__SERVICE_PRINCIPAL_ID__",
+      "authenticationType": "spnKey",
+      "serviceprincipalkey": "__SERVICE_PRINCIPAL_KEY__"
+    },
+    "scheme": "ServicePrincipal"
+  },
+  "createdBy": null,
+  "data": {
+    "subscriptionId": "__SUBSCRIPTION_ID__",
+    "subscriptionName": "__SUBSCRIPTION_NAME__",
+    "environment": "__CLOUD_ENVIRONMENT__",
+    "scopeLevel": "Subscription",
+    "creationMode": "Manual",
+    "azureSpnRoleAssignmentId": "",
+    "azureSpnPermissions": "",
+    "spnObjectId": "",
+    "appObjectId": ""
+  },
+  "name": "__SERVICE_CONNECTION_NAME__",
+  "type": "azurerm",
+  "url": "__MANAGEMENT_URI__",
+  "readersGroup": null,
+  "groupScopeId": null,
+  "operationStatus": null
+}

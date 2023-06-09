@@ -17,7 +17,20 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
   - As part of the Symphony infrastructure deployment workflow, [GitLeaks](https://github.com/gitleaks/gitleaks) is run to check for any potentially leaked credentials. The results of the scan are saved in a **Sarif** report formatted document. To be able to publish the report for visualization and GitHub integration, your GitHub organization needs to have access to  **Advanced Security Features**. GitHub Advanced Security features are enabled for all public repositories on GitHub.com. If your Organization uses GitHub Enterprise Cloud with Advanced Security, and you plan to use Symphony with private or internal repositories, **Advanced Security Features** must be enabled. To read more about the availability of this feature please see  [The official GitHub Documentation for GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security).
 
   For Azure DevOps:
-  - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
+  - Azure DevOps Services (Hosted)
+    - Create an [Azure DevOps PAT](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows) on the organization to be used to provision Symphony.
+
+  - Azure DevOps Server:
+    - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
+    - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server.  The Default agent pool must include at least one self hosted build agent.
+    To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
+    Self-hosted agents can be run in a virtual machine or in a [docker container](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops).  When running a build agent container in [Azure Container Instance](https://learn.microsoft.com/en-us/azure/container-instances/), please ensure that the instance size is at least 2 core CPU and 7GB ram. This is required to run symphony pipelines.
+    - Ensure that the following dependencies are installed on the self hosted agent
+
+       ```bash
+       sudo apt update
+       sudo apt install build-essential unzip
+       ```
 
 ## Getting started
 
@@ -41,7 +54,10 @@ $> symphony provision
 $> symphony pipeline config <azdo|github> <terraform|bicep>
 ```
 
-**Note: When naming the azdo project, during `symphony pipeline config`, ensure there are no spaces in the project name. Also, make sure the project name adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).**
+**Notes**:
+
+- When naming the azdo project, during `symphony pipeline config`, ensure there are no spaces in the project name. Also, make sure the project name adheres to this [guideline](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/naming-restrictions?view=azure-devops#project-names).
+- Both AzDO PAAS service (`*.azure.com` or `*.visualstudio.com`) and server (`your-azdo-server.com`) are supported. The `ORG` name is used for the service and `Project Collection` name for server hosts. The terminal may prompt for AzDO Server login credentials if not accessible.
 
 Now that you have completed the provisioning process. Go you created Symphony on the SCM you selected when you ran `Symphony pipeline config` command. You can browse the code, tests, and run the pipelines as well to deploy the sample app.
 

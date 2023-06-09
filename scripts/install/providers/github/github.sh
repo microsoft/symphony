@@ -92,3 +92,7 @@ function create_pipelines_bicep {
 function create_pipelines_terraform {
     _debug "skip create_pipelines_terraform"
 }
+
+function push_repo {
+    git push origin --all
+}
