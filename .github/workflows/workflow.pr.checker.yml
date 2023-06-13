@@ -66,7 +66,7 @@ jobs:
 
       - name: Run MarkdownLint
         id: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v10
+        uses: DavidAnson/markdownlint-cli2-action@v11
         with:
           command: config
           globs: .github/linters/.markdownlint.yml,${{ steps.files.outputs.result }}
