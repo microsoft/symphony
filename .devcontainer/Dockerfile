@@ -3,22 +3,12 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:bullseye
 
 COPY library-scripts/*.sh /tmp/library-scripts/
 
-# [Option] Enable non-root Docker access in container
-ARG ENABLE_NONROOT_DOCKER="true"
 # Enable new "BUILDKIT" mode for Docker CLI
 ENV DOCKER_BUILDKIT=1
-
-# [Option] Install Docker CLI
-ARG INSTALL_DOCKER="true"
 
 ENV NVM_DIR=/usr/local/share/nvm
 ENV NVM_SYMLINK_CURRENT=true \
     PATH=${NVM_DIR}/current/bin:${PATH}
-RUN if [ "${INSTALL_DOCKER}" = "true" ]; then \
-        bash /tmp/library-scripts/docker-debian.sh "${ENABLE_NONROOT_DOCKER}" "/var/run/docker-host.sock" "/var/run/docker.sock" "${USERNAME}"; \
-    else \
-        echo '#!/bin/bash\n"$@"' > /usr/local/share/docker-init.sh && chmod +x /usr/local/share/docker-init.sh; \
-    fi
 
 # # Install TFLint Azure RM Ruleset
 ARG INSTALL_TERRAFORM="true"
