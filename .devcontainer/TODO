@@ -1,0 +1,15 @@
+# # Install TFLint Azure RM Ruleset
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"TFLINT_RULESET_AZURERM_VERSION": "v0.14.0"
+		}
+	},
+
+ARG INSTALL_TERRAFORM="true"
+ARG TFLINT_RULESET_AZURERM_VERSION=""
+RUN if [ "${INSTALL_TERRAFORM}" = "true" ]; then curl -Lo ~/tflint-ruleset-azurerm.zip https://github.com/terraform-linters/tflint-ruleset-azurerm/releases/download/${TFLINT_RULESET_AZURERM_VERSION}/tflint-ruleset-azurerm_linux_amd64.zip \
+    && mkdir -p ~/.tflint.d/plugins \
+    && unzip ~/tflint-ruleset-azurerm.zip -d ~/.tflint.d/plugins \
+    && mv ~/.tflint.d /home/vscode \
+    && rm -f ~/tflint-ruleset-azurerm.zip; fi

@@ -1,16 +1,6 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.226.0/containers/azure-terraform
 {
 	"name": "Symphony",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": { 
-			"TFLINT_RULESET_AZURERM_VERSION": "v0.14.0"
-		}
-	},
-	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
-	// "mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
-	"overrideCommand": false,
+	"image": "mcr.microsoft.com/vscode/devcontainers/base:bullseye",
 	"runArgs": ["--env-file",".devcontainer/devcontainer.env", "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
     "remoteEnv": {
 		// Sets environment variables required for terrafom remote backend
@@ -95,6 +85,11 @@
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {},
-		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1.0.5": {}
+		"ghcr.io/rchaganti/vsc-devcontainer-features/azurebicep:1.0.5": {},
+		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+			"packages": [
+				"graphviz"
+			]
+		}
 	}
 }
