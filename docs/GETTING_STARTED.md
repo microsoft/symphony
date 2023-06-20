@@ -33,10 +33,9 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
        ```
 
     - Self-hosted agents can be run in either:
-        - A [docker container](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops).  When running a build agent container in [Azure Container Instance](https://learn.microsoft.com/en-us/azure/container-instances/), please ensure that the instance size is at least 2 core CPU and 7GB ram. This is required to run symphony pipelines.
+      - A [docker container](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops).  When running a build agent container in [Azure Container Instance](https://learn.microsoft.com/en-us/azure/container-instances/), please ensure that the instance size is at least 2 core CPU and 7GB ram. This is required to run symphony pipelines.
 
-        - A Linux or Windows VM, see [Getting started with Symphony on a Virtual Machine](./GETTING_STARTED_VM.md)
-
+      - A Linux or Windows VM, see [Getting started with Symphony on a Virtual Machine](./GETTING_STARTED_VM.md)
 
 ## Getting started
 

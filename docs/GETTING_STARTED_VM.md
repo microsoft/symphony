@@ -1,3 +1,5 @@
+# Getting Started with Symphony and self hosted build agents on a Virtual Machine
+
 ## Agent Configuration
 
 A virtual machine can be either Linux or Windows (with WSL enabled.) It is recommended to run the self-hosted agent as a service, and to run as root.  The agent can be configured as root using the following commands.
@@ -11,6 +13,7 @@ sudo ./svc.sh start
 ## Windows (WSL)
 
 If running a self hosted agent on a windows server with WSL. Please complete the following steps.
+
 ```powershell
 # Open a PowerShell window.
 
