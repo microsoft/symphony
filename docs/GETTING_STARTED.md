@@ -24,13 +24,19 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
     - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
     - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server.  The Default agent pool must include at least one self hosted build agent.
     To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
-    Self-hosted agents can be run in a virtual machine or in a [docker container](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops).  When running a build agent container in [Azure Container Instance](https://learn.microsoft.com/en-us/azure/container-instances/), please ensure that the instance size is at least 2 core CPU and 7GB ram. This is required to run symphony pipelines.
+
     - Ensure that the following dependencies are installed on the self hosted agent
 
        ```bash
        sudo apt update
        sudo apt install build-essential unzip
        ```
+
+    - Self-hosted agents can be run in either:
+        - A [docker container](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops).  When running a build agent container in [Azure Container Instance](https://learn.microsoft.com/en-us/azure/container-instances/), please ensure that the instance size is at least 2 core CPU and 7GB ram. This is required to run symphony pipelines.
+
+        - A Linux or Windows VM, see [Getting started with Symphony on a Virtual Machine](./GETTING_STARTED_VM.md)
+
 
 ## Getting started
 
