@@ -13,12 +13,24 @@ source "$SCRIPT_DIR"/../../../utilities/http.sh
 function load_inputs {
     _information "Load AzDo Configurations"
 
+    local _host_type_group_name=''
+
     if [ -z "$AZDO_ORG_URI" ]; then
-        _prompt_input "Enter Azure Devops Org URL 'e.g :https://dev.azure.com/MYORG'" AZDO_ORG_URI
+        _prompt_input "Enter Azure Devops URL 'e.g. https://dev.azure.com/MYORG' or 'https://<CUSTOM_SERVER_URL>/MYCOLLECTION'" AZDO_ORG_URI
     fi
-   
+
+    if [[ $AZDO_ORG_URI == *".azure.com"* ]] || [[ $AZDO_ORG_URI == *".visualstudio.com"* ]]; then
+        export INSTALL_TYPE='PAAS'
+        _host_type_group_name='Organization name (i.e. MYORG)'
+    else
+        export INSTALL_TYPE='Server'
+        _host_type_group_name='Project Collection name (i.e. MYCOLLECTION)'
+    fi
+
+    _information "AzDo Install Type: $INSTALL_TYPE"
+       
     if [ -z "$AZDO_ORG_NAME" ]; then
-        _prompt_input "Enter existing Azure Devops Org Name" AZDO_ORG_NAME
+        _prompt_input "Enter existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then
@@ -28,9 +40,7 @@ function load_inputs {
     if [ -z "$AZDO_PAT" ]; then
         _prompt_input "Enter Azure Devops PAT" AZDO_PAT
     fi
-
 }
-
 
 function configure_repo { 
     _information "Create Project AzDo"
@@ -115,10 +125,9 @@ function configure_repo {
     echo "${AZDO_PROJECT_NAME} Git Repo remote URL: $CODE_REPO_GIT_HTTP_URL"
 
     # Configure remote for local git repo
-    remoteWithCreds="${CODE_REPO_GIT_HTTP_URL/@dev.azure.com/:$AZDO_PAT@dev.azure.com}"
     git init
     git branch -m main
-    git remote add origin "$remoteWithCreds"
+    git remote add origin "$CODE_REPO_GIT_HTTP_URL"
 
     _success "Project '${AZDO_PROJECT_NAME}' created."
 }
@@ -235,7 +244,11 @@ function _create_azdo_svc_connection() {
     
     _templateFile=''
 
-    _templateFile="$SCRIPT_DIR/templates/sc-ado-paas.json"
+    if [ "$INSTALL_TYPE" == "PAAS" ]; then
+        _templateFile="$SCRIPT_DIR/templates/sc-ado-paas.json"
+    else
+        _templateFile="$SCRIPT_DIR/templates/sc-ado-server.json"
+    fi
     
     _debug "starting payload $_templateFile"
                  
@@ -305,7 +318,16 @@ function _create_pipeline {
     local _agent_pool_queue_id=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_id')
     local _agent_pool_queue_name=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_name')
 
-    #Ensure the agent pool is setup correctly.
+    # Update the Agent for AzDO Server
+    if [ "$INSTALL_TYPE" == "Server" ]; then
+        local _yaml_file="${_yaml_path:1}"
+
+        sed -i 's/agentImage/agentName/g' $_yaml_file
+        sed -i 's/value: "ubuntu-latest"/value: "Default"/g' $_yaml_file
+        sed -i 's/vmImage:/name:/g' $_yaml_file
+    fi
+
+    # Ensure the Agent Pool is setup correctly 
     local _branch_name="main"
     local _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/build/definitions?api-version=" '5.1' '5.1')
 
@@ -335,7 +357,6 @@ function _create_pipeline {
 
     local _pipeId=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.id')
 
-    
     # Authorize Pipeline 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/queue/${_agent_pool_queue_id}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
@@ -352,7 +373,6 @@ function _create_pipeline {
         fi  
         _success "Created Pipeline ${_name} - id:${_pipeId}"
     fi
-
 
     # Authorize Terraform-Code Repo Access for Pipeline
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${CODE_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
@@ -372,26 +392,45 @@ function _create_svc_connection_payload() {
 
     local AZDO_SC_AZURERM_NAME='Symphony-KV'
     
-     _payload=$(< "$SCRIPT_DIR/templates/service-connection-create.json" \
-      sed 's~__SERVICE_PRINCIPAL_ID__~'"${SP_ID}"'~' \
-    | sed 's@__SERVICE_PRINCIPAL_KEY__@'"${SP_SECRET}"'@' \
-    | sed 's~__SERVICE_PRINCIPAL_TENANT_ID__~'"${SP_TENANT_ID}"'~' \
-    | sed 's~__CLOUD_ENVIRONMENT__~'"${SP_CLOUD_ENVIRONMENT}"'~' \
-    | sed 's~__SUBSCRIPTION_ID__~'"${SP_SUBSCRIPTION_ID}"'~' \
-    | sed 's~__SUBSCRIPTION_NAME__~'"${SP_SUBSCRIPTION_NAME}"'~' \
-    | sed 's~__SERVICE_CONNECTION_NAME__~'"${AZDO_SC_AZURERM_NAME}"'~' \
-    | sed 's~__PROJECT_ID__~'"${AZDO_PROJECT_ID}"'~' \
-    | sed 's~__PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' \
-    | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
-    ) 
+    if [ "$INSTALL_TYPE" == "PAAS" ]; then
+        _template="$SCRIPT_DIR/templates/service-connection-create-paas.json"
+        _payload=$(cat "$_template" \
+        | sed 's~__SERVICE_PRINCIPAL_ID__~'"${SP_ID}"'~' \
+        | sed 's@__SERVICE_PRINCIPAL_KEY__@'"${SP_SECRET}"'@' \
+        | sed 's~__SERVICE_PRINCIPAL_TENANT_ID__~'"${SP_TENANT_ID}"'~' \
+        | sed 's~__CLOUD_ENVIRONMENT__~'"${SP_CLOUD_ENVIRONMENT}"'~' \
+        | sed 's~__SUBSCRIPTION_ID__~'"${SP_SUBSCRIPTION_ID}"'~' \
+        | sed 's~__SUBSCRIPTION_NAME__~'"${SP_SUBSCRIPTION_NAME}"'~' \
+        | sed 's~__SERVICE_CONNECTION_NAME__~'"${AZDO_SC_AZURERM_NAME}"'~' \
+        | sed 's~__PROJECT_ID__~'"${AZDO_PROJECT_ID}"'~' \
+        | sed 's~__PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' \
+        | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
+        ) 
+    else
+        _template="$SCRIPT_DIR/templates/service-connection-create-server.json"
+        _payload=$(cat "$_template" \
+        | sed 's~__SERVICE_PRINCIPAL_ID__~'"${SP_ID}"'~' \
+        | sed 's@__SERVICE_PRINCIPAL_KEY__@'"${SP_SECRET}"'@' \
+        | sed 's~__SERVICE_PRINCIPAL_TENANT_ID__~'"${SP_TENANT_ID}"'~' \
+        | sed 's~__CLOUD_ENVIRONMENT__~'"${SP_CLOUD_ENVIRONMENT}"'~' \
+        | sed 's~__SUBSCRIPTION_ID__~'"${SP_SUBSCRIPTION_ID}"'~' \
+        | sed 's~__SUBSCRIPTION_NAME__~'"${SP_SUBSCRIPTION_NAME}"'~' \
+        | sed 's~__SERVICE_CONNECTION_NAME__~'"${AZDO_SC_AZURERM_NAME}"'~' \
+        | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
+        ) 
+    fi
+
     echo "$_payload"
 }
 
 function _get_management_endpoint() {
     local _response=$(az cloud show -n "${SP_CLOUD_ENVIRONMENT}")
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/az-cloud-show-response.json"
-    MANAGEMENT_URI=$(echo "$_response" | jq .endpoints.management | sed "s/^\([\"']\)\(.*\)\1\$/\2/g")
-
+    if [ "$INSTALL_TYPE" == "PAAS" ]; then
+        MANAGEMENT_URI=$(echo "$_response" | jq .endpoints.management | sed "s/^\([\"']\)\(.*\)\1\$/\2/g")
+    else
+        MANAGEMENT_URI=$(echo "$_response" | jq .endpoints.resourceManager | sed "s/^\([\"']\)\(.*\)\1\$/\2/g")
+    fi
     _debug "MANAGEMENT_URI: ${MANAGEMENT_URI}"
     
 }
@@ -429,6 +468,7 @@ function _get_agent_pool_queue() {
     echo "{\"agent_pool_queue_id\":\"$agent_pool_queue_id\",\"agent_pool_queue_name\":\"$agent_pool_queue_name\"}"
 }
 
-
-
-
+function push_repo {
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
+    git -c http.extraHeader="Authorization: Basic ${_token}" push -u origin --all
+}

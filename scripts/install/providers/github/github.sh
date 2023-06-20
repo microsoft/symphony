@@ -46,7 +46,7 @@ function load_inputs {
     fi
 }
 
-function configure_repo { 
+function configure_repo {
     _information "Starting project creation for project ${GH_Repo_NAME}"
 
     visibility="--public"
@@ -56,8 +56,8 @@ function configure_repo {
 
     command="gh repo create $GH_ORG_NAME/$GH_Repo_NAME $visibility"
     _information "running - $command"
-    eval "$command" 
-         
+    eval "$command"
+
     # 2. GET Repos Git Url and Repo Id's
     response=$(gh repo view "$GH_ORG_NAME/$GH_Repo_NAME" --json sshUrl,url,id)
     CODE_REPO_GIT_HTTP_URL=$(echo "$response" | jq -r '.url')
@@ -79,7 +79,7 @@ function _build_az_secret {
 }
 
 function configure_credentials {
-    _information "Configure Github Secrets"
+    _information "Configure GitHub Secrets"
 
     sp_json=$(_build_az_secret)
     gh secret set "AZURE_CREDENTIALS" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$sp_json"
@@ -91,4 +91,8 @@ function create_pipelines_bicep {
 
 function create_pipelines_terraform {
     _debug "skip create_pipelines_terraform"
+}
+
+function push_repo {
+    git push origin --all
 }
