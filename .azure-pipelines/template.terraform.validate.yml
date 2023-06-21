@@ -25,6 +25,7 @@ jobs:
           failOnStderr: true
           targetType: "inline"
           script: |
+            ./setup-azcli.sh
             ./setup-terraform.sh ${{ parameters.terraformVersion }}
             ./setup-tflint.sh
             ./setup-gitleaks.sh
@@ -45,11 +46,10 @@ jobs:
             source ./scanners.sh
             run_gitleaks './../../' 'sarif' 'info' 'true' 'true'
 
-      - task: PublishPipelineArtifact@1
+      - task: PublishBuildArtifacts@1
         inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/gitleaks-report.sarif"
-          artifact: 'CodeAnalysisLogs'
-          publishLocation: "pipeline"
+          pathToPublish: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/gitleaks-report.sarif"
+          artifactName: 'CodeAnalysisLogs'
 
       - task: Bash@3
         displayName: "Run Terraform lint"
