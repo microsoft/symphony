@@ -126,16 +126,18 @@ lint() {
     lint_res_file_name="$(basename $PWD)_lint_res.xml"
     filePath=$(echo "${lint_res_file_name}" | sed -e 's/\//-/g')
 
-    "tflint" >$filePath 2>&1
+    # We will disable "exit on error" to avoid tflint breaking our execution
+    set +e
+    output=$(tflint >"$filePath" 2>&1); local code=$?
+    set -e
 
-    local code=$?
     if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
         echo "tflint passed"
         #exit 0
     else
         echo "tflint failed. lint results in file name ${lint_res_file_name}"
         sed -i 's/\x1b\[[0-9;]*m//g' $filePath
-        cat $filePath
+        _error $(<"$filePath")
         #exit 1
     fi
     return $code
