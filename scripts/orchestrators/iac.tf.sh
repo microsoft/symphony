@@ -128,7 +128,7 @@ lint() {
 
     # We will disable "exit on error" to avoid tflint breaking our execution
     set +e
-    output=$(tflint >"$filePath" 2>&1); local code=$?
+    tflint >"$filePath" 2>&1; local code=$?
     set -e
 
     if [[ -z $(grep '[^[:space:]]' $filePath) ]]; then
