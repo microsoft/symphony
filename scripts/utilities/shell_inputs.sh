@@ -120,6 +120,7 @@ function _prompt_input {
     input_description=${1}
     input_name=${2}
     is_danger=${3}
+    is_secret=${4}
 
     echo ""
     if [[ "$is_danger" == "true" ]]; then
@@ -128,7 +129,13 @@ function _prompt_input {
       echo -n "> $input_description : "
     fi
 
-    read $input_name
+    if [[ "$is_secret" == "true" ]]; then
+      read -s $input_name
+      echo -n "***"
+      echo
+    else
+      read $input_name
+    fi
 }
 
 function _validate_inputs {

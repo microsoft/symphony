@@ -30,7 +30,12 @@ function load_inputs {
     _information "AzDo Install Type: $INSTALL_TYPE"
        
     if [ -z "$AZDO_ORG_NAME" ]; then
-        _prompt_input "Enter existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
+        if [[ $AZDO_ORG_URI == "https://dev.azure.com/"* ]]; then
+            AZDO_ORG_NAME="${AZDO_ORG_URI#https://dev.azure.com/}"
+            _information "AzDO Organization name detected: $AZDO_ORG_NAME"
+        else 
+            _prompt_input "Enter existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
+        fi
     fi
 
     if [ -z "$AZDO_PROJECT_NAME" ]; then
@@ -38,7 +43,7 @@ function load_inputs {
     fi
 
     if [ -z "$AZDO_PAT" ]; then
-        _prompt_input "Enter Azure Devops PAT" AZDO_PAT
+        _prompt_input "Enter Azure Devops PAT" AZDO_PAT false true
     fi
 }
 
@@ -358,6 +363,7 @@ function _create_pipeline {
     local _pipeId=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.id')
 
     # Authorize Pipeline 
+    _information "Authorizing pipeline for agent pool queue id ${_agent_pool_queue_id}"
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/queue/${_agent_pool_queue_id}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
     _payload=$( < "$SCRIPT_DIR/templates/pipeline-authorize.json" \
@@ -375,6 +381,7 @@ function _create_pipeline {
     fi
 
     # Authorize Terraform-Code Repo Access for Pipeline
+    _information "Authorizing terraform-code repo access for pipeline code repo id ${CODE_REPO_ID}"
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/repository/${AZDO_PROJECT_ID}.${CODE_REPO_ID}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
     _payload=$(< "$SCRIPT_DIR/templates/pipeline-authorize.json" \

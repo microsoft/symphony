@@ -173,6 +173,7 @@ configure_orchestrator() {
         git commit -m "Update resource names"
         push_repo
 
+        _information "Performing final validations"
         check_error_log
     popd || exit
 }
