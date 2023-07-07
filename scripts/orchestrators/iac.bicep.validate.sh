@@ -66,6 +66,9 @@ for deployment in "${modules[@]}"; do
     echo '--------------------- Run ID ----------------------'
 
     output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
+    echo '--------------------- validate output  ----------------------'
+    echo "${output}"
+    echo '--------------------------------------- ----------------------'
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
