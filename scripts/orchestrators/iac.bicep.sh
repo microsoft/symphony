@@ -119,8 +119,8 @@ validate() {
     export layerName=$6
     
     if [[ $bicep_file_path == *"01_sql/02_deployment"* ]];then
-        "${deployment_id}"
         echo echo '------------------ inside validate- echo deployment id ------------------------'
+        echo "${deployment_id}"       
         echo '------------------ inside validate ------------------------'
     fi
 
