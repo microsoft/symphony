@@ -150,7 +150,6 @@ function create_pipelines_terraform() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"   
     _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.terraform.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
-
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)" 
@@ -305,7 +304,6 @@ function _create_pipeline {
     # AzDo Service     : Definitions - Create https://docs.microsoft.com/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-5.1
     # POST https://dev.azure.com/{organization}/{project}/_apis/build/definitions?api-version=5.1
     # usage: _create_pipeline storageinit "/azure-pipelines/pipeline.storageinit.yml"
-    _information "Creating pipelines..."
 
     local _template_file="$SCRIPT_DIR/templates/pipeline-create.json"
     local _name="${1}"
@@ -314,7 +312,15 @@ function _create_pipeline {
     local _variables=${4}
     local _pipelineRepoName=${5}
 
+    _information "Creating pipeline ${_name}"
+
     local _agent_queue=$(_get_agent_pool_queue)
+
+    if [ -z "$_agent_queue" ]; then
+        _error "Error: Agent Pool Queue information could not be retrieved. Check that the AzDo PAT had sufficient permissions to retrieve agent pools information."
+        exit 1
+    fi
+
     local _agent_pool_queue_id=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_id')
     local _agent_pool_queue_name=$(echo "$_agent_queue" | jq -c -r '.agent_pool_queue_name')
 
@@ -341,6 +347,7 @@ function _create_pipeline {
                 | sed 's~__ADO_POOL_NAME__~'"${_agent_pool_queue_name}"'~' \
                 | sed 's~__AZDO_ORG_URI__~'"${AZDO_ORG_URI}"'~' \
               )
+
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
 
@@ -439,6 +446,7 @@ function _get_pipeline_var_defintion() {
     local _var_key=${1}
     local _var_value=${2}
     local _allowOverride=${3}
+
     local _template_file="$SCRIPT_DIR/templates/pipeline-variable.json"
 
     local _payload=$(< "${_template_file}" sed 's~__PIPELINE_VAR_NAME__~'"${_var_key}"'~' |
@@ -454,6 +462,13 @@ function _get_agent_pool_queue() {
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     local _uri="${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/distributedtask/queues?api-version=5.1-preview.1"
     _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
+
+    if [ -z "$_response" ]; then
+        # Agent pool could not be retrieved, probably insufficient PAT permissions
+        # This method is used as output, so we cannot show error to stdout
+        exit 1
+    fi
+
     _is_ubuntu=$(echo "$_response" | jq '.value[] | select( .name | contains("Ubuntu") )')
 
     if [ -z "${_is_ubuntu}" ]; then
@@ -465,7 +480,10 @@ function _get_agent_pool_queue() {
         agent_pool_queue_name=$(echo "$_is_ubuntu" | jq -r '.name')
     fi
 
-    echo "{\"agent_pool_queue_id\":\"$agent_pool_queue_id\",\"agent_pool_queue_name\":\"$agent_pool_queue_name\"}"
+    jq --null-input \
+        --arg agent_pool_queue_id "$agent_pool_queue_id" \
+        --arg agent_pool_queue_name "$agent_pool_queue_name" \
+        '{"agent_pool_queue_id": $agent_pool_queue_id, "agent_pool_queue_name": $agent_pool_queue_name}'
 }
 
 function push_repo {
