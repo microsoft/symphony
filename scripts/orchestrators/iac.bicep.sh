@@ -119,7 +119,7 @@ validate() {
     export layerName=$6
     
     echo '------------------ inside validate- echo deployment id ------------------------'
-    echo "${$deployment_id}"
+    echo "${deployment_id}"
     echo '------------------ inside validate ------------------------'
 
     target_scope=$(_target_scope "${bicep_file_path}")
