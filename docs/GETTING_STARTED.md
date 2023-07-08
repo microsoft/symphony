@@ -117,3 +117,101 @@ This command creates and configures a Symphony project that includes a code repo
 | CI-Destroy main workflow       | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
 | AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault                         | GitHub              |
 | Symphony-KV Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
+
+## Using Existing Resources
+
+Existing resources can be used with Symphony. The resources, however will need to follow a specific naming convention. To use existing resources you will need to create a `symphony.json` in a top level `.symphony` folder. A prefix and suffix value is required. Below is an basic example of that file:
+
+``` json
+{
+  "prefix": "{prefix}",
+  "suffix": "{suffix}" 
+}
+```
+
+The pre-created resources must follow the current naming convention.
+
+| Resource | naming convention |
+| ----------------------------- | ------------------- |
+| Resource Group | rg-{prefix}-{suffix} |
+| Keyvault | kv-{prefix}-{suffix} |
+| state storage account | sastate{prefix}{suffix} |
+| backup state storage account | sastatebkup{prefix}{suffix} |
+| container registry | cr{prefix}{suffix} |
+
+If you pre-create all the resources, the symphony provision step can be skipped. You can just fill in the full `symphony.json`:
+
+``` json
+{
+  "prefix": "{prefix}",
+  "suffix": "{suffix}",
+  "resource_group": "{resource_group_name}",
+  "keyvault": "{keyvault_name}",
+  "container_registry": "{container_registry_name}",
+  "reader_service_principal": "{reader_service_principal_name}",
+  "owner_service_principal": "{owner_service_principal_name}",
+  "state_storage_account": "{state_storage_account_name}",
+  "backupstate_storage_account": "{backupstate_storage_account_name}",
+  "state_container": "tfstate"
+}
+```
+
+### Existing Keyvault
+
+When using an existing keyvault the following secrets must be present.
+
+| Name | description |
+| ----------------------------- | ------------------- |
+| stateStorageAccount | name of the storage account that contains the tfstate |
+| stateStorageAccountBackup | name of the backup storage account that contains the tfstate |
+| stateContainer | name of the container that contains the tfstate file |
+| stateRg | resource group containing the storage account |
+| clientId | service principal client id |
+| clientSecret | service principal client secret |
+| subscriptionId | service principal subscription ID |
+| tenantId | service principal tenant ID |
+| readerClientId | reader service principal client id |
+| readerClientSecret | reader service principal client id |
+| readerSubscriptionId | reader service principal client id |
+| readerTenantId | reader service principal client id |
+*Note: stateStorageAccount, stateStorageAccountBackup, stateContainer, and stateRg are only required if you provision Symphony for terraform*
+
+### Existing Storage Accounts
+
+When using an existing State Storage Account or Backup State Storage Account, a container name tfstate must be present.
+
+### Existing Container Registry
+
+When the acr is deployed using symphony, eshop images will be pushed. One for the API and one for the Web. The repo can be cloned from here: `https://github.com/dotnet-architecture/eShopOnWeb.git` but note these images are not a part of symphony itself. You can then build and push the containers to your acr. Below are some commands to start with:
+
+```bash
+RG_NAME=${Enter your resource group name}
+CR_NAME=${Enter your container registry name}
+
+APP_REPO="https://github.com/dotnet-architecture/eShopOnWeb.git"
+APP_COMMIT="a72dd77"
+APP_WEB_NAME="eshopwebmvc"
+APP_WEB_DOCKERFILE="src/Web/Dockerfile"
+APP_API_NAME="eshoppublicapi"
+APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
+
+git clone "${APP_REPO}" "_app"
+
+git checkout "${APP_COMMIT}"
+
+az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
+
+az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
+```
+
+### Service Principals
+
+The owner service principal is the one used to access the env subscription on which resources will be deployed. While the reader service principal is used to create GH Secret or Azure DevOps service connection to access the Symphony Key vault. The reader Service principal needs to have policy permissions to (get list backup restore) the vault secrets.
+
+```bash
+az ad sp create-for-rbac --display-name {owner service principal name} --role Owner --scopes {Scope to give service principal}
+az ad sp create-for-rbac --display-name {reader service principal name} --role Reader --scopes {Scope to give service principal}
+
+# Give reader service principal keyvault secret permissions
+az keyvault set-policy --name {keyvault name} --secret-permissions get list backup restore --spn {reader service principal id}
+```
