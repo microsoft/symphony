@@ -61,14 +61,7 @@ for deployment in "${modules[@]}"; do
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
-    echo '--------------------- Run ID ----------------------'
-    echo "${RUN_ID}"
-    echo '--------------------- Run ID ----------------------'
-
     output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
-    echo '--------------------- validate output  ----------------------'
-    echo "${output}"
-    echo '--------------------------------------- ----------------------'
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then

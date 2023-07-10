@@ -118,12 +118,6 @@ validate() {
     local optional_args=$5 # --management-group-id or --resource-group
     export layerName=$6
     
-    if [[ $bicep_file_path == *"01_sql/02_deployment"* ]];then
-        echo echo '------------------ inside validate- echo deployment id ------------------------'
-        echo "${deployment_id}"       
-        echo '------------------ inside validate ------------------------'
-    fi
-
     target_scope=$(_target_scope "${bicep_file_path}")
     bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
 
