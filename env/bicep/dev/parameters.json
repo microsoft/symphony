@@ -5,9 +5,6 @@
     "environment": {
       "value": "dev"
     },
-    "location": {
-      "value": "westus"
-    },
     "layerName": {
       "value": "$layerName"
     }
