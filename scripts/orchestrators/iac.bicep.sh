@@ -210,9 +210,10 @@ export -f deploy
 destroy() {
     local environmentName=${1}
     local layerName=${2}
-
-    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name --output tsv)
-
+    local location=${3}
+    
+    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}'].name" --output tsv)
+    
     for resourceGroup in ${resourceGroups}; do
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
