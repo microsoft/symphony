@@ -225,7 +225,7 @@ destroy() {
         for deployment in ${deployments}; do
             # _information "Deleting deployment for resource group:${resourceGroup} deployment: ${deployment}"
             echo "Deleting deployment for resource group:${resourceGroup} deployment: ${deployment}"
-            az deployment delete --name "${deployment}" --no-wait
+            az deployment group delete --name "${deployment}" --resource-group "${resourceGroup}" --no-wait
             exit_code=$?
         done
 
