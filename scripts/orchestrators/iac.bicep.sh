@@ -219,17 +219,19 @@ destroy() {
         deployments=$(az deployment group list --resource-group "${resourceGroup}" | jq -r '.[].name')
         exit_code=$?
 
-        az group delete --resource-group "${resourceGroup}" --yes
-        exit_code=$?
 
         _information "Resource group destroyed: ${resourceGroup}"
        
         for deployment in ${deployments}; do
             # _information "Deleting deployment for resource group:${resourceGroup} deployment: ${deployment}"
             echo "Deleting deployment for resource group:${resourceGroup} deployment: ${deployment}"
-            az deployment group delete --name "${deployment}" --resource-group "${resourceGroup}" --no-wait
+            az deployment delete --name "${deployment}" --no-wait
             exit_code=$?
         done
+
+        az group delete --resource-group "${resourceGroup}" --yes
+        exit_code=$?
+
     done
 
     return ${exit_code}
