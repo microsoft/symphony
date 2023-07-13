@@ -212,27 +212,23 @@ destroy() {
     local layerName=${2}
     local location=${3}
     
+    deployments=$(az deployment sub list --query "[?tag=='GeneratedBy=symphony']" --query "[?tag=='EnvironmentName=${environmentName}']" --query "[?tag=='LayerName=${layerName}']" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    exit_code=$?
+    
+    for deployment in ${deployments}; do
+        echo "Deleting deployment : ${deployment}"
+        az deployment delete --name "${deployment}"
+        exit_code=$?
+    done
+
     resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
     for resourceGroup in ${resourceGroups}; do
         _information "Destroying resource group: ${resourceGroup}"
-
-        deployments=$(az deployment group list --resource-group ${resourceGroup} --output json |jq -c -r '.[].name')
-        exit_code=$?
-
-
-       
-        for deployment in ${deployments}; do
-            _information "Deleting deployment for resource group:${resourceGroup} deployment: ${deployment}"
-            az deployment group delete --name "${deployment}" --resource-group "${resourceGroup}" --no-wait
-            exit_code=$?
-        done
-
         az group delete --resource-group "${resourceGroup}" --yes
         exit_code=$?
         _information "Resource group destroyed: ${resourceGroup}"
 
     done
-
     return ${exit_code}
 }
 export -f destroy
