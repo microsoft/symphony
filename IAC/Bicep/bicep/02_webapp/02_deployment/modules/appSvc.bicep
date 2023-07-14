@@ -68,4 +68,3 @@ module roleAssignmentCr 'roleAssignmentCr.bicep' = {
   }
   scope:resourceGroup(containerRegistryResourceGroupName)
 }
-
