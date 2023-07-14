@@ -20,5 +20,3 @@ resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 }
 
-output acrRoleAssignmnetName string = acrPullRoleAssignment.name
-output acrRoleAssignmnetId string = acrPullRoleAssignment.id

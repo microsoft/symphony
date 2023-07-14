@@ -69,5 +69,3 @@ module roleAssignmentCr 'roleAssignmentCr.bicep' = {
   scope:resourceGroup(containerRegistryResourceGroupName)
 }
 
-output acrRoleAssignmnetName string = roleAssignmentCr.outputs.acrRoleAssignmnetName
-output acrRoleAssignmnetId string = roleAssignmentCr.outputs.acrRoleAssignmnetId

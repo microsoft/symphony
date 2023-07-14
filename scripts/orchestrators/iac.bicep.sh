@@ -217,7 +217,7 @@ destroy() {
     
     for deployment in ${deployments}; do
         echo "Deleting deployment : ${deployment}"
-        az deployment delete --name "${deployment}"
+        az deployment sub delete --name "${deployment}"
         exit_code=$?
     done
 
