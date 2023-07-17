@@ -26,7 +26,7 @@ jobs:
 
       - task: Bash@3
         displayName: "Install required tools"
-        inputs:         
+        inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
           failOnStderr: true
@@ -35,6 +35,7 @@ jobs:
             ./setup-azcli.sh
             ./setup-powershell.sh
             ./setup-pester.sh
+            ./setup-benchpress.sh
             ./setup-azpowershell.sh
 
       - task: AzureKeyVault@2
@@ -61,10 +62,10 @@ jobs:
           ARM_CLIENT_ID: $(clientId)
           ARM_CLIENT_SECRET: $(clientSecret)
           sqlServerResourceGroupName: $(sqlServerResourceGroupName)
-          sqlServerName:  $(sqlServerName)
-          appServiceResourceGroupName:   $(resourceGroupName)
-          appServicePlanName:  $(appServicePlanName)
-          appServiceName:  $(appServiceName)
+          sqlServerName: $(sqlServerName)
+          appServiceResourceGroupName: $(resourceGroupName)
+          appServicePlanName: $(appServicePlanName)
+          appServiceName: $(appServiceName)
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
