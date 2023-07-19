@@ -73,10 +73,15 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export ARM_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
+          export ARM_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
+          export ARM_CLIENT_ID="${{ steps.LoadSecrets.outputs.clientId }}"
+          export ARM_CLIENT_SECRET="${{ steps.LoadSecrets.outputs.clientSecret }}"
+
+          export AZ_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
+          export AZ_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
+          export AZ_APPLICATION_ID="${{ steps.LoadSecrets.outputs.clientId }}"
+          export AZ_ENCRYPTED_PASSWORD="${{ steps.LoadSecrets.outputs.clientSecret }}" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
 
           source ./tests.runner.sh
 
