@@ -89,7 +89,7 @@ bicep() {
 
   pester() {
     _information "run end to end tests"
-    
+
     # the parent bicep function does a pushd to IAC/Bicep/test
     pushd ./end_to_end
       # if the test file is not specified, run for all files
@@ -118,7 +118,7 @@ bicep() {
   }
 
   # cd to the tests directory
-  pushd ../../IAC/Bicep/test
+  pushd ../../IAC/Bicep/tests
 
   if [ -z "${1}" ]; then
     pester "$@"
