@@ -6,3 +6,4 @@ arm-ttk/
 .actrc
 .symphony
 .vscode
+IAC/**/*lint_res.xml
