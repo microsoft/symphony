@@ -32,8 +32,7 @@ case "${unameOut}" in
 Darwin*) LOCAL_READLINK=greadlink ;;
 esac
 
-
-ARMTTK_PATH="$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk"
+ARMTTK_PATH="$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk/arm-ttk"
 
 pwsh -noprofile -nologo -command "Import-Module '${ARMTTK_PATH}/arm-ttk.psd1'"
 
