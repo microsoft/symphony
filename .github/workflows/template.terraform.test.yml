@@ -59,7 +59,7 @@ jobs:
           done
           IFS=$OIFS
 
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run E2E Tests
