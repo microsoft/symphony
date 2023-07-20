@@ -13,7 +13,7 @@ source _helpers.sh
 source _setup_helpers.sh
 
 set -e
-VERSION="${1:-"latest"}"
+VERSION="${1:-"20221215"}"
 
 # Verify requested version is available, convert latest
 find_version_from_git_tags VERSION 'https://github.com/Azure/arm-ttk' 'tags/' 'none'
