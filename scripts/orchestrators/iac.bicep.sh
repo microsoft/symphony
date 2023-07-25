@@ -44,8 +44,9 @@ _bicep_parameters() {
 
 parse_bicep_parameters() {
     local bicep_parameters_file_path="${1}"
-
-    local content=$(cat $bicep_parameters_file_path)
+    local bicep_parameters_json='./generatedparam.json'
+    bicep build-params $bicep_parameters_file_path --outfile $bicep_parameters_json
+    local content=$(cat $bicep_parameters_json)
 
     while IFS='=' read -r key value; do
         content=${content//"\$${key}"/$value}
