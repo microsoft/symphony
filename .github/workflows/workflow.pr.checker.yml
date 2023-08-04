@@ -75,8 +75,6 @@ jobs:
         if: ${{ steps.megalinter.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
         id: bot-details
         uses: raven-actions/bot-details@v1
-        with:
-          bot-slug-name: ${{ steps.get-token.outputs.BOT_NAME }}
 
       - name: 🆙 Commit and push applied linter fixes
         if: ${{ steps.megalinter.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
