@@ -1,5 +1,5 @@
 ---
-name: PR Quality Checker 2
+name: PR Quality Checker
 
 on: # yamllint disable-line rule:truthy
   # push:
