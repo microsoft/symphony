@@ -1,0 +1,12 @@
+{
+  "comments": true,
+  "trailing-commas": true,
+  "duplicate-keys": false,
+  "log-files": true,
+  "compact": true,
+  "continue": true,
+  "patterns": [
+    "**/*.json",
+    "!**/node_modules"
+  ]
+}
