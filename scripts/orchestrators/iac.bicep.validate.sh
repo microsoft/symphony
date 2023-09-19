@@ -50,6 +50,16 @@ for deployment in "${modules[@]}"; do
     fi
     IFS=${SAVEIFS}
 
+    layer_folder_path=$(dirname "${deployment}")
+    if [ -f "${layer_folder_path}/_events.sh" ]; then
+      source "${layer_folder_path}/_events.sh"
+    fi
+
+    if [ "$(type -t pre_deploy)" == "function" ]; then
+        pre_deploy
+    fi
+
+
     params_path=()
     for param_path_tmp in "${params[@]}"; do
         if [[ -f "${param_path_tmp}" ]]; then
