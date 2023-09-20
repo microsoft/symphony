@@ -41,10 +41,10 @@ for deployment in "${modules[@]}"; do
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
-    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}" -maxdepth 1 -type f -name '*parameters*.json'))
+    #params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
-        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json' -and -not -name '*mockup*'))
+        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
     fi
     IFS=${SAVEIFS}
 
