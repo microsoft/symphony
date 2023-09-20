@@ -55,8 +55,8 @@ for deployment in "${modules[@]}"; do
       source "${layer_folder_path}/_events.sh"
     fi
 
-    if [ "$(type -t pre_deploy)" == "function" ]; then
-        pre_deploy
+    if [ "$(type -t pre_validate)" == "function" ]; then
+        pre_validate
     fi
 
 
@@ -78,6 +78,12 @@ for deployment in "${modules[@]}"; do
         _error "Bicep validate failed - returned code ${exit_code}"
         exit ${exit_code}
     fi
+
+    if [ "$(type -t post_validate)" == "function" ]; then
+        post_deploy
+    fi
+    unset -f pre_validate
+    unset -f post_validate
 
     bicep_output_to_env "${output}"
 
