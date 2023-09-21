@@ -79,7 +79,7 @@ for deployment in "${modules[@]}"; do
     fi
 
     if [ "$(type -t post_validate)" == "function" ]; then
-        post_deploy
+        post_validate
     fi
     unset -f pre_validate
     unset -f post_validate
