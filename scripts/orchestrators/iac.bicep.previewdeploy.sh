@@ -56,19 +56,23 @@ for deployment in "${modules[@]}"; do
         pre_deploy
     fi
 
-    params_path=()
-    for param_path_tmp in "${params[@]}"; do
-        if [[ -f "${param_path_tmp}" ]]; then
-            parse_bicep_parameters "${param_path_tmp}"
-            params_path+=("${param_path_tmp}")
-        fi
-    done
+    # params_path=()
+    # for param_path_tmp in "${params[@]}"; do
+    #     if [[ -f "${param_path_tmp}" ]]; then
+    #         parse_bicep_parameters "${param_path_tmp}"
+    #         params_path+=("${param_path_tmp}")
+    #     fi
+    # done
+
+    az bicep upgrade
+    az config set bicep.check_version=False
+
     load_dotenv
 
     # resourceGroupName is a bicep output that is stored in an environment variable.
     _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
    
-    output=$(preview "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+    output=$(preview "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
   
     exit_code=$?
 
@@ -77,22 +81,22 @@ for deployment in "${modules[@]}"; do
         exit ${exit_code}
     fi
 
+    _information "Executing Bicep deploy: 'deploy \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
+
+    output=$(deploy "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
+
+    exit_code=$?
+
+    
+    if [[ ${exit_code} != 0 ]]; then
+        _error "Bicep deploy failed - returned code ${exit_code}"
+        exit ${exit_code}
+    fi
     if [ "$(type -t post_deploy)" == "function" ]; then
         post_deploy
     fi
     unset -f pre_deploy
     unset -f post_deploy
-
-    _information "Executing Bicep deploy: 'deploy \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
-
-    output=$(deploy "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
-
-    exit_code=$?
-
-    if [[ ${exit_code} != 0 ]]; then
-        _error "Bicep deploy failed - returned code ${exit_code}"
-        exit ${exit_code}
-    fi
 
     bicep_output_to_env "${output}" ".env" "false" "true"
 done

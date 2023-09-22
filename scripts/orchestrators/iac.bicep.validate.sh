@@ -57,22 +57,10 @@ for deployment in "${modules[@]}"; do
     if [ "$(type -t pre_validate)" == "function" ]; then
         pre_validate
     fi
-
-
-    # params_path=()
-    # for param_path_tmp in "${params[@]}"; do
-    #     if [[ -f "${param_path_tmp}" ]]; then
-    #         parse_bicep_parameters "${param_path_tmp}"
-    #         params_path+=("${param_path_tmp}")
-    #     fi
-    # done
-    
-    bicep_version=$(az bicep version)
+   
     az bicep upgrade
-    bicep_version=$(az bicep version)
     az config set bicep.check_version=False
-    echo "------ current Bicep version = ${bicep_version}---------"
-     echo "*******************************************************"
+
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
