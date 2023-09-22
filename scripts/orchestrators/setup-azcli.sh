@@ -6,6 +6,7 @@
 if command -v az &> /dev/null
 then
   echo "Azure CLI is already installed"
+  az bicep upgrade
   exit 0
 fi
 
@@ -18,3 +19,4 @@ set -e
 _information "Installing Azure CLI..."
 
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+az bicep upgrade
