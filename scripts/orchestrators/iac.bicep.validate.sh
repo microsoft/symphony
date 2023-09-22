@@ -66,7 +66,10 @@ for deployment in "${modules[@]}"; do
     #         params_path+=("${param_path_tmp}")
     #     fi
     # done
-
+    
+    bicep_version=$(az bicep version)
+    echo "------ current Bicep version = ${bicep_version}---------"
+     echo "*******************************************************"
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
