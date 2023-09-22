@@ -140,7 +140,7 @@ validate() {
         az group create --resource-group "${optional_args}" --location "${LOCATION_NAME}"
         output=$(eval "${command}")
         exit_code=$?
-        az group delete --resource-group "${optional_args}" --yes --no-wait
+        az group delete --resource-group "${optional_args}" --yes
     fi
 
     echo "${output}"
