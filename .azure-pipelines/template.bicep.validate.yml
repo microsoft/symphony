@@ -30,7 +30,6 @@ jobs:
             ./setup-powershell.sh
             ./setup-armttk.sh
             ./setup-shellspec.sh
-            ./setup-bicep.sh
             source ~/.bashrc
 
       - task: AzureKeyVault@2
