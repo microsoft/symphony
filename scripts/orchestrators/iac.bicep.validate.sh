@@ -71,6 +71,7 @@ for deployment in "${modules[@]}"; do
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
     # output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
+    echo "$(validate "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")"
     output=$(validate "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
     exit_code=$?
 
