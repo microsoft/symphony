@@ -84,10 +84,6 @@ for deployment in "${modules[@]}"; do
     unset -f pre_validate
     unset -f post_validate
 
-    echo "----------OUTPUT --------------"
-    echo "${output}"
-    echo "-------------------------------"
-
     bicep_output_to_env "${output}"
 
     echo "------------------------"

@@ -75,6 +75,10 @@ bicep_output_to_env() {
             echo "##vso[task.setvariable variable=bicepJson;isOutput=true]${bicepOutput}"
         fi
     fi
+    _information "--------------------- Bicep output content -----------------"
+    _information "${bicep_output_json}"
+    _information "--------------------- --------------------------------------"
+
     _information "--------------------- PARSE Bicep output-----------------"
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$'\n' read -r c; do
