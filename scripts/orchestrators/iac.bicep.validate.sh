@@ -68,6 +68,9 @@ for deployment in "${modules[@]}"; do
     # done
     
     bicep_version=$(az bicep version)
+    az bicep upgrade
+    bicep_version=$(az bicep version)
+    az config set bicep.use_binary_from_path=true
     echo "------ current Bicep version = ${bicep_version}---------"
      echo "*******************************************************"
     load_dotenv
