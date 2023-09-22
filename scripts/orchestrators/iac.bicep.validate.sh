@@ -40,12 +40,12 @@ for deployment in "${modules[@]}"; do
     path=$(dirname "${deployment}")
     export layerName=$(basename "$(dirname "$(dirname "${deployment}")")")
 
-    params=()
+    params=""
     SAVEIFS=${IFS}
     IFS=$'\n'
     param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
-        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
+        params=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
     fi
     IFS=${SAVEIFS}
 
@@ -59,18 +59,19 @@ for deployment in "${modules[@]}"; do
     fi
 
 
-    params_path=()
-    for param_path_tmp in "${params[@]}"; do
-        if [[ -f "${param_path_tmp}" ]]; then
-            parse_bicep_parameters "${param_path_tmp}"
-            params_path+=("${param_path_tmp}")
-        fi
-    done
+    # params_path=()
+    # for param_path_tmp in "${params[@]}"; do
+    #     if [[ -f "${param_path_tmp}" ]]; then
+    #         parse_bicep_parameters "${param_path_tmp}"
+    #         params_path+=("${param_path_tmp}")
+    #     fi
+    # done
 
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
-    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
+    # output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
+    output=$(validate "${deployment}" "${params}" "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
