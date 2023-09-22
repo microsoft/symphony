@@ -77,9 +77,13 @@ bicep_output_to_env() {
     fi
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
+        _information "--------------------- PARSE Bicep output-----------------"
         while IFS=$'\n' read -r c; do
+            
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
+
+            _information "--------------------- key:${outputName}, value:${outputValue}-----------------"
 
             echo "${outputName}"="${outputValue}" >>"${dotenv_file_path}"
             eval export "${outputName}"="${outputValue}"
