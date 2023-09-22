@@ -129,7 +129,8 @@ validate() {
  
     target_scope=$(_target_scope "${bicep_file_path}")
     # bicep_parameters=$(_bicep_parameters bicep_parameters_file_path_array)
-
+    az bicep upgrade
+    
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
         output=$(eval "${command}")
