@@ -56,13 +56,6 @@ for deployment in "${modules[@]}"; do
         pre_deploy
     fi
 
-    # params_path=()
-    # for param_path_tmp in "${params[@]}"; do
-    #     if [[ -f "${param_path_tmp}" ]]; then
-    #         parse_bicep_parameters "${param_path_tmp}"
-    #         params_path+=("${param_path_tmp}")
-    #     fi
-    # done
 
     az bicep upgrade
     az config set bicep.check_version=False
