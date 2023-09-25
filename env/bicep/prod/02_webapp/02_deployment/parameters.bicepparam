@@ -1,7 +1,7 @@
 using './../../../../../IAC/Bicep/bicep/02_webapp/02_deployment/main.bicep'
 
 param environment= 'prod'
-param location=readEnvironmentVariable('location','westus')
+param location=readEnvironmentVariable('LOCATION_NAME','westus')
 param layerName=readEnvironmentVariable('layerName')
 
 param appSvcPlanSkuName='S1'
