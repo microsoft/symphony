@@ -9,7 +9,9 @@ if [ -f "/usr/local/bin/bicep" ]; then
 fi
 
 # Includes
+# shellcheck source=/dev/null
 source _helpers.sh
+# shellcheck source=/dev/null
 source _setup_helpers.sh
 
 set -e
