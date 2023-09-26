@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# shellcheck source=/dev/null
 source ./iac.bicep.sh
 source ../utilities/os.sh
 

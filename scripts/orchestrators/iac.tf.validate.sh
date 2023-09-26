@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shellcheck source=/dev/null
+
 source ./iac.tf.sh
 pushd "${WORKSPACE_PATH}/IAC/Terraform/terraform"
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
