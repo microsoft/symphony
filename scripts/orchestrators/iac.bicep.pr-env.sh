@@ -33,7 +33,7 @@ bicepParamFiles=$(find "$newEnvDir" -name "parameters.bicepparam")
 for bicepParamFile in $bicepParamFiles; do
   sed \
     -i.bak \
-    "s/param\s*environment\s*=\s*'$PR_ENVIRONMENT_TEMPLATE'/param environment = 'ENVIRONMENT_NAME'/" \
+    "s/param\s*environment\s*=\s*'$PR_ENVIRONMENT_TEMPLATE'/param environment = '$ENVIRONMENT_NAME'/" \
     "$bicepParamFile"
 
     rm "$bicepParamFile.bak"
