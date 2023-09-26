@@ -1,0 +1,169 @@
+name: PR Deployment
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  
+  # By default, this workflow will cancel a previous run when a new one is queued.
+  # Depending on when the workflow was cancelled, it may leave orphaned environments
+  # that will be cleaned up after the PR is closed.
+  #
+  # To change this behavior and wait for the previous run to finish executing, set
+  # cancel-in-progress to false
+  cancel-in-progress: true
+
+env:
+  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
+  LOCATION_NAME: "westus"
+  PR_ENVIRONMENT_TEMPLATE: "pr"
+
+jobs:
+  Setup:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    outputs:
+      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
+      locationName: ${{ steps.setValues.outputs.locationName }}
+      prEnvironmentTemplate: ${{ steps.setValues.outputs.prEnvironmentTemplate }}
+      environmentName: ${{ steps.setValues.outputs.environmentName }}
+    steps:
+      - name: Set Values
+        id: setValues
+        run: |
+          echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
+          echo "locationName=$LOCATION_NAME" >> $GITHUB_OUTPUT
+          echo "prEnvironmentTemplate=$PR_ENVIRONMENT_TEMPLATE" >> $GITHUB_OUTPUT
+          
+          suffix=$(uuidgen)
+          
+          # create a 6 character hash of the suffix
+          suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
+          
+          echo "environmentName=$suffixHash" >> $GITHUB_OUTPUT
+
+  Validate:
+    needs: Setup
+    uses: ./.github/workflows/template.bicep.validate.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      locationName: ${{ needs.Setup.outputs.locationName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+  
+  # Right now, every new non-draft PR will trigger a new environment to be created.
+  # To change this behavior, you can add a label to the PR called "ready-to-deploy"
+  # and uncomment the following step. This will cause the workflow to only run when
+  # the label is present.
+  #
+  #
+  # CheckReadyToDeploy:
+  #   needs: [Validate, Setup]
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     READY_TO_DEPLOY: ${{ contains(github.event.pull_request.labels.*.name, 'ready-to-deploy') }}
+  #   steps:
+  #     - name: Check if the ready-to-deploy label is present
+  #       run: |
+  #         if [ "$READY_TO_DEPLOY" = "true" ]; then
+  #           echo "ready-to-deploy label present. Continuing..."
+  #         else
+  #           echo "ready-to-deploy label not present. Breaking..."
+  #           exit 1
+  #         fi
+
+  NewEnvironment:
+    needs: [Setup, Validate]
+    uses: ./.github/workflows/template.storeevent.yml
+    with:
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: PR-${{ github.event.pull_request.number }}
+      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+  
+  CommentPR:
+    needs: [Setup, Validate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            body = 'Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".';
+
+            if(${{ contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }})
+            {
+              body += '\n\nThe environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "${{ needs.Setup.outputs.environmentName }}" as the environment name.';
+            }
+            else
+            {
+              body += '\n\nThe environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  PreviewDeployBaseBranch:
+    needs: [Setup, NewEnvironment]
+    uses: ./.github/workflows/template.bicep.previewdeploy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      locationName: ${{ needs.Setup.outputs.locationName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.base_ref }} # First, deploy the base branch
+      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  PreviewDeployPRBranch:
+    needs: [Setup, PreviewDeployBaseBranch]
+    uses: ./.github/workflows/template.bicep.previewdeploy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      locationName: ${{ needs.Setup.outputs.locationName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
+      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Test:
+    needs: [Setup, PreviewDeployPRBranch]
+    uses: ./.github/workflows/template.bicep.test.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      locationName: ${{ needs.Setup.outputs.locationName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Destroy:
+    if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
+    needs: [Setup, Test]
+    uses: ./.github/workflows/template.bicep.destroy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+

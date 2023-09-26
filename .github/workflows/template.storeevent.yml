@@ -1,36 +1,33 @@
-name: "Template-Bicep-Destroy"
+name: "Template-Store-Event"
 
 on:
   workflow_call:
     inputs:
-      environmentName:
+      pipelineName:
+        type: string
+        required: true
+      eventName:
+          type: string
+          required: true
+      eventGroupId:
+        type: string
+        required: true
+      data:
         type: string
         required: true
       keyVaultName:
         type: string
         required: true
-      branchName:
-        required: true
-        type: string
     secrets:
       azureEnviromentCredentials:
         required: true
 
 jobs:
-  Destroy:
-    name: Destroy
+  StoreEvent:
+    name: Store Event
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branchName }}
-
-      - name: Setup Toolset
-        run: |
-          ./setup-azcli.sh
-          source ~/.bashrc
-        working-directory: scripts/orchestrators
-
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
@@ -40,7 +37,7 @@ jobs:
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, eventsStorageAccount, eventsTableName"
         run: |
           OIFS=$IFS
           IFS=', '
@@ -52,15 +49,19 @@ jobs:
           done
           IFS=$OIFS
 
-      - name: Run Bicep Destroy
+      - name: Store Event
         env:
-          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           WORKSPACE_PATH: ${{ github.workspace }}
-          RUN_ID: ${{ github.run_id }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          ./iac.bicep.destroy.sh
+          export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
+          export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
+          
+          source ./events.sh
+
+          store_event "${{ inputs.pipelineName }}" "${{ inputs.eventName }}" "${{ inputs.eventGroupId }}" "${{ inputs.data }}"
+
         working-directory: scripts/orchestrators

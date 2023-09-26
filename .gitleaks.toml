@@ -350,5 +350,8 @@ paths = [
   '''UDMSecretChecksv8.toml''',
   '''GitleaksUdmCombo.toml''',
 ]
+regexTarget = "line"
+regexes = ['''#GitLeaksIgnore''']
+
 commits = []
 repos = []

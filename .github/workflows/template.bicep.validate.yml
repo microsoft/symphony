@@ -14,6 +14,9 @@ on:
       branchName:
         required: true
         type: string
+      prEnvironmentTemplate:
+        required: false
+        type: string
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -23,7 +26,7 @@ jobs:
     name: Validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branchName }}
 
@@ -36,6 +39,16 @@ jobs:
           ./setup-armttk.sh
           ./setup-shellspec.sh
           source ~/.bashrc
+        working-directory: scripts/orchestrators
+
+      - name: Use Template environment
+        if: ${{ inputs.prEnvironmentTemplate != null }}
+        env:
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          WORKSPACE_PATH: ${{ github.workspace }}
+          PR_ENVIRONMENT_TEMPLATE: ${{ inputs.prEnvironmentTemplate }}
+        run: |
+          ./iac.bicep.pr-env.sh
         working-directory: scripts/orchestrators
 
       - name: Run Gitleaks
@@ -77,7 +90,7 @@ jobs:
           IFS=', '
           for secretname in $SECRETS
           do
-            secret=$(az keyvault secret show --name $secretname --vault-name ${{ github.event.inputs.keyVaultName }} --query "value")
+            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
             echo "::add-mask::$secret"
             echo "$secretname=$secret" >> $GITHUB_OUTPUT
           done
@@ -85,8 +98,8 @@ jobs:
 
       - name: Run Bicep Validate
         env:
-          ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
-          LOCATION_NAME: ${{ github.event.inputs.locationName }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          LOCATION_NAME: ${{ inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |

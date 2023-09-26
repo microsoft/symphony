@@ -106,6 +106,10 @@ deploy_dependencies() {
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
 
+    #Events Symphony Resources
+    SA_EVENTS_NAME="saevents${prefix}${suffix}"
+    SA_EVENTS_TABLE_NAME="events"
+
     _information "The following resources will be Created :"
     _information ""
     _information "                     Resource Group:  $RG_NAME"
@@ -113,6 +117,7 @@ deploy_dependencies() {
     _information "                 Container Registry:  $CR_NAME"
     _information "    Service Principal Name (Reader):  $SP_READER_NAME"
     _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+    _information "            Storage account(Events):  $SA_EVENTS_NAME"
 
     if [[ $IS_Terraform == true ]]; then
         _information "             Storage account(State):  $SA_STATE_NAME"
@@ -137,6 +142,22 @@ deploy_dependencies() {
         # Create KV
         _information "Creating Key Vault: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
+
+         # Create Events SA
+        _information "Creating Events Storage Account: ${SA_EVENTS_NAME}"
+        create_sa "${SA_EVENTS_NAME}" "Standard_LRS" "SystemAssigned"
+
+        # Create Events SA table
+        _information "Creating Events Storage Account Table: ${SA_EVENTS_TABLE_NAME} for Storage Account:${SA_EVENTS_NAME}"
+        create_sa_table "${SA_EVENTS_TABLE_NAME}" "${SA_EVENTS_NAME}"
+
+        # Save Events SA details to KV
+        echo "Saving Events Storage Account (${SA_EVENTS_NAME}) to Key Vault secret 'eventsStorageAccount'."
+        set_kv_secret 'eventsStorageAccount' "${SA_EVENTS_NAME}" "${KV_NAME}"
+
+        # Save Events Table name to KV
+        echo "Saving Storage Account Events Table(${SA_EVENTS_TABLE_NAME}) to Key Vault secret 'eventsTableName'."
+        set_kv_secret 'eventsTableName' "${SA_EVENTS_TABLE_NAME}" "${KV_NAME}"
 
         if [[ $IS_Terraform == true ]]; then
             # Create State SA
@@ -345,6 +366,13 @@ create_sa_container() {
     local _account_name="${2}"
 
     az storage container create --name "${_display_name}" --account-name "${_account_name}"
+}
+
+create_sa_table() {
+    local _table_name="${1}"
+    local _account_name="${2}"
+
+    az storage table create --name "${_table_name}" --account-name "${_account_name}"
 }
 
 set_kv_secret() {
