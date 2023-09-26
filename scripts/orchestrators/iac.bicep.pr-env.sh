@@ -22,31 +22,19 @@ if [ ! -d "$prEnvDir" ]; then
   exit 1
 fi
 
-prEnvJsonFile="$prEnvDir/parameters.json"
-# if the env/bicep/pr/parameters.json file does not exist, fail
-if [ ! -f "$prEnvJsonFile" ]; then
-  echo "$prEnvJsonFile file does not exist"
-  exit 1
-fi
-
-envKeyPath='.parameters.environment.value'
-
-# load the content of the if the env/bicep/$PR_ENVIRONMENT_TEMPLATE/parameters.json file
-currentEnv=$(jq -r $envKeyPath < "$prEnvJsonFile")
-
-# check if currentEnv is empty or is null
-if [ -z "$currentEnv" ] || [ "$currentEnv" == "null" ]; then  
-  echo "missing $envKeyPath in $prEnvJsonFile"
-  exit 1
-fi
-
 # copy $prEnvDir to $WORKSPACE_PATH/env/bicep/$ENVIRONMENT_NAME
 newEnvDir="$WORKSPACE_PATH/env/bicep/$ENVIRONMENT_NAME"
 rm -rf "$newEnvDir"
 cp -r "$prEnvDir" "$newEnvDir"
 
-# update the value of the environment parameter in the parameters.json file
-newEnvJsonFile="$newEnvDir/parameters.json"
+bicepParamFiles=$(find "$newEnvDir" -name "parameters.bicepparam")
 
-jq "$envKeyPath = \"$ENVIRONMENT_NAME\"" "$newEnvJsonFile" \
-  > tmp.json && mv tmp.json "$newEnvJsonFile"
+# for each entry in bicepParamFiles, modify it with sed
+for bicepParamFile in $bicepParamFiles; do
+  sed \
+    -i.bak \
+    "s/param\s*environment\s*=\s*'$PR_ENVIRONMENT_TEMPLATE'/param environment = 'ENVIRONMENT_NAME'/" \
+    "$bicepParamFile"
+
+    rm "$bicepParamFile.bak"
+done
