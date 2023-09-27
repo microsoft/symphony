@@ -1,7 +1,5 @@
 #!/bin/bash
 
-### TODO: Change this to use the new bicepparam files
-
 # Syntax: ./iac.bicep.pr-env.sh
 
 # if ENVIRONMENT_NAME is empty, fail
