@@ -43,31 +43,40 @@ for deployment in "${modules[@]}"; do
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
-    params=($(find "${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}" -maxdepth 1 -type f -name '*parameters*.json'))
     param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
-        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.json'))
+        params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
     fi
     IFS=${SAVEIFS}
 
-    params_path=()
-    for param_path_tmp in "${params[@]}"; do
-        if [[ -f "${param_path_tmp}" ]]; then
-            parse_bicep_parameters "${param_path_tmp}"
-            params_path+=("${param_path_tmp}")
-        fi
-    done
+    layer_folder_path=$(dirname "${deployment}")
+    if [ -f "${layer_folder_path}/_events.sh" ]; then
+      source "${layer_folder_path}/_events.sh"
+    fi
+
+    if [ "$(type -t pre_validate)" == "function" ]; then
+        pre_validate
+    fi
+   
+    az bicep upgrade
+    az config set bicep.check_version=False
 
     load_dotenv
 
     uniquer=$(echo $RANDOM | md5sum | head -c 6)
-    output=$(validate "${deployment}" params_path "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
+    output=$(validate "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "rg${uniquer}validate" "${layerName}")
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep validate failed - returned code ${exit_code}"
         exit ${exit_code}
     fi
+
+    if [ "$(type -t post_validate)" == "function" ]; then
+        post_validate
+    fi
+    unset -f pre_validate
+    unset -f post_validate
 
     bicep_output_to_env "${output}"
 
