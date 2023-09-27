@@ -173,6 +173,9 @@ configure_orchestrator() {
         git commit -m "Update resource names"
         push_repo
 
+        # configure branch-related settings, after the branches are pushed
+        configure_branches
+
         check_error_log
     popd || exit
 }

@@ -472,3 +472,7 @@ function push_repo {
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     git -c http.extraHeader="Authorization: Basic ${_token}" push -u origin --all
 }
+
+function configure_branches {
+    _debug "skip configure branches"
+}
