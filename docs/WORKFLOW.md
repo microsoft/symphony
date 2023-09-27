@@ -14,7 +14,7 @@ This workflow has a set of inputs variable that can be updated at the execution 
 
 ### Validate
 
-This stage ensures code readiness. It runs validations and linting tools, scans code for possible cred leaks, and executes any unit tests. Stage steps are executed in the following sequential order.
+This stage ensures code readiness. It executes pre_validate events, runs validations and linting tools, scans code for possible cred leaks, and executes any unit tests. Stage steps are executed in the following sequential order.
 
 ```mermaid
 flowchart LR

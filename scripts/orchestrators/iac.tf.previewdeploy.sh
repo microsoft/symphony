@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 source ./iac.tf.sh
 pushd ${WORKSPACE_PATH}/IAC/Terraform/terraform
 modules=$(find . -type d | sort | awk '$0 !~ last "/" {print last} {last=$0} END {print last}')
@@ -22,7 +23,7 @@ for deployment in "${array[@]}"; do
 
         layer_folder_path=$(dirname "${deployment}")
         if [ -f "${layer_folder_path}/_events.sh" ]; then
-        source "${layer_folder_path}/_events.sh"
+            source "${layer_folder_path}/_events.sh"
         fi
 
         if [ "$(type -t pre_deploy)" == "function" ]; then

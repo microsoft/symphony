@@ -30,7 +30,6 @@ jobs:
             ./setup-powershell.sh
             ./setup-armttk.sh
             ./setup-shellspec.sh
-            source ~/.bashrc
 
       - task: AzureKeyVault@2
         inputs:

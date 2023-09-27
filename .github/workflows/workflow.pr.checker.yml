@@ -1,223 +1,90 @@
+---
 name: PR Quality Checker
 
-on:
+on: # yamllint disable-line rule:truthy
+  # push:
+  #   branches: [ "main" ]
   pull_request:
     types:
-      -  opened
-      -  converted_to_draft
-      -  ready_for_review
-      -  synchronize
-      -  reopened
+      - opened
+      - ready_for_review
+      - synchronize
+      - reopened
     branches:
       - main
-  workflow_dispatch:
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ format('{0}-{1}-{2}', github.event_name, github.base_ref || github.ref, github.head_ref || github.event.number) }}
+  cancel-in-progress: true
+
+env:
+  DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG || vars.ACTIONS_RUNNER_DEBUG || secrets.ACTIONS_STEP_DEBUG || vars.ACTIONS_STEP_DEBUG || false }} # Check debug mode
 
 jobs:
-  changes:
-    name: Detect Changes
+  linter:
+    name: MegaLinter
     runs-on: ubuntu-latest
+    env:  # Comment env block if you do not want to apply fixes
+      # Apply linter fixes configuration
+      APPLY_FIXES:
+        - MARKDOWN_MARKDOWNLINT
+        - MARKDOWN_MARKDOWN_TABLE_FORMATTER
+        - SPELL_LYCHEE # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
+      APPLY_FIXES_EVENT: pull_request  # Decide which event triggers application of fixes in a commit or a PR (pull_request, push, all)
+      APPLY_FIXES_MODE: commit  # If APPLY_FIXES is used, defines if the fixes are directly committed (commit) or posted in a PR (pull_request)
     permissions:
-      contents: read
-      pull-requests: read
-    outputs:
-      markdown: ${{ steps.changes.outputs.markdown }}
-      markdown_files: ${{ steps.changes.outputs.markdown_files }}
-      shell: ${{ steps.changes.outputs.shell }}
-      shell_files: ${{ steps.changes.outputs.shell_files }}
-      changed: ${{ steps.changes.outputs.changed }}
+      # Give the default GITHUB_TOKEN write permission to commit and push, comment issues & post new PR
+      # Remove the ones you do not need
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - name: Checkout
+      - name: 🩺 Debug
+        if: ${{ env.DEBUG == 'true' }}
+        uses: raven-actions/debug@v1
+        with:
+          vars-context: ${{ toJson(vars) }}
+          secrets-context: ${{ toJson(secrets) }}
+          needs-context: ${{ toJson(needs) }}
+          inputs-context: ${{ toJson(inputs) }}
+
+      - name: ⤵️ Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
 
-      - name: Detect Changes
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          list-files: json
-          filters: |
-            markdown:
-              - added|modified: '**/*.md'
-            shell:
-              - added|modified: '**/*.sh'
-            changed:
-              - '**'
-
-  markdownlint:
-    name: MarkdownLint
-    if: ${{ always() && needs.changes.outputs.markdown == 'true' }}
-    needs:
-      - changes
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Parse Files
-        id: files
-        run: |
-          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(",")')
-          echo "result=${result}" >> "${GITHUB_OUTPUT}"
-        env:
-          INPUT_FILES: ${{ needs.changes.outputs.markdown_files }}
-
-      - name: Run MarkdownLint
-        id: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v11
-        with:
-          command: config
-          globs: .github/linters/.markdownlint.yml,${{ steps.files.outputs.result }}
-          separator: ','
-
-  lychee:
-    name: Lychee
-    if: ${{ always() && needs.changes.outputs.markdown == 'true' }}
-    needs:
-      - changes
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Parse Files
-        id: files
-        run: |
-          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(" ")')
-          echo "result=${result}" >> "${GITHUB_OUTPUT}"
-        env:
-          INPUT_FILES: ${{ needs.changes.outputs.markdown_files }}
-
-      - name: Run Lychee
-        uses: lycheeverse/lychee-action@v1
-        with:
-          args: --config ".github/linters/.lychee.toml" --no-progress ${{ steps.files.outputs.result }}
-          format: detailed
-          fail: true
+      - name: 🧹 MegaLinter
+        id: megalinter
+        uses: oxsecurity/megalinter/flavors/documentation@v7
+        # uses: oxsecurity/megalinter@v7
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          # All available variables are described in documentation
+          # https://megalinter.io/configuration/
+          VALIDATE_ALL_CODEBASE: ${{ (contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main') || false }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+          REPOSITORY_GITLEAKS_PR_COMMITS_SCAN: ${{ (github.event_name == 'pull_request' && 'true') || 'false' }} # If true, Gitleaks will scan all commits of a PR, not only the last one
 
-  shellcheck:
-    name: ShellCheck
-    if: ${{ always() && needs.changes.outputs.shell == 'true' }}
-    needs:
-      - changes
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Parse Files
-        id: files
-        run: |
-          result=$(echo "${INPUT_FILES}" | jq --raw-output 'join(" ")')
-          echo "result=${result}" >> "${GITHUB_OUTPUT}"
-        env:
-          INPUT_FILES: ${{ needs.changes.outputs.shell_files }}
-
-      - name: Setup ShellCheck Problem Matcher
-        uses: lumaxis/shellcheck-problem-matchers@v2
+      - name: 📦 Archive MegaLinter artifacts
+        if: ${{ always() && (steps.megalinter.outcome == 'success' || steps.megalinter.outcome == 'failure') }}
+        uses: actions/upload-artifact@v3
         with:
-          format: tty
+          name: MegaLinter reports
+          path: |
+            megalinter-reports
+            mega-linter.log
 
-      # - name: Run ShellCheck
-      #   uses: ludeeus/action-shellcheck@2.0.0
-      #   with:
-      #     additional_files: ${{ steps.files.outputs.result }}
-      #     format: tty
-      #     scandir: ${{ github.workspace }}
-      #     ignore_paths: '**/*.sh'
+      - name: 🤖 Get bot details
+        if: ${{ steps.megalinter.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        id: bot-details
+        uses: raven-actions/bot-details@v1
 
-      - name: Run Shell Checker (shellcheck, checkbashisms)
-        uses: luizm/action-sh-checker@v0.7.0
+      - name: 🆙 Commit and push applied linter fixes
+        if: ${{ steps.megalinter.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          sh_checker_comment: false
-          sh_checker_only_diff: true
-          sh_checker_shfmt_disable: true
-          sh_checker_shellcheck_disable: false
-          sh_checker_checkbashisms_enable: true
-        env:
-          SHELLCHECK_OPTS: --severity=error
-          GITHUB_TOKEN: ${{ github.token }}
-
-  # Temporarily disabling summary job as it is causing a failed check with forks. This will be resolved with a new mega-linter update and upgraded job.
-  # This workflow will be updated with the next release of Mega Linter.
-  # summary:
-  #   name: Summary
-  #   if: ${{ always() }}
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - markdownlint
-  #     - lychee
-  #     - shellcheck
-  #   permissions:
-  #     pull-requests: write
-  #     checks: write
-  #     statuses: write
-  #   env:
-  #     COMMENT_IDENTIFIER: ${{ format('<!-- workflow="{0}" job="{1}" -->', github.workflow, github.job) }}
-  #   steps:
-  #     - name: Debug
-  #       uses: raven-actions/debug@v1
-
-  #     - name: Bot Details
-  #       id: bot-details
-  #       uses: raven-actions/bot-details@v1
-
-  #     - name: Find Comment
-  #       uses: peter-evans/find-comment@v2
-  #       id: find-comment
-  #       with:
-  #         issue-number: ${{ github.event.pull_request.number }}
-  #         comment-author: ${{ steps.bot-details.outputs.name }}
-  #         body-includes: ${{ env.COMMENT_IDENTIFIER }}
-
-  #     - name: Set Comment
-  #       if: ${{ contains(needs.*.result, 'failure') }}
-  #       uses: peter-evans/create-or-update-comment@v3
-  #       with:
-  #         issue-number: ${{ github.event.pull_request.number }}
-  #         comment-id: ${{ steps.find-comment.outputs.comment-id }}
-  #         edit-mode: replace
-  #         body: |
-  #           Hey @${{ github.actor }}
-
-  #           🛑 `PR QUALITY` has detected some issues with the files in this PR.
-
-  #           - MarkdownLint ${{ (needs.markdownlint.result == 'success' && '✅') || '❌' }}
-  #           - Lychee (Markdown Links) ${{ (needs.lychee.result == 'success' && '✅') || '❌' }}
-  #           - ShellCheck: ${{ (needs.shellcheck.result == 'success' && '✅') || '❌' }}
-
-  #           > Please review the file annotations and make the necessary changes.
-  #           > See [files changed](${{ format('{0}/files', github.event.pull_request.html_url) }})
-
-  #           ${{ env.COMMENT_IDENTIFIER }}
-  #         reactions: eyes
-
-  #     - name: Delete Comment
-  #       if: ${{ steps.find-comment.outputs.comment-id != '' && !contains(needs.*.result, 'failure') }}
-  #       uses: sandeshjangam/comment-actions@v1
-  #       with:
-  #         type: delete
-  #         comment_id: ${{ steps.find-comment.outputs.comment-id }}
-
-  #     - name: Set Check Status
-  #       uses: maxisam/create-summary-check-status@v1.1.0
-  #       with:
-  #         jobResults: |
-  #           ${{ needs.markdownlint.result }}
-  #           ${{ needs.lychee.result }}
-  #           ${{ needs.shellcheck.result }}
-  #         authToken: ${{ github.token }}
-  #         checkName: PR QUALITY
-  #         failureStates: |
-  #           failure
-  #           cancelled
-  #         sha: ${{ github.event.pull_request.head.sha || github.sha }}
-  #         targetUrl: ${{ format('{0}/actions/runs/{1}', github.event.pull_request.base.repo.html_url, github.run_id) }}
+          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
+          commit_message: 'style: apply linter fixes'
+          commit_user_name: ${{ steps.bot-details.outputs.name }}
+          commit_user_email: ${{ steps.bot-details.outputs.email }}
+          commit_author: ${{ steps.bot-details.outputs.name-email }}
