@@ -25,7 +25,7 @@ _target_scope() {
     else
         target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
     fi
-    
+
     target_scope=${target_scope//\'/}
 
     echo "${target_scope}"
@@ -79,7 +79,7 @@ bicep_output_to_env() {
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$'\n' read -r c; do
-            
+
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
@@ -119,7 +119,7 @@ validate() {
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
     export layerName=$6
-    
+
     target_scope=$(_target_scope "${bicep_file_path}")
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
@@ -207,10 +207,10 @@ destroy() {
     local environmentName=${1}
     local layerName=${2}
     local location=${3}
-    
+
     deployments=$(az deployment sub list --query "[?tag=='GeneratedBy=symphony']" --query "[?tag=='EnvironmentName=${environmentName}']" --query "[?tag=='LayerName=${layerName}']" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
     exit_code=$?
-    
+
     for deployment in ${deployments}; do
         echo "Deleting deployment : ${deployment}"
         az deployment sub delete --name "${deployment}"
