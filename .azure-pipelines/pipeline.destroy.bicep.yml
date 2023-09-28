@@ -19,7 +19,7 @@ variables:
   # Name of the Environment
   # - name: environmentName
   #   value: "dev"
-  
+
   # - name: locationName
   #   value: "westus"
 
