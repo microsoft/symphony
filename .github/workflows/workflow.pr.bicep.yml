@@ -150,7 +150,8 @@ jobs:
   Test:
     needs: [Setup, PreviewDeployPRBranch]
     permissions:
-      checks: write    
+      pull-requests: write
+      checks: write   
     uses: ./.github/workflows/template.bicep.test.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
