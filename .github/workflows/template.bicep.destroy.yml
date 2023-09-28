@@ -31,7 +31,7 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          source ~/.bashrc
+
         working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
