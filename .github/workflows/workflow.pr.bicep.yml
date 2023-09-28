@@ -97,6 +97,8 @@ jobs:
   CommentPR:
     needs: [Setup, Validate]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write 
     steps:
       - name: Comment PR
         uses: actions/github-script@v6
@@ -147,6 +149,8 @@ jobs:
 
   Test:
     needs: [Setup, PreviewDeployPRBranch]
+    permissions:
+      checks: write    
     uses: ./.github/workflows/template.bicep.test.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
