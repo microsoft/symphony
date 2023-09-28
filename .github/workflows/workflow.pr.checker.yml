@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:  # Comment env block if you do not want to apply fixes
       # Apply linter fixes configuration
-      APPLY_FIXES:
+      APPLY_FIXES: |
         - MARKDOWN_MARKDOWNLINT
         - MARKDOWN_MARKDOWN_TABLE_FORMATTER
         - SPELL_LYCHEE # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
