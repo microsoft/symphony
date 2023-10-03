@@ -85,16 +85,8 @@ jobs:
         id: LoadSecrets
         env:
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-        run: |
-          OIFS=$IFS
-          IFS=', '
-          for secretname in $SECRETS
-          do
-            secret=$(az keyvault secret show --name $secretname --vault-name ${{ inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"
-            echo "$secretname=$secret" >> $GITHUB_OUTPUT
-          done
-          IFS=$OIFS
+        run: ./github.loadsecrets.sh
+        working-directory: scripts/orchestrators
 
       - name: Run Bicep Validate
         env:
