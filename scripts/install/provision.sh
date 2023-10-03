@@ -44,6 +44,8 @@ remove_dependencies() {
     SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
 
+    SA_EVENTS_NAME="saevents${prefix}${suffix}"
+
     #Terraform Symphony Resources
     SA_STATE_NAME="sastate${prefix}${suffix}"
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
@@ -58,6 +60,7 @@ remove_dependencies() {
     _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
     _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
+    _danger "            Storage account(Events):  $SA_EVENTS_NAME"
     if [[ "$is_terraform" != "false" ]]; then
         _danger "             Storage account(State):  $SA_STATE_NAME"
         _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
