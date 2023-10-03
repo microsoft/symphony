@@ -85,6 +85,7 @@ jobs:
         id: LoadSecrets
         env:
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
 
