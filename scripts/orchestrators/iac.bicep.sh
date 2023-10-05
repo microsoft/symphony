@@ -215,6 +215,10 @@ destroy() {
         echo "Deleting deployment : ${deployment}"
         az deployment sub delete --name "${deployment}"
         exit_code=$?
+        if [[ ${exit_code} != 0 ]]; then
+            _error "Deleting deployment : ${deployment} failed"
+            return ${exit_code}
+        fi
     done
 
     resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
@@ -222,6 +226,10 @@ destroy() {
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
         exit_code=$?
+        if [[ ${exit_code} != 0 ]]; then
+            _error "Deleting Resource group : ${resourceGroup} failed"
+            return ${exit_code}
+        fi
         _information "Resource group destroyed: ${resourceGroup}"
 
     done
