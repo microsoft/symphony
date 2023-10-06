@@ -18,7 +18,7 @@ query_events() {
     local event_group_id=$3
 
     filter_expression="${odata_filter} PartitionKey eq '${pipeline_name}'"
-    
+
     cmd="az storage entity query \
         --account-name ${EVENTS_STORAGE_ACCOUNT} \
         --table-name ${EVENTS_TABLE_NAME} \

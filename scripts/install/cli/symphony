@@ -7,8 +7,8 @@ REPO_DIR=$SCRIPT_DIR/../../../
 source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
 source "$SCRIPT_DIR/../../utilities/http.sh"
-source "$SCRIPT_DIR/../../utilities/json.sh" 
-source "$SCRIPT_DIR/../../utilities/os.sh" 
+source "$SCRIPT_DIR/../../utilities/json.sh"
+source "$SCRIPT_DIR/../../utilities/os.sh"
 source "$SCRIPT_DIR/../../utilities/service_principal.sh"
 source "$SCRIPT_DIR/../../install/banner.sh"
 source "$SCRIPT_DIR/../../install/contents.sh"
@@ -46,13 +46,13 @@ check_dependencies(){
     else
         _error "Required tool JQ not installed!. Please install JQ and retry."
         exit $?
-    fi    
+    fi
     if [[ -x "$(command -v sed)" ]]; then
         _information "Sed already installed!"
     else
         _error "Required tool sed not installed!. Please install sed and retry."
         exit $?
-    fi   
+    fi
 }
 
 verify_az_logged_in() {
@@ -68,9 +68,9 @@ set_cloud_env() {
 }
 
 get_acr_login_endpoint() {
-   login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
-   
-   echo "${login_endpoint}"
+    login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
+
+    echo "${login_endpoint}"
 }
 
 # Provision resources and service principals needed by Symphony
@@ -100,8 +100,8 @@ destroy(){
 }
 
 configure_orchestrator() {
-    ORCHESTRATOR=${args[0]}      
-    IACTOOL=${args[1]} 
+    ORCHESTRATOR=${args[0]}
+    IACTOOL=${args[1]}
 
     _validate_inputs
     code=$?
@@ -128,7 +128,7 @@ configure_orchestrator() {
         load_symphony_env
         printEnvironment
         load_inputs
-        
+
         # remove unused files
         remove_yaml
         if [ "$IACTOOL" == "bicep" ]; then
@@ -136,10 +136,10 @@ configure_orchestrator() {
         else
             remove_bicep_content
         fi
-        
+
         configure_repo
         configure_credentials
-        
+
         # Update the resource names KV, ACR, RG
         git add .
         git commit -m "Initial commit"
@@ -155,9 +155,9 @@ configure_orchestrator() {
         eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
         eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
         eval "git grep -l 'AzureCloud' -- ':!*_helpers.sh' | xargs $sedCommand \"s/AzureCloud/$SP_CLOUD_ENVIRONMENT/g\""
-        
+
         server_endpoint="$(get_acr_login_endpoint)"
-        eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\"" 
+        eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\""
         eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\""
 
         if [ "$IACTOOL" == "bicep" ]; then

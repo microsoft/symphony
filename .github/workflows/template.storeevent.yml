@@ -52,7 +52,7 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
           export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
-          
+
           source ./events.sh
 
           store_event "${{ inputs.pipelineName }}" "${{ inputs.eventName }}" "${{ inputs.eventGroupId }}" "${{ inputs.data }}"

@@ -3,7 +3,7 @@ name: "Template-Query-Event"
 on:
   workflow_call:
     outputs:
-      events: 
+      events:
         description: "Json array with events"
         value: ${{ jobs.QueryEvent.outputs.events}}
     inputs:
@@ -56,7 +56,7 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
           export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
-          
+
           source ./events.sh
 
           events=$(query_events "${{ inputs.pipelineName }}" "${{ inputs.eventName }}" "${{ inputs.eventGroupId }}")

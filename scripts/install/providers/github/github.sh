@@ -42,7 +42,7 @@ function load_inputs {
     if [ "$code" == "0" ]; then
         _information "GitHub Cli is already logged in. Bootstrap with existing authorization."
     else
-         echo "$GH_PAT" | gh auth login --with-token
+        echo "$GH_PAT" | gh auth login --with-token
     fi
 }
 

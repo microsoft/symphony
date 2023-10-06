@@ -11,7 +11,7 @@ on:
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
-  
+
   # By default, this workflow will cancel a previous run when a new one is queued.
   # Depending on when the workflow was cancelled, it may leave orphaned environments
   # that will be cleaned up after the PR is closed.
@@ -41,12 +41,12 @@ jobs:
           echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "locationName=$LOCATION_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentTemplate=$PR_ENVIRONMENT_TEMPLATE" >> $GITHUB_OUTPUT
-          
+
           suffix=$(uuidgen)
-          
+
           # create a 6 character hash of the suffix
           suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
-          
+
           echo "environmentName=$suffixHash" >> $GITHUB_OUTPUT
 
   Validate:
@@ -60,7 +60,7 @@ jobs:
       prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-  
+
   # Right now, every new non-draft PR will trigger a new environment to be created.
   # To change this behavior, you can add a label to the PR called "ready-to-deploy"
   # and uncomment the following step. This will cause the workflow to only run when
@@ -93,12 +93,12 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-  
+
   CommentPR:
     needs: [Setup, Validate]
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write 
+      pull-requests: write
     steps:
       - name: Comment PR
         uses: actions/github-script@v6
@@ -151,7 +151,7 @@ jobs:
     needs: [Setup, PreviewDeployPRBranch]
     permissions:
       pull-requests: write
-      checks: write   
+      checks: write
     uses: ./.github/workflows/template.bicep.test.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
