@@ -30,6 +30,7 @@ jobs:
 
       - name: Setup Toolset
         run: |
+          # shellcheck disable=SC1090
           ./setup-azcli.sh
           ./setup-powershell.sh
           ./setup-pester.sh
@@ -73,6 +74,7 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
+          # shellcheck disable=SC2155
           export ARM_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
           export ARM_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
           export ARM_CLIENT_ID="${{ steps.LoadSecrets.outputs.clientId }}"
