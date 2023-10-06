@@ -89,7 +89,7 @@ jobs:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}
-      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }}
+      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
@@ -167,6 +167,7 @@ jobs:
     uses: ./.github/workflows/template.bicep.destroy.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
+      locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
     secrets:

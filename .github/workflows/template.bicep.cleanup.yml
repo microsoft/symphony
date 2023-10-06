@@ -66,17 +66,19 @@ jobs:
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
 
           # NEW_ENVIRONMENT_EVENTS_JSON is an array of events. 
-          # Each event has a Name and SHA properties. 
+          # Each event has a Name, SHA and Location properties. 
           # For each event, we want to checkout the .SHA commit, get the .Name environment name
-          # and pass it to the destroy script.
+          # and the Location of the environment, and pass it to the destroy script.
           
           for event in $(echo "${NEW_ENVIRONMENT_EVENTS_JSON}" | jq -c '.[]'); do
               sha=$(echo "${event}" | jq -r '.SHA')
               name=$(echo "${event}" | jq -r '.Name')
+              location=$(echo "${event}" | jq -r '.Location')
               
               git checkout "${sha}"
               echo "Destroying environment: $name"
               export ENVIRONMENT_NAME=$name
+              export LOCATION_NAME=$location
                 
               ./iac.bicep.destroy.sh
           done

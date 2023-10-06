@@ -6,6 +6,9 @@ on:
       environmentName:
         type: string
         required: true
+      locationName:
+        type: string
+        required: true
       keyVaultName:
         type: string
         required: true
@@ -28,7 +31,7 @@ jobs:
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-          source ~/.bashrc
+
         working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
@@ -48,6 +51,7 @@ jobs:
       - name: Run Bicep Destroy
         env:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          LOCATION_NAME: ${{ inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
