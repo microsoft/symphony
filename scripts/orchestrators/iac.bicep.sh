@@ -25,7 +25,7 @@ _target_scope() {
     else
         target_scope=$(grep -oP 'targetScope\s*=\s*\K[^\s]+' "${bicep_file_path}" | sed -e 's/[\"\`]//g')
     fi
-    
+
     target_scope=${target_scope//\'/}
 
     echo "${target_scope}"
@@ -79,7 +79,7 @@ bicep_output_to_env() {
 
     echo "${bicep_output_json}" | jq -c 'select(.properties.outputs | length > 0) | .properties.outputs | to_entries[] | [.key, .value.value]' |
         while IFS=$'\n' read -r c; do
-            
+
             outputName=$(echo "$c" | jq -r '.[0]')
             outputValue=$(echo "$c" | jq -r '.[1]')
 
@@ -119,7 +119,7 @@ validate() {
     local location=$4
     local optional_args=$5 # --management-group-id or --resource-group
     export layerName=$6
- 
+
     target_scope=$(_target_scope "${bicep_file_path}")
     if [[ "${target_scope}" == "managementGroup" ]]; then
         command="az deployment mg validate --management-group-id ${optional_args} --name ${deployment_id} --location ${LOCATION_NAME} --template-file ${bicep_file_path} --parameters ${bicep_parameters}"
@@ -206,13 +206,33 @@ export -f deploy
 destroy() {
     local environmentName=${1}
     local layerName=${2}
+    local location=${3}
 
-    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query [].name --output tsv)
+    deployments=$(az deployment sub list --query "[?tag=='GeneratedBy=symphony']" --query "[?tag=='EnvironmentName=${environmentName}']" --query "[?tag=='LayerName=${layerName}']" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    exit_code=$?
 
+    for deployment in ${deployments}; do
+        echo "Deleting deployment : ${deployment}"
+        az deployment sub delete --name "${deployment}"
+        exit_code=$?
+        if [[ ${exit_code} != 0 ]]; then
+            _error "Deleting deployment : ${deployment} failed"
+            return ${exit_code}
+        fi
+    done
+
+    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
     for resourceGroup in ${resourceGroups}; do
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
+        exit_code=$?
+        if [[ ${exit_code} != 0 ]]; then
+            _error "Deleting Resource group : ${resourceGroup} failed"
+            return ${exit_code}
+        fi
         _information "Resource group destroyed: ${resourceGroup}"
+
     done
+    return ${exit_code}
 }
 export -f destroy

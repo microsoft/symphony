@@ -17,7 +17,7 @@ for deployment in "${modules[@]}"; do
 
     layerName=$(basename "$(dirname "$(dirname "${deployment}")")")
 
-    output=$(destroy "${ENVIRONMENT_NAME}" "${layerName}")
+    output=$(destroy "${ENVIRONMENT_NAME}" "${layerName}" "${LOCATION_NAME}")
 
     exit_code=$?
 
