@@ -172,4 +172,3 @@ jobs:
       branchName: ${{ github.head_ref }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-
