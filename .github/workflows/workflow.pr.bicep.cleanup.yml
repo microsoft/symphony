@@ -33,4 +33,3 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-
