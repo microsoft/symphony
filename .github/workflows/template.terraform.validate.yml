@@ -14,7 +14,6 @@ on:
       runLayerTest:
         type: string
         required: true
-        default: 'true'
       keyVaultName:
         type: string
         required: true
