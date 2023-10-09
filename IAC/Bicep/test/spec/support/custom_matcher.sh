@@ -6,7 +6,7 @@ shellspec_matcher_include_name() {
     shellspec_matcher__match() {
         SHELLSPEC_EXPECT="$1"
         SHELLSPEC_SUBJECT=$(echo "$SHELLSPEC_SUBJECT" | jq -r '.name')
-        [ "$SHELLSPEC_EXPECT" = "$SHELLSPEC_EXPECT" ] || return 1
+        [ "$SHELLSPEC_EXPECT" == "$SHELLSPEC_EXPECT" ] || return 1
         expr "$SHELLSPEC_SUBJECT" : "$SHELLSPEC_EXPECT" > /dev/null || return 1
         return 0
     }
