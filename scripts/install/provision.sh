@@ -44,10 +44,9 @@ remove_dependencies() {
     SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
 
-    SA_EVENTS_NAME="saevents${prefix}${suffix}"
-
+    SA_NAME="sa${prefix}${suffix}"
+    
     #Terraform Symphony Resources
-    SA_STATE_NAME="sastate${prefix}${suffix}"
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
 
@@ -60,9 +59,8 @@ remove_dependencies() {
     _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
     _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
-    _danger "            Storage account(Events):  $SA_EVENTS_NAME"
+    _danger "                    Storage account:  $SA_NAME"
     if [[ "$is_terraform" != "false" ]]; then
-        _danger "             Storage account(State):  $SA_STATE_NAME"
         _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
     fi
     echo ""
@@ -103,14 +101,13 @@ deploy_dependencies() {
     KV_NAME="kv-${prefix}-${suffix}"
     SP_READER_NAME="sp-reader-${prefix}-${suffix}"
     SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+    SA_NAME="sa${prefix}${suffix}"
 
     #Terraform Symphony Resources
-    SA_STATE_NAME="sastate${prefix}${suffix}"
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
 
     #Events Symphony Resources
-    SA_EVENTS_NAME="saevents${prefix}${suffix}"
     SA_EVENTS_TABLE_NAME="events"
 
     _information "The following resources will be Created :"
@@ -120,10 +117,9 @@ deploy_dependencies() {
     _information "                 Container Registry:  $CR_NAME"
     _information "    Service Principal Name (Reader):  $SP_READER_NAME"
     _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
-    _information "            Storage account(Events):  $SA_EVENTS_NAME"
+    _information "                    Storage account:  $SA_NAME"
 
     if [[ $IS_Terraform == true ]]; then
-        _information "             Storage account(State):  $SA_STATE_NAME"
         _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
     fi
     echo ""
@@ -146,30 +142,26 @@ deploy_dependencies() {
         _information "Creating Key Vault: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
 
-        # Create Events SA
-        _information "Creating Events Storage Account: ${SA_EVENTS_NAME}"
-        create_sa "${SA_EVENTS_NAME}" "Standard_LRS" "SystemAssigned"
+        # Create SA
+        _information "Creating Storage Account: ${SA_NAME}"
+        create_sa "${SA_NAME}" "Standard_LRS" "SystemAssigned"
 
         # Create Events SA table
-        _information "Creating Events Storage Account Table: ${SA_EVENTS_TABLE_NAME} for Storage Account:${SA_EVENTS_NAME}"
-        create_sa_table "${SA_EVENTS_TABLE_NAME}" "${SA_EVENTS_NAME}"
+        _information "Creating Events Storage Account Table: ${SA_EVENTS_TABLE_NAME} for Storage Account:${SA_NAME}"
+        create_sa_table "${SA_EVENTS_TABLE_NAME}" "${SA_NAME}"
 
         # Save Events SA details to KV
-        echo "Saving Events Storage Account (${SA_EVENTS_NAME}) to Key Vault secret 'eventsStorageAccount'."
-        set_kv_secret 'eventsStorageAccount' "${SA_EVENTS_NAME}" "${KV_NAME}"
+        echo "Saving Events Storage Account (${SA_NAME}) to Key Vault secret 'eventsStorageAccount'."
+        set_kv_secret 'eventsStorageAccount' "${SA_NAME}" "${KV_NAME}"
 
         # Save Events Table name to KV
         echo "Saving Storage Account Events Table(${SA_EVENTS_TABLE_NAME}) to Key Vault secret 'eventsTableName'."
         set_kv_secret 'eventsTableName' "${SA_EVENTS_TABLE_NAME}" "${KV_NAME}"
 
         if [[ $IS_Terraform == true ]]; then
-            # Create State SA
-            _information "Creating Storage Account: ${SA_STATE_NAME}"
-            create_sa "${SA_STATE_NAME}" "Standard_LRS" "SystemAssigned"
-
             # Create State SA container
-            _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_NAME}"
-            create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_NAME}"
+            _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
+            create_sa_container "${SA_CONTAINER_NAME}" "${SA_NAME}"
 
             # Create backup State SA
             _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
@@ -180,8 +172,8 @@ deploy_dependencies() {
             create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
 
             # Save State SA details to KV
-            echo "Saving State Storage Account (${SA_STATE_NAME}) to Key Vault secret 'stateStorageAccount'."
-            set_kv_secret 'stateStorageAccount' "${SA_STATE_NAME}" "${KV_NAME}"
+            echo "Saving State Storage Account (${SA_NAME}) to Key Vault secret 'stateStorageAccount'."
+            set_kv_secret 'stateStorageAccount' "${SA_NAME}" "${KV_NAME}"
 
             # Save State Backup SA details to KV
             echo "Saving State Backup Storage Account (${SA_STATE_BACKUP_NAME}) to Key Vault secret 'stateStorageAccountBackup'."
@@ -266,8 +258,8 @@ deploy_dependencies() {
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_NAME"
         if [[ $IS_Terraform == true ]]; then
-            set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_STATE_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container" "$SA_CONTAINER_NAME"
         fi
