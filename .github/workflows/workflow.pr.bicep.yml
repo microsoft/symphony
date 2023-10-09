@@ -89,7 +89,7 @@ jobs:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}
-      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}}
+      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
