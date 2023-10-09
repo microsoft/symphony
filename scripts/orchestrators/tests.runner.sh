@@ -118,7 +118,7 @@ bicep() {
   }
 
   # cd to the tests directory
-  pushd ../../IAC/Bicep/tests
+  pushd ../../IAC/Bicep/test
 
   if [ -z "${1}" ]; then
     pester "$@"
