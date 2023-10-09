@@ -58,4 +58,6 @@ store_event() {
 
     _information "Executing: ${cmd}"
     eval "${cmd}"
+
+    return $?
 }
