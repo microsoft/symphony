@@ -23,7 +23,7 @@ ENABLE_LINTERS:
   - YAML_YAMLLINT
   - JSON_JSONLINT
 # The next line is commented out to prevent errors in actionlint and avoid the pipeline from failing
-# - ACTION_ACTIONLINT
+  - ACTION_ACTIONLINT
   - EDITORCONFIG_EDITORCONFIG_CHECKER
 EXCLUDED_DIRECTORIES:
   - '.git'
