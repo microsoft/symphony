@@ -73,7 +73,7 @@ jobs:
           script: |
             source ./tests.runner.sh
 
-            pushd ../../IAC/Bicep/bicep
+            pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep
               load_dotenv
             popd
 

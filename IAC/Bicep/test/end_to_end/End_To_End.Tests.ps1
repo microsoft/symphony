@@ -27,26 +27,26 @@ Describe "End to End Tests" {
     It "resources should be ready and online, and web app works" {
       # act and assert
       $sqlServerResource = Confirm-AzBPSqlServer $sqlServerName $sqlServerResourceGroupName
-      $sqlServerResource.PublicNetworkAccess | Should -Be "Enabled"
+      $sqlServerResource.ResourceDetails.PublicNetworkAccess | Should -Be "Enabled"
 
       # act and assert
       $identitydbResource = Confirm-AzBPSqlDatabase "identitydb" $sqlServerName $sqlServerResourceGroupName
-      $identitydbResource.Status | Should -Be "Online"
+      $identitydbResource.ResourceDetails.Status | Should -Be "Online"
 
       # act and assert
       $catalogdbResource = Confirm-AzBPSqlDatabase "catalogdb" $sqlServerName $sqlServerResourceGroupName
-      $catalogdbResource.Status | Should -Be "Online"
+      $catalogdbResource.ResourceDetails.Status | Should -Be "Online"
 
       # act and assert
       $appServicePlanResource = Confirm-AzBPAppServicePlan $appServicePlanName $appServiceResourceGroupName
-      $appServicePlanResource.Status | Should -Be "Ready"
+      $appServicePlanResource.ResourceDetails.Status | Should -Be "Ready"
 
       # act and assert
       $webAppResource = Confirm-AzBPWebApp $appServiceName $appServiceResourceGroupName
-      $webAppResource.State | Should -Be "Running"
+      $webAppResource.ResourceDetails.State | Should -Be "Running"
 
       # act and assert
-      $defaultHostName = $webAppResource.DefaultHostName
+      $defaultHostName = $webAppResource.ResourceDetails.DefaultHostName
       $defaultHostName | Should -Not -Be $null
 
       # act and assert
