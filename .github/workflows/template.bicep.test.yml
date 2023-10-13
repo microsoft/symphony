@@ -78,11 +78,6 @@ jobs:
           export ARM_CLIENT_ID="${{ steps.LoadSecrets.outputs.clientId }}"
           export ARM_CLIENT_SECRET="${{ steps.LoadSecrets.outputs.clientSecret }}"
 
-          export AZ_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
-          export AZ_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
-          export AZ_APPLICATION_ID="${{ steps.LoadSecrets.outputs.clientId }}"
-          export AZ_ENCRYPTED_PASSWORD="$(pwsh -c "\"${{ steps.LoadSecrets.outputs.clientSecret }}\" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString")"
-
           source ./tests.runner.sh
 
           pushd ../../IAC/Bicep/bicep
