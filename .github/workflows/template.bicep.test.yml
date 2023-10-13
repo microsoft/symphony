@@ -43,6 +43,7 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
+          enable-AzPSSession: true
 
       - name: Fetch Cached Environment
         id: cache-env
