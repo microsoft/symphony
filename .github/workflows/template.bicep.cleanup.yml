@@ -20,7 +20,7 @@ jobs:
     with:
       pipelineName: PR
       eventName: NewEnvironment
-      eventGroupId: PR-${{ inputs.pullRequestNumber }}
+      eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       keyVaultName: ${{ inputs.keyVaultName }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.azureEnviromentCredentials }}
