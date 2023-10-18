@@ -27,7 +27,12 @@ query_events() {
             EventName eq '${event_name}' and \
             EventGroupId eq '${event_group_id}'\""
 
-    local resultJson=$(eval "${cmd}")
+    resultJson=$(eval "${cmd}")
+    exit_code=$?
+
+    if [[ ${exit_code} != 0 ]]; then
+        return ${exit_code}
+    fi
 
     local values=$(echo "${resultJson}" | jq -r ".items")
 
