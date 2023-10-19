@@ -18,6 +18,9 @@ on:
       keyVaultName:
         type: string
         required: true
+      comment:
+        type: string
+        required: false
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -26,6 +29,8 @@ jobs:
   StoreEvent:
     name: Store Event
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: Azure/login@v1
@@ -58,3 +63,16 @@ jobs:
           store_event "${{ inputs.pipelineName }}" "${{ inputs.eventName }}" "${{ inputs.eventGroupId }}" "${{ inputs.data }}"
 
         working-directory: scripts/orchestrators
+
+      - name: Comment PR
+        if: ${{ inputs.comment != '' }}
+        uses: actions/github-script@v6    
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ inputs.comment }}`
+            });

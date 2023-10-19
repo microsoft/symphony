@@ -85,43 +85,25 @@ jobs:
   NewEnvironment:
     needs: [Setup, Validate]
     uses: ./.github/workflows/template.storeevent.yml
+    permissions:
+      pull-requests: write
     with:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
       data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      comment: |
+        Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
+
+        ${{ 
+          contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') && 
+            format('The environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "{0}" as the environment name.', needs.Setup.outputs.environmentName) 
+          ||
+            'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
+        }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-
-  CommentPR:
-    needs: [Setup, Validate]
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Comment PR
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            body = 'Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".';
-
-            if(${{ contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }})
-            {
-              body += '\n\nThe environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "${{ needs.Setup.outputs.environmentName }}" as the environment name.';
-            }
-            else
-            {
-              body += '\n\nThe environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.';
-            }
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
