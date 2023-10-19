@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source ./iac.bicep.sh
+azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+
 # include helpers
 source _helpers.sh
 
@@ -92,15 +95,9 @@ bicep() {
   export AZ_APPLICATION_ID="${ARM_CLIENT_ID}"
   export AZ_ENCRYPTED_PASSWORD=$(pwsh -Command "\"${ARM_CLIENT_SECRET}\" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString")
 
-  echo "AZ_SUBSCRIPTION_ID: ${AZ_SUBSCRIPTION_ID}"
-  echo "AZ_TENANT_ID: ${AZ_TENANT_ID}"
-  echo "AZ_APPLICATION_ID: ${AZ_APPLICATION_ID}"
-  echo "AZ_ENCRYPTED_PASSWORD: ${AZ_ENCRYPTED_PASSWORD}"
-
   pester() {
     _information "run end to end tests"
 
-    # the parent bicep function does a pushd to IAC/Bicep/test
     pushd ./end_to_end
       # if the test file is not specified, run for all files
       if [ -z "${1}" ]; then
