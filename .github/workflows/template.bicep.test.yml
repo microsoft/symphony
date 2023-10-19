@@ -33,6 +33,7 @@ jobs:
           ./setup-azcli.sh
           ./setup-powershell.sh
           ./setup-pester.sh
+          ./setup-benchpress.sh
           ./setup-azpowershell.sh
           source ~/.bashrc
         working-directory: scripts/orchestrators
@@ -42,6 +43,7 @@ jobs:
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
+          enable-AzPSSession: true
 
       - name: Fetch Cached Environment
         id: cache-env
@@ -65,10 +67,10 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
+          export ARM_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
+          export ARM_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
+          export ARM_CLIENT_ID="${{ steps.LoadSecrets.outputs.clientId }}"
+          export ARM_CLIENT_SECRET="${{ steps.LoadSecrets.outputs.clientSecret }}"
 
           source ./tests.runner.sh
 

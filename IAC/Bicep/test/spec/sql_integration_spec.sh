@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 Describe 'SQL Integration Tests'
     setup(){
       export SQL_SERVER_RG_NAME="${sqlServerResourceGroupName}"
