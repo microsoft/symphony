@@ -96,9 +96,9 @@ jobs:
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
 
-        ${{ 
-          contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') && 
-            format('The environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "{0}" as the environment name.', needs.Setup.outputs.environmentName) 
+        ${{
+          contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') &&
+            format('The environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "{0}" as the environment name.', needs.Setup.outputs.environmentName)
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
