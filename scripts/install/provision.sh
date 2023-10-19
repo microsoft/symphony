@@ -45,7 +45,7 @@ remove_dependencies() {
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
 
     SA_NAME="sa${prefix}${suffix}"
-    
+
     #Terraform Symphony Resources
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
