@@ -92,6 +92,11 @@ bicep() {
   export AZ_APPLICATION_ID="${ARM_CLIENT_ID}"
   export AZ_ENCRYPTED_PASSWORD=$(pwsh -Command "\"${ARM_CLIENT_SECRET}\" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString")
 
+  echo "AZ_SUBSCRIPTION_ID: ${AZ_SUBSCRIPTION_ID}"
+  echo "AZ_TENANT_ID: ${AZ_TENANT_ID}"
+  echo "AZ_APPLICATION_ID: ${AZ_APPLICATION_ID}"
+  echo "AZ_ENCRYPTED_PASSWORD: ${AZ_ENCRYPTED_PASSWORD}"
+
   pester() {
     _information "run end to end tests"
 
