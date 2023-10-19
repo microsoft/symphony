@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # shellcheck shell=sh
 
 # Defining variables and functions here will affect all specfiles.

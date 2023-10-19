@@ -13,7 +13,7 @@ source _helpers.sh
 source _setup_helpers.sh
 
 set -e
-VERSION="${1:-"20221215"}"
+VERSION="${1:-"20230619"}"
 
 # Verify requested version is available, convert latest
 find_version_from_git_tags VERSION 'https://github.com/Azure/arm-ttk' 'tags/' 'none'
@@ -32,8 +32,7 @@ case "${unameOut}" in
 Darwin*) LOCAL_READLINK=greadlink ;;
 esac
 
-
-ARMTTK_PATH="$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk"
+ARMTTK_PATH="$(dirname $(${LOCAL_READLINK} -f $0))/arm-ttk/arm-ttk"
 
 pwsh -noprofile -nologo -command "Import-Module '${ARMTTK_PATH}/arm-ttk.psd1'"
 

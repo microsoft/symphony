@@ -85,21 +85,25 @@ terraform() {
 # @usage <to run all the tests for shellspec>: source ${0} && bicep shellspec
 bicep() {
   source ./iac.bicep.sh
-  azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
+
+  # Set environment variables for BenchPress login
+  export AZ_SUBSCRIPTION_ID="${ARM_SUBSCRIPTION_ID}"
+  export AZ_TENANT_ID="${ARM_TENANT_ID}"
+  export AZ_APPLICATION_ID="${ARM_CLIENT_ID}"
+  export AZ_ENCRYPTED_PASSWORD=$(pwsh -Command "\"${ARM_CLIENT_SECRET}\" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString")
 
   pester() {
     _information "run end to end tests"
-    
-    # the parent bicep function does a pushd to IAC/Bicep/test
+
     pushd ./end_to_end
       # if the test file is not specified, run for all files
       if [ -z "${1}" ]; then
-        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML –EnableExit"
+        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML -EnableExit"
       else
         TEST_FILE=$(find ${1})
 
         if [ ! -z "${TEST_FILE}" ]; then
-          pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE} –EnableExit"
+          pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE} -EnableExit"
         fi
       fi
 
