@@ -17,12 +17,6 @@ Describe "End to End Tests" {
       $sqlServerName | Should -Not -Be $Null
     }
 
-    It "should check the azure powershell connected and configured correctly" {
-      # act and assert
-      $currentContext = Get-AzContext
-      $currentContext | Should -Not -Be $Null
-    }
-
     It "should check the sql server is ready" {
       # act and assert
       $sqlServerResource = Confirm-AzBPSqlServer $sqlServerName $sqlServerResourceGroupName

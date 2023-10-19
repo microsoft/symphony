@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ./iac.bicep.sh
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
 # include helpers
 source _helpers.sh
 
