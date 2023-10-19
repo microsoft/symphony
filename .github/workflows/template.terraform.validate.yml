@@ -14,7 +14,6 @@ on:
       runLayerTest:
         type: string
         required: true
-        default: 'true'
       keyVaultName:
         type: string
         required: true
@@ -30,7 +29,7 @@ jobs:
     name: "Validate"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branchName }}
 
