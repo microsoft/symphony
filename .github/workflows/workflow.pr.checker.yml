@@ -51,8 +51,9 @@ jobs:
 
       - name: ⤵️ Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
+        # temp comment this line since VALIDATE_ALL_CODEBASE to true to fix all issues on main
+        # with:
+        #   fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
 
       - name: 🧹 MegaLinter
         id: megalinter
@@ -62,7 +63,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           # All available variables are described in documentation
           # https://megalinter.io/configuration/
-          VALIDATE_ALL_CODEBASE: ${{ (contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main') || false }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+          # temp set VALIDATE_ALL_CODEBASE to true to fix all issues on main
+          #VALIDATE_ALL_CODEBASE: ${{ (contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main') || false }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+          VALIDATE_ALL_CODEBASE: true
           REPOSITORY_GITLEAKS_PR_COMMITS_SCAN: ${{ (github.event_name == 'pull_request' && 'true') || 'false' }} # If true, Gitleaks will scan all commits of a PR, not only the last one
 
       - name: 📦 Archive MegaLinter artifacts
