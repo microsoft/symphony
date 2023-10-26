@@ -23,7 +23,7 @@ concurrency:
 env:
   KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   LOCATION_NAME: "westus"
-  PR_ENVIRONMENT_TEMPLATE: "pr"
+  PR_ENVIRONMENT_DIRECTORY: "pr"
 
 jobs:
   Setup:
@@ -32,7 +32,7 @@ jobs:
     outputs:
       keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       locationName: ${{ steps.setValues.outputs.locationName }}
-      prEnvironmentTemplate: ${{ steps.setValues.outputs.prEnvironmentTemplate }}
+      prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
     steps:
       - name: Set Values
@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "locationName=$LOCATION_NAME" >> $GITHUB_OUTPUT
-          echo "prEnvironmentTemplate=$PR_ENVIRONMENT_TEMPLATE" >> $GITHUB_OUTPUT
+          echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
 
           suffix=$(uuidgen)
 
@@ -54,10 +54,10 @@ jobs:
     uses: ./.github/workflows/template.bicep.validate.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -110,10 +110,10 @@ jobs:
     uses: ./.github/workflows/template.bicep.previewdeploy.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
-      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -122,10 +122,10 @@ jobs:
     uses: ./.github/workflows/template.bicep.previewdeploy.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
-      prEnvironmentTemplate: ${{ needs.Setup.outputs.prEnvironmentTemplate }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 

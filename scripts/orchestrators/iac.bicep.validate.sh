@@ -7,6 +7,11 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
+# in case ENVIRONMENT_DIRECTORY is empty, we set it to ENVIRONMENT_NAME (for backwards compatibility)
+if [[ -z "${ENVIRONMENT_DIRECTORY}" ]]; then
+    ENVIRONMENT_DIRECTORY="${ENVIRONMENT_NAME}"
+fi
+
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep"
 
 SAVEIFS=${IFS}
@@ -43,7 +48,7 @@ for deployment in "${modules[@]}"; do
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
-    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
+    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_DIRECTORY}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
     fi
