@@ -208,7 +208,21 @@ destroy() {
     local layerName=${2}
     local location=${3}
 
-    deployments=$(az deployment sub list --query "[?tag=='GeneratedBy=symphony']" --query "[?tag=='EnvironmentName=${environmentName}']" --query "[?tag=='LayerName=${layerName}']" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    #deployments=$(az deployment sub list 
+    #--query "[?tag=='GeneratedBy=symphony']" 
+    #--query "[?tag=='EnvironmentName=${environmentName}']" 
+    #--query "[?tag=='LayerName=${layerName}']" 
+    #--query "[?location=='${location}']" 
+    #--output json |jq -c -r '.[].name')
+    deployments=$(az deployment sub list --output json | \
+        jq -c -r ".[]
+            | select(
+                .location == \"${location}\" and
+                .tags.GeneratedBy == \"symphony\" and
+                .tags.EnvironmentName == \"${environmentName}\" and
+                .tags.LayerName == \"${layerName}\")
+            | .name")
+    
     exit_code=$?
 
     for deployment in ${deployments}; do
@@ -221,7 +235,20 @@ destroy() {
         fi
     done
 
-    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    #resourceGroups=$(az group list 
+    #--tag "GeneratedBy=symphony" 
+    #--tag "EnvironmentName=${environmentName}" 
+    #--tag "LayerName=${layerName}" 
+    #--query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    resourceGroups=$(az group list --output json | \
+        jq -c -r ".[]
+            | select(
+                .location == \"${location}\" and
+                .tags.GeneratedBy == \"symphony\" and
+                .tags.EnvironmentName == \"${environmentName}\" and
+                .tags.LayerName == \"${layerName}\")
+            | .name")
+
     for resourceGroup in ${resourceGroups}; do
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
