@@ -218,6 +218,12 @@ destroy() {
                 .tags.LayerName == \"${layerName}\")
             | @base64")
 
+    exit_code=$?
+    if [[ ${exit_code} != 0 ]]; then
+        _error "Getting resource groups failed"
+        return ${exit_code}
+    fi
+
     _information "For each resource groups..."
     for b64ResourceGroup in ${resourceGroups}; do
         resourceGroupJson=$(echo "$b64ResourceGroup" | base64 --decode)
@@ -230,6 +236,12 @@ destroy() {
                 | select(
                     .properties.outputResources[]? | select(.id == \"${resourceGroupId}\"))
                 | @base64")
+
+        exit_code=$?
+        if [[ ${exit_code} != 0 ]]; then
+            _error "Getting deployments for ${resourceGroup} failed"
+            return ${exit_code}
+        fi
         
         _information "For each deployment..."
         for b64Deployment in ${deployments}; do
