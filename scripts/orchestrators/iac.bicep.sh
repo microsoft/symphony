@@ -208,38 +208,7 @@ destroy() {
     local layerName=${2}
     local location=${3}
 
-    #deployments=$(az deployment sub list 
-    #--query "[?tag=='GeneratedBy=symphony']" 
-    #--query "[?tag=='EnvironmentName=${environmentName}']" 
-    #--query "[?tag=='LayerName=${layerName}']" 
-    #--query "[?location=='${location}']" 
-    #--output json |jq -c -r '.[].name')
-    deployments=$(az deployment sub list --output json | \
-        jq -c -r ".[]
-            | select(
-                .location == \"${location}\" and
-                .tags.GeneratedBy == \"symphony\" and
-                .tags.EnvironmentName == \"${environmentName}\" and
-                .tags.LayerName == \"${layerName}\")
-            | .name")
-    
-    exit_code=$?
-
-    for deployment in ${deployments}; do
-        echo "Deleting deployment : ${deployment}"
-        az deployment sub delete --name "${deployment}"
-        exit_code=$?
-        if [[ ${exit_code} != 0 ]]; then
-            _error "Deleting deployment : ${deployment} failed"
-            return ${exit_code}
-        fi
-    done
-
-    #resourceGroups=$(az group list 
-    #--tag "GeneratedBy=symphony" 
-    #--tag "EnvironmentName=${environmentName}" 
-    #--tag "LayerName=${layerName}" 
-    #--query "[?location=='${location}']" --output json |jq -c -r '.[].name')
+    _information "Getting resource groups..."
     resourceGroups=$(az group list --output json | \
         jq -c -r ".[]
             | select(
@@ -247,9 +216,35 @@ destroy() {
                 .tags.GeneratedBy == \"symphony\" and
                 .tags.EnvironmentName == \"${environmentName}\" and
                 .tags.LayerName == \"${layerName}\")
-            | .name")
+            | @base64")
 
-    for resourceGroup in ${resourceGroups}; do
+    _information "For each resource groups..."
+    for b64ResourceGroup in ${resourceGroups}; do
+        resourceGroupJson=$(echo "$b64ResourceGroup" | base64 --decode)
+        resourceGroup=$(echo "$resourceGroupJson" | jq -r '.name')
+        resourceGroupId=$(echo "$resourceGroupJson" | jq -r '.id')
+
+        _information "Getting deployments for ${resourceGroup}..."
+        deployments=$(az deployment sub list --output json | \
+            jq -c -r ".[]
+                | select(
+                    .properties.outputResources[]? | select(.id == \"${resourceGroupId}\"))
+                | @base64")
+        
+        _information "For each deployment..."
+        for b64Deployment in ${deployments}; do
+            deploymentJson=$(echo "$b64Deployment" | base64 --decode)
+            deployment=$(echo "$deploymentJson" | jq -r '.name')
+
+            _information "Deleting deployment : ${deployment}"
+            az deployment sub delete --name "${deployment}"
+            exit_code=$?
+            if [[ ${exit_code} != 0 ]]; then
+                _error "Deleting deployment : ${deployment} failed"
+                return ${exit_code}
+            fi
+        done
+       
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
         exit_code=$?
