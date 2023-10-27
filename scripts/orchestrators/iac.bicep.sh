@@ -255,8 +255,17 @@ destroy() {
                 _error "Deleting deployment : ${deployment} failed"
                 return ${exit_code}
             fi
+
+            deploymentNameGenerator="${deployment}NameGenerator"
+            _information "Deleting deployment : ${deploymentNameGenerator}"
+            az deployment sub delete --name "${deploymentNameGenerator}"
+            exit_code=$?
+            if [[ ${exit_code} != 0 ]]; then
+                _error "Deleting deployment : ${deploymentNameGenerator} failed"
+                return ${exit_code}
+            fi
         done
-       
+
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
         exit_code=$?
