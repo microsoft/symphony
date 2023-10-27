@@ -69,9 +69,9 @@ for deployment in "${modules[@]}"; do
 
     # resourceGroupName is a bicep output that is stored in an environment variable.
     _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
-   
+
     output=$(preview "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
-  
+
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
@@ -85,7 +85,7 @@ for deployment in "${modules[@]}"; do
 
     exit_code=$?
 
-    
+
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep deploy failed - returned code ${exit_code}"
         exit ${exit_code}

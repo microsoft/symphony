@@ -62,7 +62,7 @@ for deployment in "${modules[@]}"; do
     if [ "$(type -t pre_validate)" == "function" ]; then
         pre_validate
     fi
-   
+
     az bicep upgrade
     az config set bicep.check_version=False
 
