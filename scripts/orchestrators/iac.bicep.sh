@@ -208,21 +208,64 @@ destroy() {
     local layerName=${2}
     local location=${3}
 
-    deployments=$(az deployment sub list --query "[?tag=='GeneratedBy=symphony']" --query "[?tag=='EnvironmentName=${environmentName}']" --query "[?tag=='LayerName=${layerName}']" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
-    exit_code=$?
+    _information "Getting resource groups..."
+    resourceGroups=$(az group list --output json | \
+        jq -c -r ".[]
+            | select(
+                .location == \"${location}\" and
+                .tags.GeneratedBy == \"symphony\" and
+                .tags.EnvironmentName == \"${environmentName}\" and
+                .tags.LayerName == \"${layerName}\")
+            | @base64")
 
-    for deployment in ${deployments}; do
-        echo "Deleting deployment : ${deployment}"
-        az deployment sub delete --name "${deployment}"
+    exit_code=$?
+    if [[ ${exit_code} != 0 ]]; then
+        _error "Getting resource groups failed"
+        return ${exit_code}
+    fi
+
+    _information "For each resource groups..."
+    for b64ResourceGroup in ${resourceGroups}; do
+        resourceGroupJson=$(echo "$b64ResourceGroup" | base64 --decode)
+        resourceGroup=$(echo "$resourceGroupJson" | jq -r '.name')
+        resourceGroupId=$(echo "$resourceGroupJson" | jq -r '.id')
+
+        _information "Getting deployments for ${resourceGroup}..."
+        deployments=$(az deployment sub list --output json | \
+            jq -c -r ".[]
+                | select(
+                    .properties.outputResources[]? | select(.id == \"${resourceGroupId}\"))
+                | @base64")
+
         exit_code=$?
         if [[ ${exit_code} != 0 ]]; then
-            _error "Deleting deployment : ${deployment} failed"
+            _error "Getting deployments for ${resourceGroup} failed"
             return ${exit_code}
         fi
-    done
+        
+        _information "For each deployment..."
+        for b64Deployment in ${deployments}; do
+            deploymentJson=$(echo "$b64Deployment" | base64 --decode)
+            deployment=$(echo "$deploymentJson" | jq -r '.name')
 
-    resourceGroups=$(az group list --tag "GeneratedBy=symphony" --tag "EnvironmentName=${environmentName}" --tag "LayerName=${layerName}" --query "[?location=='${location}']" --output json |jq -c -r '.[].name')
-    for resourceGroup in ${resourceGroups}; do
+            _information "Deleting deployment : ${deployment}"
+            az deployment sub delete --name "${deployment}"
+            exit_code=$?
+            if [[ ${exit_code} != 0 ]]; then
+                _error "Deleting deployment : ${deployment} failed"
+                return ${exit_code}
+            fi
+
+            deploymentNameGenerator="${deployment}NameGenerator"
+            _information "Deleting deployment : ${deploymentNameGenerator}"
+            az deployment sub delete --name "${deploymentNameGenerator}"
+            exit_code=$?
+            if [[ ${exit_code} != 0 ]]; then
+                _error "Deleting deployment : ${deploymentNameGenerator} failed"
+                return ${exit_code}
+            fi
+        done
+
         _information "Destroying resource group: ${resourceGroup}"
         az group delete --resource-group "${resourceGroup}" --yes
         exit_code=$?
