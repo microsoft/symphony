@@ -60,7 +60,6 @@ export DEBIAN_FRONTEND=noninteractive
 # Soft version matching that resolves a version for a given package in the *current apt-cache*
 # Return value is stored in first argument (the unprocessed version)
 apt_cache_version_soft_match() {
-    
     # Version
     local variable_name="$1"
     local requested_version=${!variable_name}
@@ -72,7 +71,6 @@ apt_cache_version_soft_match() {
     # Ensure we've exported useful variables
     . /etc/os-release
     local architecture="$(dpkg --print-architecture)"
-    
     dot_escaped="${requested_version//./\\.}"
     dot_plus_escaped="${dot_escaped//+/\\+}"
     # Regex needs to handle debian package version number format: https://www.systutorials.com/docs/linux/man/5-deb-version/

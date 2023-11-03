@@ -67,7 +67,7 @@ find_version_from_git_tags() {
     local repository=$2
     local prefix=${3:-"tags/v"}
     local separator=${4:-"."}
-    local last_part_optional=${5:-"false"}    
+    local last_part_optional=${5:-"false"}
     if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
         local escaped_separator=${separator//./\\.}
         local last_part
@@ -154,7 +154,7 @@ if ! cat /etc/group | grep -e "^golang:" > /dev/null 2>&1; then
     groupadd -r golang
 fi
 usermod -a -G golang "${USERNAME}"
-mkdir -p "${TARGET_GOROOT}" "${TARGET_GOPATH}" 
+mkdir -p "${TARGET_GOROOT}" "${TARGET_GOPATH}"
 if [ "${TARGET_GO_VERSION}" != "none" ] && ! type go > /dev/null 2>&1; then
     # Use a temporary locaiton for gpg keys to avoid polluting image
     export GNUPGHOME="/tmp/tmp-gnupg"
@@ -177,7 +177,7 @@ if [ "${TARGET_GO_VERSION}" != "none" ] && ! type go > /dev/null 2>&1; then
             ((minor=minor-1))
             TARGET_GO_VERSION="${major}.${minor}"
             find_version_from_git_tags TARGET_GO_VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
-        else 
+        else
             ((breakfix=breakfix-1))
            TARGET_GO_VERSION="${major}.${minor}.${breakfix}"
         fi
@@ -219,7 +219,7 @@ if [ "${INSTALL_GO_TOOLS}" = "true" ]; then
         export GO111MODULE=on
         go_install_command=get
         echo "Go version < 1.16, using go get."
-    fi 
+    fi
 
     (echo "${GO_TOOLS}" | xargs -n 1 go ${go_install_command} -v )2>&1 | tee -a /usr/local/etc/vscode-dev-containers/go.log
 

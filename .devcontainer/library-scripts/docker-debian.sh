@@ -84,7 +84,7 @@ find_version_from_git_tags() {
     local repository=$2
     local prefix=${3:-"tags/v"}
     local separator=${4:-"."}
-    local last_part_optional=${5:-"false"}    
+    local last_part_optional=${5:-"false"}
     if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
         local escaped_separator=${separator//./\\.}
         local last_part
@@ -150,7 +150,7 @@ apt-get update
 if [ "${DOCKER_VERSION}" = "latest" ] || [ "${DOCKER_VERSION}" = "lts" ] || [ "${DOCKER_VERSION}" = "stable" ]; then
     # Empty, meaning grab whatever "latest" is in apt repo
     cli_version_suffix=""
-else    
+else
     # Fetch a valid version from the apt-cache (eg: the Microsoft repo appends +azure, breakfix, etc...)
     docker_version_dot_escaped="${DOCKER_VERSION//./\\.}"
     docker_version_dot_plus_escaped="${docker_version_dot_escaped//+/\\+}"
@@ -205,7 +205,7 @@ else
         fi
         ${pipx_bin} install --pip-args '--no-cache-dir --force-reinstall' docker-compose
         rm -rf /tmp/pip-tmp
-    else 
+    else
         find_version_from_git_tags DOCKER_DASH_COMPOSE_VERSION "https://github.com/docker/compose" "tags/"
         echo "(*) Installing docker-compose ${DOCKER_DASH_COMPOSE_VERSION}..."
         curl -fsSL "https://github.com/docker/compose/releases/download/${DOCKER_DASH_COMPOSE_VERSION}/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
@@ -233,13 +233,13 @@ if [ "${ENABLE_NONROOT_DOCKER}" = "false" ] || [ "${USERNAME}" = "root" ]; then
 fi
 
 # If enabling non-root access and specified user is found, setup socat and add script
-chown -h "${USERNAME}":root "${TARGET_SOCKET}"        
+chown -h "${USERNAME}":root "${TARGET_SOCKET}"
 if ! dpkg -s socat > /dev/null 2>&1; then
     apt_get_update_if_needed
     apt-get -y install socat
 fi
 tee /usr/local/share/docker-init.sh > /dev/null \
-<< EOF 
+<< EOF
 #!/usr/bin/env bash
 #-------------------------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
@@ -271,8 +271,8 @@ log()
 echo -e "\n** \$(date) **" | sudoIf tee -a \${SOCAT_LOG} > /dev/null
 log "Ensuring ${USERNAME} has access to ${SOURCE_SOCKET} via ${TARGET_SOCKET}"
 
-# If enabled, try to add a docker group with the right GID. If the group is root, 
-# fall back on using socat to forward the docker socket to another unix socket so 
+# If enabled, try to add a docker group with the right GID. If the group is root,
+# fall back on using socat to forward the docker socket to another unix socket so
 # that we can set permissions on it without affecting the host.
 if [ "${ENABLE_NONROOT_DOCKER}" = "true" ] && [ "${SOURCE_SOCKET}" != "${TARGET_SOCKET}" ] && [ "${USERNAME}" != "root" ] && [ "${USERNAME}" != "0" ]; then
     SOCKET_GID=\$(stat -c '%g' ${SOURCE_SOCKET})
@@ -299,7 +299,7 @@ if [ "${ENABLE_NONROOT_DOCKER}" = "true" ] && [ "${SOURCE_SOCKET}" != "${TARGET_
     log "Success"
 fi
 
-# Execute whatever commands were passed in (if any). This allows us 
+# Execute whatever commands were passed in (if any). This allows us
 # to set this script to ENTRYPOINT while still executing the default CMD.
 set +e
 exec "\$@"
