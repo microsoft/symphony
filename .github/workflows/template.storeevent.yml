@@ -1,42 +1,40 @@
-name: "Template-Bicep-PreviewDeploy"
+name: "Template-Store-Event"
 
 on:
   workflow_call:
     inputs:
-      environmentName:
+      pipelineName:
         type: string
         required: true
-      environmentDirectory:
+      eventName:
         type: string
         required: true
-      locationName:
+      eventGroupId:
+        type: string
+        required: true
+      data:
         type: string
         required: true
       keyVaultName:
         type: string
         required: true
-      branchName:
-        required: true
+      comment:
         type: string
+        required: false
     secrets:
       azureEnviromentCredentials:
         required: true
 
 jobs:
-  PreviewDeploy:
-    name: "Preview and Deploy"
+  StoreEvent:
+    name: Store Event
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branchName }}
-
-      - name: Setup Toolset
-        run: |
-          ./setup-azcli.sh
-        working-directory: scripts/orchestrators
-
       - uses: Azure/login@v1
+        name: Run Azure Login
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
@@ -44,30 +42,37 @@ jobs:
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
+          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, eventsStorageAccount, eventsTableName"
           KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
 
-      - name: Run Bicep Deploy
-        id: BicepDeploy
+      - name: Store Event
         env:
-          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
-          LOCATION_NAME: ${{ inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
-          RUN_ID: ${{ github.run_id }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          ./iac.bicep.previewdeploy.sh
+          export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
+          export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
+
+          source ./events.sh
+
+          store_event "${{ inputs.pipelineName }}" "${{ inputs.eventName }}" "${{ inputs.eventGroupId }}" "${{ inputs.data }}"
+
         working-directory: scripts/orchestrators
 
-      - name: Cache Environment
-        id: cache-env
-        uses: actions/cache@v3
+      - name: Comment PR
+        if: ${{ inputs.comment != '' }}
+        uses: actions/github-script@v6
         with:
-          path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
-          key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ inputs.comment }}`
+            });

@@ -28,7 +28,7 @@ function load_inputs {
     fi
 
     _information "AzDo Install Type: $INSTALL_TYPE"
-       
+
     if [ -z "$AZDO_ORG_NAME" ]; then
         _prompt_input "Enter existing Azure Devops $_host_type_group_name" AZDO_ORG_NAME
     fi
@@ -42,7 +42,7 @@ function load_inputs {
     fi
 }
 
-function configure_repo { 
+function configure_repo {
     _information "Create Project AzDo"
 
     local project_source_control='git'
@@ -58,15 +58,15 @@ function configure_repo {
     _debug "Requesting process templates"
     _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}")
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/pt.json"
-    
+
     if [[ "$_response" == *"Access Denied: The Personal Access Token used has expired"* ]]; then
       _error "Authentication Error Personal Access Token used has expired!"
-      exit 1      
+      exit 1
     fi
-    
+
     if [[ "$_response" == *"Azure DevOps Services | Sign In"* ]]; then
       _error "Authentication Error Requesting process templates. Please ensure the PAT is valid."
-      exit 1      
+      exit 1
     fi
 
     if [ -z "$_response" ]; then
@@ -84,18 +84,18 @@ function configure_repo {
     _debug "Creating project"
     # 2. POST Create project
     _response=$( request_post \
-                   "${_uri}" \
-                   "${_payload}" \
-                   "application/json; charset=utf-8" \
-                   "Basic ${_token}"
-               )
-    echo "$_response" > "$AZDO_TEMP_LOG_PATH/cp.json"   
+                    "${_uri}" \
+                    "${_payload}" \
+                    "application/json; charset=utf-8" \
+                    "Basic ${_token}"
+                )
+    echo "$_response" > "$AZDO_TEMP_LOG_PATH/cp.json"
     local _createProjectTypeKey=$(echo "$_response" | jq -r '.typeKey')
     if [ "$_createProjectTypeKey" = "ProjectAlreadyExistsException" ]; then
         _error "Error creating project in org '${AZDO_ORG_URI}. \nProject repo '${AZDO_PROJECT_NAME}' already exists."
         exit 1
     fi
-    
+
     _debug_log_post "$_uri" "$_response" "$_payload"
 
     #When going through rest apis, there is a timing issue from project create to querying the repo properties.
@@ -108,14 +108,14 @@ function configure_repo {
     _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/get-project-id.json"
     AZDO_PROJECT_ID=$(< "$AZDO_TEMP_LOG_PATH/get-project-id.json"  jq -r '.value[] | select (.name == "'"${AZDO_PROJECT_NAME}"'") | .id')
-    
+
     # 3. GET Repos Git Url and Repo Id's
     # AzDo Service     : Repositories - Get Repository https://docs.microsoft.com/rest/api/azure/devops/git/repositories/get%20repository?view=azure-devops-rest-5.1
     # GET https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}?api-version=5.1
-    
+
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/git/repositories/${AZDO_PROJECT_NAME}?api-version=" '5.1' '5.1')
     _debug "Fetching ${AZDO_PROJECT_NAME} repository information"
-    _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}") 
+    _response=$(request_get "${_uri}" "application/json; charset=utf-8" "Basic ${_token}")
     _debug_log_get "$_uri" "$_response"
 
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/${AZDO_PROJECT_NAME}-ri.json"
@@ -144,16 +144,16 @@ function create_pipelines_terraform() {
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)" 
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.1.7 true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.1.7 true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runLayerTest false true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"   
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"
     _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.terraform.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
     _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.terraform.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
@@ -163,17 +163,17 @@ function create_pipelines_bicep() {
     local pipelineVariables
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"  
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)"
     _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.bicep.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 
     pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)" 
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)"
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
-    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"    
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
     _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.bicep.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
@@ -213,7 +213,7 @@ function _create_arm_svc_connection() {
     echo "$_response" > "$AZDO_TEMP_LOG_PATH/isready.json"
 
     _isReady=$(< "$AZDO_TEMP_LOG_PATH"/isready.json jq -r '.isReady')
-    if [ "$_isReady" != true ]; then    
+    if [ "$_isReady" != true ]; then
         _error "Error creating AzureRM service connection"
     fi
 
@@ -231,7 +231,7 @@ function _create_arm_svc_connection() {
         "application/json; charset=utf-8" \
         "Basic ${_token}"
         )
-    
+
     _debug_log_patch "$_uri" "$_response" "$_payload"
 
     _success "AzureRM service connection created and authorized"
@@ -241,7 +241,7 @@ function _create_arm_svc_connection() {
 function _create_azdo_svc_connection() {
     _information "Creating azdo service connection"
     # AzDo Service     : Service Endpoint - Create https://docs.microsoft.com/rest/api/azure/devops/serviceendpoint/endpoints/create?view=azure-devops-rest-5.1
-    
+
     _templateFile=''
 
     if [ "$INSTALL_TYPE" == "PAAS" ]; then
@@ -249,13 +249,13 @@ function _create_azdo_svc_connection() {
     else
         _templateFile="$SCRIPT_DIR/templates/sc-ado-server.json"
     fi
-    
+
     _debug "starting payload $_templateFile"
-                 
+
     _payload=$(< "$_templateFile" sed 's~__ADO_ORG_NAME__~'"${AZDO_ORG_NAME}"'~' | sed 's~__ADO_ORG_URI__~'"${AZDO_ORG_URI}"'~' | sed 's~__ADO_PAT__~'"${AZDO_PAT}"'~' )
 
     _debug "done payload"
-    _debug_json "$_payload"            
+    _debug_json "$_payload"
 
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.1' '5.1-preview.1')
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
@@ -273,7 +273,7 @@ function _create_azdo_svc_connection() {
     _scId=$(< "$AZDO_TEMP_LOG_PATH/scado.json" jq -r '.id')
     _isReady=$(< "$AZDO_TEMP_LOG_PATH/scado.json" jq -r '.isReady')
 
-    if [ "$_isReady" != true ]; then    
+    if [ "$_isReady" != true ]; then
         _error "Error creating azdo service connection"
     fi
 
@@ -293,15 +293,15 @@ function _create_azdo_svc_connection() {
 
     _allPipelinesAuthorized=$(< "$AZDO_TEMP_LOG_PATH/sc-ado-auth.json" jq -r '.allPipelines.authorized')
 
-    if [ "$_allPipelinesAuthorized" == true ]; then    
+    if [ "$_allPipelinesAuthorized" == true ]; then
         _success "azdo service connection authorized for all pipelines"
     fi
 }
 
 function _create_pipeline {
-    
+
     _information "Create Pipeline AzDo"
-    
+
     # AzDo Service     : Definitions - Create https://docs.microsoft.com/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-5.1
     # POST https://dev.azure.com/{organization}/{project}/_apis/build/definitions?api-version=5.1
     # usage: _create_pipeline storageinit "/azure-pipelines/pipeline.storageinit.yml"
@@ -327,7 +327,7 @@ function _create_pipeline {
         sed -i 's/vmImage:/name:/g' $_yaml_file
     fi
 
-    # Ensure the Agent Pool is setup correctly 
+    # Ensure the Agent Pool is setup correctly
     local _branch_name="main"
     local _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/build/definitions?api-version=" '5.1' '5.1')
 
@@ -357,7 +357,7 @@ function _create_pipeline {
 
     local _pipeId=$(< "$AZDO_TEMP_LOG_PATH/${_name}-cp.json" jq -r '.id')
 
-    # Authorize Pipeline 
+    # Authorize Pipeline
     _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/pipelines/pipelinePermissions/queue/${_agent_pool_queue_id}?api-version=" '5.1-preview.1' '5.1-preview.1')
     _debug "${_uri}"
     _payload=$( < "$SCRIPT_DIR/templates/pipeline-authorize.json" \
@@ -370,7 +370,7 @@ function _create_pipeline {
     if [ "$_pipeId" != null ]; then
         if [ "${_name}" == "env.compile" ]; then
             envCompilePipelineId=$_pipeId
-        fi  
+        fi
         _success "Created Pipeline ${_name} - id:${_pipeId}"
     fi
 
@@ -391,7 +391,7 @@ function _create_svc_connection_payload() {
     local _payload
 
     local AZDO_SC_AZURERM_NAME='Symphony-KV'
-    
+
     if [ "$INSTALL_TYPE" == "PAAS" ]; then
         _template="$SCRIPT_DIR/templates/service-connection-create-paas.json"
         _payload=$(cat "$_template" \
@@ -405,7 +405,7 @@ function _create_svc_connection_payload() {
         | sed 's~__PROJECT_ID__~'"${AZDO_PROJECT_ID}"'~' \
         | sed 's~__PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~' \
         | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
-        ) 
+        )
     else
         _template="$SCRIPT_DIR/templates/service-connection-create-server.json"
         _payload=$(cat "$_template" \
@@ -417,7 +417,7 @@ function _create_svc_connection_payload() {
         | sed 's~__SUBSCRIPTION_NAME__~'"${SP_SUBSCRIPTION_NAME}"'~' \
         | sed 's~__SERVICE_CONNECTION_NAME__~'"${AZDO_SC_AZURERM_NAME}"'~' \
         | sed 's~__MANAGEMENT_URI__~'"${MANAGEMENT_URI}"'~' \
-        ) 
+        )
     fi
 
     echo "$_payload"
@@ -432,7 +432,7 @@ function _get_management_endpoint() {
         MANAGEMENT_URI=$(echo "$_response" | jq .endpoints.resourceManager | sed "s/^\([\"']\)\(.*\)\1\$/\2/g")
     fi
     _debug "MANAGEMENT_URI: ${MANAGEMENT_URI}"
-    
+
 }
 
 function _get_pipeline_var_defintion() {
@@ -471,4 +471,8 @@ function _get_agent_pool_queue() {
 function push_repo {
     local _token=$(echo -n ":${AZDO_PAT}" | base64)
     git -c http.extraHeader="Authorization: Basic ${_token}" push -u origin --all
+}
+
+function configure_branches {
+    _debug "skip configure branches"
 }

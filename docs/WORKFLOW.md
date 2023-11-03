@@ -59,9 +59,9 @@ This workflow has a set of inputs variable that can be updated at the execution 
 
 ![Workflow steps](images/destroy_workflow.png)
 
-## Pull Request Workflow (to be supported soon)
+## Pull Request Workflow (currently for GitHub + Bicep only)
 
-This is a feature to be supported soon to ensure best practices in IAC code repos when development is in progress, Pull Request workflow offers a set of validations to vet the pull request branch code changes as part of the review process. This will ensure changes of the IaC have not only been validated at the code quality level but also been properly tested on a real deployed environment to see the impact of resource changes.
+This is a feature that helps ensuring best practices in IAC code repos when development is in progress, Pull Request workflow offers a set of validations to vet the pull request branch code changes as part of the review process. This will ensure changes of the IaC have not only been validated at the code quality level but also been properly tested on a real deployed environment to see the impact of resource changes.
 
 ![Workflow steps](images/pr_workflow.png)
 

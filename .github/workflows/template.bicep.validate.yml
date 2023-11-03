@@ -5,6 +5,9 @@ on:
       environmentName:
         type: string
         required: true
+      environmentDirectory:
+        type: string
+        required: true
       locationName:
         type: string
         required: true
@@ -72,21 +75,15 @@ jobs:
         id: LoadSecrets
         env:
           SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-        run: |
-          OIFS=$IFS
-          IFS=', '
-          for secretname in $SECRETS
-          do
-            secret=$(az keyvault secret show --name $secretname --vault-name ${{ github.event.inputs.keyVaultName }} --query "value")
-            echo "::add-mask::$secret"
-            echo "$secretname=$secret" >> $GITHUB_OUTPUT
-          done
-          IFS=$OIFS
+          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
+        run: ./github.loadsecrets.sh
+        working-directory: scripts/orchestrators
 
       - name: Run Bicep Validate
         env:
-          ENVIRONMENT_NAME: ${{ github.event.inputs.environmentName }}
-          LOCATION_NAME: ${{ github.event.inputs.locationName }}
+          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
+          LOCATION_NAME: ${{ inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |

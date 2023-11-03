@@ -5,6 +5,11 @@ azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CL
 
 pushd .
 
+# in case ENVIRONMENT_DIRECTORY is empty, we set it to ENVIRONMENT_NAME (for backwards compatibility)
+if [[ -z "${ENVIRONMENT_DIRECTORY}" ]]; then
+    ENVIRONMENT_DIRECTORY="${ENVIRONMENT_NAME}"
+fi
+
 cd "${WORKSPACE_PATH}/IAC/Bicep/bicep" || exit
 
 SAVEIFS=${IFS}
@@ -41,7 +46,7 @@ for deployment in "${modules[@]}"; do
     params=()
     SAVEIFS=${IFS}
     IFS=$'\n'
-    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_NAME}/${path//.\//}/"
+    param_tmp_deployment="${WORKSPACE_PATH}/env/bicep/${ENVIRONMENT_DIRECTORY}/${path//.\//}/"
     if [[ -d "${param_tmp_deployment}" ]]; then
         params+=($(find "${param_tmp_deployment}" -maxdepth 1 -type f -name '*parameters*.bicepparam'))
     fi
@@ -64,9 +69,9 @@ for deployment in "${modules[@]}"; do
 
     # resourceGroupName is a bicep output that is stored in an environment variable.
     _information "Executing Bicep preview: 'preview \"${deployment}\" params_path \"${RUN_ID}\" \"${LOCATION_NAME}\" \"${resourceGroupName}\"'"
-   
+
     output=$(preview "${deployment}" "${params[0]}" "${RUN_ID}" "${LOCATION_NAME}" "${resourceGroupName}")
-  
+
     exit_code=$?
 
     if [[ ${exit_code} != 0 ]]; then
@@ -80,7 +85,7 @@ for deployment in "${modules[@]}"; do
 
     exit_code=$?
 
-    
+
     if [[ ${exit_code} != 0 ]]; then
         _error "Bicep deploy failed - returned code ${exit_code}"
         exit ${exit_code}

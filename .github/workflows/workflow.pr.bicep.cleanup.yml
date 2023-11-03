@@ -1,0 +1,35 @@
+name: PR Cleanup Bicep
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+
+env:
+  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
+
+jobs:
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
+    steps:
+      - name: Set Values
+        id: setValues
+        run: |
+          # shellcheck source=/dev/null
+          echo "keyVaultName=${{ env.KEY_VAULT_NAME }}" >> $GITHUB_OUTPUT
+
+  Cleanup:
+    needs: [Setup]
+    uses: ./.github/workflows/template.bicep.cleanup.yml
+    with:
+      pullRequestNumber: ${{ github.event.pull_request.number }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

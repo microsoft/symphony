@@ -1,37 +1,43 @@
-name: "Template-Bicep-Destroy"
+name: "Template-Bicep-Cleanup"
 
 on:
   workflow_call:
     inputs:
-      environmentName:
-        type: string
-        required: true
-      locationName:
+      pullRequestNumber:
         type: string
         required: true
       keyVaultName:
         type: string
         required: true
-      branchName:
-        required: true
-        type: string
     secrets:
       azureEnviromentCredentials:
         required: true
 
 jobs:
+  GetEnvironments:
+    name: GetEnvironments
+    uses: ./.github/workflows/template.queryevents.yml
+    with:
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
+      keyVaultName: ${{ inputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.azureEnviromentCredentials }}
+
   Destroy:
     name: Destroy
+    needs: [GetEnvironments]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branchName }}
+          fetch-depth: 0
 
       - name: Setup Toolset
         run: |
           ./setup-azcli.sh
-
+          source ~/.bashrc
         working-directory: scripts/orchestrators
 
       - uses: Azure/login@v1
@@ -50,14 +56,31 @@ jobs:
 
       - name: Run Bicep Destroy
         env:
-          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          LOCATION_NAME: ${{ inputs.locationName }}
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
+          NEW_ENVIRONMENT_EVENTS_JSON: ${{ needs.GetEnvironments.outputs.events }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
           export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
           export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          ./iac.bicep.destroy.sh
+
+          # NEW_ENVIRONMENT_EVENTS_JSON is an array of events.
+          # Each event has a Name, SHA and Location properties.
+          # For each event, we want to checkout the .SHA commit, get the .Name environment name
+          # and the Location of the environment, and pass it to the destroy script.
+
+          for event in $(echo "${NEW_ENVIRONMENT_EVENTS_JSON}" | jq -c '.[]'); do
+              sha=$(echo "${event}" | jq -r '.SHA')
+              name=$(echo "${event}" | jq -r '.Name')
+              location=$(echo "${event}" | jq -r '.Location')
+
+              git checkout "${sha}"
+              echo "Destroying environment: $name"
+              export ENVIRONMENT_NAME=$name
+              export LOCATION_NAME=$location
+
+              ./iac.bicep.destroy.sh
+          done
+
         working-directory: scripts/orchestrators

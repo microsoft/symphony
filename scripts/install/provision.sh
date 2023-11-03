@@ -40,12 +40,13 @@ remove_dependencies() {
     KV_NAME="kv-${prefix}-${suffix}"
     SP_READER_NAME="sp-reader-${prefix}-${suffix}"
     SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
-    
+
     SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
     SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
 
+    SA_NAME="sa${prefix}${suffix}"
+
     #Terraform Symphony Resources
-    SA_STATE_NAME="sastate${prefix}${suffix}"
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
 
@@ -58,9 +59,9 @@ remove_dependencies() {
     _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
     _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
     _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
+    _danger "                    Storage account:  $SA_NAME"
     if [[ "$is_terraform" != "false" ]]; then
-        _danger "             Storage account(State):  $SA_STATE_NAME"
-        _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
+        _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
     fi
     echo ""
 
@@ -69,9 +70,9 @@ remove_dependencies() {
 
     if [[ "$selection" == "yes" ]]; then
         _information "Starting removal of resources"
-        
+
         _information "Removing Resource Group (${RG_NAME}), Azure Container Registry ($CR_NAME) and Keyvault ($KV_NAME)"
-        az group delete --resource-group "${RG_NAME}" --yes 
+        az group delete --resource-group "${RG_NAME}" --yes
 
         _information "Purging Key Vault (${KV_NAME})"
         az keyvault purge -n "$KV_NAME"
@@ -100,11 +101,14 @@ deploy_dependencies() {
     KV_NAME="kv-${prefix}-${suffix}"
     SP_READER_NAME="sp-reader-${prefix}-${suffix}"
     SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+    SA_NAME="sa${prefix}${suffix}"
 
     #Terraform Symphony Resources
-    SA_STATE_NAME="sastate${prefix}${suffix}"
     SA_STATE_BACKUP_NAME="sastatebkup${prefix}${suffix}"
     SA_CONTAINER_NAME="tfstate"
+
+    #Events Symphony Resources
+    SA_EVENTS_TABLE_NAME="events"
 
     _information "The following resources will be Created :"
     _information ""
@@ -113,10 +117,10 @@ deploy_dependencies() {
     _information "                 Container Registry:  $CR_NAME"
     _information "    Service Principal Name (Reader):  $SP_READER_NAME"
     _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+    _information "                    Storage account:  $SA_NAME"
 
     if [[ $IS_Terraform == true ]]; then
-        _information "             Storage account(State):  $SA_STATE_NAME"
-        _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME" 
+        _information "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
     fi
     echo ""
 
@@ -125,7 +129,7 @@ deploy_dependencies() {
 
     if [[ "$selection" == "yes" ]]; then
         _information "Starting creation of resources"
-        
+
         # Create RG
         _information "Creating Resource Group: ${RG_NAME}"
         create_rg
@@ -138,26 +142,38 @@ deploy_dependencies() {
         _information "Creating Key Vault: ${KV_NAME}"
         kv_id=$(create_kv | jq -r .id)
 
-        if [[ $IS_Terraform == true ]]; then
-            # Create State SA
-            _information "Creating Storage Account: ${SA_STATE_NAME}"
-            create_sa "${SA_STATE_NAME}" "Standard_LRS" "SystemAssigned"
+        # Create SA
+        _information "Creating Storage Account: ${SA_NAME}"
+        create_sa "${SA_NAME}" "Standard_LRS" "SystemAssigned"
 
+        # Create Events SA table
+        _information "Creating Events Storage Account Table: ${SA_EVENTS_TABLE_NAME} for Storage Account:${SA_NAME}"
+        create_sa_table "${SA_EVENTS_TABLE_NAME}" "${SA_NAME}"
+
+        # Save Events SA details to KV
+        echo "Saving Events Storage Account (${SA_NAME}) to Key Vault secret 'eventsStorageAccount'."
+        set_kv_secret 'eventsStorageAccount' "${SA_NAME}" "${KV_NAME}"
+
+        # Save Events Table name to KV
+        echo "Saving Storage Account Events Table(${SA_EVENTS_TABLE_NAME}) to Key Vault secret 'eventsTableName'."
+        set_kv_secret 'eventsTableName' "${SA_EVENTS_TABLE_NAME}" "${KV_NAME}"
+
+        if [[ $IS_Terraform == true ]]; then
             # Create State SA container
-            _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_NAME}"
-            create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_NAME}"
+            _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
+            create_sa_container "${SA_CONTAINER_NAME}" "${SA_NAME}"
 
             # Create backup State SA
             _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
             create_sa "${SA_STATE_BACKUP_NAME}" "Standard_LRS" "SystemAssigned"
-            
+
             # Create Backup State SA container
             _information "Creating Backup Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_BACKUP_NAME}"
             create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
-            
+
             # Save State SA details to KV
-            echo "Saving State Storage Account (${SA_STATE_NAME}) to Key Vault secret 'stateStorageAccount'."
-            set_kv_secret 'stateStorageAccount' "${SA_STATE_NAME}" "${KV_NAME}"
+            echo "Saving State Storage Account (${SA_NAME}) to Key Vault secret 'stateStorageAccount'."
+            set_kv_secret 'stateStorageAccount' "${SA_NAME}" "${KV_NAME}"
 
             # Save State Backup SA details to KV
             echo "Saving State Backup Storage Account (${SA_STATE_BACKUP_NAME}) to Key Vault secret 'stateStorageAccountBackup'."
@@ -166,7 +182,7 @@ deploy_dependencies() {
             # Save Container name to KV
             echo "Saving Storage Account State Container(${SA_CONTAINER_NAME}) to Key Vault secret 'stateContainer'."
             set_kv_secret 'stateContainer' "${SA_CONTAINER_NAME}" "${KV_NAME}"
-            
+
             # Save state RG name to KV
             echo "Saving state Resource Group Name (${RG_NAME}) to Key Vault secret 'stateRg'."
             set_kv_secret 'stateRg' "${RG_NAME}" "${KV_NAME}"
@@ -179,21 +195,21 @@ deploy_dependencies() {
         local sp_owner_client_secret=""
         local sp_owner_tenant_id=""
         local sp_owner_sub_id=""
- 
+
         if [[ "$create_owner_sp" == "yes" ]]; then
-       
+
             # Create Owner SP and assing to subscription level
             _information "Creating Owner Service Principal: ${SP_OWNER_NAME}"
             sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
             sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
 
             # Save Owner SP details to KV
-            sp_owner_client_id=$(echo "${sp_owner_obj}" | jq -r .appId)     
+            sp_owner_client_id=$(echo "${sp_owner_obj}" | jq -r .appId)
             sp_owner_client_secret=$(echo "${sp_owner_obj}" | jq -r .password)
             sp_owner_sub_id=${SP_SUBSCRIPTION_ID}
-            sp_owner_tenant_id=$(echo "${sp_owner_obj}" | jq -r .tenant)       
+            sp_owner_tenant_id=$(echo "${sp_owner_obj}" | jq -r .tenant)
         else
-            echo "Use Existing Service Principal for Owner"            
+            echo "Use Existing Service Principal for Owner"
             _prompt_input "Enter Owner Service Principal Subscription Id" sp_owner_sub_id
             _prompt_input "Enter Owner Service Principal tenant Id" sp_owner_tenant_id
             _prompt_input "Enter Owner Service Principal Id" sp_owner_client_id
@@ -211,7 +227,7 @@ deploy_dependencies() {
         set_kv_secret 'subscriptionId' "${sp_owner_sub_id}" "${KV_NAME}"
 
         _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'tenantId'."
-        set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"       
+        set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"
 
         # Create Reader SP and assign to KV only
         _information "Creating Reader Service Principal: ${SP_READER_NAME}"
@@ -242,8 +258,8 @@ deploy_dependencies() {
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
         set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
+        set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_NAME"
         if [[ $IS_Terraform == true ]]; then
-            set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_STATE_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"
             set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container" "$SA_CONTAINER_NAME"
         fi
@@ -305,10 +321,10 @@ create_cr() {
     git clone "${APP_REPO}" "_app"
     pushd "_app" || exit
         git checkout "${APP_COMMIT}"
-        
+
         _information "Creating App Web Container"
         az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
-            
+
         sleep 5
         _information "Creating App Api Container"
         az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
@@ -337,7 +353,7 @@ create_sa() {
     local _sku="${2}"
     local _identity="${3}"
     sleep 60
-    az storage account create --name "${_display_name}" --resource-group "${RG_NAME}" --location "${LOCATION}" --sku "${_sku}" --identity-type "${_identity}"  
+    az storage account create --name "${_display_name}" --resource-group "${RG_NAME}" --location "${LOCATION}" --sku "${_sku}" --identity-type "${_identity}"
 }
 
 create_sa_container() {
@@ -345,6 +361,13 @@ create_sa_container() {
     local _account_name="${2}"
 
     az storage container create --name "${_display_name}" --account-name "${_account_name}"
+}
+
+create_sa_table() {
+    local _table_name="${1}"
+    local _account_name="${2}"
+
+    az storage table create --name "${_table_name}" --account-name "${_account_name}"
 }
 
 set_kv_secret() {
@@ -358,6 +381,6 @@ set_kv_secret() {
 set_kv_secret_policies() {
     local _vault_name="${1}"
     local _sp_app_id="${2}"
-    
+
     az keyvault set-policy --name "${_vault_name}" --secret-permissions get list backup restore --spn "${_sp_app_id}"
 }

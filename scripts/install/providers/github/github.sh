@@ -42,7 +42,7 @@ function load_inputs {
     if [ "$code" == "0" ]; then
         _information "GitHub Cli is already logged in. Bootstrap with existing authorization."
     else
-         echo "$GH_PAT" | gh auth login --with-token
+        echo "$GH_PAT" | gh auth login --with-token
     fi
 }
 
@@ -58,7 +58,7 @@ function configure_repo {
     _information "running - $command"
     eval "$command"
 
-    # 2. GET Repos Git Url and Repo Id's
+    # GET Repos Git Url and Repo Id's
     response=$(gh repo view "$GH_ORG_NAME/$GH_Repo_NAME" --json sshUrl,url,id)
     CODE_REPO_GIT_HTTP_URL=$(echo "$response" | jq -r '.url')
     CODE_REPO_ID=$(echo "$response" | jq -r '.id')
@@ -95,4 +95,29 @@ function create_pipelines_terraform {
 
 function push_repo {
     git push origin --all
+}
+
+function configure_branches {
+    # Enable Branch Protection rules
+    command="gh api --silent -X PUT /repos/$GH_ORG_NAME/$GH_Repo_NAME/branches/main/protection \
+        --input - << EOF
+        {
+            \"required_status_checks\": {
+                \"strict\":true,
+                \"contexts\":[
+                    \"Test / Test\"
+                ]
+            },
+            \"required_pull_request_reviews\": {
+                \"dismiss_stale_reviews\":false,
+                \"require_code_owner_reviews\":false,
+                \"require_last_push_approval\":false,
+                \"required_approving_review_count\":1
+            },
+            \"enforce_admins\":false,
+            \"restrictions\": null
+        }
+EOF"
+    echo "running - $command"
+    eval "$command"
 }
