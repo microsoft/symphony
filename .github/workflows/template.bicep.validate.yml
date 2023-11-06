@@ -1,3 +1,4 @@
+---
 name: "Template-Bicep-Validate"
 on:
   workflow_call:

@@ -1,3 +1,4 @@
+---
 name: "Template-TF-Destroy"
 on:
   workflow_call:

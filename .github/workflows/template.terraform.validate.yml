@@ -1,3 +1,4 @@
+---
 name: "Template-TF-Validate"
 on:
   workflow_call:

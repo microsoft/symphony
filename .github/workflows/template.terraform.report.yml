@@ -1,3 +1,4 @@
+---
 name: "Template-TF-Report"
 on:
   workflow_call:

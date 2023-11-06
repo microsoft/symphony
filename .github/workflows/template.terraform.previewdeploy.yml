@@ -1,3 +1,4 @@
+---
 name: "Template-TF-PreviewDeploy"
 on:
   workflow_call:
