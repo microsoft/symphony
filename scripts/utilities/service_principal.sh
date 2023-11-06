@@ -20,9 +20,9 @@ function loadServicePrincipalCredentials() {
             SP_TENANT_ID=$(read_kv_secret 'readerTenantId')
             SP_ID=$(read_kv_secret 'readerClientId')
             SP_SECRET=$(read_kv_secret 'readerClientSecret')
-        fi  
+        fi
     fi
- 
+
     if [ -z "$SP_SUBSCRIPTION_ID" ];  then
         _prompt_input "Enter Azure Service Principal Subscription Id" SP_SUBSCRIPTION_ID
     fi
@@ -42,7 +42,7 @@ function loadServicePrincipalCredentials() {
     if [ -z "$SP_SECRET" ]; then
         _prompt_input "Enter Azure Service Principal Client Secret" SP_SECRET
     fi
-    
+
 }
 
 # command is a global variable declared in the entrypoint script.
@@ -78,7 +78,7 @@ function load_symphony_env(){
         _prompt_input "Enter Symphony Resource Group Name" SYMPHONY_RG_NAME
     fi
 
-   
+
     if [ -z "$SYMPHONY_ACR_NAME" ];  then
         _prompt_input "Enter Symphony Container Registry Name" SYMPHONY_ACR_NAME
     fi

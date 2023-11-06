@@ -57,4 +57,3 @@ variable "rs_container_key" {
   description = "The name of the remote state file in the storage account container"
   type = string
 }
-

@@ -179,7 +179,7 @@ if [ "${TARGET_GO_VERSION}" != "none" ] && ! type go > /dev/null 2>&1; then
             find_version_from_git_tags TARGET_GO_VERSION "https://go.googlesource.com/go" "tags/go" "." "true"
         else
             ((breakfix=breakfix-1))
-           TARGET_GO_VERSION="${major}.${minor}.${breakfix}"
+          TARGET_GO_VERSION="${major}.${minor}.${breakfix}"
         fi
         echo "Trying ${TARGET_GO_VERSION}..."
         curl -fsSL -o /tmp/go.tar.gz "https://golang.org/dl/go${TARGET_GO_VERSION}.linux-${architecture}.tar.gz"

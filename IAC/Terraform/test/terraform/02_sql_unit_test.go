@@ -4,13 +4,13 @@
 package terraform
 
 import (
-	"os"
-	"testing"
+  "os"
+  "testing"
 
-	"github.com/Azure/azure-sdk-for-go/services/sql/mgmt/2014-04-01/sql"
-	"github.com/gruntwork-io/terratest/modules/azure"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+  "github.com/Azure/azure-sdk-for-go/services/sql/mgmt/2014-04-01/sql"
+  "github.com/gruntwork-io/terratest/modules/azure"
+  "github.com/gruntwork-io/terratest/modules/terraform"
+  "github.com/stretchr/testify/assert"
 )
 
 func Test02_SQL(t *testing.T) {

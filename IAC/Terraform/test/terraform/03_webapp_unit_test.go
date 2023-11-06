@@ -4,12 +4,12 @@
 package terraform
 
 import (
-	"os"
-	"testing"
+  "os"
+  "testing"
 
-	"github.com/gruntwork-io/terratest/modules/azure"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+  "github.com/gruntwork-io/terratest/modules/azure"
+  "github.com/gruntwork-io/terratest/modules/terraform"
+  "github.com/stretchr/testify/assert"
 )
 
 func Test03_WebAPP(t *testing.T) {

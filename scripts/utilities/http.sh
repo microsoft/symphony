@@ -3,7 +3,7 @@
 _set_api_version(){
     uri=$1
     paas_version=$2
-    
+
     echo "$1$2"
 }
 
@@ -15,7 +15,7 @@ check_error_log() {
 }
 
 verify_response() {
-    local _request_uri=$1 
+    local _request_uri=$1
     local _response=$2
 
     if [[ "$_response" == *"innerException"* ]]; then
@@ -26,7 +26,7 @@ verify_response() {
             echo "_response: "
             echo "$_response"
         } >> "$AZDO_TEMP_LOG_PATH/http.error.log"
-  
+
     fi
     if [[ "$_response" == *"Azure DevOps Services | Sign In"* ]]; then
         {
@@ -45,7 +45,7 @@ verify_response() {
             echo "_response: "
             echo "$_response"
         } >> "$AZDO_TEMP_LOG_PATH/http.error.log"
-    fi    
+    fi
 }
 _debug_log_patch() {
     _debug "REQ - $1"
@@ -98,7 +98,7 @@ request_post(){
         --data-raw "${payload}")
 
     verify_response "$request_uri" "$_response"
-    echo "$_response" 
+    echo "$_response"
 }
 
 request_put(){
@@ -116,7 +116,7 @@ request_put(){
         --data-raw "${payload}")
 
     verify_response "$request_uri" "$_response"
-    echo "$_response" 
+    echo "$_response"
 }
 
 _debug_log_get() {

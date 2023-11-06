@@ -4,15 +4,15 @@
 package terraform
 
 import (
-	"crypto/tls"
-	"os"
-	"testing"
+  "crypto/tls"
+  "os"
+  "testing"
 
-	"github.com/Azure/azure-sdk-for-go/services/sql/mgmt/2014-04-01/sql"
-	"github.com/gruntwork-io/terratest/modules/azure"
-	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+  "github.com/Azure/azure-sdk-for-go/services/sql/mgmt/2014-04-01/sql"
+  "github.com/gruntwork-io/terratest/modules/azure"
+  http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
+  "github.com/gruntwork-io/terratest/modules/terraform"
+  "github.com/stretchr/testify/assert"
 )
 
 func Test_EndToEnd(t *testing.T) {

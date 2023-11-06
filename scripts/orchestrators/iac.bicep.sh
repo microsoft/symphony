@@ -242,7 +242,7 @@ destroy() {
             _error "Getting deployments for ${resourceGroup} failed"
             return ${exit_code}
         fi
-        
+
         _information "For each deployment..."
         for b64Deployment in ${deployments}; do
             deploymentJson=$(echo "$b64Deployment" | base64 --decode)

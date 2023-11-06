@@ -41,7 +41,7 @@ function _select_list_no_display(){
       found=0
     fi
   done
-  
+
 }
 function _select_list() {
     variable="$1"
@@ -55,7 +55,7 @@ function _select_list() {
       printf "\e[31m> %s : \e[0m" "$message"
       printf "\n\e[31m"
     else
-      _prompt "$message" 
+      _prompt "$message"
       printf "\n\e[35m"
     fi
     select input in "${list[@]}"
@@ -80,7 +80,7 @@ function _select_yes_no() {
     variable="$1"
     message="${2:-Please make a selection}"
     is_danger=${3}
-    
+
     # configure the select prompt via the PS3 variable
     PS3="$(printf '\e[0m')?> "
 
@@ -88,7 +88,7 @@ function _select_yes_no() {
       printf "\e[31m> %s : \e[0m" "$message"
       printf "\n\e[31m"
     else
-      _prompt "$message" 
+      _prompt "$message"
       printf "\n\e[35m"
     fi
     select input in yes no
@@ -155,17 +155,17 @@ function usage() {
   commands:
     provision  Set up the required infrastructure needed for symphony
     destroy    Remove the required infrastructure needed for symphony
-    pipeline   
+    pipeline
       sub commands:
-        config 
+        config
           arguments:
             provider   (required)    azdo|github       specify the desired orchestrator
             iac_tool   (required)    terraform|bicep   specify the desired iac tool to configure
         example:
           symphony pipeline config azdo terraform
           symphony pipeline config github bicep
- 
-"      
+
+"
     _information "$_helpText" 1>&2
-    exit 0  
+    exit 0
 }

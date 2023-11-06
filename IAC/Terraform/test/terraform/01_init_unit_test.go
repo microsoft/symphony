@@ -4,14 +4,14 @@
 package terraform
 
 import (
-	"strings"
-	"testing"
+  "strings"
+  "testing"
 
-	"github.com/gruntwork-io/terratest/modules/azure"
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/stretchr/testify/assert"
+  "github.com/gruntwork-io/terratest/modules/azure"
+  "github.com/gruntwork-io/terratest/modules/random"
+  "github.com/stretchr/testify/assert"
 
-	"github.com/gruntwork-io/terratest/modules/terraform"
+  "github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 func Test01_Init_Storage(t *testing.T) {
