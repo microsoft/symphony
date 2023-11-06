@@ -109,7 +109,7 @@ It also creates a symphony.json in ./.symphony/ to store the names of the deploy
 The following resources will be deployed as dependencies for Symphony:
 
 | Resource           | Description                                                                                                                 | IaC tool          |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
 | Resource Group     | Container for all needed Symphony deployed resources.                                                                       | Terraform / Bicep |
 | Key Vault          | Stores the credential secrets to be used by workflows.                                                                      | Terraform / Bicep |
 | Container Registry | Stores the Symphony sample app 'eshop on web' docker images.                                                                | Terraform / Bicep |
@@ -143,7 +143,7 @@ $> symphony pipeline config github terraform
 This command creates and configures a Symphony project that includes a code repository, workflow pipelines, and workflow secrets. It then pushes the code to the newly created repository on the selected scm provider. It also creates a set of JSON logs files in ./.symphony/logs/YYYY-MM-DD-HH-MM-SS-ORCH to store responses from all the orchestrator calls for easier debugging. The following resources will be Configured:
 
 | Resource                       | Description                                                                                                                                                | orchestrator tool   |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
 | Symphony Code Repository       | an Azure DevOps or a GitHub code Repository based on the selected tool in cmd.                                                                             | Azure devOps/GitHub |
 | CI-Deploy main workflow        | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to deploy the IaC code .                                                   | Azure devOps/GitHub |
 | CI-Destroy main workflow       | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |

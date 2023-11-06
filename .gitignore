@@ -7,3 +7,5 @@ arm-ttk/
 .symphony
 .vscode
 IAC/**/*lint_res.xml
+megalinter-reports/
+.lycheecache

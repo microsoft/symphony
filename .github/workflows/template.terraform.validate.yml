@@ -122,7 +122,7 @@ jobs:
         shell: bash
 
       - uses: actions/upload-artifact@v3
-        if: (success() || failure()) && ${{ inputs.runLayerTest == 'true' }}
+        if: ${{ always() && inputs.runLayerTest == 'true' }}
         with:
           name: Modules test results
           path: ./IAC/Terraform/test/terraform/*.xml
