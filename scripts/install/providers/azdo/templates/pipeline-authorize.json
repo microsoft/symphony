@@ -1,8 +1,8 @@
 {
-    "pipelines": [ 
-        { 
-            "id": __PIPELINE_ID__, 
-            "authorized": true
-        }
-    ]
+  "pipelines": [
+    {
+      "id": "__PIPELINE_ID__",
+      "authorized": true
+    }
+  ]
 }
