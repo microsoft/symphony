@@ -25,14 +25,14 @@ jobs:
   linter:
     name: MegaLinter
     runs-on: ubuntu-latest
-    env:  # Comment env block if you do not want to apply fixes
+    env: # Comment env block if you do not want to apply fixes
       # Apply linter fixes configuration
       APPLY_FIXES: |
         - MARKDOWN_MARKDOWNLINT
         - MARKDOWN_MARKDOWN_TABLE_FORMATTER
         - SPELL_LYCHEE # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
-      APPLY_FIXES_EVENT: pull_request  # Decide which event triggers application of fixes in a commit or a PR (pull_request, push, all)
-      APPLY_FIXES_MODE: commit  # If APPLY_FIXES is used, defines if the fixes are directly committed (commit) or posted in a PR (pull_request)
+      APPLY_FIXES_EVENT: pull_request # Decide which event triggers application of fixes in a commit or a PR (pull_request, push, all)
+      APPLY_FIXES_MODE: commit # If APPLY_FIXES is used, defines if the fixes are directly committed (commit) or posted in a PR (pull_request)
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push, comment issues & post new PR
       # Remove the ones you do not need
@@ -87,7 +87,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-          commit_message: 'style: apply linter fixes'
+          commit_message: "style: apply linter fixes"
           commit_user_name: ${{ steps.bot-details.outputs.name }}
           commit_user_email: ${{ steps.bot-details.outputs.email }}
           commit_author: ${{ steps.bot-details.outputs.name-email }}
