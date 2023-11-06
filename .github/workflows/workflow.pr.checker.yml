@@ -51,9 +51,8 @@ jobs:
 
       - name: ⤵️ Checkout
         uses: actions/checkout@v4
-        # temp comment this line since VALIDATE_ALL_CODEBASE to true to fix all issues on main
-        # with:
-        #   fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
+        with:
+          fetch-depth: 0 # If you use VALIDATE_ALL_CODEBASE = true, you can remove this line to improve performances
 
       - name: 🧹 MegaLinter
         id: megalinter
