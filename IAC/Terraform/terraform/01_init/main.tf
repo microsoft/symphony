@@ -8,6 +8,9 @@
 resource "azurerm_resource_group" "tfstate_rg" {
   name     = var.resource_group_name
   location = var.location
+  tags = {
+    GeneratedBy = "symphony"
+  }
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -46,6 +49,9 @@ resource "azurerm_storage_container" "tfstate_container" {
 resource "azurerm_resource_group" "tfstatebak_rg" {
   name     = var.backup_resource_group_name
   location = var.location
+  tags = {
+    GeneratedBy = "symphony"
+  }
 }
 
 # ------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 resource "random_string" "sqlserverlogin" {
   length  = 10
   special = false
-  numeric  = false
+  numeric = false
 }
 
 resource "random_password" "sqlserverpassword" {
@@ -29,7 +29,10 @@ resource "azurerm_resource_group" "rg" {
   name     = azurecaf_name.rg_name.result
   location = var.location
 
-  tags = { env : var.env }
+  tags = {
+    env         = var.env,
+    GeneratedBy = "symphony"
+  }
 }
 
 # ------------------------------------------------------------------------------------------------------
