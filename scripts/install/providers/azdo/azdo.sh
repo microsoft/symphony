@@ -176,6 +176,14 @@ function create_pipelines_bicep() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
     _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.bicep.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
+
+    pipelineVariables=$(_get_pipeline_var_defintion prEnvironmentDirectory pr true)
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)"
+    _create_pipeline "PR-Deploy" "/.azure-pipelines/pipeline.pr.bicep.yml" "PR" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
+
 }
 
 function _create_arm_svc_connection() {

@@ -41,3 +41,4 @@ jobs:
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
+      branchName: $(Build.SourceBranchName)

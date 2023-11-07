@@ -1,6 +1,8 @@
 parameters:
   - name: environmentName
     type: string
+  - name: environmentDirectory
+    type: string
   - name: locationName
     type: string
   - name: keyVaultArmSvcConnectionName
@@ -67,6 +69,7 @@ jobs:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
           ENVIRONMENT_NAME: ${{ parameters.environmentName }}
+          ENVIRONMENT_DIRECTORY: ${{ parameters.environmentDirectory }}
           LOCATION_NAME: ${{ parameters.locationName }}
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)

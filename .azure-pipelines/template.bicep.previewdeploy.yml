@@ -1,6 +1,8 @@
 parameters:
   - name: environmentName
     type: string
+  - name: environmentDirectory
+    type: string
   - name: locationName
     type: string
   - name: keyVaultArmSvcConnectionName
@@ -8,6 +10,8 @@ parameters:
   - name: keyVaultName
     type: string
   - name: excludedFolders
+    type: string
+  - name: branchName
     type: string
 
 jobs:
@@ -18,6 +22,16 @@ jobs:
 
     steps:
       - checkout: self
+        fetchDepth: 0
+
+      - task: Bash@3
+        displayName: "Checkout branch"
+        inputs:
+          bashEnvValue: "~/.profile"
+          failOnStderr: true
+          targetType: "inline"
+          script: |
+            git checkout $(parameters.branchName)
 
       - task: Bash@3
         displayName: "Install Azure CLI"
@@ -41,6 +55,7 @@ jobs:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
           ENVIRONMENT_NAME: ${{ parameters.environmentName }}
+          ENVIRONMENT_DIRECTORY: ${{ parameters.environmentDirectory }}
           LOCATION_NAME: ${{ parameters.locationName }}
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)

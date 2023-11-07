@@ -1,0 +1,142 @@
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  branches:
+    - main
+  drafts: false
+  autoCancel: true
+
+variables:
+  #=============================================================#
+  # The following Variables should be set on the pipeline level #
+  #=============================================================#
+
+  - name: agentImage
+    value: "ubuntu-latest"
+  # Commented out to use the values from the Azdo pipeline variables
+  # - name: prEnvironmentDirectory
+  #   value: "pr"
+
+  # - name: locationName
+  #   value: "westus"
+
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
+
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
+
+  - name: excludedFolders
+    value: ","
+
+pool:
+  vmImage: $(agentImage)
+
+jobs:
+  - job: Setup
+    displayName: Setup
+    steps:
+      - task: Bash@3
+        name: GenerateEnvironmentName
+        displayName: "Generate environment name"
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: true
+          targetType: "inline"
+          script: |
+            suffix=$(uuidgen)
+
+            # create a 6 character hash of the suffix
+            suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
+
+            echo "##vso[task.setvariable variable=environmentName;isOutput=true]$suffixHash"
+
+  - template: ./template.bicep.validate.yml
+    dependsOn: Setup
+    parameters:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  ### ADD A COMMENTED OUT JOB TO CHECK FOR A LABEL "ready-to-deploy"
+  ### HERE IS THE GITHUB ACTIONS EQUIVALENT
+
+  # CheckReadyToDeploy:
+  #   needs: [Validate, Setup]
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     READY_TO_DEPLOY: ${{ contains(github.event.pull_request.labels.*.name, 'ready-to-deploy') }}
+  #   steps:
+  #     - name: Check if the ready-to-deploy label is present
+  #       run: |
+  #         if [ "$READY_TO_DEPLOY" = "true" ]; then
+  #           echo "ready-to-deploy label present. Continuing..."
+  #         else
+  #           echo "ready-to-deploy label not present. Breaking..."
+  #           exit 1
+  #         fi
+
+  - template: ./template.storeevent.yml
+    name: NewEnvironment
+    dependsOn: [ Setup, Validate ]
+    parameters:
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)
+      data: Name=$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ] SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      comment: |
+        Creating environment with name: "$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]" using commit: "$(System.PullRequest.SourceCommitId)".
+        The environment will be destroyed after the pipeline completes.
+
+        If you want to preserve this environment after the pipeline completes, add the "preserve-pr-environment" label to the PR. The environment will then be destroyed when the PR is closed.
+        To delete the environment manually, use the Destroy pipeline on the current branch with "$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]" as the environment name.
+
+  - template: ./template.bicep.previewdeploy.yml
+    name: PreviewDeployBaseBranch
+    dependsOn: [ Setup, NewEnvironment]
+    parameters:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+      branchName: $(System.PullRequest.TargetBranch)
+
+  - template: ./template.bicep.previewdeploy.yml
+    name: PreviewDeployPRBranch
+    dependsOn: [ Setup, PreviewDeployBaseBranch ]
+    parameters:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+      branchName: $(System.PullRequest.SourceCommitId)
+
+  - template: ./template.bicep.test.yml
+    dependsOn: [ Setup, PreviewDeployPRBranch ]
+    parameters:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  - template: ./template.bicep.destroy.yml
+    parameters:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      branchName: $(System.PullRequest.SourceCommitId)
