@@ -51,6 +51,10 @@ jobs:
       branchName: ${{ github.ref_name }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
   PreviewDeploy:
     needs: Validate
