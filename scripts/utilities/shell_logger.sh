@@ -42,5 +42,10 @@ _success() {
 _debug_json() {
     if [ -n "$DEBUG_FLAG" ]; then
         echo "$@" | jq
+        local exit_code=$?
+
+        if [ $exit_code -ne 0 ]; then
+            echo "jq command failed with exit code $exit_code. Raw value: $*"
+        fi
     fi
 }
