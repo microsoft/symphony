@@ -13,12 +13,16 @@ parameters:
     type: string
   - name: branchName
     type: string
+  - name: dependsOn
+    type: object
+  - name: jobName
+    type: string
+    default: "PreviewDeploy"
 
 jobs:
-  - job: PreviewDeploy
-    displayName: "Preview and Deploy"
-    dependsOn:
-      - Validate
+  - job: ${{ parameters.jobName }}
+    displayName: "Preview and Deploy ${{ parameters.branchName }}"
+    dependsOn: ${{ parameters.dependsOn }}
 
     steps:
       - checkout: self

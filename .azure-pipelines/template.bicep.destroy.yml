@@ -9,10 +9,14 @@ parameters:
     type: string
   - name: branchName
     type: string
+  - name: dependsOn
+    type: object
+    default: []
 
 jobs:
   - job: Destroy
     displayName: "Destroy"
+    dependsOn: ${{ parameters.dependsOn }}
     workspace:
       clean: resources
 

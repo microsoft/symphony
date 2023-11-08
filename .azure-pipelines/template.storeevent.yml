@@ -13,10 +13,14 @@ parameters:
     type: string
   - name: comment
     type: string
+  - name: dependsOn
+    type: object
+    default: []
 
 jobs:
   - job: StoreEvent
-    displayName: "Store Event"
+    displayName: "Store Event: ${{ parameters.eventName }}"
+    dependsOn: ${{ parameters.dependsOn }}
     
     steps:
       - checkout: self

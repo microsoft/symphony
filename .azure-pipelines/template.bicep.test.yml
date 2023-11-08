@@ -9,15 +9,16 @@ parameters:
     type: string
   - name: excludedFolders
     type: string
+  - name: dependsOn
+    type: object
 
 jobs:
   - job: Test
+    dependsOn: ${{ parameters.dependsOn }}
     variables:
       - name: bicepJson
         value: $[ dependencies.PreviewDeploy.outputs['BicepPreviewDeploy.bicepJson'] ]
     displayName: "E2E Test"
-    dependsOn:
-      - PreviewDeploy
     workspace:
       clean: resources
 

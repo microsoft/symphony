@@ -11,10 +11,14 @@ parameters:
     type: string
   - name: excludedFolders
     type: string
+  - name: dependsOn
+    type: object
+    default: []
 
 jobs:
   - job: Validate
     displayName: "Validate"
+    dependsOn: ${{ parameters.dependsOn }}
 
     steps:
       - checkout: self

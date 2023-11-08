@@ -56,8 +56,8 @@ jobs:
             echo "##vso[task.setvariable variable=environmentName;isOutput=true]$suffixHash"
 
   - template: ./template.bicep.validate.yml
-    dependsOn: Setup
     parameters:
+      dependsOn: [ Setup ]
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
       locationName: $(locationName)
@@ -85,8 +85,8 @@ jobs:
 
   - template: ./template.storeevent.yml
     name: NewEnvironment
-    dependsOn: [ Setup, Validate ]
     parameters:
+      dependsOn: [ Setup, Validate ]
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)
@@ -101,9 +101,9 @@ jobs:
         To delete the environment manually, use the Destroy pipeline on the current branch with "$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]" as the environment name.
 
   - template: ./template.bicep.previewdeploy.yml
-    name: PreviewDeployBaseBranch
-    dependsOn: [ Setup, NewEnvironment]
     parameters:
+      dependsOn: [ Setup, Validate ]
+      jobName: PreviewDeployBaseBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
       locationName: $(locationName)
@@ -113,9 +113,9 @@ jobs:
       branchName: $(System.PullRequest.TargetBranch)
 
   - template: ./template.bicep.previewdeploy.yml
-    name: PreviewDeployPRBranch
     dependsOn: [ Setup, PreviewDeployBaseBranch ]
     parameters:
+      name: PreviewDeployPRBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
       locationName: $(locationName)
@@ -125,8 +125,8 @@ jobs:
       branchName: $(System.PullRequest.SourceCommitId)
 
   - template: ./template.bicep.test.yml
-    dependsOn: [ Setup, PreviewDeployPRBranch ]
     parameters:
+      dependsOn: [ Setup, PreviewDeployPRBranch ]
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
@@ -135,6 +135,7 @@ jobs:
 
   - template: ./template.bicep.destroy.yml
     parameters:
+      dependsOn: [ Setup, Test ]
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
