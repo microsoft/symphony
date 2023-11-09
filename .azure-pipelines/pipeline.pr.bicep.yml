@@ -4,10 +4,7 @@ trigger:
   - none
 
 pr:
-  branches:
-    - main
-  drafts: false
-  autoCancel: true
+  - none
 
 variables:
   #=============================================================#
@@ -84,7 +81,6 @@ jobs:
   #         fi
 
   - template: ./template.storeevent.yml
-    name: NewEnvironment
     parameters:
       dependsOn: [ Setup, Validate ]
       pipelineName: PR
@@ -113,9 +109,9 @@ jobs:
       branchName: $(System.PullRequest.TargetBranch)
 
   - template: ./template.bicep.previewdeploy.yml
-    dependsOn: [ Setup, PreviewDeployBaseBranch ]
     parameters:
-      name: PreviewDeployPRBranch
+      dependsOn: [ Setup, PreviewDeployBaseBranch ]
+      jobName: PreviewDeployPRBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
       locationName: $(locationName)
