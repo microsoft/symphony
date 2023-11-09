@@ -1,6 +1,7 @@
+---
 name: "Destroy Terraform"
 
-on:
+on: # yamllint disable-line rule:truthy
   #=============================================================#
   # The following Variables should be set on the workflow level #
   #=============================================================#

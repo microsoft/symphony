@@ -19,7 +19,7 @@ Symphony supports the following Build Orchestrators:
 Symphony offers the workflows needed to implement IaC automation. Symphony provides multi-environment support and can be used on both public and non-public clouds. With the easily pluggable and integrable workflow design to integrate more tools with no need to update the workflow or change the CI/CD pipeline. Symphony offers all these features and more.
 
 | Feature                      | Description                                                                                                                                                                 |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Security Scanning            | Symphony helps preventing credential leaking in the IAC code by running security scanners in the workflows.                                                                 |
 | Linting & Validation         | Symphony ensures no invalid IaC code early and reduces the development iteration loop.                                                                                      |
 | IaC Modules Dependency       | Symphony offers a clear structure to organize modules based on dependency, while allowing for the flexibility of automatically passing outputs from one module to the next. |

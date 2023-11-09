@@ -1,3 +1,4 @@
+---
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
 trigger:
@@ -12,7 +13,6 @@ variables:
 
   - name: workDir
     value: "$(System.DefaultWorkingDirectory)/IAC/Terraform/terraform"
-  
   #=============================================================#
   # The following Variables should be set on the pipeline level #
   #=============================================================#
@@ -37,10 +37,9 @@ variables:
   # Terraform version
   # - name: terraformVersion
   #   value: "1.1.7"
-  
   # Run Layer tests
   - name: layerTestEnabled
-    value:  $(runLayerTest)
+    value: $(runLayerTest)
 
   # Backup remote state
   - name: backupStateEnabled

@@ -1,6 +1,7 @@
+---
 name: "Template-Store-Event"
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
       pipelineName:

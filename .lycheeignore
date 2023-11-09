@@ -3,3 +3,5 @@
 # The `.lycheeignore` file is only used for excluding URLs, not paths. Use the `exclude_path` key in the `lychee.toml` file. ref: https://github.com/lycheeverse/lycheeverse.github.io/blob/master/recipes/excluding-paths.md
 
 https://megalinter.io/configuration
+https://vsrm.dev.azure.com/__ADO_ORG_NAME__
+https://opensource.microsoft.com/codeofconduct/faq

@@ -1,3 +1,4 @@
+---
 name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
 
 trigger:
