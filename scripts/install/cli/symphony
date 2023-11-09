@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 REPO_DIR=$SCRIPT_DIR/../../../
-
 
 source "$SCRIPT_DIR/../../utilities/shell_logger.sh"
 source "$SCRIPT_DIR/../../utilities/shell_inputs.sh"
@@ -32,27 +31,27 @@ declare SYMPHONY_SA_STATE_NAME=""
 declare AZURE_REGIONS=""
 
 main() {
-    show_banner
-    check_dependencies
-    verify_az_logged_in
-    set_cloud_env
-    parse_args "$@"
-    process_command
+  show_banner
+  check_dependencies
+  verify_az_logged_in
+  set_cloud_env
+  parse_args "$@"
+  process_command
 }
 
-check_dependencies(){
-    if [[ -x "$(command -v jq)" ]]; then
-        _information "JQ already installed!"
-    else
-        _error "Required tool JQ not installed!. Please install JQ and retry."
-        exit $?
-    fi
-    if [[ -x "$(command -v sed)" ]]; then
-        _information "Sed already installed!"
-    else
-        _error "Required tool sed not installed!. Please install sed and retry."
-        exit $?
-    fi
+check_dependencies() {
+  if [[ -x "$(command -v jq)" ]]; then
+    _information "JQ already installed!"
+  else
+    _error "Required tool JQ not installed!. Please install JQ and retry."
+    exit $?
+  fi
+  if [[ -x "$(command -v sed)" ]]; then
+    _information "Sed already installed!"
+  else
+    _error "Required tool sed not installed!. Please install sed and retry."
+    exit $?
+  fi
 }
 
 verify_az_logged_in() {
@@ -64,188 +63,187 @@ verify_az_logged_in() {
 }
 
 set_cloud_env() {
-    SP_CLOUD_ENVIRONMENT=$(az cloud show | jq -r '.name')
+  SP_CLOUD_ENVIRONMENT=$(az cloud show | jq -r '.name')
 }
 
 get_acr_login_endpoint() {
-    login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
+  login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
 
-    echo "${login_endpoint}"
+  echo "${login_endpoint}"
 }
 
 # Provision resources and service principals needed by Symphony
 provision() {
-    _information "Deploying Symphony Dependencies"
-    source scripts/install/provision.sh
+  _information "Deploying Symphony Dependencies"
+  source scripts/install/provision.sh
 
-    AZURE_REGIONS=$(az account list-locations -o json | jq -r '.[].name' | sort)
-    _select_list_no_display default_location "Enter an Azure Location to deploy resources to (enter 'list' to view all available locations)" "$AZURE_REGIONS" "location"
+  AZURE_REGIONS=$(az account list-locations -o json | jq -r '.[].name' | sort)
+  _select_list_no_display default_location "Enter an Azure Location to deploy resources to (enter 'list' to view all available locations)" "$AZURE_REGIONS" "location"
 
-    local is_terraform=""
-    _select_yes_no is_terraform "Provision for Terraform:"
+  local is_terraform=""
+  _select_yes_no is_terraform "Provision for Terraform:"
 
-    if [[ "$is_terraform" == "yes" ]]; then
-        deploy_dependencies "$default_location" true
-    else
-        deploy_dependencies "$default_location" false
-    fi
+  if [[ "$is_terraform" == "yes" ]]; then
+    deploy_dependencies "$default_location" true
+  else
+    deploy_dependencies "$default_location" false
+  fi
 }
 
 # Destroy resources and service principals needed by Symphony. Note this is a destructive operation
-destroy(){
-    _information "Removing Symphony Dependencies"
-    source scripts/install/provision.sh
+destroy() {
+  _information "Removing Symphony Dependencies"
+  source scripts/install/provision.sh
 
-    remove_dependencies
+  remove_dependencies
 }
 
 configure_orchestrator() {
-    ORCHESTRATOR=${args[0]}
-    IACTOOL=${args[1]}
+  ORCHESTRATOR=${args[0]}
+  IACTOOL=${args[1]}
 
-    _validate_inputs
-    code=$?
-    if [[ $code -gt 0 ]]; then
-        usage
-        exit $code
-    fi
+  _validate_inputs
+  code=$?
+  if [[ $code -gt 0 ]]; then
+    usage
+    exit $code
+  fi
 
-    if [ "$ORCHESTRATOR" == "azdo" ]; then
-        source "$REPO_DIR/scripts/install/providers/azdo/azdo.sh"
-        mkdir -p "$AZDO_TEMP_LOG_PATH"
-    else
-        source "$REPO_DIR/scripts/install/providers/github/github.sh"
-    fi
+  if [ "$ORCHESTRATOR" == "azdo" ]; then
+    source "$REPO_DIR/scripts/install/providers/azdo/azdo.sh"
+    mkdir -p "$AZDO_TEMP_LOG_PATH"
+  else
+    source "$REPO_DIR/scripts/install/providers/github/github.sh"
+  fi
 
-    # workflow
-    TARGET_ROOT=$(mktemp -d)
-    cp -R "$REPO_DIR" "$TARGET_ROOT"
+  # workflow
+  TARGET_ROOT=$(mktemp -d)
+  cp -R "$REPO_DIR" "$TARGET_ROOT"
 
-    pushd "$TARGET_ROOT" || exit
-        rm -rf .git
-        #Load the reader sp credentials
-        loadServicePrincipalCredentials
-        load_symphony_env
-        printEnvironment
-        load_inputs
+  pushd "$TARGET_ROOT" || exit
+  rm -rf .git
+  #Load the reader sp credentials
+  loadServicePrincipalCredentials
+  load_symphony_env
+  printEnvironment
+  load_inputs
 
-        # remove unused files
-        remove_yaml
-        if [ "$IACTOOL" == "bicep" ]; then
-            remove_tf_content
-        else
-            remove_bicep_content
-        fi
+  # remove unused files
+  remove_yaml
+  if [ "$IACTOOL" == "bicep" ]; then
+    remove_tf_content
+  else
+    remove_bicep_content
+  fi
 
-        configure_repo
-        configure_credentials
+  configure_repo
+  configure_credentials
 
-        # Update the resource names KV, ACR, RG
-        git add .
-        git commit -m "Initial commit"
+  # Update the resource names KV, ACR, RG
+  git add .
+  git commit -m "Initial commit"
 
-        check_mac_os
-        is_mac=$?
+  check_mac_os
+  is_mac=$?
 
-        # The default sed command behaves differently on macos
-        sedCommand="sed -i"
-        if [[ $is_mac == 0 ]]; then
-            sedCommand="sed -i '' -e "
-        fi
-        eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
-        eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
-        eval "git grep -l 'AzureCloud' -- ':!*_helpers.sh' | xargs $sedCommand \"s/AzureCloud/$SP_CLOUD_ENVIRONMENT/g\""
+  # The default sed command behaves differently on macos
+  sedCommand="sed -i"
+  if [[ $is_mac == 0 ]]; then
+    sedCommand="sed -i '' -e "
+  fi
+  eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
+  eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
+  eval "git grep -l 'AzureCloud' -- ':!*_helpers.sh' | xargs $sedCommand \"s/AzureCloud/$SP_CLOUD_ENVIRONMENT/g\""
 
-        server_endpoint="$(get_acr_login_endpoint)"
-        eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\""
-        eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\""
+  server_endpoint="$(get_acr_login_endpoint)"
+  eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\""
+  eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\""
 
-        if [ "$IACTOOL" == "bicep" ]; then
-            create_pipelines_bicep
-        else
-            # Update SA state Name
-            eval "git grep -l 'symphonyremotestate360' | xargs $sedCommand \"s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g\""
-            create_pipelines_terraform
-        fi
+  if [ "$IACTOOL" == "bicep" ]; then
+    create_pipelines_bicep
+  else
+    # Update SA state Name
+    eval "git grep -l 'symphonyremotestate360' | xargs $sedCommand \"s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g\""
+    create_pipelines_terraform
+  fi
 
-        # commit & push the code the repo
-        git add .
-        git commit -m "Update resource names"
-        push_repo
+  # commit & push the code the repo
+  git add .
+  git commit -m "Update resource names"
+  push_repo
 
-        # configure branch-related settings, after the branches are pushed
-        configure_branches
+  # configure branch-related settings, after the branches are pushed
+  configure_branches
 
-        check_error_log
-    popd || exit
+  check_error_log
+  popd || exit
 }
 
 pipeline() {
-    case $sub_command in
-        "config")
-            configure_orchestrator
-            ;;
-        *)
-            usage
-            ;;
-    esac
+  case $sub_command in
+  "config")
+    configure_orchestrator
+    ;;
+  *)
+    usage
+    ;;
+  esac
 }
 
 parse_args() {
-    while (( "$#" )); do
-        case "${1}" in
-            provision)
-                shift 1
-                export command="provision"
-                ;;
-            destroy)
-                shift 1
-                export command="destroy"
-                ;;
-            pipeline)
-                shift 1
-                export command="pipeline"
-                export sub_command="$1"
-                shift 1
-                ;;
-            -h|--help)
-                shift 1
-                export command="help"
-                usage
-                ;;
-            -c|--cloud)
-                shift 1
-                export SP_CLOUD_ENVIRONMENT="${1}"
-                shift 1
-                ;;
-            *) # preserve positional arguments
-                PARAMS+="${1} "
-                shift
-                ;;
-        esac
-    done
+  while (("$#")); do
+    case "${1}" in
+    provision)
+      shift 1
+      export command="provision"
+      ;;
+    destroy)
+      shift 1
+      export command="destroy"
+      ;;
+    pipeline)
+      shift 1
+      export command="pipeline"
+      export sub_command="$1"
+      shift 1
+      ;;
+    -h | --help)
+      shift 1
+      export command="help"
+      usage
+      ;;
+    -c | --cloud)
+      shift 1
+      export SP_CLOUD_ENVIRONMENT="${1}"
+      shift 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS+="${1} "
+      shift
+      ;;
+    esac
+  done
 
-    args=( $PARAMS )
+  args=($PARAMS)
 
-    if [[ -z "$command" ]]; then
-        usage
-    fi
+  if [[ -z "$command" ]]; then
+    usage
+  fi
 }
 
 process_command() {
-    case "$command" in
-        provision)
-            provision
-            ;;
-        destroy)
-            destroy
-            ;;
-        pipeline)
-            pipeline
-            ;;
-    esac
+  case "$command" in
+  provision)
+    provision
+    ;;
+  destroy)
+    destroy
+    ;;
+  pipeline)
+    pipeline
+    ;;
+  esac
 }
 
 # main
 main "$@"
-

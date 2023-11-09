@@ -6,10 +6,10 @@ extends: default
 locale: en_US.UTF-8
 
 yaml-files:
-  - '.yamllint.yml'
-  - '*.yaml'
-  - '*.yml'
-  - '*.pages'
+  - ".yamllint.yml"
+  - "*.yaml"
+  - "*.yml"
+  - "*.pages"
 
 rules:
   line-length: disable

@@ -5,4 +5,3 @@ param sqlServerAdministratorPassword=readEnvironmentVariable('sqlServerAdministr
 param environment=readEnvironmentVariable('ENVIRONMENT_NAME')
 param location=readEnvironmentVariable('LOCATION_NAME','westus')
 param layerName=readEnvironmentVariable('layerName')
-

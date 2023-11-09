@@ -3,7 +3,7 @@ declare INSTALL_PATH=$(pwd)/scripts/install/cli
 declare SCRIPTS_PATH=$(pwd)/scripts
 source "$SCRIPTS_PATH/utilities/shell_logger.sh"
 
-if [[ "$0" = "$BASH_SOURCE" ]]; then 
+if [[ "$0" = "$BASH_SOURCE" ]]; then
     _error "WARNING: setup.sh should not executed directly. Please source this script."
     echo ""
     _information "source setup.sh"

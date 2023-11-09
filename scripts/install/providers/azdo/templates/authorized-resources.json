@@ -1,7 +1,7 @@
 [
-    {
-            "type": "endpoint",
-            "id": "__SERVICE_CONNECTION_ID__",
-            "authorized": true
-    }
+  {
+    "type": "endpoint",
+    "id": "__SERVICE_CONNECTION_ID__",
+    "authorized": true
+  }
 ]

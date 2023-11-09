@@ -5,8 +5,5 @@
   "log-files": true,
   "compact": true,
   "continue": true,
-  "patterns": [
-    "**/*.json",
-    "!**/node_modules"
-  ]
+  "patterns": ["**/*.json", "!**/node_modules"]
 }
