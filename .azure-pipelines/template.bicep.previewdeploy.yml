@@ -18,10 +18,13 @@ parameters:
   - name: jobName
     type: string
     default: "PreviewDeploy"
+  - name: displayNameSuffix
+    type: string
+    default: ""
 
 jobs:
   - job: ${{ parameters.jobName }}
-    displayName: "Preview and Deploy ${{ parameters.branchName }}"
+    displayName: "Preview and Deploy ${{ parameters.displayNameSuffix }}"
     dependsOn: ${{ parameters.dependsOn }}
 
     steps:

@@ -107,6 +107,7 @@ jobs:
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
       branchName: $(System.PullRequest.TargetBranch)
+      displayNameSuffix: "Base Branch"
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
@@ -119,6 +120,7 @@ jobs:
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
       branchName: $(System.PullRequest.SourceCommitId)
+      displayNameSuffix: "PR Branch"
 
   - template: ./template.bicep.test.yml
     parameters:
