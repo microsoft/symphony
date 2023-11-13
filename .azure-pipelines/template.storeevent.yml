@@ -21,6 +21,10 @@ jobs:
   - job: StoreEvent
     displayName: "Store Event: ${{ parameters.eventName }}"
     dependsOn: ${{ parameters.dependsOn }}
+    variables:
+      data: ${{ parameters.data }}
+      eventGroupId: ${{ parameters.eventGroupId }}
+      comment: ${{ parameters.comment }}
     
     steps:
       - checkout: self
@@ -58,14 +62,13 @@ jobs:
           script: |
             source ./events.sh
 
-            store_event "$(parameters.pipelineName)" "$(parameters.eventName)" "$(parameters.eventGroupId)" "$(parameters.data)"
+            store_event "$(parameters.pipelineName)" "$(parameters.eventName)" "$(eventGroupId)" "$(data)"
 
       - task: Bash@3
         name: CommentPR
         displayName: "Comment PR"
         env:
           System.AccessToken: $(System.AccessToken)
-          comment: $(parameters.comment)
         inputs:
           targetType: "inline"
           failOnStderr: true
@@ -73,5 +76,10 @@ jobs:
             prId=$(System.PullRequest.PullRequestId)
             repoId=$(Build.Repository.Id)
             uri="$(System.TeamFoundationCollectionUri)_apis/git/repositories/$repoId/pullRequests/$prId/threads?api-version=6.0"
+
+            echo "Commenting on PR $prId in repo $repoId"
+            echo "URI: $uri"
+            echo "Comment: $comment"
+            
             body='{"comments": [{"parentCommentId": 0,"content": "'"$comment"'","commentType": 1}]}'
             curl -X POST -H "Content-Type: application/json" -d "$body" -u :$(System.AccessToken) $uri

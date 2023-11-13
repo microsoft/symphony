@@ -11,13 +11,16 @@ parameters:
     type: string
   - name: dependsOn
     type: object
+  - name: previewDeployStageToTest
+    type: string
+    default: PreviewDeploy
 
 jobs:
   - job: Test
     dependsOn: ${{ parameters.dependsOn }}
     variables:
       - name: bicepJson
-        value: $[ dependencies.PreviewDeploy.outputs['BicepPreviewDeploy.bicepJson'] ]
+        value: $[ dependencies.${{ parameters.previewDeployStageToTest }}.outputs['BicepPreviewDeploy.bicepJson'] ]
     displayName: "E2E Test"
     workspace:
       clean: resources

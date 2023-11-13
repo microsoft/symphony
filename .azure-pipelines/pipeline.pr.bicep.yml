@@ -125,6 +125,7 @@ jobs:
   - template: ./template.bicep.test.yml
     parameters:
       dependsOn: [ Setup, PreviewDeployPRBranch ]
+      previewDeployStageToTest: PreviewDeployPRBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)

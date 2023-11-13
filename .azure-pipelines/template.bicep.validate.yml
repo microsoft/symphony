@@ -19,7 +19,9 @@ jobs:
   - job: Validate
     displayName: "Validate"
     dependsOn: ${{ parameters.dependsOn }}
-
+    variables:
+      environmentName: ${{ parameters.environmentName }}
+      environmentDirectory: ${{ parameters.environmentDirectory }}
     steps:
       - checkout: self
 
@@ -72,8 +74,8 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          ENVIRONMENT_DIRECTORY: ${{ parameters.environmentDirectory }}
+          ENVIRONMENT_NAME: $(environmentName)
+          ENVIRONMENT_DIRECTORY: $(environmentDirectory)
           LOCATION_NAME: ${{ parameters.locationName }}
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)
