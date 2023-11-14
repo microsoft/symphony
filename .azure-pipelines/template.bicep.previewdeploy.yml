@@ -29,20 +29,30 @@ jobs:
     variables:
       environmentName: ${{ parameters.environmentName }}
       environmentDirectory: ${{ parameters.environmentDirectory }}
+      branchName: ${{ parameters.branchName }}
     
     steps:
       - checkout: self
         fetchDepth: 0
+        fetchTags: true
+        persistCredentials: true
 
       - task: Bash@3
         displayName: "Checkout branch"
         inputs:
           bashEnvValue: "~/.profile"
-          failOnStderr: true
           targetType: "inline"
           script: |
-            git checkout $(parameters.branchName)
+            set -e
 
+            git fetch origin
+            # split the content of the branchName variable on the / character and take the last element
+            cleanRefName=$(echo $(branchName) | awk -F/ '{print $NF}')
+
+            echo "Checking out $cleanRefName"
+            
+            git checkout $branchName
+            
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:

@@ -62,7 +62,10 @@ jobs:
           script: |
             source ./events.sh
 
-            store_event "$(parameters.pipelineName)" "$(parameters.eventName)" "$(eventGroupId)" "$(data)"
+            echo "eventGroupId: $eventGroupId"
+            echo "data: $data"
+
+            store_event "${{ parameters.pipelineName }}" "${{ parameters.eventName }}" "$(eventGroupId)" "$(data)"
 
       - task: Bash@3
         name: CommentPR
@@ -80,6 +83,6 @@ jobs:
             echo "Commenting on PR $prId in repo $repoId"
             echo "URI: $uri"
             echo "Comment: $comment"
-            
+
             body='{"comments": [{"parentCommentId": 0,"content": "'"$comment"'","commentType": 1}]}'
             curl -X POST -H "Content-Type: application/json" -d "$body" -u :$(System.AccessToken) $uri

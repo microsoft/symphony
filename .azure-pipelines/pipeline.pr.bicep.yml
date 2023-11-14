@@ -85,8 +85,8 @@ jobs:
       dependsOn: [ Setup, Validate ]
       pipelineName: PR
       eventName: NewEnvironment
-      eventGroupId: PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)
-      data: Name=$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ] SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName)
+      eventGroupId: "PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)"
+      data: "Name=$[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ] SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName)"
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       comment: |
@@ -135,6 +135,7 @@ jobs:
   - template: ./template.bicep.destroy.yml
     parameters:
       dependsOn: [ Setup, Test ]
+      conditions: succeededOrFailed()
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
