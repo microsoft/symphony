@@ -31,6 +31,8 @@ jobs:
     steps:
       - checkout: self
         fetchDepth: 0
+        fetchTags: true
+        persistCredentials: true
 
       - task: Bash@3
         displayName: "Checkout branch"
