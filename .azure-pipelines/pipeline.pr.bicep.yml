@@ -135,7 +135,7 @@ jobs:
   - template: ./template.bicep.destroy.yml
     parameters:
       dependsOn: [ Setup, Test ]
-      conditions: succeededOrFailed()
+      conditions: always()
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
