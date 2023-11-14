@@ -12,7 +12,7 @@ parameters:
   - name: dependsOn
     type: object
     default: []
-  - name: conditions
+  - name: condition
     type: string
     default: succeeded()
 
@@ -20,7 +20,7 @@ jobs:
   - job: Destroy
     displayName: "Destroy"
     dependsOn: ${{ parameters.dependsOn }}
-    conditions: ${{ parameters.conditions }}
+    condition: ${{ parameters.condition }}
     workspace:
       clean: resources
 
