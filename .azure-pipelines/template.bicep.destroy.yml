@@ -20,7 +20,7 @@ jobs:
   - job: Destroy
     displayName: "Destroy"
     dependsOn: ${{ parameters.dependsOn }}
-    conditions: $ {{ parameters.conditions }}
+    conditions: ${{ parameters.conditions }}
     workspace:
       clean: resources
 
