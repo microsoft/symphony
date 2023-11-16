@@ -7,6 +7,9 @@ on: # yamllint disable-line rule:truthy
       environmentName:
         type: string
         required: true
+      environmentDirectory:
+        type: string
+        required: true
       goVersion:
         type: string
         required: true
@@ -112,6 +115,7 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
           TEST_TAG: module_tests
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}

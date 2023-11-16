@@ -1,0 +1,22 @@
+---
+name: "Cleanup Terraform"
+
+on: # yamllint disable-line rule:truthy
+  workflow_dispatch:
+    inputs:
+      pullRequestNumber:
+        description: "Pull Request Number"
+        required: true
+      keyVaultName:
+        description: "Environment Key Vault Name"
+        required: true
+        default: "kv-symphony-environments"
+
+jobs:
+  Destroy:
+    uses: ./.github/workflows/template.terraform.cleanup.yml
+    with:
+      pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
+      keyVaultName: ${{ github.event.inputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
