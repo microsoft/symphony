@@ -58,12 +58,13 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "inline"
-          failOnStderr: true
+          failOnStderr: false
           script: |
+            set -x
             source ./events.sh
 
-            echo "eventGroupId: $eventGroupId"
-            echo "data: $data"
+            echo "eventGroupId: $(eventGroupId)"
+            echo "data: $(data)"
 
             store_event "${{ parameters.pipelineName }}" "${{ parameters.eventName }}" "$(eventGroupId)" "$(data)"
 
@@ -74,15 +75,17 @@ jobs:
           System.AccessToken: $(System.AccessToken)
         inputs:
           targetType: "inline"
-          failOnStderr: true
+          failOnStderr: false
           script: |
+            set -x
             prId=$(System.PullRequest.PullRequestId)
             repoId=$(Build.Repository.Id)
             uri="$(System.TeamFoundationCollectionUri)_apis/git/repositories/$repoId/pullRequests/$prId/threads?api-version=6.0"
 
             echo "Commenting on PR $prId in repo $repoId"
             echo "URI: $uri"
-            echo "Comment: $comment"
+            echo "Comment: $(comment)"
 
-            body='{"comments": [{"parentCommentId": 0,"content": "'"$comment"'","commentType": 1}]}'
+            body='{"comments": [{"parentCommentId": 0,"content": "'"$(comment)"'","commentType": 1}]}'
+            echo $body
             curl -X POST -H "Content-Type: application/json" -d "$body" -u :$(System.AccessToken) $uri
