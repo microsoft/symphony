@@ -70,7 +70,7 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: $(branchName)
+          ENVIRONMENT_NAME: $(environmentName)
           LOCATION_NAME: ${{ parameters.locationName }}
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)
