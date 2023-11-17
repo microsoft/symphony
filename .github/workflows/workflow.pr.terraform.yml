@@ -36,6 +36,7 @@ jobs:
       prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
       terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
+      runLayerTests: ${{ steps.setValues.outputs.runLayerTests }}
     steps:
       - name: Set Values
         id: setValues
@@ -43,6 +44,7 @@ jobs:
           echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
           echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
+          echo "runLayerTests=$RUN_LAYER_TESTS" >> $GITHUB_OUTPUT
 
           suffix=$(uuidgen)
 
@@ -59,7 +61,7 @@ jobs:
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      runLayerTest: ${{ $RUN_LAYER_TESTS }}
+      runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
     secrets:
