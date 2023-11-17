@@ -117,7 +117,7 @@ jobs:
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
-    needs: PreviewDeployPRBranch
+    needs: [Setup, PreviewDeployPRBranch]
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
@@ -141,7 +141,7 @@ jobs:
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
     needs: [Setup, Test]
-    uses: ./.github/workflows/template.terraform.destroy
+    uses: ./.github/workflows/template.terraform.destroy.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
@@ -150,4 +150,3 @@ jobs:
       branchName: ${{ github.head_ref }}
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-
