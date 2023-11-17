@@ -44,6 +44,7 @@ jobs:
     uses: ./.github/workflows/template.terraform.validate.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
+      environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
