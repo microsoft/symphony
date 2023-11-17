@@ -62,6 +62,7 @@ jobs:
     uses: ./.github/workflows/template.terraform.previewdeploy.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
+      environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
