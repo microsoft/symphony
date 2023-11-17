@@ -25,6 +25,7 @@ env:
   KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   PR_ENVIRONMENT_DIRECTORY: "pr"
   TERRAFORM_VERSION: "1.1.7"
+  RUN_LAYER_TESTS: true
 
 jobs:
   Setup:
@@ -58,7 +59,7 @@ jobs:
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      runLayerTest: ${{ true }}
+      runLayerTest: ${{ $RUN_LAYER_TESTS }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
     secrets:
