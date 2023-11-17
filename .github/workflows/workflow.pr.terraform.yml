@@ -24,6 +24,7 @@ concurrency:
 env:
   KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   PR_ENVIRONMENT_DIRECTORY: "pr"
+  TERRAFORM_VERSION: "1.1.7"
 
 jobs:
   Setup:
@@ -33,12 +34,14 @@ jobs:
       keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
+      terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
     steps:
       - name: Set Values
         id: setValues
         run: |
           echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
+          echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
 
           suffix=$(uuidgen)
 
@@ -53,7 +56,7 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
-      terraformVersion: "1.1.7"
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
       runLayerTest: "true"
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
@@ -94,7 +97,7 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
-      terraformVersion: "1.1.7"
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
     secrets:
@@ -106,7 +109,7 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
-      terraformVersion: "1.1.7"
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
     secrets:
@@ -117,7 +120,7 @@ jobs:
     needs: PreviewDeploy
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
-      terraformVersion: "1.1.7"
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
@@ -142,7 +145,7 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
-      terraformVersion: "1.1.7"
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
     secrets:

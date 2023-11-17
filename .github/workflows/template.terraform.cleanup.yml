@@ -10,6 +10,9 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         type: string
         required: true
+      terraformVersion:
+        type: string
+        required: true
     secrets:
       azureEnviromentCredentials:
         required: true
@@ -35,7 +38,7 @@ jobs:
         with:
           fetch-depth: 0
 
-       - name: Setup Toolset
+      - name: Setup Toolset
         run: |
           ./setup-azcli.sh
           ./setup-terraform.sh ${{ inputs.terraformVersion }}
