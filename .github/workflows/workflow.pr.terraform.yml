@@ -58,7 +58,7 @@ jobs:
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      runLayerTest: 'true'
+      runLayerTest: true
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
     secrets:
