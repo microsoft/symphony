@@ -53,7 +53,7 @@ jobs:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
     permissions:
       actions: read
-      contents: read
+      contents: write
       security-events: write
 
   PreviewDeploy:
