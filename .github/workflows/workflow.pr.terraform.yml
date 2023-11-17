@@ -115,9 +115,9 @@ jobs:
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-   Test:
+  Test:
     uses: ./.github/workflows/template.terraform.test.yml
-    needs: PreviewDeploy
+    needs: PreviewDeployPRBranch
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
@@ -128,7 +128,7 @@ jobs:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
-    needs: PreviewDeploy
+    needs: Test
     if: ${{ github.event.inputs.backupStateFiles == 'true' }}
     uses: ./.github/workflows/template.terraform.report.yml
     with:

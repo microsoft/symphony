@@ -57,7 +57,7 @@ jobs:
         env:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           WORKSPACE_PATH: ${{ github.workspace }}
-          ENVIRONMENT_DIRECTORY : ${{ inputs.environmentDirectory }}
+          ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
