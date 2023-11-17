@@ -70,6 +70,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
+      checks: write
 
   NewEnvironment:
     needs: [Setup, Validate]
@@ -121,6 +122,9 @@ jobs:
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
     needs: [Setup, PreviewDeployPRBranch]
+    permissions:
+      pull-requests: write
+      checks: write
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
