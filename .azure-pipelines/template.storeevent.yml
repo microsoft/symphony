@@ -60,7 +60,6 @@ jobs:
           targetType: "inline"
           failOnStderr: false
           script: |
-            set -x
             source ./events.sh
 
             echo "eventGroupId: $(eventGroupId)"
@@ -77,7 +76,6 @@ jobs:
           targetType: "inline"
           failOnStderr: false
           script: |
-            set -x
             prId=$(System.PullRequest.PullRequestId)
             repoId=$(Build.Repository.Id)
             uri="$(System.TeamFoundationCollectionUri)_apis/git/repositories/$repoId/pullRequests/$prId/threads?api-version=6.0"

@@ -51,6 +51,38 @@ jobs:
             suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
 
             echo "##vso[task.setvariable variable=environmentName;isOutput=true]$suffixHash"
+      - task: Bash@3
+        name: Labels
+        displayName: "Check labels"
+        env:
+          System.AccessToken: $(System.AccessToken)
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: false
+          targetType: "inline"
+          script: |
+            prId=$(System.PullRequest.PullRequestId)
+            repoId=$(Build.Repository.Id)
+            uri="$(System.TeamFoundationCollectionUri)_apis/git/repositories/$repoId/pullRequests/$prId/labels?api-version=6.0"
+            labelName="preserve-pr-environment"
+
+            echo "Checking if the \"$labelName\" label is present on the PR..."
+            echo "URI: $uri"
+
+            labelsJson=$(curl -u :$(System.AccessToken) $uri)
+            labelContent=$(echo $labelsJson | jq -e ".value[] | select(.name==\"$labelName\")")
+    
+            if [ -z "$labelContent" ]; then
+                hasLabel=false
+            else
+                hasLabel=true
+            fi
+
+            preservePrEnvironment=$hasLabel
+            echo "preservePrEnvironment: $preservePrEnvironment"
+
+            echo "##vso[task.setvariable variable=preservePrEnvironment;isOutput=true]$preservePrEnvironment"
 
   - template: ./template.bicep.validate.yml
     parameters:
@@ -89,10 +121,8 @@ jobs:
       - task: Bash@3
         name: Data
         displayName: "Generate event information"
-        
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-
           bashEnvValue: "~/.profile"
           failOnStderr: true
           targetType: "inline"
@@ -156,7 +186,7 @@ jobs:
   - template: ./template.bicep.destroy.yml
     parameters:
       dependsOn: [ Setup, Test ]
-      condition: always()
+      condition: and(eq(dependencies.Setup.outputs['Labels.preservePrEnvironment'],'false'), always())
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
