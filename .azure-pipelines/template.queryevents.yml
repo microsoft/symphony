@@ -1,0 +1,66 @@
+parameters:
+  - name: pipelineName
+    type: string
+  - name: eventName
+    type: string
+  - name: eventGroupId
+    type: string
+  - name: data
+    type: string
+  - name: keyVaultArmSvcConnectionName
+    type: string
+  - name: keyVaultName
+    type: string
+  - name: jobName
+    type: string
+  - name: dependsOn
+    type: object
+    default: []
+
+jobs:
+  - job: ${{ parameters.jobName }}
+    displayName: "Query events: ${{ parameters.eventName }}"
+    dependsOn: ${{ parameters.dependsOn }}
+    variables:
+      data: ${{ parameters.data }}
+      eventGroupId: ${{ parameters.eventGroupId }}
+      comment: ${{ parameters.comment }}
+    
+    steps:
+      - checkout: self
+
+      - task: Bash@3
+        displayName: "Install Azure CLI"
+        inputs:
+          filePath: "scripts/orchestrators/setup-azcli.sh"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: true
+
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
+          keyVaultName: ${{ parameters.keyVaultName }}
+          secretsFilter: "*"
+          runAsPreJob: true
+
+      - task: Bash@3
+        name: StoreEvent
+        displayName: "Store Event"
+        env:
+          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
+          ARM_CLIENT_ID: $(clientId)
+          ARM_CLIENT_SECRET: $(clientSecret)
+          EVENTS_STORAGE_ACCOUNT: $(eventsStorageAccount)
+          EVENTS_TABLE_NAME: $(eventsTableName)
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          targetType: "inline"
+          failOnStderr: false
+          script: |
+            source ./events.sh
+            
+            events=$(query_events "${{ parameters.pipelineName }}" "${{ parameters.eventName }}" "$(eventGroupId)")
+            echo "##vso[task.setvariable variable=events;isOutput=true]$events"
