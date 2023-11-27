@@ -132,7 +132,7 @@ jobs:
             
             environmentName="$(environmentName)"
             
-            comment="Creating environment with name: \"$environmentName\" using commit: \"$(System.PullRequest.SourceCommitId)\". The environment will be destroyed after the pipeline completes. If you want to preserve this environment after the pipeline completes, add the \"preserve-pr-environment\" label to the PR. The environment will then be destroyed when the PR is closed. To delete the environment manually, use the Destroy pipeline on the current branch with \"$environmentName\" as the environment name."
+            comment="Creating environment with name: \"$environmentName\" using commit: \"$(System.PullRequest.SourceCommitId)\". The environment will be destroyed after the pipeline completes, unless the PR has the \"preserve-pr-environment\" label. In that case, the environment will be destroyed when the PR is closed. To delete the environment manually, use the Destroy pipeline on the current branch with \"$environmentName\" as the environment name."
             
             echo "##vso[task.setvariable variable=comment;isOutput=true]$comment"
 
