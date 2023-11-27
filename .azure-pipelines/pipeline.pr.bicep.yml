@@ -94,6 +94,7 @@ jobs:
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
 
+
   ### ADD A COMMENTED OUT JOB TO CHECK FOR A LABEL "ready-to-deploy"
   ### HERE IS THE GITHUB ACTIONS EQUIVALENT
 
@@ -132,7 +133,7 @@ jobs:
             
             environmentName="$(environmentName)"
             
-            comment="Creating environment with name: \"$environmentName\" using commit: \"$(System.PullRequest.SourceCommitId)\". The environment will be destroyed after the pipeline completes, unless the PR has the \"preserve-pr-environment\" label. In that case, the environment will be destroyed when the PR is closed. To delete the environment manually, use the Destroy pipeline on the current branch with \"$environmentName\" as the environment name."
+            comment="Creating environment with name: '$environmentName' using commit: '$(System.PullRequest.SourceCommitId)'. The environment will be destroyed after the pipeline completes, unless the PR has the 'preserve-pr-environment' label. In that case, the environment will not be destroyed automatically. To delete the environment manually, use the Destroy pipeline on the current branch with '$environmentName' as the environment name."
             
             echo "##vso[task.setvariable variable=comment;isOutput=true]$comment"
 

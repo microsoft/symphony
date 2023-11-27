@@ -25,8 +25,8 @@ jobs:
       clean: resources
 
     variables:
-      environmentName: ${{ parameters.environmentName }}
-      branchName: ${{ parameters.branchName }}
+      environmentNameDestroy: ${{ parameters.environmentName }}
+      branchNameDestroy: ${{ parameters.branchName }}
 
     steps:
       - checkout: self
@@ -44,11 +44,11 @@ jobs:
 
             git fetch origin
             # split the content of the branchName variable on the / character and take the last element
-            cleanRefName=$(echo $(branchName) | awk -F/ '{print $NF}')
+            cleanRefName=$(echo $(branchNameDestroy) | awk -F/ '{print $NF}')
 
             echo "Checking out $cleanRefName"
             
-            git checkout $branchName
+            git checkout $branchNameDestroy
 
       - task: Bash@3
         displayName: "Install Azure CLI"
@@ -70,7 +70,7 @@ jobs:
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: $(environmentName)
+          ENVIRONMENT_NAME: $(environmentNameDestroy)
           LOCATION_NAME: ${{ parameters.locationName }}
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)
