@@ -24,12 +24,12 @@ variables:
   #   value: "westus"
 
   # ARM Service Connection Name used for environment Key Vault access
-  - name: keyVaultArmSvcConnectionName
-    value: "Symphony-KV"
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
 
   # Environment Key Vault Name
-  - name: keyVaultName
-    value: "kv-symphony-environments"
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
 
 pool:
   vmImage: $(agentImage)
