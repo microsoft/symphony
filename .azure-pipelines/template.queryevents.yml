@@ -5,8 +5,6 @@ parameters:
     type: string
   - name: eventGroupId
     type: string
-  - name: data
-    type: string
   - name: keyVaultArmSvcConnectionName
     type: string
   - name: keyVaultName
@@ -22,9 +20,7 @@ jobs:
     displayName: "Query events: ${{ parameters.eventName }}"
     dependsOn: ${{ parameters.dependsOn }}
     variables:
-      data: ${{ parameters.data }}
       eventGroupId: ${{ parameters.eventGroupId }}
-      comment: ${{ parameters.comment }}
     
     steps:
       - checkout: self
@@ -45,8 +41,8 @@ jobs:
           runAsPreJob: true
 
       - task: Bash@3
-        name: StoreEvent
-        displayName: "Store Event"
+        name: QueryEvents
+        displayName: "Query Event"
         env:
           WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
