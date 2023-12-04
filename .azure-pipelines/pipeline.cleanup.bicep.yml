@@ -19,13 +19,7 @@ variables:
     value: 0
 
   # Commented out to use the values from the Azdo pipeline variables
-  # Name of the Environment
-  # - name: environmentName
-  #   value: "dev"
-
-  # - name: locationName
-  #   value: "westus"
-
+  
   # ARM Service Connection Name used for environment Key Vault access
   # - name: keyVaultArmSvcConnectionName
   #   value: "Symphony-KV"

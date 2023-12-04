@@ -184,6 +184,11 @@ function create_pipelines_bicep() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)"
     _create_pipeline "PR-Deploy" "/.azure-pipelines/pipeline.pr.bicep.yml" "PR" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
+
+    pipelineVariables=$(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
+    _create_pipeline "PR-Cleanup" "/.azure-pipelines/pipeline.cleanup.bicep.yml" "PR" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
+
 }
 
 function _create_arm_svc_connection() {
