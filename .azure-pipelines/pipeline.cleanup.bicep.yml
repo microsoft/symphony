@@ -81,8 +81,8 @@ jobs:
 
       - task: AzureKeyVault@2
         inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
+          azureSubscription: $(keyVaultArmSvcConnectionName)
+          keyVaultName: $(keyVaultName)
           secretsFilter: "*"
           runAsPreJob: true
 
