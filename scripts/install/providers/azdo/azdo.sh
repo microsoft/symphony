@@ -187,6 +187,7 @@ function create_pipelines_bicep() {
 
     pipelineVariables=$(_get_pipeline_var_defintion keyVaultArmSvcConnectionName Symphony-KV true)
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion keyVaultName ${SYMPHONY_KV_NAME} true)"
+    pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion pullRequestNumber 0 true)"
     _create_pipeline "PR-Cleanup" "/.azure-pipelines/pipeline.cleanup.bicep.yml" "PR" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
