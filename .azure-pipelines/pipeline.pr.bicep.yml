@@ -128,13 +128,11 @@ jobs:
           failOnStderr: true
           targetType: "inline"
           script: |
-            echo "##vso[task.setvariable variable=groupId;isOutput=true]PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)"
-            echo "##vso[task.setvariable variable=payload;isOutput=true]Name=$environmentName SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName)"
-            
             environmentName="$(environmentName)"
-            
             comment="Creating environment with name: '$environmentName' using commit: '$(System.PullRequest.SourceCommitId)'. The environment will be destroyed after the pipeline completes, unless the PR has the 'preserve-pr-environment' label. In that case, the environment will not be destroyed automatically. To delete the environment manually, use the Destroy pipeline on the current branch with '$environmentName' as the environment name."
             
+            echo "##vso[task.setvariable variable=groupId;isOutput=true]PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)"
+            echo "##vso[task.setvariable variable=payload;isOutput=true]Name=$environmentName SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName)"
             echo "##vso[task.setvariable variable=comment;isOutput=true]$comment"
 
   - template: ./template.storeevent.yml
