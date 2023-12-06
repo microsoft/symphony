@@ -91,7 +91,7 @@ jobs:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
-      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}
+      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }} Name@odata.type=Edm.String
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
