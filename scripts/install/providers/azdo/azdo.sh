@@ -190,6 +190,25 @@ function create_pipelines_bicep() {
     pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion pullRequestNumber 0 true)"
     _create_pipeline "PR-Cleanup" "/.azure-pipelines/pipeline.cleanup.bicep.yml" "PR" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
+    _addPipelineToMainBranchPolicy "PR-Deploy"
+}
+
+function _addPipelineToMainBranchPolicy() {
+    local _pipelineName=$1
+
+    local _codeRepoId=$(< "$AZDO_TEMP_LOG_PATH/${AZDO_PROJECT_NAME}-ri.json"  jq -c -r '.id')
+    
+    local _pipelineBuildDefinitionId=$(< "$AZDO_TEMP_LOG_PATH/$_pipelineName-cp.json" jq -r '.id')
+    
+    local _payload="{\"type\":{\"id\":\"0609b952-1397-4640-95ec-e00a01b2c241\"},\"revision\":1,\"isDeleted\":false,\"isBlocking\":true,\"isEnabled\":true,\"settings\":{\"buildDefinitionId\":$_pipelineBuildDefinitionId,\"displayName\":\"$_pipelineName\",\"manualQueueOnly\":false,\"queueOnSourceUpdateOnly\":false,\"validDuration\":0,\"scope\":[{\"repositoryId\":\"$_codeRepoId\",\"refName\":\"refs/heads/main\",\"matchKind\":\"Exact\"}]}}"
+    
+    local _token=$(echo -n ":${AZDO_PAT}" | base64)
+    
+    local _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/policy/Configurations?api-version=" '5.1' '5.1')
+    
+    local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
+
+    _success "Build policy added to main branch"
 }
 
 function _create_arm_svc_connection() {
