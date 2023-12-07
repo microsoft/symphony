@@ -54,7 +54,7 @@ jobs:
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run E2E Tests
