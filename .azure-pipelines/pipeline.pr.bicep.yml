@@ -148,7 +148,7 @@ jobs:
       
   - template: ./template.bicep.previewdeploy.yml
     parameters:
-      dependsOn: [ Setup, Validate ]
+      dependsOn: [ Setup, Validate, StoreEvent ]
       jobName: PreviewDeployBaseBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
