@@ -23,7 +23,7 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         description: "Terraform version"
         required: true
-        default: "1.1.7"
+        default: "1.6.0"
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
@@ -53,9 +53,11 @@ jobs:
     secrets:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
     permissions:
-      actions: read
+      actions: write
       contents: write
       security-events: write
+      pull-requests: write
+      checks: write
 
   PreviewDeploy:
     needs: Validate

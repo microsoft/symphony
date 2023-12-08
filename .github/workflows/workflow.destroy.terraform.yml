@@ -14,7 +14,7 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         description: "Terraform version"
         required: true
-        default: "1.1.7"
+        default: "1.6.0"
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true

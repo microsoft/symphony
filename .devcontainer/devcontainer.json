@@ -6,7 +6,7 @@
     "dockerfile": "Dockerfile",
     "args": {
       "VARIANT": "bullseye",
-      "TERRAFORM_VERSION": "1.1.7",
+      "TERRAFORM_VERSION": "1.6.0",
       "TFLINT_VERSION": "0.34.1",
       "TFLINT_RULESET_AZURERM_VERSION": "v0.14.0",
       "TERRAGRUNT_VERSION": "0.36.3",
@@ -88,7 +88,7 @@
     "docker-in-docker": "latest",
     "docker-from-docker": "latest",
     // "terraform": {
-    // 	"version": "1.1.7",
+    // 	"version": "1.6.0",
     // 	"tflint": "0.34.1",
     // 	"terragrunt": "0.36.3"
     // },
