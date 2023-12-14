@@ -52,6 +52,8 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
     - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server.  The Default agent pool must include at least one self hosted build agent.
     To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
 
+    - To allow the PR pipeline to add comments to the PRs, make sure that the **Build Service** user is allowed to **Contribute to pull requests** in the **Security** tab of of the **Repositories** settings for the project.
+
     - Ensure that the following dependencies are installed on the self hosted agent
 
        ```bash
