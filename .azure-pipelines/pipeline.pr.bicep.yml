@@ -72,7 +72,7 @@ jobs:
 
             labelsJson=$(curl -u :$(System.AccessToken) $uri)
             labelContent=$(echo $labelsJson | jq -e ".value[] | select(.name==\"$labelName\")")
-    
+
             if [ -z "$labelContent" ]; then
                 hasLabel=false
             else
@@ -86,7 +86,7 @@ jobs:
 
   - template: ./template.bicep.validate.yml
     parameters:
-      dependsOn: [ Setup ]
+      dependsOn: [Setup]
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
       locationName: $(locationName)
@@ -94,27 +94,8 @@ jobs:
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
 
-
-  ### ADD A COMMENTED OUT JOB TO CHECK FOR A LABEL "ready-to-deploy"
-  ### HERE IS THE GITHUB ACTIONS EQUIVALENT
-
-  # CheckReadyToDeploy:
-  #   needs: [Validate, Setup]
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     READY_TO_DEPLOY: ${{ contains(github.event.pull_request.labels.*.name, 'ready-to-deploy') }}
-  #   steps:
-  #     - name: Check if the ready-to-deploy label is present
-  #       run: |
-  #         if [ "$READY_TO_DEPLOY" = "true" ]; then
-  #           echo "ready-to-deploy label present. Continuing..."
-  #         else
-  #           echo "ready-to-deploy label not present. Breaking..."
-  #           exit 1
-  #         fi
-
   - job: EventInfo
-    dependsOn: [ Setup, Validate ]
+    dependsOn: [Setup, Validate]
     displayName: Generating event information
     variables:
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
@@ -130,14 +111,14 @@ jobs:
           script: |
             environmentName="$(environmentName)"
             comment="Creating environment with name: '$environmentName' using commit: '$(System.PullRequest.SourceCommitId)'. The environment will be destroyed after the pipeline completes, unless the PR has the 'preserve-pr-environment' label. In that case, the environment will not be destroyed automatically. To delete the environment manually, use the Destroy pipeline on the current branch with '$environmentName' as the environment name."
-            
+
             echo "##vso[task.setvariable variable=groupId;isOutput=true]PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)"
             echo "##vso[task.setvariable variable=payload;isOutput=true]Name=$environmentName SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName) Name@odata.type=Edm.String"
             echo "##vso[task.setvariable variable=comment;isOutput=true]$comment"
 
   - template: ./template.storeevent.yml
     parameters:
-      dependsOn: [ Setup, EventInfo ]
+      dependsOn: [Setup, EventInfo]
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: $[ dependencies.EventInfo.outputs['Data.groupId'] ]
@@ -145,10 +126,10 @@ jobs:
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       comment: $[ dependencies.EventInfo.outputs['Data.comment'] ]
-      
+
   - template: ./template.bicep.previewdeploy.yml
     parameters:
-      dependsOn: [ Setup, Validate, StoreEvent ]
+      dependsOn: [Setup, Validate, StoreEvent]
       jobName: PreviewDeployBaseBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
@@ -161,7 +142,7 @@ jobs:
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
-      dependsOn: [ Setup, PreviewDeployBaseBranch ]
+      dependsOn: [Setup, PreviewDeployBaseBranch]
       jobName: PreviewDeployPRBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       environmentDirectory: $(prEnvironmentDirectory)
@@ -174,7 +155,7 @@ jobs:
 
   - template: ./template.bicep.test.yml
     parameters:
-      dependsOn: [ Setup, PreviewDeployPRBranch ]
+      dependsOn: [Setup, PreviewDeployPRBranch]
       previewDeployStageToTest: PreviewDeployPRBranch
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
@@ -184,7 +165,7 @@ jobs:
 
   - template: ./template.bicep.destroy.yml
     parameters:
-      dependsOn: [ Setup, Test ]
+      dependsOn: [Setup, Test]
       condition: and(eq(dependencies.Setup.outputs['Labels.preservePrEnvironment'],'false'), always())
       environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
       locationName: $(locationName)
