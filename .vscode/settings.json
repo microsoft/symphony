@@ -1,0 +1,10 @@
+{
+  // editor
+  "editor.formatOnSave": true,
+  "editor.detectIndentation": true,
+  // files
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  // yaml
+  "yaml.format.singleQuote": false
+}

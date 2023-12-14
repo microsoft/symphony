@@ -3,8 +3,7 @@
 # Syntax: ./setup-powershell.sh [version]
 
 # check if powershell is already installed
-if command -v pwsh &> /dev/null
-then
+if command -v pwsh &>/dev/null; then
   echo "PowerShell is already installed"
   exit 0
 fi

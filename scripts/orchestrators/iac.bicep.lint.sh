@@ -18,53 +18,53 @@ popd || exit
 
 # LINT
 for deployment in "${modules[@]}"; do
-    SANITIZED_EXCLUDED_FOLDERS=",${EXCLUDED_FOLDERS},"
-    SANITIZED_EXCLUDED_FOLDERS=${SANITIZED_EXCLUDED_FOLDERS//;/,}
+  SANITIZED_EXCLUDED_FOLDERS=",${EXCLUDED_FOLDERS},"
+  SANITIZED_EXCLUDED_FOLDERS=${SANITIZED_EXCLUDED_FOLDERS//;/,}
 
-    dirname=$(dirname "${deployment}")
-    sanitized_dirname=${dirname//.\//}
+  dirname=$(dirname "${deployment}")
+  sanitized_dirname=${dirname//.\//}
 
-    if [[ ${sanitized_dirname} == __* ]]; then
-        _information "Skipping ${deployment}"
-        echo ""
-        echo "------------------------"
-        continue
-    fi
+  if [[ ${sanitized_dirname} == __* ]]; then
+    _information "Skipping ${deployment}"
+    echo ""
+    echo "------------------------"
+    continue
+  fi
 
-    if [[ ${SANITIZED_EXCLUDED_FOLDERS} == *",${sanitized_dirname},"* ]]; then
-        _information "${sanitized_dirname} excluded"
-        echo ""
-        echo "------------------------"
-        continue
-    fi
+  if [[ ${SANITIZED_EXCLUDED_FOLDERS} == *",${sanitized_dirname},"* ]]; then
+    _information "${sanitized_dirname} excluded"
+    echo ""
+    echo "------------------------"
+    continue
+  fi
 
-    deployment=${deployment/'./'/"${looking_path}/"}
+  deployment=${deployment/'./'/"${looking_path}/"}
 
-    _information "Executing Bicep lint for: ${deployment}"
+  _information "Executing Bicep lint for: ${deployment}"
 
-    lint "${deployment}"
-    exit_code=$?
+  lint "${deployment}"
+  exit_code=$?
 
-    if [[ ${exit_code} != 0 ]]; then
-        _error "Bicep lint failed - returned code ${exit_code}"
-        exit ${exit_code}
-    fi
+  if [[ ${exit_code} != 0 ]]; then
+    _error "Bicep lint failed - returned code ${exit_code}"
+    exit ${exit_code}
+  fi
 
-    _information "------------------------"
+  _information "------------------------"
 done
 
 # ARM-TTK
 for deployment in "${modules[@]}"; do
-    deployment=${deployment/'./'/"${looking_path}/"}
-    _information "Executing ARM-TTK for: ${deployment}"
+  deployment=${deployment/'./'/"${looking_path}/"}
+  _information "Executing ARM-TTK for: ${deployment}"
 
-    run_armttk "${deployment}"
-    exit_code=$?
+  run_armttk "${deployment}"
+  exit_code=$?
 
-    if [[ ${exit_code} != 0 ]]; then
-        _error "ARM-TTK failed - returned code ${exit_code}"
-        exit ${exit_code}
-    fi
+  if [[ ${exit_code} != 0 ]]; then
+    _error "ARM-TTK failed - returned code ${exit_code}"
+    exit ${exit_code}
+  fi
 
-    echo "------------------------"
+  echo "------------------------"
 done

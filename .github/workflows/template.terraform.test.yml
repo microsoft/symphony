@@ -1,5 +1,7 @@
+---
 name: "Template-TF-Test"
-on:
+
+on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
       environmentName:
@@ -59,7 +61,7 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          TEST_TAG: ''
+          TEST_TAG: ""
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
