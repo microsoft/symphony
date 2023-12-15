@@ -83,7 +83,7 @@ jobs:
         working-directory: scripts/orchestrators
 
       - name: Upload E2E Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-test--results

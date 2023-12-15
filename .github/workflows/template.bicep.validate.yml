@@ -53,7 +53,7 @@ jobs:
           run_gitleaks './../../' 'sarif' 'info' 'true' 'true'
         working-directory: scripts/orchestrators
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: gitleaks-report
