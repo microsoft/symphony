@@ -45,7 +45,7 @@ jobs:
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
-      dependsOn: [ Validate ]
+      dependsOn: [Validate]
       environmentName: $(environmentName)
       environmentDirectory: $(environmentName)
       locationName: $(locationName)
@@ -56,7 +56,7 @@ jobs:
 
   - template: ./template.bicep.test.yml
     parameters:
-      dependsOn: [ PreviewDeploy ]
+      dependsOn: [PreviewDeploy]
       environmentName: $(environmentName)
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)

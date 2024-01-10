@@ -14,12 +14,12 @@ variables:
   # Name of the Agent Pool to use
   - name: agentImage
     value: "ubuntu-latest"
-  
+
   - name: pullRequestNumber
     value: 0
 
   # Commented out to use the values from the Azdo pipeline variables
-  
+
   # ARM Service Connection Name used for environment Key Vault access
   # - name: keyVaultArmSvcConnectionName
   #   value: "Symphony-KV"
@@ -45,11 +45,11 @@ jobs:
           targetType: "inline"
           script: |
             echo "##vso[task.setvariable variable=groupId;isOutput=true]PR-$(pullRequestNumber)-$(Build.Repository.Id)"
-            
+
   - template: ./template.queryevents.yml
     parameters:
       jobName: GetEnvironments
-      dependsOn: [ EventInfo ]
+      dependsOn: [EventInfo]
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: $[ dependencies.EventInfo.outputs['Data.groupId'] ]
@@ -58,7 +58,7 @@ jobs:
 
   - job: Destroy
     displayName: "Destroy"
-    dependsOn: [ GetEnvironments ]
+    dependsOn: [GetEnvironments]
     workspace:
       clean: resources
 
