@@ -25,7 +25,7 @@ jobs:
       data: ${{ parameters.data }}
       eventGroupId: ${{ parameters.eventGroupId }}
       comment: ${{ parameters.comment }}
-    
+
     steps:
       - checkout: self
 

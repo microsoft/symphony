@@ -21,7 +21,7 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     variables:
       eventGroupId: ${{ parameters.eventGroupId }}
-    
+
     steps:
       - checkout: self
 
@@ -57,6 +57,6 @@ jobs:
           failOnStderr: false
           script: |
             source ./events.sh
-            
+
             events=$(query_events "${{ parameters.pipelineName }}" "${{ parameters.eventName }}" "$(eventGroupId)")
             echo "##vso[task.setvariable variable=events;isOutput=true]$events"

@@ -48,7 +48,7 @@ jobs:
             cleanRefName=$(echo $(branchNameDestroy) | awk -F/ '{print $NF}')
 
             echo "Checking out $cleanRefName"
-            
+
             git checkout $branchNameDestroy
 
       - task: Bash@3

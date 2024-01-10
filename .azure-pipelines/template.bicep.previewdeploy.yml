@@ -31,7 +31,7 @@ jobs:
       environmentName: ${{ parameters.environmentName }}
       environmentDirectory: ${{ parameters.environmentDirectory }}
       branchName: ${{ parameters.branchName }}
-    
+
     steps:
       - checkout: self
         fetchDepth: 0
@@ -51,9 +51,9 @@ jobs:
             cleanRefName=$(echo $(branchName) | awk -F/ '{print $NF}')
 
             echo "Checking out $cleanRefName"
-            
+
             git checkout $branchName
-            
+
       - task: Bash@3
         displayName: "Install Azure CLI"
         inputs:
