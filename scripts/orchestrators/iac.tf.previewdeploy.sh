@@ -21,7 +21,7 @@ for deployment in "${array[@]}"; do
   if [[ ${deployment} != *"01_init"* ]]; then
     echo "tf init ${deployment}"
     pushd "$deployment" || exit
-    init true "${ENVIRONMENT_NAME}${deployment}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
+    init true "${ENVIRONMENT_NAME}/${deployment/'./'/''}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
     # Preview deployment
     envfile=${deployment/'./'/''}
     envfile=${envfile/'/'/'_'}
