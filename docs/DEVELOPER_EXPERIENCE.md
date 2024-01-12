@@ -11,7 +11,7 @@ The [DevContainer configuration](./../.devcontainer/devcontainer.json) uses a [D
 The _DevContainer_ is based on the _Ubuntu:bullseye_ image and has the following packages installed:
 
 - [golang 1.17.8](https://go.dev/)
-- [Terraform 1.6.0](https://www.terraform.io/)
+- [Terraform 1.6.2](https://www.terraform.io/)
 - [TFLint 0.34.1](https://github.com/terraform-linters/tflint)
 - [TFLint Ruleset for terraform-provider-azurerm 0.14.0](https://github.com/terraform-linters/tflint-ruleset-azurerm)
 - [Terragrunt 0.36.3](https://terragrunt.gruntwork.io/)

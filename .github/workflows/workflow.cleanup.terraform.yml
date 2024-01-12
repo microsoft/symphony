@@ -14,7 +14,7 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         type: string
         required: true
-        default: "1.6.0"
+        default: "1.6.2"
 
 jobs:
   Destroy:

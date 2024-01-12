@@ -13,7 +13,7 @@ concurrency:
 
 env:
   KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
-  TERRAFORM_VERSION: "1.6.0"
+  TERRAFORM_VERSION: "1.6.2"
 
 jobs:
   Setup:
