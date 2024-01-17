@@ -136,7 +136,7 @@ jobs:
       azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
-    needs: Test
+    needs: [Setup,Test]
     if: ${{ github.event.inputs.backupStateFiles == 'true' }}
     uses: ./.github/workflows/template.terraform.report.yml
     with:
