@@ -1,0 +1,174 @@
+name: $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)
+
+trigger:
+  - none
+
+pr:
+  - none
+
+variables:
+  #=============================================================#
+  # The following Variables should be set on the pipeline level #
+  #=============================================================#
+
+  - name: agentImage
+    value: "ubuntu-latest"
+  # Commented out to use the values from the Azdo pipeline variables
+  # - name: prEnvironmentDirectory
+  #   value: "pr"
+
+  # - name: locationName
+  #   value: "westus"
+
+  # - name: keyVaultArmSvcConnectionName
+  #   value: "Symphony-KV"
+
+  # - name: keyVaultName
+  #   value: "kv-symphony-environments"
+
+  - name: excludedFolders
+    value: ","
+
+pool:
+  vmImage: $(agentImage)
+
+jobs:
+  - job: Setup
+    displayName: Setup
+    steps:
+      - task: Bash@3
+        name: GenerateEnvironmentName
+        displayName: "Generate environment name"
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: true
+          targetType: "inline"
+          script: |
+            suffix=$(uuidgen)
+
+            # create a 6 character hash of the suffix
+            suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
+
+            echo "##vso[task.setvariable variable=environmentName;isOutput=true]$suffixHash"
+      - task: Bash@3
+        name: Labels
+        displayName: "Check labels"
+        env:
+          System.AccessToken: $(System.AccessToken)
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: false
+          targetType: "inline"
+          script: |
+            prId=$(System.PullRequest.PullRequestId)
+            repoId=$(Build.Repository.Id)
+            uri="$(System.TeamFoundationCollectionUri)_apis/git/repositories/$repoId/pullRequests/$prId/labels?api-version=6.0"
+            labelName="preserve-pr-environment"
+
+            echo "Checking if the \"$labelName\" label is present on the PR..."
+            echo "URI: $uri"
+
+            labelsJson=$(curl -u :$(System.AccessToken) $uri)
+            labelContent=$(echo $labelsJson | jq -e ".value[] | select(.name==\"$labelName\")")
+
+            if [ -z "$labelContent" ]; then
+                hasLabel=false
+            else
+                hasLabel=true
+            fi
+
+            preservePrEnvironment=$hasLabel
+            echo "preservePrEnvironment: $preservePrEnvironment"
+
+            echo "##vso[task.setvariable variable=preservePrEnvironment;isOutput=true]$preservePrEnvironment"
+
+  - template: ./template.bicep.validate.yml
+    parameters:
+      dependsOn: [Setup]
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  - job: EventInfo
+    dependsOn: [Setup, Validate]
+    displayName: Generating event information
+    variables:
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+    steps:
+      - task: Bash@3
+        name: Data
+        displayName: "Generate event information"
+        inputs:
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          bashEnvValue: "~/.profile"
+          failOnStderr: true
+          targetType: "inline"
+          script: |
+            environmentName="$(environmentName)"
+            comment="Creating environment with name: '$environmentName' using commit: '$(System.PullRequest.SourceCommitId)'. The environment will be destroyed after the pipeline completes, unless the PR has the 'preserve-pr-environment' label. In that case, the environment will not be destroyed automatically. To delete the environment manually, use the Destroy pipeline on the current branch with '$environmentName' as the environment name."
+
+            echo "##vso[task.setvariable variable=groupId;isOutput=true]PR-$(System.PullRequest.PullRequestId)-$(Build.Repository.Id)"
+            echo "##vso[task.setvariable variable=payload;isOutput=true]Name=$environmentName SHA=$(System.PullRequest.SourceCommitId) Location=$(locationName) Name@odata.type=Edm.String"
+            echo "##vso[task.setvariable variable=comment;isOutput=true]$comment"
+
+  - template: ./template.storeevent.yml
+    parameters:
+      dependsOn: [Setup, EventInfo]
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: $[ dependencies.EventInfo.outputs['Data.groupId'] ]
+      data: $[ dependencies.EventInfo.outputs['Data.payload'] ]
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      comment: $[ dependencies.EventInfo.outputs['Data.comment'] ]
+
+  - template: ./template.bicep.previewdeploy.yml
+    parameters:
+      dependsOn: [Setup, Validate, StoreEvent]
+      jobName: PreviewDeployBaseBranch
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+      branchName: $(System.PullRequest.TargetBranch)
+      displayNameSuffix: "Base Branch"
+
+  - template: ./template.bicep.previewdeploy.yml
+    parameters:
+      dependsOn: [Setup, PreviewDeployBaseBranch]
+      jobName: PreviewDeployPRBranch
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      environmentDirectory: $(prEnvironmentDirectory)
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+      branchName: $(System.PullRequest.SourceCommitId)
+      displayNameSuffix: "PR Branch"
+
+  - template: ./template.bicep.test.yml
+    parameters:
+      dependsOn: [Setup, PreviewDeployPRBranch]
+      previewDeployStageToTest: PreviewDeployPRBranch
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      excludedFolders: $(excludedFolders)
+
+  - template: ./template.bicep.destroy.yml
+    parameters:
+      dependsOn: [Setup, Test]
+      condition: and(eq(dependencies.Setup.outputs['Labels.preservePrEnvironment'],'false'), always())
+      environmentName: $[ dependencies.Setup.outputs['GenerateEnvironmentName.environmentName'] ]
+      locationName: $(locationName)
+      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
+      keyVaultName: $(keyVaultName)
+      branchName: $(System.PullRequest.SourceCommitId)

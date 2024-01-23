@@ -37,6 +37,7 @@ jobs:
   - template: ./template.bicep.validate.yml
     parameters:
       environmentName: $(environmentName)
+      environmentDirectory: $(environmentName)
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
@@ -44,14 +45,18 @@ jobs:
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
+      dependsOn: [Validate]
       environmentName: $(environmentName)
+      environmentDirectory: $(environmentName)
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
       keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
+      branchName: $(Build.SourceBranchName)
 
   - template: ./template.bicep.test.yml
     parameters:
+      dependsOn: [PreviewDeploy]
       environmentName: $(environmentName)
       locationName: $(locationName)
       keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
