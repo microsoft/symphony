@@ -68,6 +68,10 @@ validate() {
   return $?
 }
 
+_warning() {
+  echo "WARNING: $1"
+}
+
 preview() {
   plan_file_name=$1
   var_file=$2
