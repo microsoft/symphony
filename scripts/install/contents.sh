@@ -60,3 +60,8 @@ function remove_bicep_content() {
   rm "$TARGET_ROOT"/scripts/orchestrators/*pester.sh
   rm "$TARGET_ROOT"/scripts/orchestrators/setup-armttk.sh
 }
+
+function remove_tmp_terraform() {
+  _information "Remove temporary Terraform files"
+  rm -r "$TARGET_ROOT"/IAC/Terraform/test/terraform/mocked_deployment.tfstate
+}
