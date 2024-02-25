@@ -173,10 +173,7 @@ configure_orchestrator() {
   push_repo
 
   # configure branch-related settings, after the branches are pushed
-  # until there is a PR workflow implementation for terraform, we will only configure branches for bicep
-  if [ "$IACTOOL" == "bicep" ]; then
-    configure_branches
-  fi
+  configure_branches
 
   check_error_log
   popd || exit

@@ -1,0 +1,160 @@
+---
+name: PR Deployment
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+
+  # By default, this workflow will cancel a previous run when a new one is queued.
+  # Depending on when the workflow was cancelled, it may leave orphaned environments
+  # that will be cleaned up after the PR is closed.
+  #
+  # To change this behavior and wait for the previous run to finish executing, set
+  # cancel-in-progress to false
+  cancel-in-progress: true
+
+env:
+  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
+  PR_ENVIRONMENT_DIRECTORY: "pr"
+  TERRAFORM_VERSION: "1.6.2"
+  RUN_LAYER_TESTS: true
+
+jobs:
+  Setup:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    outputs:
+      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
+      prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
+      environmentName: ${{ steps.setValues.outputs.environmentName }}
+      terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
+      runLayerTests: ${{ steps.setValues.outputs.runLayerTests }}
+    steps:
+      - name: Set Values
+        id: setValues
+        run: |
+          echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
+          echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
+          echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
+          echo "runLayerTests=$RUN_LAYER_TESTS" >> $GITHUB_OUTPUT
+
+          suffix=$(uuidgen)
+
+          # create a 6 character hash of the suffix
+          suffixHash=$(echo -n "$suffix" | md5sum | cut -c1-6)
+
+          echo "environmentName=$suffixHash" >> $GITHUB_OUTPUT
+
+  Validate:
+    needs: Setup
+    uses: ./.github/workflows/template.terraform.validate.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      goVersion: "1.18.1"
+      runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+    permissions:
+      actions: write
+      contents: write
+      security-events: write
+      pull-requests: write
+      checks: write
+
+  NewEnvironment:
+    needs: [Setup, Validate]
+    uses: ./.github/workflows/template.storeevent.yml
+    permissions:
+      pull-requests: write
+    with:
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
+      data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Directory=${{ needs.Setup.outputs.prEnvironmentDirectory }} Name@odata.type=Edm.String
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      comment: |
+        Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
+
+        ${{
+          contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') &&
+            format('The environment will not be destroyed after the workflow completes.\nTo delete it, use the [Destroy workflow](../actions/workflows/workflow.destroy.bicep.yml) on the current branch with "{0}" as the environment name.', needs.Setup.outputs.environmentName)
+          ||
+            'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
+        }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  PreviewDeployBaseBranch:
+    needs: [Setup, NewEnvironment]
+    uses: ./.github/workflows/template.terraform.previewdeploy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.base_ref }} # First, deploy the base branch
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  PreviewDeployPRBranch:
+    needs: [Setup, PreviewDeployBaseBranch]
+    uses: ./.github/workflows/template.terraform.previewdeploy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Test:
+    uses: ./.github/workflows/template.terraform.test.yml
+    needs: [Setup, PreviewDeployPRBranch]
+    permissions:
+      pull-requests: write
+      checks: write
+    with:
+      environmentName: ${{  needs.Setup.outputs.environmentName }}
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      goVersion: "1.18.1"
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Report:
+    needs: [Setup, Test]
+    if: ${{ github.event.inputs.backupStateFiles == 'true' }}
+    uses: ./.github/workflows/template.terraform.report.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Destroy:
+    if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
+    needs: [Setup, Test]
+    uses: ./.github/workflows/template.terraform.destroy.yml
+    with:
+      environmentName: ${{ needs.Setup.outputs.environmentName }}
+      environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
+      terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      branchName: ${{ github.head_ref }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
