@@ -7,6 +7,9 @@ on: # yamllint disable-line rule:truthy
       environmentName:
         type: string
         required: true
+      environmentDirectory:
+        type: string
+        required: true
       terraformVersion:
         type: string
         required: true
@@ -53,6 +56,7 @@ jobs:
       - name: Run TF plan- Apply
         env:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
+          ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
@@ -62,6 +66,7 @@ jobs:
           export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export TF_VAR_ENV=${{ inputs.environmentName }}
           ./iac.tf.previewdeploy.sh
 
         working-directory: scripts/orchestrators
