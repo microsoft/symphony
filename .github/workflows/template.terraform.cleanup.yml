@@ -1,37 +1,42 @@
 ---
-name: "Template-TF-Test"
+name: "Template-Terraform-Cleanup"
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
-      environmentName:
-        type: string
-        required: true
-      goVersion:
-        type: string
-        required: true
-      terraformVersion:
+      pullRequestNumber:
         type: string
         required: true
       keyVaultName:
         type: string
         required: true
-      branchName:
+      terraformVersion:
         type: string
         required: true
-
     secrets:
       azureEnviromentCredentials:
         required: true
 
 jobs:
-  Test:
-    name: "E2E Test"
+  GetEnvironments:
+    name: GetEnvironments
+    uses: ./.github/workflows/template.queryevents.yml
+    with:
+      pipelineName: PR
+      eventName: NewEnvironment
+      eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
+      keyVaultName: ${{ inputs.keyVaultName }}
+    secrets:
+      azureEnviromentCredentials: ${{ secrets.azureEnviromentCredentials }}
+
+  Destroy:
+    name: Destroy
+    needs: [GetEnvironments]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branchName }}
+          fetch-depth: 0
 
       - name: Setup Toolset
         run: |
@@ -54,14 +59,10 @@ jobs:
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ inputs.goVersion }}
-      - name: Run E2E Tests
+      - name: Run TF Destroy
         env:
-          WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
-          TEST_TAG: ""
+          WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
           export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
@@ -70,22 +71,23 @@ jobs:
           export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
-          export TF_VAR_ENV=${{ inputs.environmentName }}
-          ./iac.tf.test.sh
 
+          # NEW_ENVIRONMENT_EVENTS_JSON is an array of events.
+          # Each event has a Name, SHA and Location properties.
+          # For each event, we want to checkout the .SHA commit, get the .Name environment name
+          # and the config directory of the environment, and pass it to the destroy script.
+
+          for event in $(echo "${NEW_ENVIRONMENT_EVENTS_JSON}" | jq -c '.[]'); do
+              sha=$(echo "${event}" | jq -r '.SHA')
+              name=$(echo "${event}" | jq -r '.Name')
+              directory=$(echo "${event}" | jq -r '.Directory')
+
+              git checkout "${sha}"
+              echo "Destroying environment: $name"
+              export ENVIRONMENT_NAME=$name
+              export ENVIRONMENT_DIRECTORY=$directory
+
+              ./iac.tf.destroy.sh
+          done
         working-directory: scripts/orchestrators
         shell: bash
-
-      - uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: E2E Test results
-          path: ./IAC/Terraform/test/terraform/*.xml
-
-      - name: Publish E2E Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: "./IAC/Terraform/test/terraform/*.xml"
-          check_name: "E2E Tests Results"
-          action_fail: true
