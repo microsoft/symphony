@@ -1,7 +1,7 @@
 {
   "pipelines": [
     {
-      "id": "__PIPELINE_ID__",
+      "id": __PIPELINE_ID__,
       "authorized": true
     }
   ]
