@@ -36,7 +36,7 @@ variables:
 
   # Terraform version
   # - name: terraformVersion
-  #   value: "1.1.7"
+  #   value: "1.6.2"
   # Run Layer tests
   - name: layerTestEnabled
     value: $(runLayerTest)

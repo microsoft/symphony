@@ -21,20 +21,23 @@
       "pollingJobId": null,
       "pollingInterval": 0,
       "pathFilters": [],
-      "branchFilters": ["+refs/heads/main"],
+      "branchFilters": [
+        "+refs/heads/main"
+      ],
       "defaultSettingsSourceType": 2,
       "isSettingsSourceOptionSupported": true,
       "settingsSourceType": 2,
       "triggerType": 2
     }
   ],
-  "variables": ["__ADO_PIPELINE_VARIABLES__"],
+  "variables": { __ADO_PIPELINE_VARIABLES__
+  },
   "queue": {
-    "id": "__ADO_POOL_ID__",
+    "id": __ADO_POOL_ID__,
     "name": "__ADO_POOL_NAME__",
     "url": "__AZDO_ORG_URI__/_apis/build/Queues/__ADO_POOL_ID__",
     "pool": {
-      "id": "__ADO_POOL_ID__",
+      "id": __ADO_POOL_ID__,
       "name": "__ADO_POOL_NAME__",
       "isHosted": true
     }
