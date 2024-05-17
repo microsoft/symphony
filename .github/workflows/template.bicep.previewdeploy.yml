@@ -37,7 +37,7 @@ jobs:
           ./setup-azcli.sh
         working-directory: scripts/orchestrators
 
-      - uses: Azure/login@v1
+      - uses: Azure/login@v2
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"

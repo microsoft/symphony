@@ -45,7 +45,7 @@ jobs:
         working-directory: scripts/orchestrators
         shell: bash
 
-      - uses: Azure/login@v1
+      - uses: Azure/login@v2
         name: Run Azure Login
         with:
           creds: "${{ secrets.azureEnviromentCredentials }}"
