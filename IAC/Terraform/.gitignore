@@ -7,6 +7,7 @@
 /secrets
 
 ### Terraform ###
+!IAC/Terraform/test/terraform/mocked_deployment.tfstate
 **/.terraform
 *.tfstate
 *.tfplan
