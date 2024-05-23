@@ -48,7 +48,7 @@ jobs:
 
       - name: Fetch Cached Environment
         id: cache-env
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
           key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
