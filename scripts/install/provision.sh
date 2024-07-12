@@ -162,6 +162,10 @@ deploy_dependencies() {
       _information "Creating Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
       create_sa_container "${SA_CONTAINER_NAME}" "${SA_NAME}"
 
+      # Push Test mocks to state SA
+      _information "Push test mocked state files to state SA: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
+      store_file_in_sa_container "./../../IAC/Terraform/test/terraform/mocked_deployment.tfstate" "Test_Mocks/02_sql/01_deployment.tfstate" "${SA_NAME}" "${SA_CONTAINER_NAME}"
+
       # Create backup State SA
       _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
       create_sa "${SA_STATE_BACKUP_NAME}" "Standard_LRS" "SystemAssigned"
@@ -359,6 +363,15 @@ create_sa_container() {
   local _account_name="${2}"
 
   az storage container create --name "${_display_name}" --account-name "${_account_name}"
+}
+
+store_file_in_sa_container() {
+  local _file_path="${1}"
+  local _display_name="${2}"
+  local _account_name="${3}"
+  local _container_name="${4}"
+
+  az storage blob upload --account-name "${_account_name}" --container-name "${_container_name}" --file "${_file_path}" --name "${_display_name}"
 }
 
 create_sa_table() {

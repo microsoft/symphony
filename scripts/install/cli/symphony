@@ -134,6 +134,7 @@ configure_orchestrator() {
     remove_tf_content
   else
     remove_bicep_content
+    remove_tmp_terraform
   fi
 
   configure_repo

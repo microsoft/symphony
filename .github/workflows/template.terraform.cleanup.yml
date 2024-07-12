@@ -61,7 +61,6 @@ jobs:
 
       - name: Run TF Destroy
         env:
-          ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
           export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
