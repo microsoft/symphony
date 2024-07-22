@@ -141,6 +141,10 @@ deploy_dependencies() {
     _information "Creating Key Vault: ${KV_NAME}"
     kv_id=$(create_kv | jq -r .id)
 
+    # Create KV role assignment for the current logged in user
+    local _current_az_user=$(az ad signed-in-user show --query id -o tsv)
+    create_kv_role_assignment "Key Vault Administrator" "${_current_az_user}" "${KV_NAME}"
+
     # Create SA
     _information "Creating Storage Account: ${SA_NAME}"
     create_sa "${SA_NAME}" "Standard_LRS" "SystemAssigned"
@@ -241,8 +245,8 @@ deploy_dependencies() {
     clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
     set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
 
-    _information "Assign access policies for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
-    set_kv_secret_policies "${KV_NAME}" "${clientId}"
+    _information "Assign Reader role for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
+    create_kv_role_assignment "Key Vault Reader" "${clientId}" "${KV_NAME}"
 
     _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientSecret'."
     clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
@@ -339,6 +343,18 @@ create_kv() {
   az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled
 }
 
+create_kv_role_assignment() {
+  local _role="${1}"
+  local _sp_app_id="${2}"
+  local _kvName="${3}"
+
+  local _scope=$(az keyvault show --name "${_kvName}" --query id -o tsv)
+  az role assignment create --role "${_role}" --assignee "${_sp_app_id}" --scope "${_scope}"
+
+  _information "sleep for 20 seconds to allow the role assignment to take effect"
+  sleep 20
+}
+
 create_sp() {
   local _display_name="${1}"
   local _role="${2}"
@@ -387,11 +403,4 @@ set_kv_secret() {
   local _vault_name="${3}"
 
   az keyvault secret set --name "${_name}" --value "${_value}" --vault-name "${_vault_name}"
-}
-
-set_kv_secret_policies() {
-  local _vault_name="${1}"
-  local _sp_app_id="${2}"
-
-  az keyvault set-policy --name "${_vault_name}" --secret-permissions get list backup restore --spn "${_sp_app_id}"
 }
