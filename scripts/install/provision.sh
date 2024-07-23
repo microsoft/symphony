@@ -245,8 +245,8 @@ deploy_dependencies() {
     clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
     set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
 
-    _information "Assign Reader role for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
-    create_kv_role_assignment "Key Vault Reader" "${clientId}" "${KV_NAME}"
+    _information "Assign Key Vault Secrets User role for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
+    create_kv_role_assignment "Key Vault Secrets User" "${clientId}" "${KV_NAME}"
 
     _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientSecret'."
     clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
