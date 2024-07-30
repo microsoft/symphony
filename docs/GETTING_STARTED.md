@@ -2,12 +2,23 @@
 
 Symphony offers a CLI to perform several actions that bootstrap a new IAC project on the orchestrator of your choice. Symphony relies on several backing resources that are needed to facilitate deployment workflows/pipelines. These resources can be provisioned via the CLI and the tool can also create and configure the code repository.
 
-**Note: symphony commands are built specifically for use in a bash/zsh shell.**
+> [!NOTE]
+> Symphony commands are built specifically for use in a bash/zsh shell.
 
 ## Prerequisites tools
 
-- Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). **Note: Make sure your git version is 2.40.0 or newer. Having an older git version can cause errors!**
+- Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+
+> [!NOTE]
+> Make sure your git version is 2.40.0 or newer. Having an older git version can cause errors!
+
 - Install [Azure CLI](https://docs.microsoft.com/cli/azure).
+
+> [!NOTE]
+> If you are using WSL on Windows, make sure to download [Azure CLI for Linux](https://learn.microsoft.com/cli/azure/install-azure-cli-linux) from WSL.
+> The command `which az` should return the path `/usr/bin/az`.
+> Using the Windows version of the Azure CLI from WSL can cause unexpected errors.
+
 - Install [JQ](https://stedolan.github.io/jq).
 
   For GitHub:
@@ -126,7 +137,8 @@ $> symphony destroy
 
 This command deletes symphony resources that were deployed by executing the `symphony provision` command. It utilizes the symphony.json file in ./.symphony/ folder.
 
-**Note: Configured Symphony Repository workflow can no longer run after the Symphony resources are deleted. You need to manually delete the code repo on the SCM.**
+> [!NOTE]
+> Configured Symphony Repository workflow can no longer run after the Symphony resources are deleted. You need to manually delete the code repo on the SCM.
 
 ### Symphony Pipeline Config
 
