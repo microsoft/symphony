@@ -56,7 +56,7 @@ jobs:
 
       - name: 🧹 MegaLinter
         id: megalinter
-        uses: oxsecurity/megalinter/flavors/documentation@v7
+        uses: oxsecurity/megalinter/flavors/documentation@v8
         # uses: oxsecurity/megalinter@v7
         env:
           GITHUB_TOKEN: ${{ github.token }}
