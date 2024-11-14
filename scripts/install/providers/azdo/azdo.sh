@@ -47,7 +47,7 @@ function configure_repo {
 
   local project_source_control='git'
   local project_process_tempalte='Agile'
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
 
   _information "Starting project creation for project ${AZDO_PROJECT_NAME}"
 
@@ -191,7 +191,7 @@ function _create_arm_svc_connection() {
   _payload=$(_create_svc_connection_payload)
   echo "${_payload}" >"$AZDO_TEMP_LOG_PATH/casc_payload.json"
 
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
   _response=$(
     request_post \
       "${_uri}" \
@@ -259,7 +259,7 @@ function _create_azdo_svc_connection() {
   _debug_json "$_payload"
 
   _uri=$(_set_api_version "${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/serviceendpoint/endpoints?api-version=" '5.1-preview.1' '5.1-preview.1')
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
 
   _response=$(
     request_post \
@@ -345,7 +345,7 @@ function _create_pipeline {
       sed 's~__ADO_POOL_NAME__~'"${_agent_pool_queue_name}"'~' |
       sed 's~__AZDO_ORG_URI__~'"${AZDO_ORG_URI}"'~'
   )
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
   local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
 
   echo "$_payload" >"$AZDO_TEMP_LOG_PATH/${_name}-cp-payload.json"
@@ -458,7 +458,7 @@ function _get_pipeline_var_defintion() {
 }
 function _get_agent_pool_queue() {
   # https://docs.microsoft.com/rest/api/azure/devops/distributedtask/queues/get%20agent%20queues?view=azure-devops-rest-5.1
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
   local _uri="${AZDO_ORG_URI}/${AZDO_PROJECT_NAME}/_apis/distributedtask/queues?api-version=5.1-preview.1"
   _response=$(request_get "$_uri" "application/json; charset=utf-8" "Basic ${_token}")
   _is_ubuntu=$(echo "$_response" | jq '.value[] | select( .name | contains("Ubuntu") )')
@@ -476,7 +476,7 @@ function _get_agent_pool_queue() {
 }
 
 function push_repo {
-  local _token=$(echo -n ":${AZDO_PAT}" | base64)
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
   git -c http.extraHeader="Authorization: Basic ${_token}" push -u origin --all
 }
 
