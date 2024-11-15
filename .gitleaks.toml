@@ -36,7 +36,7 @@ description = "PublishSettings"
 regex = '''userPWD="[a-zA-Z0-9\+\/]{60}"'''
 path = '''(?i)(publishsettings|\.pubxml$)'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -53,7 +53,7 @@ description = "AspNetMachineKeyInConfig1"
 path = '''\.(?:xml|pubxml|definitions|ps1|wadcfgx|ccf|config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''<machineKey[^>]+(?:decryptionKey\s*\=\s*"[a-fA-F0-9]{48,}|validationKey\s*\=\s*"[a-fA-F0-9]{48,})[^>]+>'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -64,7 +64,7 @@ description = "AspNetMachineKeyInConfig2"
 path = '''\.(?:xml|pubxml|definitions|ps1|wadcfgx|ccf|config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''(?:decryptionKey|validationKey)="[a-zA-Z0-9]+"'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -75,7 +75,7 @@ description = "SqlConnectionStringInConfig1"
 path = '''\.(?:xml|pubxml|definitions|ps1|wadcfgx|ccf|config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''(?i)(?:connection[sS]tring|connString)[^=]*=["'][^"']*[pP]assword\s*=\s*[^\s;][^"']*(?:'|")'''
 [rules.allowlist]
-regex = '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager'''
+regexes = '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager'''
 
 [[rules]]
 id = "CSCAN0092-2"
@@ -83,7 +83,7 @@ description = "SqlConnectionStringInConfig2"
 path = '''\.(?:xml|pubxml|definitions|ps1|wadcfgx|ccf|config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties|policy_and_key\.hpp|AccountConfig\.h)$|hubot'''
 regex = '''(?i)(?:User ID|uid|UserId).*(?:Password|[^a-z]pwd)=[^'\$%<@'";\[\{][^;/"]{4,128}(?:;|")'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:prefix <<|guestaccesstoken|skiptoken|cookie|tsm|fake|example|badlyFormatted|Invalid|sha512|sha256|"input"|ENCRYPTED|"EncodedRequestUri"|looks like|myStorageAccountName|(?:0|x|\*){8,})''',
 ]
@@ -94,7 +94,7 @@ description = "SqlConnectionStringInCode"
 path = '''\.(?:xml|pubxml|definitions|ps1|wadcfgx|ccf|config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties|policy_and_key\.hpp|AccountConfig\.h)$|hubot'''
 regex = '''(?i)(?:User ID|uid|UserId).*(?:Password|[^a-z]pwd)=[^'\$%<@'";\[\{][^;/"]{4,128}(?:;|")'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:prefix <<|guestaccesstoken|skiptoken|cookie|tsm|fake|example|badlyFormatted|Invalid|sha512|sha256|"input"|ENCRYPTED|"EncodedRequestUri"|looks like|myStorageAccountName|(?:0|x|\*){8,})''',
 ]
@@ -141,7 +141,7 @@ description = "GeneralSecretInConfig1"
 path = '''\.(?:config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''<add\skey="[^"]+(?:key(?:s|[0-9])?|credentials?|secret(?:s|[0-9])?|password|token|KeyPrimary|KeySecondary|KeyOrSas|KeyEncrypted)"\s*value\s*="[^"]+"[^>]*/>'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''key\s*=\s*"[^"]*AppKey[^"]*"\s+value\s*=\s*"[a-z]+"''',
   '''value\s*=\s*"(?:[a-z]+(?: [a-z]+)+"|_+[a-z]+_+"|[a-z]+-[a-z]+-[a-z]+["-]|[a-z]+-[a-z]+"|[a-z]+\\[a-z]+"|\d+"|[^"]*ConnectionString")''',
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
@@ -156,7 +156,7 @@ description = "GeneralSecretInConfig2"
 path = '''\.(?:config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''<add\skey="[^"]+"\s*value="[^"]*EncryptedSecret:[^"]+"\s*/>'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''key\s*=\s*"[^"]*AppKey[^"]*"\s+value\s*=\s*"[a-z]+"''',
   '''value\s*=\s*"(?:[a-z]+(?: [a-z]+)+"|_+[a-z]+_+"|[a-z]+-[a-z]+-[a-z]+["-]|[a-z]+-[a-z]+"|[a-z]+\\[a-z]+"|\d+"|[^"]*ConnectionString")''',
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
@@ -171,7 +171,7 @@ description = "GeneralSecretInConfig3"
 path = '''\.(?:config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''<Credential\sname="[^"]*(?:key(?:s|[0-9])?|credentials?|secret(?:s|[0-9])?|password|token|KeyPrimary|KeySecondary|KeyOrSas|KeyEncrypted)"(\s*value\s*="[^"]+".*?/>|[^>]*>.*?</Credential>)'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''key\s*=\s*"[^"]*AppKey[^"]*"\s+value\s*=\s*"[a-z]+"''',
   '''value\s*=\s*"(?:[a-z]+(?: [a-z]+)+"|_+[a-z]+_+"|[a-z]+-[a-z]+-[a-z]+["-]|[a-z]+-[a-z]+"|[a-z]+\\[a-z]+"|\d+"|[^"]*ConnectionString")''',
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
@@ -186,7 +186,7 @@ description = "GeneralSecretInConfig4"
 path = '''\.(?:config|cscfg|json|js|txt|cpp|sql|dtsx|md|java|FF|template|settings|ini|BF|ste|isml|test|ts|resx|Azure|sample|backup|rd|hpp|psm1|cshtml|htm|bat|waz|yml|Beta|py|sh|m|php|xaml|keys|cmd|rds|loadtest|properties)$|hubot'''
 regex = '''<setting\sname="[^"]*Password".*[\r?\n]*\s*<value>.+</value>'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''key\s*=\s*"[^"]*AppKey[^"]*"\s+value\s*=\s*"[a-z]+"''',
   '''value\s*=\s*"(?:[a-z]+(?: [a-z]+)+"|_+[a-z]+_+"|[a-z]+-[a-z]+-[a-z]+["-]|[a-z]+-[a-z]+"|[a-z]+\\[a-z]+"|\d+"|[^"]*ConnectionString")''',
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
@@ -219,7 +219,7 @@ description = "DefaultPasswordContexts1"
 path = '''\.(?:ps1|psm1|)$'''
 regex = '''ConvertTo-SecureString(?:\s*-String)?\s*"[^$"\r?\n]+"'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -230,7 +230,7 @@ description = "DefaultPasswordContexts2"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''new\sX509Certificate2\([^()]*,\s*"[^"\r?\n]+"[^)]*\)'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -241,7 +241,7 @@ description = "DefaultPasswordContexts3"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''AdminPassword\s*=\s*"[^"\r?\n]+"'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -252,7 +252,7 @@ description = "DefaultPasswordContexts4"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''(?i)<password>.+</password>'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -263,7 +263,7 @@ description = "DefaultPasswordContexts5"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''ClearTextPassword"?\s*[:=]\s*"[^"\r?\n]+"'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -274,7 +274,7 @@ description = "DefaultPasswordContexts6"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''certutil.*?\-p\s+("[^"%]+"|'[^'%]+'|[^"']\S*\s)'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -285,7 +285,7 @@ description = "DefaultPasswordContexts7"
 path = '''\.(?:cs|xml|config|json|ts|cfg|txt|ps1|bat|cscfg|publishsettings|cmd|psm1|aspx|asmx|vbs|added_cluster|clean|pubxml|ccf|ini|svd|sql|c|xslt|csv|FF|ExtendedTests|settings|cshtml|template|trd|argpath)$|(config|certificate|publish|UT)\.js$|(commands|user|tests)\.cpp$'''
 regex = '''password\s*=\s*N?(["][^"\r?\n]{4,}["]|['][^'\r?\n]{4,}['])'''
 [rules.allowlist]
-regex = [
+regexes = [
   '''Credentials?Type|ConnectionStringKey|notasecret|PartitionKey|notreal|insertkey|LookupKey|IgnoreKeys|SecretsService|SecretsTenantId|(?:Password|pwd|secret|credentials?)(?:Key|Location)|KeyManager''',
   '''(?:_AppKey"|(?:(?:credential|password|token)s?|(?:Account|access)Key=)"[\s\r?\n]*/|Username"|\.dll|(?:Secret|Token|Key|Credential)s?(?:Encryption|From|(?:Signing)?Certificate|Options|Thumbprint|Contacts|String|UserId)|Key(1;value1|word|s?Path|Index|Id|Store|WillDoWithoutValidation|:NamePattern|Name"|Ref")|(Secret|Credential)s?(Name|Path)"|(StrongName|Chaos\s?Mon|Redis|Registry|Registery|User|Insights?|Instrumentation|Match\()Key|(Certificate|cert)(Issuer|Subject)|rollingdate|skuId|HKEY_|AddServicePrincipalCredentials|Password Resets|SecretStore|(0|x|\*){8,})''',
 ]
@@ -296,7 +296,7 @@ description = "DomainPassword"
 regex = '''new(?:-object)?\s+System.Net.NetworkCredential\(?:.*?,\s*"[^"]+"'''
 path = '''\.cs$|\.c$|\.cpp$|\.ps1$|\.ps$|\.cmd$|\.bat$|\.log$|\.psd$|\.psm1$'''
 [rules.allowlist]
-regex = '''(%1%|\$MIGUSER_PASSWORD|%miguser_pwd%)'''
+regexes = '''(%1%|\$MIGUSER_PASSWORD|%miguser_pwd%)'''
 description = "ignore placeholders"
 
 [[rules]]
