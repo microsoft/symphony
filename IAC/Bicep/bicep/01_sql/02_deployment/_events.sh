@@ -4,7 +4,7 @@
 pre_deploy() {
   # placeholder for pre deploy logic
   export sqlServerAdministratorLogin="eshop"
-  export sqlServerAdministratorPassword="$(head -c 10 /dev/urandom | base64)"
+  export sqlServerAdministratorPassword="$(head -c 10 /dev/urandom | base64 -w 0)"
 
   return $?
 }
