@@ -37,3 +37,4 @@ module appConfig './modules/appconfig.bicep' = {
 
 output appConfigResourceGroupName string = resourceGroup().name
 output appConfigAccountName string = appConfig.name
+output appConfigItemsLength int = length(appConfig.outputs.keys)
