@@ -56,7 +56,6 @@ function remove_bicep_content() {
   _information "Remove Bicep orchestrators scripts"
   rm "$TARGET_ROOT"/scripts/orchestrators/*bicep*.sh
   rm "$TARGET_ROOT"/scripts/orchestrators/*powershell*.sh
-  rm "$TARGET_ROOT"/scripts/orchestrators/*shellspec*.sh
   rm "$TARGET_ROOT"/scripts/orchestrators/*pester.sh
   rm "$TARGET_ROOT"/scripts/orchestrators/setup-armttk.sh
 }

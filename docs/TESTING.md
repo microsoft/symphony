@@ -74,28 +74,6 @@ The tests will check a template or set of templates for coding best practices us
     Invoke-Pester -Path ./pester/SqlIntegration.Tests.ps1 -OutputFile Test.xml -OutputFormat JUnitXml
     ```
 
-### End to End test with ShellSpec
-
-[ShellSpec](https://github.com/shellspec/shellspec) is a full-featured BDD unit testing framework for the dash, bash, ksh, zsh and all POSIX shells that provide first-class features such as code coverage, mocking, parameterized test, parallel execution and more.
-
-1. Install ShellSpec
-
-    ```bash
-    curl -fsSL https://git.io/shellspec | sh -s -- --yes
-    ```
-
-1. (option 1) Run the test
-
-    ```bash
-    shellspec -f d
-    ```
-
-1. (option 2) Run the test with the JUnit report
-
-    ```bash
-    shellspec -f j > tests.xml
-    ```
-
 ## Terraform
 
 All below test examples have an assumption for the working directory - should be [IAC/Terraform/test/terraform](./../IAC/Terraform/test/terraform/)

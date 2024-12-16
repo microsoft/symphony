@@ -7,7 +7,7 @@ This repo has the following components to deploy the sample app using Symphony:
 - [Symphony layers (Terraform or Bicep) to deploy web app and database](./../IAC/)
 - Tests to perform tests for symphony layers
   - [golang (Terraform)](./../IAC/Terraform/test)
-  - [ShellSpec (Bicep)](./../IAC/Bicep/test)
+  - [Pester (Bicep)](./../IAC/Bicep/test)
 - [DevContainer to develop Symphony](DEVELOPER_EXPERIENCE.md)
 
 ## Symphony Layers (Terraform)

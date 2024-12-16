@@ -77,7 +77,6 @@ Symphony workflows use a set of tools to run tasks at each stage. Those tools ar
 - [Bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep) is used to deploy the Bicep IaC modules. Here is a script to [auto-install](../scripts/orchestrators/setup-bicep.sh) it.
 - [Powershell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.2) is used to execute PowerShell scripts, like [ARM-TTK](https://github.com/Azure/arm-ttk) scripts. Here is a script to [auto-install](../scripts/orchestrators/setup-powershell.sh) it.
 - [ARM-TTK](https://github.com/Azure/arm-ttk) is used to validate ARM templates. Here is a script to [auto-install](../scripts/orchestrators/setup-armttk.sh) it.
-- [Shellspec](https://shellspec.info/) is used to write and execute tests to test Bicep modules. Here is a script to [auto-install](../scripts/orchestrators/setup-shellspec.sh) it.
 - [Pester](https://pester.dev/) is used to write and execute tests to test Bicep modules. Here is a script to [auto-install](../scripts/orchestrators/setup-pester.sh) it.
 
 ### Terraform workflow tools
