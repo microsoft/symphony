@@ -123,7 +123,6 @@ The following resources will be deployed as dependencies for Symphony:
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
 | Resource Group     | Container for all needed Symphony deployed resources.                                                                       | Terraform / Bicep |
 | Key Vault          | Stores the credential secrets to be used by workflows.                                                                      | Terraform / Bicep |
-| Container Registry | Stores the Symphony sample app 'eshop on web' docker images.                                                                | Terraform / Bicep |
 | Service Principal  | Reader Service principal used by the CI to access the Key Vault.                                                            | Terraform / Bicep |
 | Service Principal  | [Create/Bring your own] Owner Service Principal used to access the target azure subscription used to deploy by IaC modules. | Terraform / Bicep |
 | Storage Account    | Storage account with Azure Blob Containers that are used for terraform remote state backend.                                | Terraform         |

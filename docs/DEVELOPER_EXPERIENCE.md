@@ -51,15 +51,9 @@ The _DevContainer_ also has the following _VSCode_ extensions installed to impro
 
 The initial setup bash script can be located in the  [IAC](./../IAC/) directory. This script deploys required Azure Services for Symphony for development and testing.
 
-For more information about the sample application that is deployed with Symphony, please take a look a the links below:
-
-- [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry)
-- [eShop Web docker image](https://github.com/dotnet-architecture/eShopOnWeb/tree/main/src/Web)
-- [eShop API docker image](https://github.com/dotnet-architecture/eShopOnWeb/tree/main/src/PublicApi)
-
 ## Deploy
 
-The [IAC](./../IAC/) directory has two subdirectories that represent options that support either a Terraform or Bicep configuration. The contained `deploy.sh` file offers a straightforward script that enables you to run and test your code quickly.
+The [IAC](./../IAC/) directory has two subdirectories that represent options that support either a Terraform or Bicep configuration.
 
 ## Input Variables
 

@@ -26,7 +26,6 @@ declare SP_CLOUD_ENVIRONMENT=""
 declare SP_SUBSCRIPTION_NAME="Azure"
 declare SYMPHONY_KV_NAME=""
 declare SYMPHONY_RG_NAME=""
-declare SYMPHONY_ACR_NAME=""
 declare SYMPHONY_SA_STATE_NAME=""
 declare AZURE_REGIONS=""
 
@@ -64,12 +63,6 @@ verify_az_logged_in() {
 
 set_cloud_env() {
   SP_CLOUD_ENVIRONMENT=$(az cloud show | jq -r '.name')
-}
-
-get_acr_login_endpoint() {
-  login_endpoint=$(az cloud show | jq -r '.suffixes.acrLoginServerEndpoint')
-
-  echo "${login_endpoint}"
 }
 
 # Provision resources and service principals needed by Symphony
@@ -140,7 +133,7 @@ configure_orchestrator() {
   configure_repo
   configure_credentials
 
-  # Update the resource names KV, ACR, RG
+  # Update the resource names KV, RG
   git add .
   git commit -m "Initial commit"
 
@@ -155,10 +148,6 @@ configure_orchestrator() {
   eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
   eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
   eval "git grep -l 'AzureCloud' -- ':!*_helpers.sh' | xargs $sedCommand \"s/AzureCloud/$SP_CLOUD_ENVIRONMENT/g\""
-
-  server_endpoint="$(get_acr_login_endpoint)"
-  eval "git grep -l 'crsymphony360.azurecr.io' | xargs $sedCommand \"s/crsymphony360.azurecr.io/${SYMPHONY_ACR_NAME}${server_endpoint}/g\""
-  eval "git grep -l 'crsymphony360' | xargs $sedCommand \"s/crsymphony360/${SYMPHONY_ACR_NAME}/g\""
 
   if [ "$IACTOOL" == "bicep" ]; then
     create_pipelines_bicep
