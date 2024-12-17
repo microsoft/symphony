@@ -116,6 +116,7 @@ bicep() {
     pester "$@"
   elif [ "${1}" == "pester" ]; then
     pester ${2}
+  fi
 
   popd
 }
