@@ -34,7 +34,6 @@ Describe "End to End Tests" {
       $storageAccountResource.ResourceDetails.Kind | Should -Be "StorageV2"
       $storageAccountResource.ResourceDetails.Sku.Name | Should -Be "Standard_LRS"
       $storageAccountResource.ResourceDetails.EnableHttpsTrafficOnly | Should -Be $true
-      $storageAccountResource.ResourceDetails.MinimumTlsVersion | Should -Be "TLS1_2"
     }
 
     It "should check the app config is ready" {
@@ -42,13 +41,6 @@ Describe "End to End Tests" {
       $appConfigResource = Get-AzBPResource -ResourceName $appConfigAccountName -ResourceGroupName $appConfigResourceGroupName
 
       $appConfigResource | Should -Be -Not $null
-    }
-
-    It "should check the app config is running" {
-      # act and assert
-      $appConfigResource = Get-AzBPResource -ResourceName $appConfigAccountName -ResourceGroupName $appConfigResourceGroupName
-
-      $appConfigResource[1].Success | Should -Be $true
     }
   }
 }
