@@ -16,6 +16,7 @@ module appConfigName './../../modules/nameGenerator.bicep' = {
     name: 'appconfig'
     prefix: environment
     uniqueToken: location
+    suffixLength: 6
   }
 }
 

@@ -8,7 +8,7 @@ var _deploymentName = empty(deploymentName)
   : deploymentName
 
 var namePrefix = '${environment}sa'
-var nameSuffix = substring(uniqueString(location, subscription().id, guid(namePrefix)), 0, 3)
+var nameSuffix = substring(uniqueString(location, subscription().id, guid(namePrefix)), 0, 6)
 var name = '${namePrefix}${nameSuffix}'
 
 // Storage Account
