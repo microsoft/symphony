@@ -130,6 +130,13 @@ configure_orchestrator() {
     remove_tmp_terraform
   fi
 
+  local include_sample_code=""
+  _select_yes_no include_sample_code "Include sample code:"
+
+  if [[ "$include_sample_code" == "no" ]]; then
+    delete_sample_code "$IACTOOL"
+  fi
+
   configure_repo
   configure_credentials
 

@@ -64,3 +64,29 @@ function remove_tmp_terraform() {
   _information "Remove temporary Terraform files"
   rm -r "$TARGET_ROOT"/IAC/Terraform/test/terraform/mocked_deployment.tfstate
 }
+
+function delete_sample_code() {
+  local iac_tool=$1
+
+  _information "Remove sample code"
+
+  if [ "$iac_tool" == "bicep" ]; then
+    rm -rf "$TARGET_ROOT"/IAC/Bicep/*
+    touch "$TARGET_ROOT"/IAC/Bicep/.gitkeep
+
+    rm -rf "$TARGET_ROOT"/env/bicep/*
+
+    # create the well-known PR dir
+    mkdir -p "$TARGET_ROOT"/env/bicep/pr
+    touch "$TARGET_ROOT"/env/bicep/pr/.gitkeep
+  else
+    rm -rf "$TARGET_ROOT"/IAC/Terraform/*
+    touch "$TARGET_ROOT"/IAC/Terraform/.gitkeep
+
+    rm -rf "$TARGET_ROOT"/env/terraform/*
+
+    # create the well-known PR dir
+    mkdir -p "$TARGET_ROOT"/env/terraform/pr
+    touch "$TARGET_ROOT"/env/terraform/pr/.gitkeep
+  fi
+}
