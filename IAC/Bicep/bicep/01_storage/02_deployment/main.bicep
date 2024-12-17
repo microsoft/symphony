@@ -24,4 +24,4 @@ module storageAccount './modules/storageAccount.bicep' = {
 }
 
 output storageAccountResourceGroupName string = resourceGroup().name
-output storageAccountName string = storageAccount.name
+output storageAccountName string = storageAccount.outputs.name
