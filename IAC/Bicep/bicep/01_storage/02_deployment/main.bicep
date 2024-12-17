@@ -7,21 +7,16 @@ var _deploymentName = empty(deploymentName)
   ? uniqueString(subscription().subscriptionId, location, environment)
   : deploymentName
 
+var namePrefix = '${environment}sa'
+var nameSuffix = substring(uniqueString(location, subscription().id, guid(namePrefix)), 0, 3)
+var name = '${namePrefix}${nameSuffix}'
+
 // Storage Account
 
-module storageAccountName './../../modules/nameGenerator.bicep' = {
-  name: '${_deploymentName}-storageAccountName'
-  params: {
-    name: 'storage'
-    prefix: environment
-    uniqueToken: location
-  }
-}
-
 module storageAccount './modules/storageAccount.bicep' = {
-  name: '${_deploymentName}-sqlServer'
+  name: '${_deploymentName}-storage'
   params: {
-    name: storageAccountName.outputs.name
+    name: name
     location: location
     environment: environment
     layerName: layerName
