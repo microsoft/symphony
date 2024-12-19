@@ -49,7 +49,7 @@ resource "azurerm_app_configuration" "appconfig" {
 # ------------------------------------------------------------------------------------------------------
 
 resource "azurerm_app_configuration_key" "app_config_key" {
-  configuration_store_id = azurerm_app_configuration.app_config.id
+  configuration_store_id = azurerm_app_configuration.appconfig.id
   key                    = "storageAccountName"
   value                  = data.terraform_remote_state.l02_d01.outputs.storage_account_name
   content_type           = "text/plain"
