@@ -27,6 +27,15 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
+data "azurerm_client_config" "client_config" {
+}
+
+resource "azurerm_role_assignment" "data_owner_role_assignment" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "App Configuration Data Owner"
+  principal_id         = data.azurerm_client_config.client_config.object_id
+}
+
 # ------------------------------------------------------------------------------------------------------
 # Deploy app configuration
 # ------------------------------------------------------------------------------------------------------
@@ -42,6 +51,10 @@ resource "azurerm_app_configuration" "appconfig" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "standard"
+
+  depends_on = [
+    azurerm_role_assignment.data_owner_role_assignment
+  ]
 }
 
 # ------------------------------------------------------------------------------------------------------
