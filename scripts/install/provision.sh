@@ -160,7 +160,7 @@ deploy_dependencies() {
 
       # Push Test mocks to state SA
       _information "Push test mocked state files to state SA: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
-      store_file_in_sa_container "./../../IAC/Terraform/test/terraform/mocked_deployment.tfstate" "Test_Mocks/02_sql/01_deployment.tfstate" "${SA_NAME}" "${SA_CONTAINER_NAME}"
+      store_file_in_sa_container "./../../IAC/Terraform/test/terraform/mocked_deployment.tfstate" "Test_Mocks/02_storage/01_deployment.tfstate" "${SA_NAME}" "${SA_CONTAINER_NAME}"
 
       # Create backup State SA
       _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
