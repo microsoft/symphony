@@ -14,7 +14,7 @@ Usage: ${0} [terraform or bicep]
   bicep             : run \`all\` bicep tests
     bicep arm_ttk   : run \`arm_ttk\`   bicep tests
     bicep pester    : run \`pester\`    bicep tests
-      [optional] provide the name of the test file to run, e.g. source ${0} && bicep pester SqlIntegration.Tests.ps1
+      [optional] provide the name of the test file to run, e.g. source ${0} && bicep pester End_To_End.Tests.ps1
 
 EOF
 }
@@ -80,7 +80,7 @@ terraform() {
 # @usage <to run all the tests>: source ${0} && bicep
 # @usage <to run all the tests for arm-ttk>: source ${0} && bicep arm-ttk
 # @usage <to run all the tests for pester>: source ${0} && bicep pester
-# @usage <to run {FILENAME} tests only for pester>; source ${0} && bicep pester SqlIntegration.Tests.ps1
+# @usage <to run {FILENAME} tests only for pester>; source ${0} && bicep pester End_To_End.Tests.ps1
 bicep() {
   source ./iac.bicep.sh
 
