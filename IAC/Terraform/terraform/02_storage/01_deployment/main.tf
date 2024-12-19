@@ -33,7 +33,7 @@ resource "azurecaf_name" "storage_name" {
   clean_input   = true
 }
 resource "azurerm_storage_account" "storage" {
-  name                     = azurecaf_name.storage_name
+  name                     = azurecaf_name.storage_name.result
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
