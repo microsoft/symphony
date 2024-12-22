@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/azure"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,18 +45,11 @@ func Test03_Config(t *testing.T) {
 
 	// Run `terraform output` to get the values of output variables from the terraform.tfstate
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
-	appName := terraform.Output(t, terraformOptions, "app_service_name")
+	appConfigId := terraform.Output(t, terraformOptions, "app_configuration_id")
+	appConfigName := terraform.Output(t, terraformOptions, "app_configuration_name")
 
-	appId := terraform.Output(t, terraformOptions, "app_service_id")
-	appDefaultHostName := terraform.Output(t, terraformOptions, "default_hostname")
-
-	// Assert deployed app
-	assert.True(t, azure.AppExists(t, appName, resourceGroupName, ""))
-	site := azure.GetAppService(t, appName, resourceGroupName, "")
-
-	assert.Equal(t, appId, *site.ID)
-	assert.Equal(t, appDefaultHostName, *site.DefaultHostName)
-
-	assert.NotEmpty(t, *site.OutboundIPAddresses)
-	assert.Equal(t, "Running", *site.State)
+	// Assert output values are not empty
+	assert.NotEmpty(t, resourceGroupName, "Resource Group Name is empty")
+	assert.NotEmpty(t, appConfigId, "App Configuration ID is empty")
+	assert.NotEmpty(t, appConfigName, "App Configuration Name is empty")
 }

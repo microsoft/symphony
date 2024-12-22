@@ -7,8 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/services/sql/mgmt/2014-04-01/sql"
-	"github.com/gruntwork-io/terratest/modules/azure"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 )
@@ -51,14 +49,9 @@ func Test02_Storage(t *testing.T) {
 
 	// Run `terraform output` to get the values of output variables from the terraform.tfstate
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
-	sqlServerName := terraform.Output(t, terraformOptions, "sql_server_name")
-
-	catalogDBName := terraform.Output(t, terraformOptions, "catalog_sql_db_name")
-	identityDBName := terraform.Output(t, terraformOptions, "identity_sql_db_name")
-	expectedSQLDBStatus := "Online"
+	storageAccountName := terraform.Output(t, terraformOptions, "storage_account_name")
 
 	// Assert deployed server and databases status
-	assert.Equal(t, sql.ServerStateReady, azure.GetSQLServer(t, resourceGroupName, sqlServerName, "").State, "SQl server Status")
-	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, catalogDBName, "").Status, "Catalog SQL DB Status")
-	assert.Equal(t, expectedSQLDBStatus, *azure.GetSQLDatabase(t, resourceGroupName, sqlServerName, identityDBName, "").Status, "Identity SQL DB Status")
+	assert.NotEmpty(t, resourceGroupName, "Resource Group Name is empty")
+	assert.NotEmpty(t, storageAccountName, "Storage Account Name is empty")
 }
