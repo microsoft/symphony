@@ -282,7 +282,7 @@ create_rg() {
 }
 
 create_kv() {
-  az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled
+  az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled --enable-rbac-authorization
 }
 
 create_kv_role_assignment() {
