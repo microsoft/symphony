@@ -13,7 +13,7 @@ source _helpers.sh
 source _setup_helpers.sh
 
 set -e
-VERSION="${1:-"latest"}"
+VERSION="${1:-"8.21.2"}"
 
 # Get OS architecture
 get_os_architecture "x64" "arm64" "armv7" "x32"

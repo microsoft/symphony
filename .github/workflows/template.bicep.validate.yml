@@ -43,7 +43,6 @@ jobs:
           ./setup-powershell.sh
           ./setup-pester.sh
           ./setup-armttk.sh
-          ./setup-shellspec.sh
           source ~/.bashrc
         working-directory: scripts/orchestrators
 

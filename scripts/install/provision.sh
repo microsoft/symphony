@@ -35,7 +35,6 @@ remove_dependencies() {
   is_terraform=$(is_terraform)
 
   RG_NAME="rg-${prefix}-${suffix}"
-  CR_NAME="cr${prefix}${suffix}"
   KV_NAME="kv-${prefix}-${suffix}"
   SP_READER_NAME="sp-reader-${prefix}-${suffix}"
   SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
@@ -52,7 +51,6 @@ remove_dependencies() {
   _danger "The following resources will be permanently deleted:"
   echo ""
   _danger "                     Resource Group:  $RG_NAME"
-  _danger "           Azure Container Registry:  $CR_NAME"
   _danger "                          Key Vault:  $KV_NAME"
   _danger "    Service Principal Name (Reader):  $SP_READER_NAME"
   _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
@@ -70,7 +68,7 @@ remove_dependencies() {
   if [[ "$selection" == "yes" ]]; then
     _information "Starting removal of resources"
 
-    _information "Removing Resource Group (${RG_NAME}), Azure Container Registry ($CR_NAME) and Keyvault ($KV_NAME)"
+    _information "Removing Resource Group (${RG_NAME}) and Keyvault ($KV_NAME)"
     az group delete --resource-group "${RG_NAME}" --yes
 
     _information "Purging Key Vault (${KV_NAME})"
@@ -96,7 +94,6 @@ deploy_dependencies() {
   IS_Terraform=$2
 
   RG_NAME="rg-${prefix}-${suffix}"
-  CR_NAME="cr${prefix}${suffix}"
   KV_NAME="kv-${prefix}-${suffix}"
   SP_READER_NAME="sp-reader-${prefix}-${suffix}"
   SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
@@ -113,7 +110,6 @@ deploy_dependencies() {
   _information ""
   _information "                     Resource Group:  $RG_NAME"
   _information "                          Key Vault:  $KV_NAME"
-  _information "                 Container Registry:  $CR_NAME"
   _information "    Service Principal Name (Reader):  $SP_READER_NAME"
   _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
   _information "                    Storage account:  $SA_NAME"
@@ -132,10 +128,6 @@ deploy_dependencies() {
     # Create RG
     _information "Creating Resource Group: ${RG_NAME}"
     create_rg
-
-    # Create CR
-    _information "Creating Container Registry: ${CR_NAME}"
-    create_cr
 
     # Create KV
     _information "Creating Key Vault: ${KV_NAME}"
@@ -168,7 +160,7 @@ deploy_dependencies() {
 
       # Push Test mocks to state SA
       _information "Push test mocked state files to state SA: ${SA_CONTAINER_NAME} for Storage Account:${SA_NAME}"
-      store_file_in_sa_container "./../../IAC/Terraform/test/terraform/mocked_deployment.tfstate" "Test_Mocks/02_sql/01_deployment.tfstate" "${SA_NAME}" "${SA_CONTAINER_NAME}"
+      store_file_in_sa_container "./../../IAC/Terraform/test/terraform/mocked_deployment.tfstate" "Test_Mocks/02_storage/01_deployment.tfstate" "${SA_NAME}" "${SA_CONTAINER_NAME}"
 
       # Create backup State SA
       _information "Creating Backup Storage Account: ${SA_STATE_BACKUP_NAME}"
@@ -262,7 +254,6 @@ deploy_dependencies() {
     # Store values in Symphonyenv.json
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "container_registry" "$CR_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_NAME"
@@ -290,57 +281,8 @@ create_rg() {
   az group create --resource-group "${RG_NAME}" --location "${LOCATION}"
 }
 
-create_cr() {
-  APP_REPO="https://github.com/dotnet-architecture/eShopOnWeb.git"
-  APP_COMMIT="a72dd77"
-  APP_WEB_NAME="eshopwebmvc"
-  APP_WEB_DOCKERFILE="src/Web/Dockerfile"
-  APP_API_NAME="eshoppublicapi"
-  APP_API_DOCKERFILE="src/PublicApi/Dockerfile"
-
-  az acr create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${CR_NAME}" --sku Basic
-
-  max=5
-  counter=0
-  ready=1
-  sleepInterval=22
-  sleepTime=$(($sleepInterval * $counter))
-
-  _information "Waiting for ACR creation before pushing images"
-  while [ $ready -ne 0 ]; do
-    _information "Checking Provisioning Status for Azure Container Registry $CR_NAME - ($(($counter + 1)) of $max)"
-    status=$(az acr show -n "${CR_NAME}" -g "${RG_NAME}" | jq -r '.provisioningState')
-    if [ "$status" == "Succeeded" ]; then
-      ready=0
-      _information "Azure Container Registry $CR_NAME created successfully!"
-    else
-      ((counter++))
-
-      if [ $counter == $max ]; then
-        _fail "provision" "Azure Container Registry $CR_NAME provision timeout."
-      fi
-      sleepTime=$(($sleepInterval * $counter))
-      sleep $sleepTime
-    fi
-  done
-
-  git clone "${APP_REPO}" "_app"
-  pushd "_app" || exit
-  git checkout "${APP_COMMIT}"
-
-  _information "Creating App Web Container"
-  az acr build --image "${APP_WEB_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_WEB_DOCKERFILE}" .
-
-  sleep 5
-  _information "Creating App Api Container"
-  az acr build --image "${APP_API_NAME}:${APP_COMMIT}" --registry "${CR_NAME}" --resource-group "${RG_NAME}" --file "${APP_API_DOCKERFILE}" .
-
-  popd || exit
-  rm -r -f "_app"
-}
-
 create_kv() {
-  az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled
+  az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled --enable-rbac-authorization
 }
 
 create_kv_role_assignment() {
