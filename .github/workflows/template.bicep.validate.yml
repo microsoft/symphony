@@ -66,12 +66,12 @@ jobs:
         with:
           sarif_file: scripts/orchestrators/gitleaks-report.sarif
 
-      # - name: Run Bicep Lint
-      #   env:
-      #     WORKSPACE_PATH: ${{ github.workspace }}
-      #   run: |
-      #     ./iac.bicep.lint.sh
-      #   working-directory: scripts/orchestrators
+      - name: Run Bicep Lint
+        env:
+          WORKSPACE_PATH: ${{ github.workspace }}
+        run: |
+          ./iac.bicep.lint.sh
+        working-directory: scripts/orchestrators
 
       - uses: azure/login@v2
         name: Run Azure Login
