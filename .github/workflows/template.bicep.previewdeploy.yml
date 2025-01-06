@@ -19,9 +19,6 @@ on: # yamllint disable-line rule:truthy
       branchName:
         required: true
         type: string
-    secrets:
-      azureEnviromentCredentials:
-        required: true
 
 jobs:
   PreviewDeploy:
@@ -39,16 +36,7 @@ jobs:
 
       - uses: Azure/login@v1
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
-
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
 
       - name: Run Bicep Deploy
         id: BicepDeploy
@@ -59,10 +47,6 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           ./iac.bicep.previewdeploy.sh
         working-directory: scripts/orchestrators
 

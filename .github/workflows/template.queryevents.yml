@@ -20,9 +20,6 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         type: string
         required: true
-    secrets:
-      azureEnviromentCredentials:
-        required: true
 
 jobs:
   QueryEvent:
@@ -35,13 +32,12 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, eventsStorageAccount, eventsTableName"
+          SECRETS: "eventsStorageAccount, eventsTableName"
           KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
@@ -51,10 +47,6 @@ jobs:
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
           export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
 

@@ -23,5 +23,3 @@ jobs:
       pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       terraformVersion: ${{  github.event.inputs.terraformVersion }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

@@ -29,5 +29,3 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

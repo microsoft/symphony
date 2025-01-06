@@ -64,8 +64,6 @@ jobs:
       runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
     permissions:
       actions: write
       contents: write
@@ -93,8 +91,6 @@ jobs:
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
@@ -105,8 +101,6 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -117,8 +111,6 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -132,8 +124,6 @@ jobs:
       goVersion: "1.18.1"
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
     needs: [Setup, Test]
@@ -143,8 +133,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
@@ -156,5 +144,3 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

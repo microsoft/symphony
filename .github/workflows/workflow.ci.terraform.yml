@@ -50,8 +50,6 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
     permissions:
       actions: write
       contents: write
@@ -68,8 +66,6 @@ jobs:
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -80,8 +76,6 @@ jobs:
       goVersion: ${{ github.event.inputs.goVersion }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Report:
     needs: PreviewDeploy
@@ -91,5 +85,3 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}

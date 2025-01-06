@@ -3,8 +3,6 @@
 # Includes
 source ./_helpers.sh
 
-azlogin "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" 'AzureCloud'
-
 # expects EVENTS_STORAGE_ACCOUNT, EVENTS_TABLE_NAME to be set
 
 usage() {

@@ -10,9 +10,6 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         type: string
         required: true
-    secrets:
-      azureEnviromentCredentials:
-        required: true
 
 jobs:
   GetEnvironments:
@@ -23,8 +20,6 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       keyVaultName: ${{ inputs.keyVaultName }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.azureEnviromentCredentials }}
 
   Destroy:
     name: Destroy
@@ -44,16 +39,7 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
-
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
 
       - name: Run Bicep Destroy
         env:
@@ -61,11 +47,6 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           NEW_ENVIRONMENT_EVENTS_JSON: ${{ needs.GetEnvironments.outputs.events }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-
           # NEW_ENVIRONMENT_EVENTS_JSON is an array of events.
           # Each event has a Name, SHA and Location properties.
           # For each event, we want to checkout the .SHA commit, get the .Name environment name

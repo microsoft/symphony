@@ -13,9 +13,6 @@ on: # yamllint disable-line rule:truthy
       branchName:
         type: string
         required: true
-    secrets:
-      azureEnviromentCredentials:
-        required: true
 
 jobs:
   Report:
@@ -36,13 +33,12 @@ jobs:
       - uses: Azure/login@v1
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
           environment: "AzureCloud"
 
       - name: Get KeyVault Secret(s)
         id: LoadSecrets
         env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
+          SECRETS: "stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
           KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
         run: ./github.loadsecrets.sh
         working-directory: scripts/orchestrators
@@ -53,10 +49,6 @@ jobs:
           COMMIT_ID: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           export STATE_STORAGE_ACCOUNT_BACKUP=${{ steps.LoadSecrets.outputs.stateStorageAccountBackup }}

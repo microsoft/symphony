@@ -59,8 +59,6 @@ jobs:
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
     permissions:
       actions: read
       contents: read
@@ -107,8 +105,6 @@ jobs:
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
@@ -119,8 +115,6 @@ jobs:
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -131,8 +125,6 @@ jobs:
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Test:
     needs: [Setup, PreviewDeployPRBranch]
@@ -145,8 +137,6 @@ jobs:
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
@@ -157,5 +147,3 @@ jobs:
       locationName: ${{ needs.Setup.outputs.locationName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
