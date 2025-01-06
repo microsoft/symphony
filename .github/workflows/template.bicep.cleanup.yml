@@ -10,6 +10,9 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         type: string
         required: true
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   GetEnvironments:
@@ -20,9 +23,11 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       keyVaultName: ${{ inputs.keyVaultName }}
+      githubEnvironment: symphony
 
   Destroy:
     name: Destroy
+    environment: ${{ inputs.githubEnvironment }}
     needs: [GetEnvironments]
     runs-on: ubuntu-latest
     steps:

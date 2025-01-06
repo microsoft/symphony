@@ -13,6 +13,9 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         type: string
         required: true
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   GetEnvironments:
@@ -23,11 +26,13 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       keyVaultName: ${{ inputs.keyVaultName }}
+      githubEnvironment: ${{ inputs.githubEnvironment }}
 
   Destroy:
     name: Destroy
     needs: [GetEnvironments]
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     steps:
       - uses: actions/checkout@v4
         with:

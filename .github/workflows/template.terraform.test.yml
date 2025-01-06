@@ -19,11 +19,15 @@ on: # yamllint disable-line rule:truthy
       branchName:
         type: string
         required: true
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   Test:
     name: "E2E Test"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     steps:
       - uses: actions/checkout@v4
         with:

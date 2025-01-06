@@ -32,3 +32,4 @@ jobs:
     with:
       pullRequestNumber: ${{ github.event.pull_request.number }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      githubEnvironment: symphony

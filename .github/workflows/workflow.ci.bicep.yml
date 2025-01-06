@@ -34,6 +34,7 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      githubEnvironment: symphony
     permissions:
       actions: read
       contents: read
@@ -48,6 +49,7 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      githubEnvironment: symphony
 
   Test:
     needs: PreviewDeploy
@@ -57,3 +59,4 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      githubEnvironment: symphony

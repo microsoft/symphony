@@ -22,11 +22,15 @@ on: # yamllint disable-line rule:truthy
       comment:
         type: string
         required: false
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   StoreEvent:
     name: Store Event
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     permissions:
       pull-requests: write
     steps:

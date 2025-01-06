@@ -74,15 +74,32 @@ function configure_repo {
   _success "Repo '${GH_Repo_NAME}' created."
 }
 
-function _build_az_secret {
-  echo "{\"clientId\": \"$SP_ID\",\"clientSecret\": \"$SP_SECRET\",\"subscriptionId\": \"$SP_SUBSCRIPTION_ID\",\"tenantId\": \"$SP_TENANT_ID\"}"
+function _add_federated_credential {
+  # Configuring federated identity for Github Actions, based on repo name and environment name
+  parameters=$(cat <<EOF
+  {
+    "name": "symphony-credential",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:${GH_ORG_NAME}/${GH_Repo_NAME}:environment:symphony",
+    "description": "Symphony credential for Github Actions",
+    "audiences": [
+        "api://AzureADTokenExchange"
+    ]
+  }
+EOF
+  )
+
+  az ad app federated-credential create --id $SP_ID --parameters "$parameters"
 }
 
 function configure_credentials {
   _information "Configure GitHub Secrets"
 
-  sp_json=$(_build_az_secret)
-  gh secret set "AZURE_CREDENTIALS" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$sp_json"
+  _add_federated_credential
+
+  gh secret set "AZURE_SUBSCRIPTION_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_SUBSCRIPTION_ID"
+  gh secret set "AZURE_TENANT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_TENANT_ID"
+  gh secret set "AZURE_CLIENT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_ID"
 }
 
 function create_pipelines_bicep {

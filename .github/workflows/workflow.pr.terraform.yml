@@ -64,6 +64,7 @@ jobs:
       runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
+      githubEnvironment: symphony
     permissions:
       actions: write
       contents: write
@@ -82,6 +83,7 @@ jobs:
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
       data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Directory=${{ needs.Setup.outputs.prEnvironmentDirectory }} Name@odata.type=Edm.String
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      githubEnvironment: symphony
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
 
@@ -101,6 +103,7 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
+      githubEnvironment: symphony
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -111,6 +114,7 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
+      githubEnvironment: symphony
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -124,6 +128,7 @@ jobs:
       goVersion: "1.18.1"
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
+      githubEnvironment: symphony
 
   Report:
     needs: [Setup, Test]
@@ -133,6 +138,7 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
+      githubEnvironment: symphony
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
@@ -144,3 +150,4 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
+      githubEnvironment: symphony

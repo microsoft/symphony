@@ -36,3 +36,4 @@ jobs:
       pullRequestNumber: ${{ github.event.pull_request.number }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
+      githubEnvironment: symphony

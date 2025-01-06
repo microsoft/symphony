@@ -20,11 +20,15 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         type: string
         required: true
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   QueryEvent:
     name: Query Events
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     outputs:
       events: ${{ steps.QueryEvents.outputs.events }}
     steps:

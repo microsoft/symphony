@@ -115,7 +115,7 @@ configure_orchestrator() {
 
   pushd "$TARGET_ROOT" || exit
   rm -rf .git
-  #Load the reader sp credentials
+  #Load the sp credentials
   loadServicePrincipalCredentials
   load_symphony_env
   printEnvironment

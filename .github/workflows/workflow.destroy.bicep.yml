@@ -33,3 +33,4 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
+      githubEnvironment: symphony

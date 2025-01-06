@@ -19,11 +19,15 @@ on: # yamllint disable-line rule:truthy
       branchName:
         required: true
         type: string
+      githubEnvironment:
+        type: string
+        required: true
 
 jobs:
   Validate:
     name: Validate
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     permissions:
       actions: read
       contents: read

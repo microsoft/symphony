@@ -36,11 +36,9 @@ remove_dependencies() {
 
   RG_NAME="rg-${prefix}-${suffix}"
   KV_NAME="kv-${prefix}-${suffix}"
-  SP_READER_NAME="sp-reader-${prefix}-${suffix}"
-  SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+  SP_NAME="sp-${prefix}-${suffix}"
 
-  SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
-  SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
+  SP_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
 
   SA_NAME="sa${prefix}${suffix}"
 
@@ -52,10 +50,8 @@ remove_dependencies() {
   echo ""
   _danger "                     Resource Group:  $RG_NAME"
   _danger "                          Key Vault:  $KV_NAME"
-  _danger "    Service Principal Name (Reader):  $SP_READER_NAME"
-  _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
-  _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
-  _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
+  _danger "            Service Principal Name :  $SP_NAME"
+  _danger "           Service Principal App Id:  $SP_APPID"
   _danger "                    Storage account:  $SA_NAME"
   if [[ "$is_terraform" != "false" ]]; then
     _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
@@ -74,11 +70,8 @@ remove_dependencies() {
     _information "Purging Key Vault (${KV_NAME})"
     az keyvault purge -n "$KV_NAME"
 
-    _information "Removing Service Principal (Reader) $SP_READER_APPID"
-    az ad sp delete --id "$SP_READER_APPID"
-
-    _information "Service Principal (Owner) $SP_OWNER_APPID"
-    az ad sp delete --id "$SP_OWNER_APPID"
+    _information "Removing Service Principal $SP_APPID"
+    az ad sp delete --id "$SP_APPID"
 
     _information "Resources Removed"
   else
@@ -95,8 +88,7 @@ deploy_dependencies() {
 
   RG_NAME="rg-${prefix}-${suffix}"
   KV_NAME="kv-${prefix}-${suffix}"
-  SP_READER_NAME="sp-reader-${prefix}-${suffix}"
-  SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+  SP_NAME="sp-${prefix}-${suffix}"
   SA_NAME="sa${prefix}${suffix}"
 
   #Terraform Symphony Resources
@@ -110,8 +102,7 @@ deploy_dependencies() {
   _information ""
   _information "                     Resource Group:  $RG_NAME"
   _information "                          Key Vault:  $KV_NAME"
-  _information "    Service Principal Name (Reader):  $SP_READER_NAME"
-  _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+  _information "             Service Principal Name:  $SP_NAME"
   _information "                    Storage account:  $SA_NAME"
 
   if [[ $IS_Terraform == true ]]; then
@@ -187,75 +178,48 @@ deploy_dependencies() {
       set_kv_secret 'stateRg' "${RG_NAME}" "${KV_NAME}"
     fi
 
-    local create_owner_sp=""
-    _select_yes_no create_owner_sp "Create Owner Service Principal (yes/no)?" "true"
+    local create_sp=""
+    _select_yes_no create_sp "Create Service Principal (yes/no)?" "true"
 
-    local sp_owner_client_id=""
-    local sp_owner_client_secret=""
-    local sp_owner_tenant_id=""
-    local sp_owner_sub_id=""
+    local sp_client_id=""
+    local sp_tenant_id=""
+    local sp_sub_id=""
 
-    if [[ "$create_owner_sp" == "yes" ]]; then
+    if [[ "$create_sp" == "yes" ]]; then
 
-      # Create Owner SP and assing to subscription level
-      _information "Creating Owner Service Principal: ${SP_OWNER_NAME}"
-      sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
-      sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
+      # Create SP and assing to subscription level
+      _information "Creating Service Principal: ${SP_NAME}"
+      sp_obj=$(create_sp "${SP_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
+      sp_appid=$(echo "$sp_obj" | jq -r '.appId')
 
-      # Save Owner SP details to KV
-      sp_owner_client_id=$(echo "${sp_owner_obj}" | jq -r .appId)
-      sp_owner_client_secret=$(echo "${sp_owner_obj}" | jq -r .password)
-      sp_owner_sub_id=${SP_SUBSCRIPTION_ID}
-      sp_owner_tenant_id=$(echo "${sp_owner_obj}" | jq -r .tenant)
+      # Save SP details to KV
+      sp_client_id=$(echo "${sp_obj}" | jq -r .appId)
+      sp_sub_id=${SP_SUBSCRIPTION_ID}
+      sp_tenant_id=$(echo "${sp_obj}" | jq -r .tenant)
     else
-      echo "Use Existing Service Principal for Owner"
-      _prompt_input "Enter Owner Service Principal Subscription Id" sp_owner_sub_id
-      _prompt_input "Enter Owner Service Principal tenant Id" sp_owner_tenant_id
-      _prompt_input "Enter Owner Service Principal Id" sp_owner_client_id
-      _prompt_input "Enter Owner Service Principal secret" sp_owner_client_secret
+      echo "Use Existing Service Principal"
+      _prompt_input "Enter Principal Subscription Id" sp_sub_id
+      _prompt_input "Enter Service Principal tenant Id" sp_tenant_id
+      _prompt_input "Enter Service Principal Id" sp_client_id
     fi
 
-    # Save Owner SP details to KV
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientId'."
-    set_kv_secret 'clientId' "${sp_owner_client_id}" "${KV_NAME}"
+    # Save SP details to KV
+    _information "Saving Service Principal (${SP_NAME}) to Key Vault secret 'clientId'."
+    set_kv_secret 'clientId' "${sp_client_id}" "${KV_NAME}"
 
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientSecret'."
-    set_kv_secret 'clientSecret' "${sp_owner_client_secret}" "${KV_NAME}"
+    _information "Saving Service Principal (${SP_NAME}) to Key Vault secret 'subscriptionId'."
+    set_kv_secret 'subscriptionId' "${sp_sub_id}" "${KV_NAME}"
 
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'subscriptionId'."
-    set_kv_secret 'subscriptionId' "${sp_owner_sub_id}" "${KV_NAME}"
+    _information "Saving Service Principal (${SP_NAME}) to Key Vault secret 'tenantId'."
+    set_kv_secret 'tenantId' "${sp_tenant_id}" "${KV_NAME}"
 
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'tenantId'."
-    set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"
-
-    # Create Reader SP and assign to KV only
-    _information "Creating Reader Service Principal: ${SP_READER_NAME}"
-    sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
-
-    # Save Reader SP details to KV
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientId'."
-    clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
-    set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
-
-    _information "Assign Key Vault Secrets User role for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
-    create_kv_role_assignment "Key Vault Secrets User" "${clientId}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientSecret'."
-    clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
-    set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerSubscriptionId'."
-    set_kv_secret 'readerSubscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerTenantId'."
-    tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
-    set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
+    _information "Assign Key Vault Secrets User role for Service Principal (${SP_NAME}) to Key Vault ${KV_NAME}"
+    create_kv_role_assignment "Key Vault Secrets User" "${sp_client_id}" "${KV_NAME}"
 
     # Store values in Symphonyenv.json
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "service_principal" "$SP_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_NAME"
     if [[ $IS_Terraform == true ]]; then
       set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"

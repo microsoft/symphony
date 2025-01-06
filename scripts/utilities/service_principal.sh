@@ -16,10 +16,9 @@ function loadServicePrincipalCredentials() {
     SYMPHONY_KV_NAME=$(get_keyvault_name)
     if [ "$SYMPHONY_KV_NAME" != "null" ]; then
       _information "$SYMPHONY_ENV_FILE_PATH Found! Loading needed credentials from ${SYMPHONY_KV_NAME}"
-      SP_SUBSCRIPTION_ID=$(read_kv_secret 'readerSubscriptionId')
-      SP_TENANT_ID=$(read_kv_secret 'readerTenantId')
-      SP_ID=$(read_kv_secret 'readerClientId')
-      SP_SECRET=$(read_kv_secret 'readerClientSecret')
+      SP_SUBSCRIPTION_ID=$(read_kv_secret 'subscriptionId')
+      SP_TENANT_ID=$(read_kv_secret 'tenantId')
+      SP_ID=$(read_kv_secret 'clientId')
     fi
   fi
 
@@ -38,11 +37,6 @@ function loadServicePrincipalCredentials() {
   if [ -z "$SP_ID" ]; then
     _prompt_input "Enter Azure Service Principal Client Id" SP_ID
   fi
-
-  if [ -z "$SP_SECRET" ]; then
-    _prompt_input "Enter Azure Service Principal Client Secret" SP_SECRET
-  fi
-
 }
 
 # command is a global variable declared in the entrypoint script.
