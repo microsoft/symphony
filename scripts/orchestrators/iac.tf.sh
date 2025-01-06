@@ -21,10 +21,9 @@ init() {
   subscription_id=$3
   tenant_id=$4
   client_id=$5
-  client_secret=$6
-  storage_account_name=$7
-  container_name=$8
-  resource_group_name=$9
+  storage_account_name=$6
+  container_name=$7
+  resource_group_name=$8
 
   if [ "${backend_config}" == "false" ]; then
     _information "Execute terraform init"
@@ -40,7 +39,6 @@ init() {
             -backend-config=subscription_id=${subscription_id} \
             -backend-config=tenant_id=${tenant_id} \
             -backend-config=client_id=${client_id} \
-            -backend-config=client_secret=${client_secret} \
             -reconfigure"
 
     terraform init \
@@ -51,7 +49,6 @@ init() {
       -backend-config=subscription_id=${subscription_id} \
       -backend-config=tenant_id=${tenant_id} \
       -backend-config=client_id=${client_id} \
-      -backend-config=client_secret=${client_secret} \
       -reconfigure
   fi
 }

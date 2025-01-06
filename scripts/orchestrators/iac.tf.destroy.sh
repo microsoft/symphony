@@ -20,7 +20,7 @@ for deployment in "${modules[@]}"; do
   _information "Executing tf destroy: ${tfPath}"
   pushd "${tfPath}" || exit
 
-  init true "${ENVIRONMENT_NAME}${tfPath}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${ARM_CLIENT_SECRET}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
+  init true "${ENVIRONMENT_NAME}${tfPath}.tfstate" "${ARM_SUBSCRIPTION_ID}" "${ARM_TENANT_ID}" "${ARM_CLIENT_ID}" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
 
   envfile=${tfPath/'./'/''}
   envfile=${envfile/'/'/'_'}
