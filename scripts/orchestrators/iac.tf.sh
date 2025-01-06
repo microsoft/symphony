@@ -18,12 +18,16 @@ usage() {
 init() {
   backend_config=$1
   key=$2
-  subscription_id=$3
-  tenant_id=$4
-  client_id=$5
-  storage_account_name=$6
-  container_name=$7
-  resource_group_name=$8
+  storage_account_name=$3
+  container_name=$4
+  resource_group_name=$5
+
+  # retrieve client_id, subscription_id, tenant_id from logged in user
+  azaccount=$(az account show)
+  client_id=$(echo $azaccount | jq -r .user.name)
+  subscription_id=$(echo $azaccount | jq -r .id)
+  tenant_id=$(echo $azaccount | jq -r .tenantId)
+
 
   if [ "${backend_config}" == "false" ]; then
     _information "Execute terraform init"
@@ -39,6 +43,8 @@ init() {
             -backend-config=subscription_id=${subscription_id} \
             -backend-config=tenant_id=${tenant_id} \
             -backend-config=client_id=${client_id} \
+            -backend-config=use_oidc=true \
+            -backend-config=use_azuread_auth=true \
             -reconfigure"
 
     terraform init \
@@ -49,6 +55,8 @@ init() {
       -backend-config=subscription_id=${subscription_id} \
       -backend-config=tenant_id=${tenant_id} \
       -backend-config=client_id=${client_id} \
+      -backend-config=use_oidc=true \
+      -backend-config=use_azuread_auth=true \
       -reconfigure
   fi
 }
