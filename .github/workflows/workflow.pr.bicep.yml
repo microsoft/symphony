@@ -110,6 +110,7 @@ jobs:
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
+    secrets: inherit
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
@@ -121,6 +122,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
       githubEnvironment: symphony
+    secrets: inherit
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -132,6 +134,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
       githubEnvironment: symphony
+    secrets: inherit
 
   Test:
     needs: [Setup, PreviewDeployPRBranch]
@@ -142,6 +145,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
+    secrets: inherit
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
