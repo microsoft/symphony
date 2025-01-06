@@ -23,6 +23,10 @@ on: # yamllint disable-line rule:truthy
         type: string
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   Destroy:
     name: "Destroy"

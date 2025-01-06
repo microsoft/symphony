@@ -27,6 +27,14 @@ env:
   TERRAFORM_VERSION: "1.6.2"
   RUN_LAYER_TESTS: true
 
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  checks: write
+
 jobs:
   Setup:
     if: ${{ !github.event.pull_request.draft }}
@@ -65,18 +73,11 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
-    permissions:
-      actions: write
-      contents: write
-      security-events: write
-      pull-requests: write
-      checks: write
+    secrets: inherit
 
   NewEnvironment:
     needs: [Setup, Validate]
     uses: ./.github/workflows/template.storeevent.yml
-    permissions:
-      pull-requests: write
     with:
       pipelineName: PR
       eventName: NewEnvironment
@@ -93,6 +94,7 @@ jobs:
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
+    secrets: inherit
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
@@ -104,6 +106,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
       githubEnvironment: symphony
+    secrets: inherit
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -115,13 +118,11 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
       githubEnvironment: symphony
+    secrets: inherit
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
     needs: [Setup, PreviewDeployPRBranch]
-    permissions:
-      pull-requests: write
-      checks: write
     with:
       environmentName: ${{  needs.Setup.outputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
@@ -129,6 +130,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
+    secrets: inherit
 
   Report:
     needs: [Setup, Test]
@@ -139,6 +141,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
+    secrets: inherit
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
@@ -151,3 +154,4 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
+    secrets: inherit

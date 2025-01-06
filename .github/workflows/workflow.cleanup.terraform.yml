@@ -16,6 +16,10 @@ on: # yamllint disable-line rule:truthy
         required: true
         default: "1.6.2"
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   Destroy:
     uses: ./.github/workflows/template.terraform.cleanup.yml
@@ -24,3 +28,4 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       terraformVersion: ${{  github.event.inputs.terraformVersion }}
       githubEnvironment: symphony
+    secrets: inherit

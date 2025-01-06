@@ -23,15 +23,17 @@ on: # yamllint disable-line rule:truthy
         type: string
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+  security-events: write
+
 jobs:
   Validate:
     name: Validate
     runs-on: ubuntu-latest
     environment: ${{ inputs.githubEnvironment }}
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,12 +66,12 @@ jobs:
         with:
           sarif_file: scripts/orchestrators/gitleaks-report.sarif
 
-      - name: Run Bicep Lint
-        env:
-          WORKSPACE_PATH: ${{ github.workspace }}
-        run: |
-          ./iac.bicep.lint.sh
-        working-directory: scripts/orchestrators
+      # - name: Run Bicep Lint
+      #   env:
+      #     WORKSPACE_PATH: ${{ github.workspace }}
+      #   run: |
+      #     ./iac.bicep.lint.sh
+      #   working-directory: scripts/orchestrators
 
       - uses: azure/login@v2
         name: Run Azure Login

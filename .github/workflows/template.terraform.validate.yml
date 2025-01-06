@@ -29,17 +29,19 @@ on: # yamllint disable-line rule:truthy
         type: string
         required: true
 
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  checks: write
+
 jobs:
   Validate:
     name: "Validate"
     runs-on: ubuntu-latest
     environment: ${{ inputs.githubEnvironment }}
-    permissions:
-      actions: write
-      contents: write
-      security-events: write
-      pull-requests: write
-      checks: write
     steps:
       - uses: actions/checkout@v4
         with:

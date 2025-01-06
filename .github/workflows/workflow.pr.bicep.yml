@@ -22,9 +22,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
+  KEY_VAULT_NAME: "kv-ykiihqqa-195" #GitLeaksIgnore
   LOCATION_NAME: "westus"
   PR_ENVIRONMENT_DIRECTORY: "pr"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  checks: write
+  actions: read
+  security-events: write
 
 jobs:
   Setup:
@@ -60,10 +68,7 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    secrets: inherit
 
   # Right now, every new non-draft PR will trigger a new environment to be created.
   # To change this behavior, you can add a label to the PR called "ready-to-deploy"
@@ -89,8 +94,6 @@ jobs:
   NewEnvironment:
     needs: [Setup, Validate]
     uses: ./.github/workflows/template.storeevent.yml
-    permissions:
-      pull-requests: write
     with:
       pipelineName: PR
       eventName: NewEnvironment
@@ -132,9 +135,6 @@ jobs:
 
   Test:
     needs: [Setup, PreviewDeployPRBranch]
-    permissions:
-      pull-requests: write
-      checks: write
     uses: ./.github/workflows/template.bicep.test.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
@@ -153,3 +153,4 @@ jobs:
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
+    secrets: inherit

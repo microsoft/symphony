@@ -20,6 +20,10 @@ on: # yamllint disable-line rule:truthy
         required: true
         default: "kv-symphony-environments"
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   Destroy:
     uses: ./.github/workflows/template.terraform.destroy.yml
@@ -30,3 +34,4 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
+    secrets: inherit

@@ -23,7 +23,13 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
-        default: "kv-symphony-environments"
+        default: "kv-ykiihqqa-195"
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+  security-events: write
 
 jobs:
   Validate:
@@ -35,10 +41,7 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    secrets: inherit
 
   PreviewDeploy:
     needs: Validate
@@ -50,7 +53,7 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
-
+    secrets: inherit
   Test:
     needs: PreviewDeploy
     uses: ./.github/workflows/template.bicep.test.yml
@@ -60,3 +63,4 @@ jobs:
       keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
+    secrets: inherit

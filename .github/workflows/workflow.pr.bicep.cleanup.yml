@@ -12,7 +12,11 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
+  KEY_VAULT_NAME: "kv-ykiihqqa-195" #GitLeaksIgnore
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   Setup:
@@ -33,3 +37,4 @@ jobs:
       pullRequestNumber: ${{ github.event.pull_request.number }}
       keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       githubEnvironment: symphony
+    secrets: inherit
