@@ -15,6 +15,13 @@ usage() {
   exit 1
 }
 
+set_subscription_id_env() {
+  azaccount=$(az account show)
+  subscription_id=$(echo $azaccount | jq -r .id)
+
+  export ARM_SUBSCRIPTION_ID=$subscription_id
+}
+
 init() {
   backend_config=$1
   key=$2
@@ -81,6 +88,8 @@ preview() {
   plan_file_name=$1
   var_file=$2
 
+  set_subscription_id_env
+
   _information "Execute terraform plan"
   if [[ -z "$2" ]]; then
     echo "terraform plan -input=false -out=${plan_file_name}"
@@ -96,6 +105,8 @@ preview() {
 deploy() {
   plan_file_name=$1
 
+  set_subscription_id_env
+
   _information "Execute terraform apply"
   echo "terraform apply -input=false -auto-approve ${plan_file_name}"
   terraform apply -input=false -auto-approve ${plan_file_name}
@@ -107,6 +118,8 @@ deploy() {
 
 destroy() {
   var_file=$1
+
+  set_subscription_id_env
 
   _information "Execute terraform destroy"
   terraform destroy -input=false -auto-approve -var-file=${var_file}
