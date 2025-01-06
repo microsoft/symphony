@@ -29,14 +29,14 @@ on: # yamllint disable-line rule:truthy
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 jobs:
   StoreEvent:
     name: Store Event
     runs-on: ubuntu-latest
     environment: ${{ inputs.githubEnvironment }}
-    permissions:
-      pull-requests: write
+
     steps:
       - uses: actions/checkout@v4
 
