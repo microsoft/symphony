@@ -78,7 +78,7 @@ function _add_federated_credential {
   # Configuring federated identity for Github Actions, based on repo name and environment name
   parameters=$(cat <<EOF
   {
-    "name": "symphony-credential",
+    "name": "symphony-credential-${GH_ORG_NAME}-${GH_Repo_NAME}",
     "issuer": "https://token.actions.githubusercontent.com",
     "subject": "repo:${GH_ORG_NAME}/${GH_Repo_NAME}:environment:symphony",
     "description": "Symphony credential for Github Actions",
