@@ -264,9 +264,9 @@ create_role_assignment() {
   local _role="${1}"
   local _sp_app_id="${2}"
   local _name="${3}"
-  local _az_sub_command="${4}"
+  local _az_sub_commands="${4}"
 
-  local _scope=$(az "${_az_sub_command}" show --name "${_name}" --query id -o tsv)
+  local _scope=$(az ${_az_sub_commands} show --name "${_name}" --query id -o tsv)
   az role assignment create --role "${_role}" --assignee "${_sp_app_id}" --scope "${_scope}"
 
   _information "sleep for 20 seconds to allow the role assignment to take effect"
