@@ -18,6 +18,7 @@ query_events() {
   filter_expression="${odata_filter} PartitionKey eq '${pipeline_name}'"
 
   cmd="az storage entity query \
+        --auth-mode login \
         --account-name ${EVENTS_STORAGE_ACCOUNT} \
         --table-name ${EVENTS_TABLE_NAME} \
         --filter \"\
@@ -50,6 +51,7 @@ store_event() {
   _information "Store event ${event_name} with group id ${event_group_id} from pipeline ${pipeline_name} with id ${id}"
 
   local cmd="az storage entity insert \
+        --auth-mode login \
         --entity \
             PartitionKey=${pipeline_name} \
             RowKey=$id \
