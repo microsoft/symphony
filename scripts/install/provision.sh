@@ -216,6 +216,9 @@ deploy_dependencies() {
     _information "Assign Key Vault Secrets User role for Service Principal (${SP_NAME}) to Key Vault ${KV_NAME}"
     create_kv_role_assignment "Key Vault Secrets User" "${sp_client_id}" "${KV_NAME}"
 
+    _information "Assign Storage Table Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_NAME}"
+    create_sa_role_assignment "Storage Table Data Contributor" "${sp_client_id}" "${SA_NAME}"
+
     # Store values in Symphonyenv.json
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
@@ -250,11 +253,20 @@ create_kv() {
 }
 
 create_kv_role_assignment() {
+  create_role_assignment "${1}" "${2}" "${3}" "keyvault"
+}
+
+create_sa_role_assignment() {
+  create_role_assignment "${1}" "${2}" "${3}" "storage account"
+}
+
+create_role_assignment() {
   local _role="${1}"
   local _sp_app_id="${2}"
-  local _kvName="${3}"
+  local _name="${3}"
+  local _az_sub_command="${4}"
 
-  local _scope=$(az keyvault show --name "${_kvName}" --query id -o tsv)
+  local _scope=$(az "${_az_sub_command}" show --name "${_name}" --query id -o tsv)
   az role assignment create --role "${_role}" --assignee "${_sp_app_id}" --scope "${_scope}"
 
   _information "sleep for 20 seconds to allow the role assignment to take effect"
