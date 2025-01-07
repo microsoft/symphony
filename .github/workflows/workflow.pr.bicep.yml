@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KEY_VAULT_NAME: "kv-ykiihqqa-195" #GitLeaksIgnore
+  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   LOCATION_NAME: "westus"
   PR_ENVIRONMENT_DIRECTORY: "pr"
 

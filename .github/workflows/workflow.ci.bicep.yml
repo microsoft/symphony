@@ -23,7 +23,7 @@ on: # yamllint disable-line rule:truthy
       keyVaultName:
         description: "Environment Key Vault Name"
         required: true
-        default: "kv-ykiihqqa-195"
+        default: "kv-symphony-environments"
 
 permissions:
   id-token: write

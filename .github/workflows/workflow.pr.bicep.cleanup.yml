@@ -12,7 +12,7 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
 
 env:
-  KEY_VAULT_NAME: "kv-ykiihqqa-195" #GitLeaksIgnore
+  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
 
 permissions:
   id-token: write
