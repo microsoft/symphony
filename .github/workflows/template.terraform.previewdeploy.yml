@@ -68,7 +68,7 @@ jobs:
           export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
           export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
           export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
-          export TF_VAR_ENV=${{ inputs.environmentName }}
+          export TF_VAR_env=${{ inputs.environmentName }}
           ./iac.tf.previewdeploy.sh
 
         working-directory: scripts/orchestrators
