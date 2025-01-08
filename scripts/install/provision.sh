@@ -219,6 +219,14 @@ deploy_dependencies() {
     _information "Assign Storage Table Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_NAME}"
     create_sa_role_assignment "Storage Table Data Contributor" "${sp_client_id}" "${SA_NAME}"
 
+    _information "Assign Storage Blob Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_NAME}"
+    create_sa_role_assignment "Storage Blob Data Contributor" "${sp_client_id}" "${SA_NAME}"
+
+    if [[ $IS_Terraform == true ]]; then
+      _information "Assign Storage Blob Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_STATE_BACKUP_NAME}"
+      create_sa_role_assignment "Storage Blob Data Contributor" "${sp_client_id}" "${SA_STATE_BACKUP_NAME}"
+    fi
+
     # Store values in Symphonyenv.json
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
