@@ -15,7 +15,7 @@ var uniqueToken = substring(uniqueString(location, subscription().id, guid('appc
 module appConfigName './../../modules/nameGenerator.bicep' = {
   name: '${_deploymentName}-appConfigName'
   params: {
-    name: 'appconfig'
+    name: 'config'
     prefix: environment
     uniqueToken: uniqueToken
     suffixLength: 6
