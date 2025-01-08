@@ -12,6 +12,11 @@ export resource_group_name="${STATE_RG}"
 export storage_account_name="${STATE_STORAGE_ACCOUNT}"
 export container_name="${STATE_CONTAINER}"
 
+export ARM_SUBSCRIPTION_ID=$subscription_id
+export ARM_CLIENT_ID=$client_id
+export ARM_TENANT_ID=$tenant_id
+export ARM_USE_OIDC=true
+
 if [[ "${TEST_TAG}" == "module_tests" ]]; then
   echo "Run tests with tag = module_tests"
   terraform module_test true
