@@ -88,6 +88,17 @@ preview() {
   plan_file_name=$1
   var_file=$2
 
+  # retrieve client_id, subscription_id, tenant_id from logged in user
+  azaccount=$(az account show)
+  client_id=$(echo $azaccount | jq -r .user.name)
+  subscription_id=$(echo $azaccount | jq -r .id)
+  tenant_id=$(echo $azaccount | jq -r .tenantId)
+
+  export ARM_SUBSCRIPTION_ID=$subscription_id
+  export ARM_CLIENT_ID=$client_id
+  export ARM_TENANT_ID=$tenant_id
+  export ARM_USE_OIDC=true
+
   set_subscription_id_env
 
   _information "Execute terraform plan"
@@ -105,6 +116,17 @@ preview() {
 deploy() {
   plan_file_name=$1
 
+  # retrieve client_id, subscription_id, tenant_id from logged in user
+  azaccount=$(az account show)
+  client_id=$(echo $azaccount | jq -r .user.name)
+  subscription_id=$(echo $azaccount | jq -r .id)
+  tenant_id=$(echo $azaccount | jq -r .tenantId)
+
+  export ARM_SUBSCRIPTION_ID=$subscription_id
+  export ARM_CLIENT_ID=$client_id
+  export ARM_TENANT_ID=$tenant_id
+  export ARM_USE_OIDC=true
+
   set_subscription_id_env
 
   _information "Execute terraform apply"
@@ -118,6 +140,17 @@ deploy() {
 
 destroy() {
   var_file=$1
+
+  # retrieve client_id, subscription_id, tenant_id from logged in user
+  azaccount=$(az account show)
+  client_id=$(echo $azaccount | jq -r .user.name)
+  subscription_id=$(echo $azaccount | jq -r .id)
+  tenant_id=$(echo $azaccount | jq -r .tenantId)
+
+  export ARM_SUBSCRIPTION_ID=$subscription_id
+  export ARM_CLIENT_ID=$client_id
+  export ARM_TENANT_ID=$tenant_id
+  export ARM_USE_OIDC=true
 
   set_subscription_id_env
 
