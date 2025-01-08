@@ -33,6 +33,7 @@ permissions:
   checks: write
   actions: read
   security-events: write
+  issues: read
 
 jobs:
   Setup:

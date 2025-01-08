@@ -23,6 +23,9 @@ on: # yamllint disable-line rule:truthy
 permissions:
   id-token: write
   contents: read
+  issues: read
+  checks: write
+  pull-requests: write
 
 jobs:
   Test:

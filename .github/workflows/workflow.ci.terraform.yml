@@ -46,6 +46,7 @@ permissions:
   security-events: write
   pull-requests: write
   checks: write
+  issues: read
 
 jobs:
   Validate:
