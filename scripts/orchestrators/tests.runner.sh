@@ -84,11 +84,6 @@ terraform() {
 bicep() {
   source ./iac.bicep.sh
 
-  # Set environment variables for BenchPress login
-  export AZ_SUBSCRIPTION_ID="${ARM_SUBSCRIPTION_ID}"
-  export AZ_TENANT_ID="${ARM_TENANT_ID}"
-  export AZ_APPLICATION_ID="${ARM_CLIENT_ID}"
-
   pester() {
     _information "run end to end tests"
 
