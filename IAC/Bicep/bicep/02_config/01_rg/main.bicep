@@ -10,6 +10,7 @@ var _resourceGroupName = empty(deploymentName) ? resourceGroupNameGenerator.outp
 var _deploymentName = empty(deploymentName)
   ? uniqueString(subscription().subscriptionId, location, environment)
   : deploymentName
+var uniqueToken = substring(uniqueString(_deploymentName, layerName), 0, 6)
 
 // Resource Group
 
@@ -18,7 +19,7 @@ module resourceGroupNameGenerator './../../modules/nameGeneratorSubscription.bic
   params: {
     name: 'rg-config'
     prefix: environment
-    uniqueToken: location
+    uniqueToken: uniqueToken
   }
 }
 
