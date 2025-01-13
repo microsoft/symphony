@@ -14,6 +14,8 @@ if [[ -z "${ENVIRONMENT_DIRECTORY}" ]]; then
   ENVIRONMENT_DIRECTORY="${ENVIRONMENT_NAME}"
 fi
 
+export TF_VAR_env=$ENVIRONMENT_NAME
+
 for deployment in "${modules[@]}"; do
   tfPath=$(dirname "${deployment}")
 

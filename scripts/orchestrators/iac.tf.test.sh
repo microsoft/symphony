@@ -12,6 +12,12 @@ export resource_group_name="${STATE_RG}"
 export storage_account_name="${STATE_STORAGE_ACCOUNT}"
 export container_name="${STATE_CONTAINER}"
 
+# retrieve client_id, subscription_id, tenant_id from logged in user
+azaccount=$(az account show)
+client_id=$(echo $azaccount | jq -r .user.name)
+subscription_id=$(echo $azaccount | jq -r .id)
+tenant_id=$(echo $azaccount | jq -r .tenantId)
+
 export ARM_SUBSCRIPTION_ID=$subscription_id
 export ARM_CLIENT_ID=$client_id
 export ARM_TENANT_ID=$tenant_id
