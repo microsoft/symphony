@@ -17,23 +17,25 @@ fi
 export TF_VAR_env=$ENVIRONMENT_NAME
 
 for deployment in "${modules[@]}"; do
-  tfPath=$(dirname "${deployment}")
+  if [[ ${deployment} != *"01_init"* ]]; then
+    tfPath=$(dirname "${deployment}")
 
-  _information "Executing tf destroy: ${tfPath}"
-  pushd "${tfPath}" || exit
+    _information "Executing tf destroy: ${tfPath}"
+    pushd "${tfPath}" || exit
 
-  init true "${ENVIRONMENT_NAME}${tfPath}.tfstate" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
+    init true "${ENVIRONMENT_NAME}${tfPath}.tfstate" "${STATE_STORAGE_ACCOUNT}" "${STATE_CONTAINER}" "${STATE_RG}"
 
-  envfile=${tfPath/'./'/''}
-  envfile=${envfile/'/'/'_'}
+    envfile=${tfPath/'./'/''}
+    envfile=${envfile/'/'/'_'}
 
-  destroy "${WORKSPACE_PATH}/env/terraform/${ENVIRONMENT_DIRECTORY}/${envfile}.tfvars.json"
-  exit_code=$?
+    destroy "${WORKSPACE_PATH}/env/terraform/${ENVIRONMENT_DIRECTORY}/${envfile}.tfvars.json"
+    exit_code=$?
 
-  if [[ ${exit_code} != 0 ]]; then
-    _error "tf destroy failed - returned code ${exit_code}"
-    exit ${exit_code}
+    if [[ ${exit_code} != 0 ]]; then
+      _error "tf destroy failed - returned code ${exit_code}"
+      exit ${exit_code}
+    fi
+    popd || exit
   fi
-  popd || exit
 done
 popd || exit
