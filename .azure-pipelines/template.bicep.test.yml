@@ -51,27 +51,26 @@ jobs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           key: '"$(Build.BuildId)"'
 
-      - task: Bash@3
-        displayName: "Run E2E tests"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          LOCATION_NAME: ${{ parameters.locationName }}
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
-          storageAccountResourceGroupName: $(storageAccountResourceGroupName)
-          storageAccountName: $(storageAccountName)
-          appConfigResourceGroupName: $(appConfigResourceGroupName)
-          appConfigAccountName: $(appConfigAccountName)
-          appConfigItemsLength: $(appConfigItemsLength)
+      - task: AzureCLI@2
+        displayName: 'Run E2E tests'
         inputs:
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          targetType: "inline"
-          failOnStderr: true
-          script: |
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export RUN_ID="$(Build.BuildId)"
+            export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
+            export LOCATION_NAME="${{ parameters.locationName }}"
+
+            export storageAccountResourceGroupName="$(storageAccountResourceGroupName)"
+            export storageAccountName="$(storageAccountName)"
+            export appConfigResourceGroupName="$(appConfigResourceGroupName)"
+            export appConfigAccountName="$(appConfigAccountName)"
+            export appConfigItemsLength="$(appConfigItemsLength)"
+
             source ./tests.runner.sh
 
             pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep

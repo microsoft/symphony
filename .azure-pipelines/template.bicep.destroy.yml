@@ -18,14 +18,6 @@ jobs:
     steps:
       - checkout: self
 
-      - task: Bash@3
-        displayName: "Install Azure CLI"
-        inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
-
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
@@ -33,18 +25,18 @@ jobs:
           secretsFilter: "*"
           runAsPreJob: true
 
-      - task: Bash@3
-        displayName: "Destroy environment"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          LOCATION_NAME: ${{ parameters.locationName }}
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
+      - task: AzureCLI@2
+        displayName: 'Destroy environment'
         inputs:
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          targetType: "filePath"
-          filePath: "scripts/orchestrators/iac.bicep.destroy.sh"
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export RUN_ID="$(Build.BuildId)"
+            export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
+            export LOCATION_NAME="${{ parameters.locationName }}"
+
+            ./iac.bicep.destroy.sh

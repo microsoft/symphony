@@ -16,20 +16,29 @@ jobs:
     steps:
       - checkout: self
 
-      - task: Bash@3
-        displayName: "Install Azure CLI"
-        inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
-
       - task: AzureKeyVault@2
         inputs:
           azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
           keyVaultName: ${{ parameters.keyVaultName }}
           secretsFilter: "*"
           runAsPreJob: true
+
+      - task: AzureCLI@2
+        displayName: 'Destroy environment'
+        inputs:
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export STATE_RG="$(stateRg)"
+            export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
+            export STATE_CONTAINER="$(stateContainer)"
+            export ENVIRONMENT_NAME="$(environmentName)"
+
+            ./iac.tf.destroy.sh
 
       - task: Bash@3
         displayName: "Destroy environment"

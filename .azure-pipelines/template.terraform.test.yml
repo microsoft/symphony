@@ -43,23 +43,23 @@ jobs:
           secretsFilter: "*"
           runAsPreJob: true
 
-      - task: Bash@3
-        displayName: "Run E2E tests"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
-          STATE_RG: $(stateRg)
-          STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
-          STATE_CONTAINER: $(stateContainer)
-          ENVIRONMENT_NAME: $(environmentName)
-          TEST_TAG: ''
+      - task: AzureCLI@2
+        displayName: 'Run E2E tests'
         inputs:
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          targetType: "filePath"
-          filePath: "scripts/orchestrators/iac.tf.test.sh"
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export STATE_RG="$(stateRg)"
+            export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
+            export STATE_CONTAINER="$(stateContainer)"
+            export ENVIRONMENT_NAME="$(environmentName)"
+            export TEST_TAG=""
+
+            ./iac.tf.test.sh
 
       - task: PublishTestResults@2
         displayName: "Publish E2E test results"
