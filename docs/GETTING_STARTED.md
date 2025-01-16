@@ -33,32 +33,32 @@ Symphony offers a CLI to perform several actions that bootstrap a new IAC projec
 
     > **Note**: The `Azure DevOps PAT` must have the following permissions:
     >
-    >| Description | Permission |
-    >| ----------- | ----------- |
-    >| Agent Pools | Read |
-    >| Build | Read & Execute |
-    >| Code | Read & Write |
-    >| Connected Server | Connected Server |
-    >| Pipeline Resources | Use and Manage |
-    >| Project and Team | Read, Write & Manage |
-    >| Release | Read, Write & Execute |
-    >| Service Connections | Read, Query & Manage |
+    >| Description            | Permission            |
+    >| ---------------------- | --------------------- |
+    >| Agent Pools            | Read                  |
+    >| Build                  | Read & Execute        |
+    >| Code                   | Read & Write          |
+    >| Connected Server       | Connected Server      |
+    >| Pipeline Resources     | Use and Manage        |
+    >| Project and Team       | Read, Write & Manage  |
+    >| Release                | Read, Write & Execute |
+    >| Service Connections    | Read, Query & Manage  |
 
   - Azure DevOps Server:
     - Create an [Azure DevOps PAT](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops-2022&tabs=Windows) on the organization to be used to provision Symphony.
 
     > **Note**: The `Azure DevOps PAT` must have the following permissions:
     >
-    >| Description | Permission |
-    >| ----------- | ----------- |
-    >| Agent Pools | Read |
-    >| Build | Read & Execute |
-    >| Code | Read & Write |
-    >| Connected Server | Connected Server |
-    >| Pipeline Resources | Use and Manage |
-    >| Project and Team | Read, Write & Manage |
-    >| Release | Read, Write & Execute |
-    >| Service Connections | Read, Query & Manage |
+    >| Description          | Permission            |
+    >| -------------------- | --------------------- |
+    >| Agent Pools          | Read                  |
+    >| Build                | Read & Execute        |
+    >| Code                 | Read & Write          |
+    >| Connected Server     | Connected Server      |
+    >| Pipeline Resources   | Use and Manage        |
+    >| Project and Team     | Read, Write & Manage  |
+    >| Release              | Read, Write & Execute |
+    >| Service Connections  | Read, Query & Manage  |
 
     - An Agent Pool named `Default` is required for the `symphony pipeline` generated pipelines to run on the target server.  The Default agent pool must include at least one self hosted build agent.
     To deploy a new agent follow the instructions provided in in the [Azure Pipelines - Self-hosted Linux agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops#download-and-configure-the-agent) walkthrough.
@@ -159,4 +159,4 @@ This command creates and configures a Symphony project that includes a code repo
 | CI-Deploy main workflow        | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to deploy the IaC code .                                                   | Azure devOps/GitHub |
 | CI-Destroy main workflow       | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
 | AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault                         | GitHub              |
-| symphony Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
+| symphony Service Connection    | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
