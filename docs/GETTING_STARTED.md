@@ -119,14 +119,14 @@ This command deploys a set of Azure resources and identities required by Symphon
 It also creates a symphony.json in ./.symphony/ to store the names of the deployed resources.
 The following resources will be deployed as dependencies for Symphony:
 
-| Resource           | Description                                                                                                                 | IaC tool          |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
-| Resource Group     | Container for all needed Symphony deployed resources.                                                                       | Terraform / Bicep |
-| Key Vault          | Stores the credential secrets to be used by workflows.                                                                      | Terraform / Bicep |
-| Service Principal  | Reader Service principal used by the CI to access the Key Vault.                                                            | Terraform / Bicep |
-| Service Principal  | [Create/Bring your own] Owner Service Principal used to access the target azure subscription used to deploy by IaC modules. | Terraform / Bicep |
-| Storage Account    | Storage account with Azure Blob Containers that are used for terraform remote state backend.                                | Terraform         |
-| Storage Account    | Storage account with Azure Blob Containers that are used to store backup copies of terraform modules state files.           | Terraform         |
+| Resource          | Description                                                                                                                 | IaC tool          |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Resource Group    | Container for all needed Symphony deployed resources.                                                                       | Terraform / Bicep |
+| Key Vault         | Stores the credential secrets to be used by workflows.                                                                      | Terraform / Bicep |
+| Service Principal | Reader Service principal used by the CI to access the Key Vault.                                                            | Terraform / Bicep |
+| Service Principal | [Create/Bring your own] Owner Service Principal used to access the target azure subscription used to deploy by IaC modules. | Terraform / Bicep |
+| Storage Account   | Storage account with Azure Blob Containers that are used for terraform remote state backend.                                | Terraform         |
+| Storage Account   | Storage account with Azure Blob Containers that are used to store backup copies of terraform modules state files.           | Terraform         |
 
 ### Symphony Destroy
 
@@ -153,10 +153,10 @@ $> symphony pipeline config github terraform
 
 This command creates and configures a Symphony project that includes a code repository, workflow pipelines, and workflow secrets. It then pushes the code to the newly created repository on the selected scm provider. It also creates a set of JSON logs files in ./.symphony/logs/YYYY-MM-DD-HH-MM-SS-ORCH to store responses from all the orchestrator calls for easier debugging. The following resources will be Configured:
 
-| Resource                       | Description                                                                                                                                                | orchestrator tool   |
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
-| Symphony Code Repository       | an Azure DevOps or a GitHub code Repository based on the selected tool in cmd.                                                                             | Azure devOps/GitHub |
-| CI-Deploy main workflow        | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to deploy the IaC code .                                                   | Azure devOps/GitHub |
-| CI-Destroy main workflow       | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
-| AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault                         | GitHub              |
-| symphony Service Connection    | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
+| Resource                    | Description                                                                                                                                                | orchestrator tool   |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| Symphony Code Repository    | an Azure DevOps or a GitHub code Repository based on the selected tool in cmd.                                                                             | Azure devOps/GitHub |
+| CI-Deploy main workflow     | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to deploy the IaC code .                                                   | Azure devOps/GitHub |
+| CI-Destroy main workflow    | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
+| AZURE_CREDENTIALS Secret    | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault                         | GitHub              |
+| symphony Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
