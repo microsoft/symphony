@@ -51,33 +51,31 @@ jobs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           key: '"$(Build.BuildId)"'
 
-      - task: AzureCLI@2
+      - task: AzurePowerShell@5
         displayName: 'Run E2E tests'
         inputs:
           azureSubscription: symphony
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          addSpnToEnvironment: true
+          ScriptType: 'InlineScript'
+          pwsh: true
+          azurePowerShellVersion: 'LatestVersion'
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          inlineScript: |
-            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
-            export RUN_ID="$(Build.BuildId)"
-            export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
-            export LOCATION_NAME="${{ parameters.locationName }}"
+          Inline: |
+            $bashScript = @"
+              export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+              export RUN_ID="$(Build.BuildId)"
+              export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
+              export LOCATION_NAME="${{ parameters.locationName }}"
 
-            export storageAccountResourceGroupName="$(storageAccountResourceGroupName)"
-            export storageAccountName="$(storageAccountName)"
-            export appConfigResourceGroupName="$(appConfigResourceGroupName)"
-            export appConfigAccountName="$(appConfigAccountName)"
-            export appConfigItemsLength="$(appConfigItemsLength)"
+              source ./tests.runner.sh
 
-            source ./tests.runner.sh
+              pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep
+                load_dotenv
+              popd
 
-            pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep
-              load_dotenv
-            popd
+              bicep pester
+            "@
 
-            bicep pester
+            bash -c "$bashScript"
 
       - task: PublishTestResults@2
         displayName: "Publish E2E test results"
