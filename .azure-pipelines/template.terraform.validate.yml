@@ -83,6 +83,7 @@ jobs:
             export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
+            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.validate.sh
 
@@ -102,6 +103,7 @@ jobs:
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
             export TEST_TAG="module_tests"
+            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.test.sh
 

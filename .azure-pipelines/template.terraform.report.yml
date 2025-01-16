@@ -40,5 +40,6 @@ jobs:
             export STATE_STORAGE_ACCOUNT_BACKUP="$(stateStorageAccountBackup)"
             export COMMIT_ID="$(Build.SourceVersion)"
             export RUN_ID="$(Build.BuildId)"
+            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.statebackup.sh

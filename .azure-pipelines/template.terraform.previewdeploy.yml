@@ -57,5 +57,6 @@ jobs:
             export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
+            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.previewdeploy.sh
