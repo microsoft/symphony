@@ -24,7 +24,7 @@ variables:
 
   # ARM Service Connection Name used for environment Key Vault access
   # - name: keyVaultArmSvcConnectionName
-  #   value: "Symphony-KV"
+  #   value: "symphony"
 
   # Environment Key Vault Name
   # - name: keyVaultName

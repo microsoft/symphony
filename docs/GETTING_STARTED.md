@@ -159,4 +159,4 @@ This command creates and configures a Symphony project that includes a code repo
 | CI-Deploy main workflow        | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to deploy the IaC code .                                                   | Azure devOps/GitHub |
 | CI-Destroy main workflow       | an Azure devops pipeline or a GitHub action ,based on the selected tool in cmd, to destroy a previously deployed environment using the CI-Deploy workflow. | Azure devOps/GitHub |
 | AZURE_CREDENTIALS Secret       | GitHub Secret to store the Symphony **Reader Service Principal** credentials used by the Workflows to access the Symphony KeyVault                         | GitHub              |
-| Symphony-KV Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |
+| symphony Service Connection | Azure DevOps ARM Service connection using **Reader Service Principal** credentials used by the pipelines to access the Symphony KeyVault                   | Azure DevOps        |

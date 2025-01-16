@@ -1,0 +1,29 @@
+{
+  "data": {
+    "scopeLevel": "Subscription",
+    "environment": "AzureCloud",
+    "subscriptionId": "__SUBSCRIPTION_ID__",
+    "subscriptionName": "__SUBSCRIPTION_NAME__"
+  },
+  "name": "__SERVICE_CONNECTION_NAME__",
+  "description": "Azure",
+  "type": "azurerm",
+  "url": "__MANAGEMENT_URI__",
+  "authorization": {
+    "parameters": {
+      "serviceprincipalid": "__SERVICE_PRINCIPAL_ID__",
+      "tenantid": "__SERVICE_PRINCIPAL_TENANT_ID__"
+    },
+    "scheme": "WorkloadIdentityFederation"
+  },
+  "isShared": false,
+  "isReady": true,
+  "serviceEndpointProjectReferences": [
+    {
+      "name": "__SERVICE_CONNECTION_NAME__",
+      "projectReference": {
+        "id": "__PROJECT_ID__"
+      }
+    }
+  ]
+}

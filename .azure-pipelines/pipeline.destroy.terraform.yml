@@ -16,7 +16,7 @@ variables:
   #   value: "dev"
 
   # - name: keyVaultArmSvcConnectionName
-  #   value: "Symphony-KV"
+  #   value: "symphony"
 
   # - name: keyVaultName
   #   value: "kv-symphony-environments"
