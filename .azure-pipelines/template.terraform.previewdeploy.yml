@@ -4,10 +4,6 @@ parameters:
     type: string
   - name: terraformVersion
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
 
 jobs:
   - job: PreviewDeploy
@@ -34,14 +30,6 @@ jobs:
           goBin: "$(System.DefaultWorkingDirectory)"
 
       - script: echo '##vso[task.prependpath]$(System.DefaultWorkingDirectory)'
-
-      - task: AzureKeyVault@2
-        displayName: "Pull env cred from Azure Key vault"
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
 
       - task: AzureCLI@2
         displayName: 'Run Terraform plan & Apply'

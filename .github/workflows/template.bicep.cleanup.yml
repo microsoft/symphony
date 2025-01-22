@@ -7,9 +7,6 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       githubEnvironment:
         type: string
         required: true
@@ -26,7 +23,6 @@ jobs:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
-      keyVaultName: ${{ inputs.keyVaultName }}
       githubEnvironment: symphony
 
   Destroy:

@@ -100,6 +100,10 @@ function configure_credentials {
   gh secret set "AZURE_SUBSCRIPTION_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_SUBSCRIPTION_ID"
   gh secret set "AZURE_TENANT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_TENANT_ID"
   gh secret set "AZURE_CLIENT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_ID"
+  gh variable set EVENTS_STORAGE_ACCOUNT --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_EVENTS_STORAGE_ACCOUNT"
+  gh variable set EVENTS_TABLE_NAME --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_EVENTS_TABLE_NAME"
+
+
 }
 
 function create_pipelines_bicep {
@@ -107,7 +111,10 @@ function create_pipelines_bicep {
 }
 
 function create_pipelines_terraform {
-  _debug "skip create_pipelines_terraform"
+  gh variable set STATE_RG --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_RG_NAME"
+  gh variable set STATE_STORAGE_ACCOUNT --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_SA_STATE_NAME"
+  gh variable set STATE_STORAGE_ACCOUNT_BACKUP --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_SA_STATE_NAME_BACKUP"
+  gh variable set STATE_CONTAINER --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_STATE_CONTAINER"
 }
 
 function push_repo {

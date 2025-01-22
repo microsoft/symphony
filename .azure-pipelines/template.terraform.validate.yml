@@ -4,10 +4,6 @@ parameters:
     type: string
   - name: terraformVersion
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
 
 jobs:
   - job: Validate
@@ -60,14 +56,6 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           targetType: "filePath"
           filePath: "scripts/orchestrators/iac.tf.lint.sh"
-
-      - task: AzureKeyVault@2
-        displayName: "Pull env cred from Azure Key vault"
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
 
       - task: AzureCLI@2
         displayName: 'Run Terraform validate'

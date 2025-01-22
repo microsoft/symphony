@@ -13,9 +13,6 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         type: string
         required: true
@@ -54,14 +51,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "stateRg, stateContainer, stateStorageAccount"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
-
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ inputs.goVersion }}
@@ -71,9 +60,9 @@ jobs:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           TEST_TAG: ""
         run: |
-          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
-          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export STATE_RG=${{ vars.STATE_RG }}
+          export STATE_STORAGE_ACCOUNT=${{ vars.STATE_STORAGE_ACCOUNT }}
+          export STATE_CONTAINER=${{ vars.STATE_CONTAINER }}
           export TF_VAR_env=${{ inputs.environmentName }}
           ./iac.tf.test.sh
 

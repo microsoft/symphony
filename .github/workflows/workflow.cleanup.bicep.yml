@@ -7,10 +7,6 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         description: "Pull Request Number"
         required: true
-      keyVaultName:
-        description: "Environment Key Vault Name"
-        required: true
-        default: "kv-symphony-environments"
 
 permissions:
   id-token: write
@@ -21,6 +17,5 @@ jobs:
     uses: ./.github/workflows/template.bicep.cleanup.yml
     with:
       pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       githubEnvironment: symphony
     secrets: inherit

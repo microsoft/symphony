@@ -2,10 +2,6 @@
 parameters:
   - name: environmentName
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
 
 jobs:
   - job: Destroy
@@ -15,13 +11,6 @@ jobs:
 
     steps:
       - checkout: self
-
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
 
       - task: AzureCLI@2
         displayName: 'Destroy environment'

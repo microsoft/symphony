@@ -4,10 +4,6 @@ parameters:
     type: string
   - name: locationName
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
   - name: excludedFolders
     type: string
 
@@ -38,13 +34,6 @@ jobs:
             ./setup-pester.sh
             ./setup-benchpress.sh
             ./setup-azpowershell.sh
-
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
 
       - task: Cache@2
         inputs:

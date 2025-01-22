@@ -7,9 +7,6 @@ on: # yamllint disable-line rule:truthy
       environmentName:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         type: string
         required: true
@@ -45,24 +42,17 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "stateRg, stateContainer, stateStorageAccount, stateStorageAccountBackup"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
-
       - name: Backup Remote State
         env:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
           COMMIT_ID: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
-          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          export STATE_STORAGE_ACCOUNT_BACKUP=${{ steps.LoadSecrets.outputs.stateStorageAccountBackup }}
-          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export STATE_RG=${{ vars.STATE_RG }}
+          export STATE_STORAGE_ACCOUNT=${{ vars.STATE_STORAGE_ACCOUNT }}
+          export STATE_STORAGE_ACCOUNT_BACKUP=${{ vars.STATE_STORAGE_ACCOUNT_BACKUP }}
+          export STATE_CONTAINER=${{ vars.STATE_CONTAINER }}
+
           ./iac.tf.statebackup.sh
         working-directory: scripts/orchestrators
         shell: bash

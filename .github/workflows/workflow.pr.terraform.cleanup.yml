@@ -12,7 +12,6 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   TERRAFORM_VERSION: "1.6.2"
 
 permissions:
@@ -23,14 +22,12 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     outputs:
-      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
     steps:
       - name: Set Values
         id: setValues
         run: |
           # shellcheck source=/dev/null
-          echo "keyVaultName=${{ env.KEY_VAULT_NAME }}" >> $GITHUB_OUTPUT
           echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
 
   Cleanup:
@@ -38,7 +35,6 @@ jobs:
     uses: ./.github/workflows/template.terraform.cleanup.yml
     with:
       pullRequestNumber: ${{ github.event.pull_request.number }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       githubEnvironment: symphony
     secrets: inherit

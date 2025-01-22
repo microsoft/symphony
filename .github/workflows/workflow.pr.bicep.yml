@@ -22,7 +22,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   LOCATION_NAME: "westus"
   PR_ENVIRONMENT_DIRECTORY: "pr"
 
@@ -40,7 +39,6 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     outputs:
-      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       locationName: ${{ steps.setValues.outputs.locationName }}
       prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
@@ -48,7 +46,6 @@ jobs:
       - name: Set Values
         id: setValues
         run: |
-          echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "locationName=$LOCATION_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
 
@@ -66,7 +63,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit
@@ -100,7 +96,6 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
       data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Location=${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       githubEnvironment: symphony
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
@@ -120,7 +115,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
       githubEnvironment: symphony
     secrets: inherit
@@ -132,7 +126,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
       githubEnvironment: symphony
     secrets: inherit
@@ -143,7 +136,6 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit
@@ -155,7 +147,6 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit

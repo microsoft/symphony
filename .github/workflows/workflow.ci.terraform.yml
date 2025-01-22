@@ -24,10 +24,6 @@ on: # yamllint disable-line rule:truthy
         description: "Terraform version"
         required: true
         default: "1.6.2"
-      keyVaultName:
-        description: "Environment Key Vault Name"
-        required: true
-        default: "kv-symphony-environments"
       runLayerTest:
         description: "Run Layers Tests"
         type: boolean
@@ -56,7 +52,6 @@ jobs:
       environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
@@ -69,7 +64,6 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
     secrets: inherit
@@ -81,7 +75,6 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
     secrets: inherit
@@ -92,7 +85,6 @@ jobs:
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
     secrets: inherit

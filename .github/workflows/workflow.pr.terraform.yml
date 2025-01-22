@@ -22,7 +22,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   PR_ENVIRONMENT_DIRECTORY: "pr"
   TERRAFORM_VERSION: "1.6.2"
   RUN_LAYER_TESTS: false
@@ -41,7 +40,6 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     outputs:
-      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
       terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
@@ -50,7 +48,6 @@ jobs:
       - name: Set Values
         id: setValues
         run: |
-          echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
           echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
           echo "runLayerTests=$RUN_LAYER_TESTS" >> $GITHUB_OUTPUT
@@ -71,7 +68,6 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
       runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit
@@ -84,7 +80,6 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
       data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Directory=${{ needs.Setup.outputs.prEnvironmentDirectory }} Name@odata.type=Edm.String
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       githubEnvironment: symphony
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
@@ -104,7 +99,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
       githubEnvironment: symphony
     secrets: inherit
@@ -116,7 +110,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
       githubEnvironment: symphony
     secrets: inherit
@@ -128,7 +121,6 @@ jobs:
       environmentName: ${{  needs.Setup.outputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit
@@ -139,7 +131,6 @@ jobs:
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit
@@ -152,7 +143,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
       githubEnvironment: symphony
     secrets: inherit

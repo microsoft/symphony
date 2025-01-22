@@ -7,9 +7,6 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       terraformVersion:
         type: string
         required: true
@@ -29,7 +26,6 @@ jobs:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
-      keyVaultName: ${{ inputs.keyVaultName }}
       githubEnvironment: ${{ inputs.githubEnvironment }}
 
   Destroy:
@@ -56,21 +52,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "stateRg, stateContainer, stateStorageAccount"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
-
       - name: Run TF Destroy
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
-          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export STATE_RG=${{ vars.STATE_RG }}
+          export STATE_STORAGE_ACCOUNT=${{ vars.STATE_STORAGE_ACCOUNT }}
+          export STATE_CONTAINER=${{ vars.STATE_CONTAINER }}
 
           # NEW_ENVIRONMENT_EVENTS_JSON is an array of events.
           # Each event has a Name, SHA and Location properties.

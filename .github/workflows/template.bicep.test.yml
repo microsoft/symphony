@@ -10,9 +10,6 @@ on: # yamllint disable-line rule:truthy
       locationName:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         required: true
         type: string

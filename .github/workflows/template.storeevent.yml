@@ -16,9 +16,6 @@ on: # yamllint disable-line rule:truthy
       data:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       comment:
         type: string
         required: false
@@ -47,20 +44,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "eventsStorageAccount, eventsTableName"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
-
       - name: Store Event
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
-          export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
+          export EVENTS_STORAGE_ACCOUNT=${{ vars.EVENTS_STORAGE_ACCOUNT }}
+          export EVENTS_TABLE_NAME=${{ vars.EVENTS_TABLE_NAME }}
 
           source ./events.sh
 

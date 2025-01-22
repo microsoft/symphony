@@ -24,7 +24,6 @@ declare AZDO_TEMP_LOG_PATH="$REPO_DIR/.symphony/logs/$today-azdo"
 declare SYMPHONY_ENV_FILE_PATH="$REPO_DIR/.symphony/symphony.json"
 declare SP_CLOUD_ENVIRONMENT=""
 declare SP_SUBSCRIPTION_NAME="Azure"
-declare SYMPHONY_KV_NAME=""
 declare SYMPHONY_RG_NAME=""
 declare SYMPHONY_SA_STATE_NAME=""
 declare AZURE_REGIONS=""
@@ -140,7 +139,7 @@ configure_orchestrator() {
   configure_repo
   configure_credentials
 
-  # Update the resource names KV, RG
+  # Update the resource names
   git add .
   git commit -m "Initial commit"
 
@@ -152,7 +151,6 @@ configure_orchestrator() {
   if [[ $is_mac == 0 ]]; then
     sedCommand="sed -i '' -e "
   fi
-  eval "git grep -l 'kv-symphony-environments' | xargs $sedCommand \"s/kv-symphony-environments/${SYMPHONY_KV_NAME}/g\""
   eval "git grep -l 'devops-symphony-362' | xargs $sedCommand \"s/devops-symphony-362/${SYMPHONY_RG_NAME}/g\""
   eval "git grep -l 'AzureCloud' -- ':!*_helpers.sh' | xargs $sedCommand \"s/AzureCloud/$SP_CLOUD_ENVIRONMENT/g\""
 
