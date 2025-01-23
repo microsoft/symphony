@@ -62,6 +62,7 @@ jobs:
           # https://megalinter.io/configuration/
           VALIDATE_ALL_CODEBASE: ${{ (contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main') || false }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
           REPOSITORY_GITLEAKS_PR_COMMITS_SCAN: ${{ (github.event_name == 'pull_request' && 'true') || 'false' }} # If true, Gitleaks will scan all commits of a PR, not only the last one
+          JSON_JSONLINT_FILTER_REGEX_EXCLUDE: "scripts/install/providers/azdo/templates"
 
       - name: 📦 Archive MegaLinter artifacts
         if: ${{ always() && (steps.megalinter.outcome == 'success' || steps.megalinter.outcome == 'failure') }}
