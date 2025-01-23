@@ -139,6 +139,17 @@ function configure_credentials {
 }
 
 function create_pipelines_terraform() {
+  _information "Creating variable group for Terraform pipelines"
+
+  local variablesInGroup
+
+  variablesInGroup=$(_get_pipeline_var_defintion stateRg $SYMPHONY_RG_NAME true)
+  variablesInGroup="$variablesInGroup, $(_get_pipeline_var_defintion stateStorageAccount $SYMPHONY_SA_STATE_NAME true)"
+  variablesInGroup="$variablesInGroup, $(_get_pipeline_var_defintion stateContainer $SYMPHONY_STATE_CONTAINER true)"
+  variablesInGroup="$variablesInGroup, $(_get_pipeline_var_defintion stateStorageAccountBackup $SYMPHONY_SA_STATE_NAME_BACKUP true)"
+
+  _create_variable_group "symphony" "${variablesInGroup}"
+
   _information "Creating Azure Pipelines "
   local pipelineVariables
 
@@ -311,6 +322,34 @@ function _create_azdo_svc_connection() {
   if [ "$_allPipelinesAuthorized" == true ]; then
     _success "azdo service connection authorized for all pipelines"
   fi
+}
+
+function _create_variable_group {
+
+  _information "Create Variable Group"
+
+  local _template_file="$SCRIPT_DIR/templates/variable-group-create.json"
+  local _name="${1}"
+  local _variables=${2}
+
+  local _payload=$(
+    sed <"${_template_file}" 's~__ADO_VARIABLE_GROUP_NAME__~'"${_name}"'~' |
+    sed 's~__ADO_VARIABLES__~'"${_variables}"'~' |
+    sed 's~__ADO_PROJECT_ID__~'"${AZDO_PROJECT_ID}"'~' |
+    sed 's~__ADO_PROJECT_NAME__~'"${AZDO_PROJECT_NAME}"'~'
+  )
+
+  local _uri=$(_set_api_version "${AZDO_ORG_URI}/_apis/distributedtask/variablegroups?api-version=" '7.1' '7.1')
+
+  local _token=$(echo -n ":${AZDO_PAT}" | base64 -w 0)
+  local _response=$(request_post "${_uri}" "${_payload}" "application/json; charset=utf-8" "Basic ${_token}")
+
+  echo "$_payload" >"$AZDO_TEMP_LOG_PATH/${_name}-cvg-payload.json"
+  echo "$_response" >"$AZDO_TEMP_LOG_PATH/${_name}-cvg.json"
+
+  _debug_log_post "$_uri" "$_response" "$_payload"
+
+  _success "Created Variable Group ${_name}"
 }
 
 function _create_pipeline {

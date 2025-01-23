@@ -8,6 +8,8 @@ pr:
   - none
 
 variables:
+  - group: symphony
+
   - name: agentImage
     value: "ubuntu-latest"
 
