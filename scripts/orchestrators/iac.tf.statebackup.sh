@@ -12,4 +12,4 @@ sourceEndPoint=$(az storage account list -g "${STATE_RG}" --query "[?name=='$STA
 backupEndpoint=$(az storage account list -g $backupResourceGroup --query "[?name=='$STATE_STORAGE_ACCOUNT_BACKUP'].{endpointName:primaryEndpoints.blob}" -o tsv)
 
 echo "Copying remote state to container ${backupContainerName} in storage account $STATE_STORAGE_ACCOUNT_BACKUP located in resource group ${backupResourceGroup}"
-az storage copy -s ${sourceEndPoint}${STATE_CONTAINER}/${ENVIRONMENT_NAME}/* -d ${backupEndpoint}${STATE_CONTAINER}/${ENVIRONMENT_NAME}/${backupContainerName} --recursive
+az storage copy --auth-mode login -s ${sourceEndPoint}${STATE_CONTAINER}/${ENVIRONMENT_NAME}/* -d ${backupEndpoint}${STATE_CONTAINER}/${ENVIRONMENT_NAME}/${backupContainerName} --recursive

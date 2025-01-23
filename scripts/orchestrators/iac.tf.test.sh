@@ -22,6 +22,7 @@ export ARM_SUBSCRIPTION_ID=$subscription_id
 export ARM_CLIENT_ID=$client_id
 export ARM_TENANT_ID=$tenant_id
 export ARM_USE_OIDC=true
+export ARM_USE_AZUREAD=true
 
 if [[ "${TEST_TAG}" == "module_tests" ]]; then
   echo "Run tests with tag = module_tests"
