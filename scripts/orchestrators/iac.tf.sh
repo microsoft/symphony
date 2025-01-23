@@ -26,6 +26,7 @@ set_arm_env_vars() {
   export ARM_CLIENT_ID=$client_id
   export ARM_TENANT_ID=$tenant_id
   export ARM_USE_OIDC=true
+  export ARM_STORAGE_USE_AZUREAD=true
 }
 
 init() {
