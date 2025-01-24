@@ -19,26 +19,26 @@ on: # yamllint disable-line rule:truthy
       runLayerTest:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         type: string
         required: true
-    secrets:
-      azureEnviromentCredentials:
+      githubEnvironment:
+        type: string
         required: true
+
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  checks: write
 
 jobs:
   Validate:
     name: "Validate"
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: write
-      security-events: write
-      pull-requests: write
-      checks: write
+    environment: ${{ inputs.githubEnvironment }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,14 +59,14 @@ jobs:
           run_gitleaks './../../' 'sarif' 'info' 'true' 'true'
         working-directory: scripts/orchestrators
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: gitleaks-report
           path: scripts/orchestrators/gitleaks-report.*
 
       - name: Upload Gitleaks SARIF report to code scanning service
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: scripts/orchestrators/gitleaks-report.sarif
 
@@ -78,38 +78,27 @@ jobs:
         working-directory: scripts/orchestrators
         shell: bash
 
-      - uses: Azure/login@v1
+      - uses: azure/login@v2
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
-          environment: "AzureCloud"
-
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, stateRg, stateContainer, stateStorageAccount"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Run TF Validate
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
-          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export STATE_RG=${{ vars.STATE_RG }}
+          export STATE_STORAGE_ACCOUNT=${{ vars.STATE_STORAGE_ACCOUNT }}
+          export STATE_CONTAINER=${{ vars.STATE_CONTAINER }}
 
           ./iac.tf.validate.sh
         working-directory: scripts/orchestrators
         shell: bash
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run Layer Tests
@@ -120,20 +109,16 @@ jobs:
           ENVIRONMENT_DIRECTORY: ${{ inputs.environmentDirectory }}
           TEST_TAG: module_tests
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          export STATE_RG=${{ steps.LoadSecrets.outputs.stateRg }}
-          export STATE_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.stateStorageAccount }}
-          export STATE_CONTAINER=${{ steps.LoadSecrets.outputs.stateContainer }}
+          export STATE_RG=${{ vars.STATE_RG }}
+          export STATE_STORAGE_ACCOUNT=${{ vars.STATE_STORAGE_ACCOUNT }}
+          export STATE_CONTAINER=${{ vars.STATE_CONTAINER }}
 
           ./iac.tf.test.sh
 
         working-directory: scripts/orchestrators
         shell: bash
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() && inputs.runLayerTest == 'true' }}
         with:
           name: Modules test results

@@ -2,7 +2,7 @@
 name: PR Deployment
 
 on: # yamllint disable-line rule:truthy
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - synchronize
@@ -22,17 +22,24 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KEY_VAULT_NAME: "kv-symphony-environments" #GitLeaksIgnore
   PR_ENVIRONMENT_DIRECTORY: "pr"
   TERRAFORM_VERSION: "1.6.2"
-  RUN_LAYER_TESTS: true
+  RUN_LAYER_TESTS: false
+
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  checks: write
+  issues: read
 
 jobs:
   Setup:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     outputs:
-      keyVaultName: ${{ steps.setValues.outputs.keyVaultName }}
       prEnvironmentDirectory: ${{ steps.setValues.outputs.prEnvironmentDirectory }}
       environmentName: ${{ steps.setValues.outputs.environmentName }}
       terraformVersion: ${{ steps.setValues.outputs.terraformVersion }}
@@ -41,7 +48,6 @@ jobs:
       - name: Set Values
         id: setValues
         run: |
-          echo "keyVaultName=$KEY_VAULT_NAME" >> $GITHUB_OUTPUT
           echo "prEnvironmentDirectory=$PR_ENVIRONMENT_DIRECTORY" >> $GITHUB_OUTPUT
           echo "terraformVersion=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
           echo "runLayerTests=$RUN_LAYER_TESTS" >> $GITHUB_OUTPUT
@@ -62,28 +68,19 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
       runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-    permissions:
-      actions: write
-      contents: write
-      security-events: write
-      pull-requests: write
-      checks: write
+      githubEnvironment: symphony
+    secrets: inherit
 
   NewEnvironment:
     needs: [Setup, Validate]
     uses: ./.github/workflows/template.storeevent.yml
-    permissions:
-      pull-requests: write
     with:
       pipelineName: PR
       eventName: NewEnvironment
       eventGroupId: PR-${{ github.event.pull_request.number }}-${{ github.repository_id }}
       data: Name=${{ needs.Setup.outputs.environmentName }} SHA=${{ github.event.pull_request.head.sha }} Directory=${{ needs.Setup.outputs.prEnvironmentDirectory }} Name@odata.type=Edm.String
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
+      githubEnvironment: symphony
       comment: |
         Creating environment with name: "${{ needs.Setup.outputs.environmentName }}" using commit: "${{ github.event.pull_request.head.sha }}".
 
@@ -93,8 +90,7 @@ jobs:
           ||
             'The environment will be destroyed after the workflow completes.\nTo preserve it, add the "preserve-pr-environment" label to the PR.'
         }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+    secrets: inherit
 
   PreviewDeployBaseBranch:
     needs: [Setup, NewEnvironment]
@@ -103,10 +99,9 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.base_ref }} # First, deploy the base branch
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   PreviewDeployPRBranch:
     needs: [Setup, PreviewDeployBaseBranch]
@@ -115,25 +110,20 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
     needs: [Setup, PreviewDeployPRBranch]
-    permissions:
-      pull-requests: write
-      checks: write
     with:
       environmentName: ${{  needs.Setup.outputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   Report:
     needs: [Setup, Test]
@@ -141,10 +131,9 @@ jobs:
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   Destroy:
     if: ${{ always() && !contains(github.event.pull_request.labels.*.name, 'preserve-pr-environment') }}
@@ -154,7 +143,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      keyVaultName: ${{ needs.Setup.outputs.keyVaultName }}
       branchName: ${{ github.head_ref }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit

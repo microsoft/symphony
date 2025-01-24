@@ -13,24 +13,24 @@ on: # yamllint disable-line rule:truthy
       locationName:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         required: true
         type: string
-    secrets:
-      azureEnviromentCredentials:
+      githubEnvironment:
+        type: string
         required: true
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+  security-events: write
 
 jobs:
   Validate:
     name: Validate
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    environment: ${{ inputs.githubEnvironment }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,14 +52,14 @@ jobs:
           run_gitleaks './../../' 'sarif' 'info' 'true' 'true'
         working-directory: scripts/orchestrators
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: gitleaks-report
           path: scripts/orchestrators/gitleaks-report.*
 
       - name: Upload Gitleaks SARIF report to code scanning service
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: scripts/orchestrators/gitleaks-report.sarif
 
@@ -70,19 +70,12 @@ jobs:
           ./iac.bicep.lint.sh
         working-directory: scripts/orchestrators
 
-      - uses: Azure/login@v1
+      - uses: azure/login@v2
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
-          environment: "AzureCloud"
-
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Run Bicep Validate
         env:
@@ -92,9 +85,5 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
           ./iac.bicep.validate.sh
         working-directory: scripts/orchestrators

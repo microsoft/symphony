@@ -1,0 +1,16 @@
+{
+  "name": "__ADO_VARIABLE_GROUP_NAME__",
+  "type": "Vsts",
+  "variables": {
+    __ADO_VARIABLES__
+  },
+  "variableGroupProjectReferences": [
+    {
+      "name": "__ADO_VARIABLE_GROUP_NAME__",
+      "projectReference": {
+        "id": "__ADO_PROJECT_ID__",
+        "name": "__ADO_PROJECT_NAME__"
+      }
+    }
+  ]
+}

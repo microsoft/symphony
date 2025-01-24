@@ -74,15 +74,36 @@ function configure_repo {
   _success "Repo '${GH_Repo_NAME}' created."
 }
 
-function _build_az_secret {
-  echo "{\"clientId\": \"$SP_ID\",\"clientSecret\": \"$SP_SECRET\",\"subscriptionId\": \"$SP_SUBSCRIPTION_ID\",\"tenantId\": \"$SP_TENANT_ID\"}"
+function _add_federated_credential {
+  # Configuring federated identity for Github Actions, based on repo name and environment name
+  parameters=$(cat <<EOF
+  {
+    "name": "symphony-credential-${GH_ORG_NAME}-${GH_Repo_NAME}",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:${GH_ORG_NAME}/${GH_Repo_NAME}:environment:symphony",
+    "description": "Symphony credential for Github Actions",
+    "audiences": [
+        "api://AzureADTokenExchange"
+    ]
+  }
+EOF
+  )
+
+  az ad app federated-credential create --id $SP_ID --parameters "$parameters"
 }
 
 function configure_credentials {
   _information "Configure GitHub Secrets"
 
-  sp_json=$(_build_az_secret)
-  gh secret set "AZURE_CREDENTIALS" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$sp_json"
+  _add_federated_credential
+
+  gh secret set "AZURE_SUBSCRIPTION_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_SUBSCRIPTION_ID"
+  gh secret set "AZURE_TENANT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_TENANT_ID"
+  gh secret set "AZURE_CLIENT_ID" --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SP_ID"
+  gh variable set EVENTS_STORAGE_ACCOUNT --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_EVENTS_STORAGE_ACCOUNT"
+  gh variable set EVENTS_TABLE_NAME --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_EVENTS_TABLE_NAME"
+
+
 }
 
 function create_pipelines_bicep {
@@ -90,7 +111,10 @@ function create_pipelines_bicep {
 }
 
 function create_pipelines_terraform {
-  _debug "skip create_pipelines_terraform"
+  gh variable set STATE_RG --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_RG_NAME"
+  gh variable set STATE_STORAGE_ACCOUNT --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_SA_STATE_NAME"
+  gh variable set STATE_STORAGE_ACCOUNT_BACKUP --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_SA_STATE_NAME_BACKUP"
+  gh variable set STATE_CONTAINER --repo "${GH_ORG_NAME}/${GH_Repo_NAME}" --body "$SYMPHONY_STATE_CONTAINER"
 }
 
 function push_repo {

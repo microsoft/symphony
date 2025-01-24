@@ -24,10 +24,6 @@ on: # yamllint disable-line rule:truthy
         description: "Terraform version"
         required: true
         default: "1.6.2"
-      keyVaultName:
-        description: "Environment Key Vault Name"
-        required: true
-        default: "kv-symphony-environments"
       runLayerTest:
         description: "Run Layers Tests"
         type: boolean
@@ -39,6 +35,15 @@ on: # yamllint disable-line rule:truthy
         required: true
         default: true
 
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  checks: write
+  issues: read
+
 jobs:
   Validate:
     uses: ./.github/workflows/template.terraform.validate.yml
@@ -47,17 +52,10 @@ jobs:
       environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       runLayerTest: ${{ github.event.inputs.runLayerTest }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-    permissions:
-      actions: write
-      contents: write
-      security-events: write
-      pull-requests: write
-      checks: write
+      githubEnvironment: symphony
+    secrets: inherit
 
   PreviewDeploy:
     needs: Validate
@@ -66,10 +64,9 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       environmentDirectory: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   Test:
     uses: ./.github/workflows/template.terraform.test.yml
@@ -78,10 +75,9 @@ jobs:
       environmentName: ${{ github.event.inputs.environmentName }}
       terraformVersion: ${{ github.event.inputs.terraformVersion }}
       goVersion: ${{ github.event.inputs.goVersion }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit
 
   Report:
     needs: PreviewDeploy
@@ -89,7 +85,6 @@ jobs:
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ github.event.inputs.environmentName }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       branchName: ${{ github.ref_name }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit

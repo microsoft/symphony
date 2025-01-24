@@ -21,12 +21,6 @@ variables:
   # - name: locationName
   #   value: "westus"
 
-  # - name: keyVaultArmSvcConnectionName
-  #   value: "Symphony-KV"
-
-  # - name: keyVaultName
-  #   value: "kv-symphony-environments"
-
   - name: excludedFolders
     value: ","
 
@@ -38,22 +32,16 @@ jobs:
     parameters:
       environmentName: $(environmentName)
       locationName: $(locationName)
-      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-      keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
       environmentName: $(environmentName)
       locationName: $(locationName)
-      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-      keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)
 
   - template: ./template.bicep.test.yml
     parameters:
       environmentName: $(environmentName)
       locationName: $(locationName)
-      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-      keyVaultName: $(keyVaultName)
       excludedFolders: $(excludedFolders)

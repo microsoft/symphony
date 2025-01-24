@@ -7,21 +7,20 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         description: "Pull Request Number"
         required: true
-      keyVaultName:
-        description: "Environment Key Vault Name"
-        required: true
-        default: "kv-symphony-environments"
       terraformVersion:
         type: string
         required: true
         default: "1.6.2"
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   Destroy:
     uses: ./.github/workflows/template.terraform.cleanup.yml
     with:
       pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
       terraformVersion: ${{  github.event.inputs.terraformVersion }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit

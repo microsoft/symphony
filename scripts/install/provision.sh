@@ -35,12 +35,9 @@ remove_dependencies() {
   is_terraform=$(is_terraform)
 
   RG_NAME="rg-${prefix}-${suffix}"
-  KV_NAME="kv-${prefix}-${suffix}"
-  SP_READER_NAME="sp-reader-${prefix}-${suffix}"
-  SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+  SP_NAME="sp-${prefix}-${suffix}"
 
-  SP_READER_APPID=$(az keyvault secret show --name "clientId" --vault-name "$KV_NAME" | jq -r '.value')
-  SP_OWNER_APPID=$(az keyvault secret show --name "readerClientId" --vault-name "$KV_NAME" | jq -r '.value')
+  SP_APPID=$(az ad sp list --display-name ${SP_NAME} --query "[].appId" -o tsv)
 
   SA_NAME="sa${prefix}${suffix}"
 
@@ -51,11 +48,8 @@ remove_dependencies() {
   _danger "The following resources will be permanently deleted:"
   echo ""
   _danger "                     Resource Group:  $RG_NAME"
-  _danger "                          Key Vault:  $KV_NAME"
-  _danger "    Service Principal Name (Reader):  $SP_READER_NAME"
-  _danger "   Service Principal App Id(Reader):  $SP_READER_APPID"
-  _danger "     Service Principal Name (Owner):  $SP_OWNER_NAME"
-  _danger "   Service Principal App Id (Owner):  $SP_OWNER_APPID"
+  _danger "            Service Principal Name :  $SP_NAME"
+  _danger "           Service Principal App Id:  $SP_APPID"
   _danger "                    Storage account:  $SA_NAME"
   if [[ "$is_terraform" != "false" ]]; then
     _danger "      Storage account(State Backup):  $SA_STATE_BACKUP_NAME"
@@ -68,17 +62,11 @@ remove_dependencies() {
   if [[ "$selection" == "yes" ]]; then
     _information "Starting removal of resources"
 
-    _information "Removing Resource Group (${RG_NAME}) and Keyvault ($KV_NAME)"
+    _information "Removing Resource Group (${RG_NAME})"
     az group delete --resource-group "${RG_NAME}" --yes
 
-    _information "Purging Key Vault (${KV_NAME})"
-    az keyvault purge -n "$KV_NAME"
-
-    _information "Removing Service Principal (Reader) $SP_READER_APPID"
-    az ad sp delete --id "$SP_READER_APPID"
-
-    _information "Service Principal (Owner) $SP_OWNER_APPID"
-    az ad sp delete --id "$SP_OWNER_APPID"
+    _information "Removing Service Principal $SP_APPID"
+    az ad sp delete --id "$SP_APPID"
 
     _information "Resources Removed"
   else
@@ -94,9 +82,7 @@ deploy_dependencies() {
   IS_Terraform=$2
 
   RG_NAME="rg-${prefix}-${suffix}"
-  KV_NAME="kv-${prefix}-${suffix}"
-  SP_READER_NAME="sp-reader-${prefix}-${suffix}"
-  SP_OWNER_NAME="sp-owner-${prefix}-${suffix}"
+  SP_NAME="sp-${prefix}-${suffix}"
   SA_NAME="sa${prefix}${suffix}"
 
   #Terraform Symphony Resources
@@ -109,9 +95,7 @@ deploy_dependencies() {
   _information "The following resources will be Created :"
   _information ""
   _information "                     Resource Group:  $RG_NAME"
-  _information "                          Key Vault:  $KV_NAME"
-  _information "    Service Principal Name (Reader):  $SP_READER_NAME"
-  _information "     Service Principal Name (Owner):  $SP_OWNER_NAME"
+  _information "             Service Principal Name:  $SP_NAME"
   _information "                    Storage account:  $SA_NAME"
 
   if [[ $IS_Terraform == true ]]; then
@@ -129,14 +113,6 @@ deploy_dependencies() {
     _information "Creating Resource Group: ${RG_NAME}"
     create_rg
 
-    # Create KV
-    _information "Creating Key Vault: ${KV_NAME}"
-    kv_id=$(create_kv | jq -r .id)
-
-    # Create KV role assignment for the current logged in user
-    local _current_az_user=$(az ad signed-in-user show --query id -o tsv)
-    create_kv_role_assignment "Key Vault Administrator" "${_current_az_user}" "${KV_NAME}"
-
     # Create SA
     _information "Creating Storage Account: ${SA_NAME}"
     create_sa "${SA_NAME}" "Standard_LRS" "SystemAssigned"
@@ -144,14 +120,6 @@ deploy_dependencies() {
     # Create Events SA table
     _information "Creating Events Storage Account Table: ${SA_EVENTS_TABLE_NAME} for Storage Account:${SA_NAME}"
     create_sa_table "${SA_EVENTS_TABLE_NAME}" "${SA_NAME}"
-
-    # Save Events SA details to KV
-    echo "Saving Events Storage Account (${SA_NAME}) to Key Vault secret 'eventsStorageAccount'."
-    set_kv_secret 'eventsStorageAccount' "${SA_NAME}" "${KV_NAME}"
-
-    # Save Events Table name to KV
-    echo "Saving Storage Account Events Table(${SA_EVENTS_TABLE_NAME}) to Key Vault secret 'eventsTableName'."
-    set_kv_secret 'eventsTableName' "${SA_EVENTS_TABLE_NAME}" "${KV_NAME}"
 
     if [[ $IS_Terraform == true ]]; then
       # Create State SA container
@@ -169,94 +137,53 @@ deploy_dependencies() {
       # Create Backup State SA container
       _information "Creating Backup Storage Account Container: ${SA_CONTAINER_NAME} for Storage Account:${SA_STATE_BACKUP_NAME}"
       create_sa_container "${SA_CONTAINER_NAME}" "${SA_STATE_BACKUP_NAME}"
-
-      # Save State SA details to KV
-      echo "Saving State Storage Account (${SA_NAME}) to Key Vault secret 'stateStorageAccount'."
-      set_kv_secret 'stateStorageAccount' "${SA_NAME}" "${KV_NAME}"
-
-      # Save State Backup SA details to KV
-      echo "Saving State Backup Storage Account (${SA_STATE_BACKUP_NAME}) to Key Vault secret 'stateStorageAccountBackup'."
-      set_kv_secret 'stateStorageAccountBackup' "${SA_STATE_BACKUP_NAME}" "${KV_NAME}"
-
-      # Save Container name to KV
-      echo "Saving Storage Account State Container(${SA_CONTAINER_NAME}) to Key Vault secret 'stateContainer'."
-      set_kv_secret 'stateContainer' "${SA_CONTAINER_NAME}" "${KV_NAME}"
-
-      # Save state RG name to KV
-      echo "Saving state Resource Group Name (${RG_NAME}) to Key Vault secret 'stateRg'."
-      set_kv_secret 'stateRg' "${RG_NAME}" "${KV_NAME}"
     fi
 
-    local create_owner_sp=""
-    _select_yes_no create_owner_sp "Create Owner Service Principal (yes/no)?" "true"
+    local create_sp=""
+    _select_yes_no create_sp "Create Service Principal (yes/no)?" "true"
 
-    local sp_owner_client_id=""
-    local sp_owner_client_secret=""
-    local sp_owner_tenant_id=""
-    local sp_owner_sub_id=""
+    local sp_client_id=""
+    local sp_tenant_id=""
+    local sp_sub_id=""
 
-    if [[ "$create_owner_sp" == "yes" ]]; then
+    if [[ "$create_sp" == "yes" ]]; then
 
-      # Create Owner SP and assing to subscription level
-      _information "Creating Owner Service Principal: ${SP_OWNER_NAME}"
-      sp_owner_obj=$(create_sp "${SP_OWNER_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
-      sp_owner_appid=$(echo "$sp_owner_obj" | jq -r '.appId')
+      # Create SP and assing to subscription level
+      _information "Creating Service Principal: ${SP_NAME}"
+      sp_obj=$(create_sp "${SP_NAME}" 'Owner' "/subscriptions/${SP_SUBSCRIPTION_ID}")
+      sp_appid=$(echo "$sp_obj" | jq -r '.appId')
 
-      # Save Owner SP details to KV
-      sp_owner_client_id=$(echo "${sp_owner_obj}" | jq -r .appId)
-      sp_owner_client_secret=$(echo "${sp_owner_obj}" | jq -r .password)
-      sp_owner_sub_id=${SP_SUBSCRIPTION_ID}
-      sp_owner_tenant_id=$(echo "${sp_owner_obj}" | jq -r .tenant)
+      # Gather SP details
+      sp_client_id=$(echo "${sp_obj}" | jq -r .appId)
+      sp_sub_id=${SP_SUBSCRIPTION_ID}
+      sp_tenant_id=$(echo "${sp_obj}" | jq -r .tenant)
     else
-      echo "Use Existing Service Principal for Owner"
-      _prompt_input "Enter Owner Service Principal Subscription Id" sp_owner_sub_id
-      _prompt_input "Enter Owner Service Principal tenant Id" sp_owner_tenant_id
-      _prompt_input "Enter Owner Service Principal Id" sp_owner_client_id
-      _prompt_input "Enter Owner Service Principal secret" sp_owner_client_secret
+      echo "Use Existing Service Principal"
+      _prompt_input "Enter Principal Subscription Id" sp_sub_id
+      _prompt_input "Enter Service Principal tenant Id" sp_tenant_id
+      _prompt_input "Enter Service Principal Id" sp_client_id
     fi
 
-    # Save Owner SP details to KV
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientId'."
-    set_kv_secret 'clientId' "${sp_owner_client_id}" "${KV_NAME}"
+    _information "Assign Storage Table Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_NAME}"
+    create_sa_role_assignment "Storage Table Data Contributor" "${sp_client_id}" "${SA_NAME}"
 
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'clientSecret'."
-    set_kv_secret 'clientSecret' "${sp_owner_client_secret}" "${KV_NAME}"
+    _information "Assign Storage Blob Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_NAME}"
+    create_sa_role_assignment "Storage Blob Data Contributor" "${sp_client_id}" "${SA_NAME}"
 
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'subscriptionId'."
-    set_kv_secret 'subscriptionId' "${sp_owner_sub_id}" "${KV_NAME}"
-
-    _information "Saving Owner Service Principal (${SP_OWNER_NAME}) to Key Vault secret 'tenantId'."
-    set_kv_secret 'tenantId' "${sp_owner_tenant_id}" "${KV_NAME}"
-
-    # Create Reader SP and assign to KV only
-    _information "Creating Reader Service Principal: ${SP_READER_NAME}"
-    sp_reader_obj=$(create_sp "${SP_READER_NAME}" 'Reader' "${kv_id}")
-
-    # Save Reader SP details to KV
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientId'."
-    clientId=$(echo "${sp_reader_obj}" | jq -r .appId)
-    set_kv_secret 'readerClientId' "${clientId}" "${KV_NAME}"
-
-    _information "Assign Key Vault Secrets User role for Reader Service Principal (${SP_READER_NAME}) to Key Vault ${KV_NAME}"
-    create_kv_role_assignment "Key Vault Secrets User" "${clientId}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerClientSecret'."
-    clientSecret=$(echo "${sp_reader_obj}" | jq -r .password)
-    set_kv_secret 'readerClientSecret' "${clientSecret}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerSubscriptionId'."
-    set_kv_secret 'readerSubscriptionId' "${SP_SUBSCRIPTION_ID}" "${KV_NAME}"
-
-    _information "Saving Reader Service Principal (${SP_READER_NAME}) to Key Vault secret 'readerTenantId'."
-    tenantId=$(echo "${sp_reader_obj}" | jq -r .tenant)
-    set_kv_secret 'readerTenantId' "${tenantId}" "${KV_NAME}"
+    if [[ $IS_Terraform == true ]]; then
+      _information "Assign Storage Blob Data Contributor role for Service Principal (${SP_NAME}) to Storage Account ${SA_STATE_BACKUP_NAME}"
+      create_sa_role_assignment "Storage Blob Data Contributor" "${sp_client_id}" "${SA_STATE_BACKUP_NAME}"
+    fi
 
     # Store values in Symphonyenv.json
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group" "$RG_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault" "$KV_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "reader_service_principal" "$SP_READER_NAME"
-    set_json_value "$SYMPHONY_ENV_FILE_PATH" "owner_service_principal" "$SP_OWNER_NAME"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "service_principal" "$SP_NAME"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_client_id" "$sp_client_id"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_tenant_id" "$sp_tenant_id"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_sub_id" "$sp_sub_id"
     set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account" "$SA_NAME"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "events_table_name" "$SA_EVENTS_TABLE_NAME"
+    set_json_value "$SYMPHONY_ENV_FILE_PATH" "events_storage_account" "$SA_NAME"
     if [[ $IS_Terraform == true ]]; then
       set_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account" "$SA_STATE_BACKUP_NAME"
       set_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container" "$SA_CONTAINER_NAME"
@@ -281,16 +208,17 @@ create_rg() {
   az group create --resource-group "${RG_NAME}" --location "${LOCATION}"
 }
 
-create_kv() {
-  az keyvault create --resource-group "${RG_NAME}" --location "${LOCATION}" --name "${KV_NAME}" --enabled-for-template-deployment true --public-network-access Enabled --enable-rbac-authorization
+create_sa_role_assignment() {
+  create_role_assignment "${1}" "${2}" "${3}" "storage account"
 }
 
-create_kv_role_assignment() {
+create_role_assignment() {
   local _role="${1}"
   local _sp_app_id="${2}"
-  local _kvName="${3}"
+  local _name="${3}"
+  local _az_sub_commands="${4}"
 
-  local _scope=$(az keyvault show --name "${_kvName}" --query id -o tsv)
+  local _scope=$(az ${_az_sub_commands} show --name "${_name}" --query id -o tsv)
   az role assignment create --role "${_role}" --assignee "${_sp_app_id}" --scope "${_scope}"
 
   _information "sleep for 20 seconds to allow the role assignment to take effect"
@@ -337,12 +265,4 @@ create_sa_table() {
   local _account_name="${2}"
 
   az storage table create --name "${_table_name}" --account-name "${_account_name}"
-}
-
-set_kv_secret() {
-  local _name="${1}"
-  local _value="${2}"
-  local _vault_name="${3}"
-
-  az keyvault secret set --name "${_name}" --value "${_value}" --vault-name "${_vault_name}"
 }

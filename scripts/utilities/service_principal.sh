@@ -1,26 +1,10 @@
 #!/usr/bin/env bash
 
-get_keyvault_name() {
-  keyvault_name=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "keyvault")
-  echo "$keyvault_name"
-}
-read_kv_secret() {
-  local _secret_name="${1}"
-
-  secret_value=$(az keyvault secret show --name "${_secret_name}" --vault-name "${SYMPHONY_KV_NAME}" | jq -r '.value')
-  echo "${secret_value}"
-}
-
 function loadServicePrincipalCredentials() {
   if [[ -f "$SYMPHONY_ENV_FILE_PATH" ]]; then
-    SYMPHONY_KV_NAME=$(get_keyvault_name)
-    if [ "$SYMPHONY_KV_NAME" != "null" ]; then
-      _information "$SYMPHONY_ENV_FILE_PATH Found! Loading needed credentials from ${SYMPHONY_KV_NAME}"
-      SP_SUBSCRIPTION_ID=$(read_kv_secret 'readerSubscriptionId')
-      SP_TENANT_ID=$(read_kv_secret 'readerTenantId')
-      SP_ID=$(read_kv_secret 'readerClientId')
-      SP_SECRET=$(read_kv_secret 'readerClientSecret')
-    fi
+    SP_SUBSCRIPTION_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_sub_id")
+    SP_TENANT_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_tenant_id")
+    SP_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_client_id")
   fi
 
   if [ -z "$SP_SUBSCRIPTION_ID" ]; then
@@ -38,11 +22,6 @@ function loadServicePrincipalCredentials() {
   if [ -z "$SP_ID" ]; then
     _prompt_input "Enter Azure Service Principal Client Id" SP_ID
   fi
-
-  if [ -z "$SP_SECRET" ]; then
-    _prompt_input "Enter Azure Service Principal Client Secret" SP_SECRET
-  fi
-
 }
 
 # command is a global variable declared in the entrypoint script.
@@ -64,13 +43,16 @@ function printEnvironment() {
 
 function load_symphony_env() {
   if [[ -f "$SYMPHONY_ENV_FILE_PATH" ]]; then
-    SYMPHONY_KV_NAME=$(get_keyvault_name)
     SYMPHONY_RG_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "resource_group")
     SYMPHONY_SA_STATE_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "state_storage_account")
-  fi
+    SP_SUBSCRIPTION_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_sub_id")
+    SP_TENANT_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_tenant_id")
+    SP_ID=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "sp_client_id")
+    SYMPHONY_EVENTS_TABLE_NAME=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "events_table_name")
+    SYMPHONY_EVENTS_STORAGE_ACCOUNT=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "events_storage_account")
+    SYMPHONY_SA_STATE_NAME_BACKUP=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "backupstate_storage_account")
+    SYMPHONY_STATE_CONTAINER=$(get_json_value "$SYMPHONY_ENV_FILE_PATH" "state_container")
 
-  if [ -z "$SYMPHONY_KV_NAME" ]; then
-    _prompt_input "Enter Symphony KeyVault Name" SYMPHONY_KV_NAME
   fi
 
   if [ -z "$SYMPHONY_RG_NAME" ]; then

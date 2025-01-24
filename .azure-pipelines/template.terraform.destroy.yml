@@ -2,10 +2,6 @@
 parameters:
   - name: environmentName
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
 
 jobs:
   - job: Destroy
@@ -16,34 +12,20 @@ jobs:
     steps:
       - checkout: self
 
-      - task: Bash@3
-        displayName: "Install Azure CLI"
+      - task: AzureCLI@2
+        displayName: 'Destroy environment'
         inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
+          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export STATE_RG="$(stateRg)"
+            export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
+            export STATE_CONTAINER="$(stateContainer)"
+            export ENVIRONMENT_NAME="$(environmentName)"
+            export ARM_OIDC_TOKEN="$idToken"
 
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
-
-      - task: Bash@3
-        displayName: "Destroy environment"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
-          STATE_STORAGE_ACCOUNT: $(stateStorageAccount)
-          STATE_CONTAINER: $(stateContainer)
-          STATE_RG: $(stateRg)
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators/"
-          targetType: "filePath"
-          filePath: "scripts/orchestrators/iac.tf.destroy.sh"
+            ./iac.tf.destroy.sh

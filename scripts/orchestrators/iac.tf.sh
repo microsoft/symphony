@@ -15,16 +15,28 @@ usage() {
   exit 1
 }
 
+set_arm_env_vars() {
+  # retrieve client_id, subscription_id, tenant_id from logged in user
+  azaccount=$(az account show)
+  client_id=$(echo $azaccount | jq -r .user.name)
+  subscription_id=$(echo $azaccount | jq -r .id)
+  tenant_id=$(echo $azaccount | jq -r .tenantId)
+
+  export ARM_SUBSCRIPTION_ID=$subscription_id
+  export ARM_CLIENT_ID=$client_id
+  export ARM_TENANT_ID=$tenant_id
+  export ARM_USE_OIDC=true
+  export ARM_STORAGE_USE_AZUREAD=true
+}
+
 init() {
   backend_config=$1
   key=$2
-  subscription_id=$3
-  tenant_id=$4
-  client_id=$5
-  client_secret=$6
-  storage_account_name=$7
-  container_name=$8
-  resource_group_name=$9
+  storage_account_name=$3
+  container_name=$4
+  resource_group_name=$5
+
+  set_arm_env_vars
 
   if [ "${backend_config}" == "false" ]; then
     _information "Execute terraform init"
@@ -37,10 +49,11 @@ init() {
             -backend-config=container_name=${container_name} \
             -backend-config=key=${key} \
             -backend-config=resource_group_name=${resource_group_name} \
-            -backend-config=subscription_id=${subscription_id} \
-            -backend-config=tenant_id=${tenant_id} \
-            -backend-config=client_id=${client_id} \
-            -backend-config=client_secret=${client_secret} \
+            -backend-config=subscription_id=${ARM_SUBSCRIPTION_ID} \
+            -backend-config=tenant_id=${ARM_TENANT_ID} \
+            -backend-config=client_id=${ARM_CLIENT_ID} \
+            -backend-config=use_oidc=true \
+            -backend-config=use_azuread_auth=true \
             -reconfigure"
 
     terraform init \
@@ -48,10 +61,11 @@ init() {
       -backend-config=container_name=${container_name} \
       -backend-config=key=${key} \
       -backend-config=resource_group_name=${resource_group_name} \
-      -backend-config=subscription_id=${subscription_id} \
-      -backend-config=tenant_id=${tenant_id} \
-      -backend-config=client_id=${client_id} \
-      -backend-config=client_secret=${client_secret} \
+      -backend-config=subscription_id=${ARM_SUBSCRIPTION_ID} \
+      -backend-config=tenant_id=${ARM_TENANT_ID} \
+      -backend-config=client_id=${ARM_CLIENT_ID} \
+      -backend-config=use_oidc=true \
+      -backend-config=use_azuread_auth=true \
       -reconfigure
   fi
 }
@@ -76,6 +90,8 @@ preview() {
   plan_file_name=$1
   var_file=$2
 
+  set_arm_env_vars
+
   _information "Execute terraform plan"
   if [[ -z "$2" ]]; then
     echo "terraform plan -input=false -out=${plan_file_name}"
@@ -91,6 +107,8 @@ preview() {
 deploy() {
   plan_file_name=$1
 
+  set_arm_env_vars
+
   _information "Execute terraform apply"
   echo "terraform apply -input=false -auto-approve ${plan_file_name}"
   terraform apply -input=false -auto-approve ${plan_file_name}
@@ -102,6 +120,8 @@ deploy() {
 
 destroy() {
   var_file=$1
+
+  set_arm_env_vars
 
   _information "Execute terraform destroy"
   terraform destroy -input=false -auto-approve -var-file=${var_file}

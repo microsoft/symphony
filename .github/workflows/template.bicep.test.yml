@@ -10,20 +10,25 @@ on: # yamllint disable-line rule:truthy
       locationName:
         type: string
         required: true
-      keyVaultName:
-        type: string
-        required: true
       branchName:
         required: true
         type: string
-    secrets:
-      azureEnviromentCredentials:
+      githubEnvironment:
+        type: string
         required: true
+
+permissions:
+  id-token: write
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
 
 jobs:
   Test:
     name: Test
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,11 +44,12 @@ jobs:
           source ~/.bashrc
         working-directory: scripts/orchestrators
 
-      - uses: Azure/login@v1
+      - uses: azure/login@v2
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
-          environment: "AzureCloud"
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
       - name: Fetch Cached Environment
@@ -53,14 +59,6 @@ jobs:
           path: ${{ github.workspace }}/IAC/Bicep/bicep/.env
           key: ${{ runner.os }}-${{ github.run_id }}-bicep-env
 
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
-
       - name: Run e2e tests
         env:
           ENVIRONMENT_NAME: ${{ inputs.environmentName }}
@@ -68,11 +66,6 @@ jobs:
           WORKSPACE_PATH: ${{ github.workspace }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          export ARM_TENANT_ID="${{ steps.LoadSecrets.outputs.tenantId }}"
-          export ARM_SUBSCRIPTION_ID="${{ steps.LoadSecrets.outputs.subscriptionId }}"
-          export ARM_CLIENT_ID="${{ steps.LoadSecrets.outputs.clientId }}"
-          export ARM_CLIENT_SECRET="${{ steps.LoadSecrets.outputs.clientSecret }}"
-
           source ./tests.runner.sh
 
           pushd ../../IAC/Bicep/bicep
@@ -83,7 +76,7 @@ jobs:
         working-directory: scripts/orchestrators
 
       - name: Upload E2E Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-test--results

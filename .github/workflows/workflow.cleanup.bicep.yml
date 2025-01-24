@@ -7,16 +7,15 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         description: "Pull Request Number"
         required: true
-      keyVaultName:
-        description: "Environment Key Vault Name"
-        required: true
-        default: "kv-symphony-environments"
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   Destroy:
     uses: ./.github/workflows/template.bicep.cleanup.yml
     with:
       pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
-      keyVaultName: ${{ github.event.inputs.keyVaultName }}
-    secrets:
-      azureEnviromentCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      githubEnvironment: symphony
+    secrets: inherit

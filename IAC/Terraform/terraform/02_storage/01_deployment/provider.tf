@@ -6,8 +6,8 @@ terraform {
   backend "azurerm" {}
   required_providers {
     azurerm = {
-      version = "~>2.98.0"
       source  = "hashicorp/azurerm"
+      version = "=4.1.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"

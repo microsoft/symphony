@@ -4,10 +4,6 @@ parameters:
     type: string
   - name: locationName
     type: string
-  - name: keyVaultArmSvcConnectionName
-    type: string
-  - name: keyVaultName
-    type: string
 
 jobs:
   - job: Destroy
@@ -18,33 +14,18 @@ jobs:
     steps:
       - checkout: self
 
-      - task: Bash@3
-        displayName: "Install Azure CLI"
+      - task: AzureCLI@2
+        displayName: 'Destroy environment'
         inputs:
-          filePath: "scripts/orchestrators/setup-azcli.sh"
+          azureSubscription: symphony
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          bashEnvValue: "~/.profile"
-          failOnStderr: true
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export RUN_ID="$(Build.BuildId)"
+            export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
+            export LOCATION_NAME="${{ parameters.locationName }}"
 
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: ${{ parameters.keyVaultArmSvcConnectionName }}
-          keyVaultName: ${{ parameters.keyVaultName }}
-          secretsFilter: "*"
-          runAsPreJob: true
-
-      - task: Bash@3
-        displayName: "Destroy environment"
-        env:
-          WORKSPACE_PATH: $(System.DefaultWorkingDirectory)
-          RUN_ID: $(Build.BuildId)
-          ENVIRONMENT_NAME: ${{ parameters.environmentName }}
-          LOCATION_NAME: ${{ parameters.locationName }}
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-          ARM_CLIENT_ID: $(clientId)
-          ARM_CLIENT_SECRET: $(clientSecret)
-        inputs:
-          workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          targetType: "filePath"
-          filePath: "scripts/orchestrators/iac.bicep.destroy.sh"
+            ./iac.bicep.destroy.sh

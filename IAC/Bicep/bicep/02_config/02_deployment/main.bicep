@@ -8,14 +8,16 @@ var _deploymentName = empty(deploymentName)
   ? uniqueString(subscription().subscriptionId, location, environment)
   : deploymentName
 
+var uniqueToken = substring(uniqueString(location, subscription().id, guid('appconfig'), resourceGroup().id), 0, 6)
+
 // App Configuration
 
 module appConfigName './../../modules/nameGenerator.bicep' = {
   name: '${_deploymentName}-appConfigName'
   params: {
-    name: 'appconfig'
+    name: 'config'
     prefix: environment
-    uniqueToken: location
+    uniqueToken: uniqueToken
     suffixLength: 6
   }
 }

@@ -17,46 +17,38 @@ on: # yamllint disable-line rule:truthy
       eventGroupId:
         type: string
         required: true
-      keyVaultName:
+      githubEnvironment:
         type: string
         required: true
-    secrets:
-      azureEnviromentCredentials:
-        required: true
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   QueryEvent:
     name: Query Events
     runs-on: ubuntu-latest
+    environment: ${{ inputs.githubEnvironment }}
     outputs:
       events: ${{ steps.QueryEvents.outputs.events }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Azure/login@v1
+
+      - uses: azure/login@v2
         name: Run Azure Login
         with:
-          creds: "${{ secrets.azureEnviromentCredentials }}"
-          environment: "AzureCloud"
-
-      - name: Get KeyVault Secret(s)
-        id: LoadSecrets
-        env:
-          SECRETS: "clientId, clientSecret, subscriptionId, tenantId, eventsStorageAccount, eventsTableName"
-          KEY_VAULT_NAME: ${{ inputs.keyVaultName }}
-        run: ./github.loadsecrets.sh
-        working-directory: scripts/orchestrators
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Query Events
         id: QueryEvents
         env:
           WORKSPACE_PATH: ${{ github.workspace }}
         run: |
-          export ARM_TENANT_ID=${{ steps.LoadSecrets.outputs.tenantId }}
-          export ARM_SUBSCRIPTION_ID=${{ steps.LoadSecrets.outputs.subscriptionId }}
-          export ARM_CLIENT_ID=${{ steps.LoadSecrets.outputs.clientId }}
-          export ARM_CLIENT_SECRET=${{ steps.LoadSecrets.outputs.clientSecret }}
-          export EVENTS_STORAGE_ACCOUNT=${{ steps.LoadSecrets.outputs.eventsStorageAccount }}
-          export EVENTS_TABLE_NAME=${{ steps.LoadSecrets.outputs.eventsTableName }}
+          export EVENTS_STORAGE_ACCOUNT=${{ vars.EVENTS_STORAGE_ACCOUNT }}
+          export EVENTS_TABLE_NAME=${{ vars.EVENTS_TABLE_NAME }}
 
           source ./events.sh
 

@@ -8,18 +8,14 @@ pr:
   - none
 
 variables:
+  - group: symphony
+
   - name: agentImage
     value: "ubuntu-latest"
 
   # Commented out to use the values from the Azdo pipeline variables
   # - name: environmentName
   #   value: "dev"
-
-  # - name: keyVaultArmSvcConnectionName
-  #   value: "Symphony-KV"
-
-  # - name: keyVaultName
-  #   value: "kv-symphony-environments"
 
 pool:
   vmImage: $(agentImage)
@@ -28,5 +24,3 @@ jobs:
   - template: ./template.terraform.destroy.yml
     parameters:
       environmentName: $(environmentName)
-      keyVaultArmSvcConnectionName: $(keyVaultArmSvcConnectionName)
-      keyVaultName: $(keyVaultName)

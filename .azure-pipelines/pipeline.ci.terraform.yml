@@ -8,6 +8,8 @@ pr:
   - none
 
 variables:
+  - group: symphony
+
   - name: agentImage
     value: "ubuntu-latest"
 
@@ -21,14 +23,6 @@ variables:
   # Name of the Environment
   # - name: environmentName
   #   value: "dev"
-
-  # ARM Service Connection Name used for environment Key Vault access
-  # - name: keyVaultArmSvcConnectionName
-  #   value: "Symphony-KV"
-
-  # Environment Key Vault Name
-  # - name: keyVaultName
-  #   value: "kv-symphony-environments"
 
   # Go Lang version
   # - name: goVersion
@@ -56,24 +50,15 @@ stages:
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
 
       - template: ./template.terraform.previewdeploy.yml
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
 
       - template: ./template.terraform.test.yml
         parameters:
           goVersion: "$(goVersion)"
           terraformVersion: "$(terraformVersion)"
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
 
       - template: ./template.terraform.report.yml
-        parameters:
-          keyVaultArmSvcConnectionName: "$(keyVaultArmSvcConnectionName)"
-          keyVaultName: "$(keyVaultName)"
