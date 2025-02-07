@@ -23,7 +23,7 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         description: "Terraform version"
         required: true
-        default: "1.6.2"
+        default: "1.11.0-beta2"
       runLayerTest:
         description: "Run Layers Tests"
         type: boolean

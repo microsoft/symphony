@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
       terraformVersion:
         type: string
         required: true
-        default: "1.6.2"
+        default: "1.11.0-beta2"
 
 permissions:
   id-token: write
