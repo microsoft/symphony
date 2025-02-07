@@ -156,7 +156,7 @@ function create_pipelines_terraform() {
   pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
 
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)"
-  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.6.2 true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.11.0-beta2 true)"
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runLayerTest false true)"
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"
   _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.terraform.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"

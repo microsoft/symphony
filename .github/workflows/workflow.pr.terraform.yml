@@ -23,7 +23,7 @@ concurrency:
 
 env:
   PR_ENVIRONMENT_DIRECTORY: "pr"
-  TERRAFORM_VERSION: "1.6.2"
+  TERRAFORM_VERSION: "1.11.0-beta2"
   RUN_LAYER_TESTS: false
 
 permissions:
