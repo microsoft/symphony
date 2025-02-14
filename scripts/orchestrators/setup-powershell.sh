@@ -29,5 +29,5 @@ mkdir -p tmp/pwsh "${target_path}"
 cd tmp/pwsh
 curl -sSL -o "${filename}" "https://github.com/PowerShell/PowerShell/releases/download/v${VERSION}/${filename}"
 tar -xf "${filename}" -C "${target_path}"
-ln -s "${target_path}/pwsh" /usr/local/bin/pwsh
+sudo ln -s "${target_path}/pwsh" /usr/local/bin/pwsh
 rm -rf tmp/pwsh
