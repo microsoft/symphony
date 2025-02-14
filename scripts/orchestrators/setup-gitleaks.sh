@@ -27,4 +27,4 @@ filename="gitleaks_${VERSION}_linux_${os_architecture}.tar.gz"
 curl -sSL -o "${filename}" "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/${filename}"
 tar -xf "${filename}" gitleaks
 rm -f "${filename}"
-mv -f gitleaks /usr/local/bin/
+sudo mv -f gitleaks /usr/local/bin/

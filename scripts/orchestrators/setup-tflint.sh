@@ -27,4 +27,4 @@ filename="tflint_linux_${os_architecture}.zip"
 curl -sSL -o "${filename}" "https://github.com/terraform-linters/tflint/releases/download/v${VERSION}/${filename}"
 unzip "${filename}"
 rm -f "${filename}"
-mv -f tflint /usr/local/bin/
+sudo mv -f tflint /usr/local/bin/
