@@ -77,6 +77,17 @@ function configure_repo {
 }
 
 function configure_runners {
+  # Replace in all files in ./.github/workflows "runs-on: ubuntu-latest" with "runs-on: self-hosted"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+      for file in ./.github/workflows/*; do
+          sed -i '' -E 's/([[:space:]]*)runs-on: ubuntu-latest([[:space:]]*)/\1runs-on: self-hosted\2/g' "$file"
+      done
+  else
+      for file in ./.github/workflows/*; do
+          sed -i -E 's/([[:space:]]*)runs-on: ubuntu-latest([[:space:]]*)/\1runs-on: self-hosted\2/g' "$file"
+      done
+  fi
+
   # Verify that required variables exist
   local REQUIRED_VARS=(\
       GH_ORG_NAME \

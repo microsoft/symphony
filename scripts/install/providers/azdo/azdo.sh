@@ -168,6 +168,17 @@ function configure_repo {
 }
 
 function configure_runners {
+  # Replace in all files in ./.azure-pipelines "runs-on: ubuntu-latest" with "runs-on: self-hosted"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+      for file in ./.azure-pipelines/*; do
+          sed -i '' -E 's/([[:space:]]*)vmImage: \$\(agentImage\)([[:space:]]*)/\1name: 'Default'\2/g' "$file"
+      done
+  else
+      for file in ./.azure-pipelines/*; do
+          sed -i -E 's/([[:space:]]*)vmImage: \$\(agentImage\)([[:space:]]*)/\1name: 'Default'\2/g' "$file"
+      done
+  fi
+
   # Verify that required variables exist
   local REQUIRED_VARS=(\
       AZDO_ORG_URI \
