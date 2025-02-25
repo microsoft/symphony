@@ -125,7 +125,6 @@ configure_orchestrator() {
   if [[ "$create_private_runners" == "yes" ]]; then
     RUNNERS_RESOURCE_GROUP=""
     RUNNERS_LOCATION=""
-    RUNNERS_VNET=""
     RUNNERS_SUBNET=""
     RUNNERS_COUNT=""
     RUNNERS_PUBLIC_KEY_PATH=""
@@ -134,8 +133,7 @@ configure_orchestrator() {
 
     _prompt_input "Enter the name of an existing resource group to deploy the runners to" RUNNERS_RESOURCE_GROUP
     _select_list_no_display RUNNERS_LOCATION "Enter an Azure Location to deploy the runners to (enter 'list' to view all available locations)" "$AZURE_REGIONS" "location"
-    _prompt_input "Enter the name of an existing virtual network to deploy the runners to" RUNNERS_VNET
-    _prompt_input "Enter the name of an existing subnet to deploy the runners to" RUNNERS_SUBNET
+    _prompt_input "Enter the full resource id of an existing subnet to deploy the runners to" RUNNERS_SUBNET
     _prompt_input "Enter the path to the public key to use for the runners" RUNNERS_PUBLIC_KEY_PATH
     _select_number RUNNERS_COUNT "Number of runners to create"
   fi

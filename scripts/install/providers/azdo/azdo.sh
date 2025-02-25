@@ -185,7 +185,6 @@ function configure_runners {
       AZDO_PAT \
       RUNNERS_RESOURCE_GROUP \
       RUNNERS_LOCATION \
-      RUNNERS_VNET \
       RUNNERS_SUBNET \
       RUNNERS_PUBLIC_KEY_PATH)
   for var in "${REQUIRED_VARS[@]}"; do
@@ -210,8 +209,8 @@ function configure_runners {
   # Optional parameter: Image (default: Ubuntu2404)
   RUNNERS_AZURE_IMAGE=${RUNNERS_AZURE_IMAGE:-Ubuntu2404}
 
-  # Optional parameter: VM name (default: symphony-runner)
-  RUNNERS_VM_NAME=${RUNNERS_VM_NAME:-symphony-runner}
+  # Optional parameter: VM name (default: symphony-azdo-runner)
+  RUNNERS_VM_NAME=${RUNNERS_VM_NAME:-symphony-azdo-runner}-${AZDO_PROJECT_NAME}
 
   # Optional parameter: VM username (default: azureuser)
   RUNNERS_VM_USERNAME=${RUNNERS_VM_USERNAME:-azureuser}
@@ -288,10 +287,9 @@ EOF
     --size \"$RUNNERS_AZURE_VM_SIZE\" \
     --admin-username \"$RUNNERS_VM_USERNAME\" \
     --ssh-key-values \"@$RUNNERS_PUBLIC_KEY_PATH\" \
-    --vnet-name \"$RUNNERS_AZURE_VNET\" \
     --subnet \"$RUNNERS_AZURE_SUBNET\" \
-    --custom-data cloud-init.yaml \
-    --no-wait"
+    --nsg \"\" \
+    --custom-data cloud-init.yaml"
 
   eval $vm_create_command
 
