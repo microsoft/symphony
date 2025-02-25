@@ -2,10 +2,14 @@
 
 # Syntax: ./setup-azcli.sh
 
-# Create a temporary directory for Azure CLI configuration isolation
-temp_dir=$(mktemp -d)
-export AZURE_CONFIG_DIR="$temp_dir"
-echo "AZURE_CONFIG_DIR=$AZURE_CONFIG_DIR" >> $GITHUB_ENV
+# If it's running as a Github action, Create a temporary directory
+# for Azure CLI configuration isolation
+
+if [ "$GITHUB_ACTIONS" == "true" ]; then
+  temp_dir=$(mktemp -d)
+  export AZURE_CONFIG_DIR="$temp_dir"
+  echo "AZURE_CONFIG_DIR=$AZURE_CONFIG_DIR" >> $GITHUB_ENV
+fi
 
 # check if azurecli is already installed
 if command -v az &>/dev/null; then
