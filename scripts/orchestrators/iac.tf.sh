@@ -26,6 +26,7 @@ set_arm_env_vars() {
   export ARM_CLIENT_ID=$client_id
   export ARM_TENANT_ID=$tenant_id
   export ARM_USE_OIDC=true
+  export ARM_USE_AZUREAD=true
   export ARM_STORAGE_USE_AZUREAD=true
 }
 
@@ -49,11 +50,6 @@ init() {
             -backend-config=container_name=${container_name} \
             -backend-config=key=${key} \
             -backend-config=resource_group_name=${resource_group_name} \
-            -backend-config=subscription_id=${ARM_SUBSCRIPTION_ID} \
-            -backend-config=tenant_id=${ARM_TENANT_ID} \
-            -backend-config=client_id=${ARM_CLIENT_ID} \
-            -backend-config=use_oidc=true \
-            -backend-config=use_azuread_auth=true \
             -reconfigure"
 
     terraform init \
@@ -61,11 +57,6 @@ init() {
       -backend-config=container_name=${container_name} \
       -backend-config=key=${key} \
       -backend-config=resource_group_name=${resource_group_name} \
-      -backend-config=subscription_id=${ARM_SUBSCRIPTION_ID} \
-      -backend-config=tenant_id=${ARM_TENANT_ID} \
-      -backend-config=client_id=${ARM_CLIENT_ID} \
-      -backend-config=use_oidc=true \
-      -backend-config=use_azuread_auth=true \
       -reconfigure
   fi
 }
