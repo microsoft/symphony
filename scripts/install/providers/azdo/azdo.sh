@@ -242,11 +242,6 @@ function configure_runners {
           sudo systemctl enable --now docker
           sudo usermod -aG docker $RUNNERS_VM_USERNAME
 
-          echo 'if [ ! -f ~/.config/docker-rootless-done ]; then
-              dockerd-rootless-setuptool.sh install
-              touch ~/.config/docker-rootless-done
-          fi' >> ~/.bashrc
-
           # Install AzDO runner
 
           for i in \$(seq 1 ${RUNNERS_COUNT}); do
