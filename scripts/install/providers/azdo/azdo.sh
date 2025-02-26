@@ -228,6 +228,7 @@ function configure_runners {
     - uidmap
     - unzip
     - docker.io
+    - build-essential
 
   write_files:
     - path: /agent-install.sh

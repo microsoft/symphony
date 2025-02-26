@@ -158,6 +158,7 @@ function configure_runners {
     - uidmap
     - unzip
     - docker.io
+    - build-essential
 
   write_files:
     - path: /runner-install.sh
