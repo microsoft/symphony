@@ -19,9 +19,10 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           arguments: ${{ parameters.terraformVersion }}
           bashEnvValue: "~/.profile"
-          failOnStderr: true
+          failOnStderr: false
           targetType: "inline"
           script: |
+            set -e
             ./setup-azcli.sh
             ./setup-terraform.sh ${{ parameters.terraformVersion }}
             ./setup-tflint.sh
