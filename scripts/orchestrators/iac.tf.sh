@@ -27,6 +27,9 @@ set_arm_env_vars() {
   export ARM_TENANT_ID=$tenant_id
   export ARM_USE_OIDC=true
   export ARM_STORAGE_USE_AZUREAD=true
+
+  export TF_VAR_target_tenant_id=$tenant_id
+  export TF_VAR_target_subscription_id=$subscription_id
 }
 
 init() {
