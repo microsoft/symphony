@@ -220,6 +220,7 @@ EOF
     --nsg \"\" \
     --custom-data cloud-init.yaml"
 
+  _debug "Running command: $vm_create_command"
   eval $vm_create_command
 
   rm cloud-init.yaml
