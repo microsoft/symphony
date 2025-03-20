@@ -33,16 +33,21 @@ function load_inputs {
     _select_yes_no IS_Private_GH_Repo "Is GitHub Repo Private (yes/no)" "false"
   fi
 
-  if [ -z "$GH_PAT" ]; then
-    _prompt_input "Enter GitHub PAT" GH_PAT
-  fi
-
   $(gh auth status >/dev/null 2>&1)
   code=$?
   if [ "$code" == "0" ]; then
     _information "GitHub Cli is already logged in. Bootstrap with existing authorization."
   else
-    echo "$GH_PAT" | gh auth login --with-token
+    local login_to_github
+    _select_yes_no login_to_github "Do an interactive login to the gh cli" "true"
+    if [ "$login_to_github" == "true" ]; then
+      gh auth login
+    else
+      if [ -z "$GH_PAT" ]; then
+        _prompt_input "Enter GitHub PAT" GH_PAT
+      fi
+      echo "$GH_PAT" | gh auth login --with-token
+    fi
   fi
 }
 
@@ -54,7 +59,10 @@ function configure_repo {
     visibility="--private"
   fi
 
-  command="gh repo create $GH_ORG_NAME/$GH_Repo_NAME $visibility"
+  git init
+  git branch -m main
+
+  command="gh repo create $GH_ORG_NAME/$GH_Repo_NAME $visibility --source=."
   _information "running - $command"
   eval "$command"
 
@@ -65,13 +73,159 @@ function configure_repo {
   _debug "$CODE_REPO_GIT_HTTP_URL"
   _debug "$CODE_REPO_ID"
 
-  # Configure remote for local git repo
-  remoteWithCreds="https://${GH_PAT}@github.com/${GH_ORG_NAME}/${GH_Repo_NAME}.git"
-  git init
-  git branch -m main
-  git remote add origin "$remoteWithCreds"
-
   _success "Repo '${GH_Repo_NAME}' created."
+}
+
+function configure_runners {
+  # Replace in all files in ./.github/workflows "runs-on: ubuntu-latest" with "runs-on: self-hosted"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+      for file in ./.github/workflows/*; do
+          sed -i '' -E 's/([[:space:]]*)runs-on: ubuntu-latest([[:space:]]*)/\1runs-on: self-hosted\2/g' "$file"
+      done
+  else
+      for file in ./.github/workflows/*; do
+          sed -i -E 's/([[:space:]]*)runs-on: ubuntu-latest([[:space:]]*)/\1runs-on: self-hosted\2/g' "$file"
+      done
+  fi
+
+  # Verify that required variables exist
+  local REQUIRED_VARS=(\
+      GH_ORG_NAME \
+      GH_Repo_NAME \
+      RUNNERS_RESOURCE_GROUP \
+      RUNNERS_LOCATION \
+      RUNNERS_SUBNET \
+      RUNNERS_PUBLIC_KEY_PATH)
+  for var in "${REQUIRED_VARS[@]}"; do
+      if [[ -z "${!var}" ]]; then
+          _error "The variable '$var' is not defined. Aborting."
+          exit 1
+      fi
+  done
+
+  # Validate that the file exists
+  if [[ ! -f "$RUNNERS_PUBLIC_KEY_PATH" ]]; then
+      _error "The specified public key file '$RUNNERS_PUBLIC_KEY_PATH' does not exist. Aborting."
+      exit 1
+  fi
+
+  # Optional parameter: VM size (default: Standard_D2s_v3)
+  RUNNERS_AZURE_VM_SIZE=${RUNNERS_AZURE_VM_SIZE:-Standard_D2s_v3}
+
+  # Optional parameter: Number of runners to launch (default: 1)
+  RUNNERS_COUNT=${RUNNERS_COUNT:-1}
+
+  # Optional parameter: Image (default: Ubuntu2404)
+  RUNNERS_AZURE_IMAGE=${RUNNERS_AZURE_IMAGE:-Ubuntu2404}
+
+  # Optional parameter: VM name (default: symphony-github-runner)
+  RUNNERS_VM_NAME=${RUNNERS_VM_NAME:-symphony-github-runner}-${GH_Repo_NAME}
+
+  # Optional parameter: VM username (default: azureuser)
+  RUNNERS_VM_USERNAME=${RUNNERS_VM_USERNAME:-azureuser}
+
+  # Retrieve multiple GitHub runner registration tokens
+  _information "Retrieving ${RUNNERS_COUNT} GitHub runner registration tokens..."
+  local tokens=()
+
+  for i in $(seq 1 "$RUNNERS_COUNT"); do
+      local token=$(gh api -X POST /repos/${GH_ORG_NAME}/${GH_Repo_NAME}/actions/runners/registration-token -q .token)
+
+      if [[ "$token" == "null" || -z "$token" ]]; then
+          _error "Error: Failed to retrieve token for runner $i."
+          exit 1
+      fi
+
+      tokens+=("$token")
+
+      _information "Sleeping for 1 second to avoid repeated token requests..."
+      sleep 1
+  done
+
+  _information "All tokens retrieved successfully."
+
+  # Convert tokens array into a space-separated string
+  local token_string=$(IFS=" " ; echo "${tokens[*]}")
+
+  # Generate the cloud-init file (cloud-init.yaml)
+  cat > cloud-init.yaml <<EOF
+  #cloud-config
+  package_update: true
+
+  packages:
+    - curl
+    - tar
+    - uidmap
+    - unzip
+    - docker.io
+    - build-essential
+
+  write_files:
+    - path: /runner-install.sh
+      permissions: '0777'
+      content: |
+          #!/usr/bin/env bash
+
+          cd /home/$RUNNERS_VM_USERNAME
+
+          # Enable Docker
+          sudo systemctl enable --now docker
+          sudo usermod -aG docker $RUNNERS_VM_USERNAME
+
+          # Install GitHub runner
+
+          # Tokens from cloud-init
+          TOKENS=(${token_string})
+
+          for i in \$(seq 1 ${RUNNERS_COUNT}); do
+              RUNNER_DIR="/home/$RUNNERS_VM_USERNAME/github-runner-\$i"
+              echo "Configuring runner in \$RUNNER_DIR..."
+              mkdir -p "\$RUNNER_DIR"
+              cd "\$RUNNER_DIR"
+
+              # Download a fixed version of the runner
+              RUNNER_VERSION="2.322.0"
+              curl -O -L "https://github.com/actions/runner/releases/download/v\${RUNNER_VERSION}/actions-runner-linux-x64-\${RUNNER_VERSION}.tar.gz"
+              tar xzf "actions-runner-linux-x64-\${RUNNER_VERSION}.tar.gz"
+
+              # Configure the runner non-interactively using its respective token
+              ./config.sh --url "https://github.com/${GH_ORG_NAME}/${GH_Repo_NAME}" --token "\${TOKENS[\$((i-1))]}" --unattended --name "runner-\$i"
+
+              # Install the service
+              sudo ./svc.sh install
+
+              # Start the runner in the background
+              sudo ./svc.sh start
+
+              # Return to the home directory for the next iteration
+              cd /home/$RUNNERS_VM_USERNAME
+          done
+  runcmd:
+    - sudo -u $RUNNERS_VM_USERNAME /runner-install.sh
+EOF
+
+  _information "cloud-init.yaml file generated."
+
+  # Create the VM using Azure CLI with the specified parameters and cloud-init
+  _information "Creating the VM in Azure..."
+  vm_create_command="az vm create \
+    --resource-group \"$RUNNERS_RESOURCE_GROUP\" \
+    --name \"$RUNNERS_VM_NAME\" \
+    --location \"$RUNNERS_LOCATION\" \
+    --image \"$RUNNERS_AZURE_IMAGE\" \
+    --size \"$RUNNERS_AZURE_VM_SIZE\" \
+    --admin-username \"$RUNNERS_VM_USERNAME\" \
+    --ssh-key-values \"@$RUNNERS_PUBLIC_KEY_PATH\" \
+    --subnet \"$RUNNERS_AZURE_SUBNET\" \
+    --nsg \"\" \
+    --custom-data cloud-init.yaml"
+
+  _debug "Running command: $vm_create_command"
+  eval $vm_create_command
+
+  rm cloud-init.yaml
+
+  _information "The VM creation request has been submitted."
 }
 
 function _add_federated_credential {

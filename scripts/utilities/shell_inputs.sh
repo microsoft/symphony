@@ -73,6 +73,22 @@ function _select_list() {
   printf "\e[0m"
 }
 
+function _select_number() {
+  variable="$1"
+  message="${2:-Please enter a number between 1 and 9}"
+
+  _prompt "> $message : "
+  read -r input
+  re='^[1-9]$'
+  while ! [[ "$input" =~ $re ]]; do
+    _error "$input is not a valid value. Please enter a number from 1 to 9."
+    _prompt "$message"
+    read -r input
+  done
+  eval "$variable=$input"
+  printf "\e[0m"
+}
+
 function _select_yes_no() {
   variable="$1"
   message="${2:-Please make a selection}"

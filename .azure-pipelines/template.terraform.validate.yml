@@ -19,9 +19,10 @@ jobs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           arguments: ${{ parameters.terraformVersion }}
           bashEnvValue: "~/.profile"
-          failOnStderr: true
+          failOnStderr: false
           targetType: "inline"
           script: |
+            set -e
             ./setup-azcli.sh
             ./setup-terraform.sh ${{ parameters.terraformVersion }}
             ./setup-tflint.sh
@@ -71,7 +72,6 @@ jobs:
             export STATE_STORAGE_ACCOUNT="$(stateStorageAccount)"
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
-            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.validate.sh
 
@@ -91,7 +91,6 @@ jobs:
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
             export TEST_TAG="module_tests"
-            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.test.sh
 

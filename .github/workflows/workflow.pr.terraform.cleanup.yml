@@ -12,7 +12,7 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
 
 env:
-  TERRAFORM_VERSION: "1.6.2"
+  TERRAFORM_VERSION: "1.11.0"
 
 permissions:
   id-token: write
