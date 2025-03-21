@@ -160,6 +160,21 @@ function _validate_inputs {
   return $code
 }
 
+# Converts either a relative or absolute path to an absolute path.
+# Useful when reading a path in from a user prompt (which doesn't guarantee an absolute path)
+function to_absolute_path {
+  local path=$1
+  local full_path=""
+
+  if [[ -z "$path" ]]; then
+    _error "Path cannot be empty."
+    exit 1
+  fi
+
+  eval "full_path=$path"
+  echo "$full_path"
+}
+
 function usage() {
   # me is defined in the entry point script that sources this file.
 

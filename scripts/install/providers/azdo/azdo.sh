@@ -194,6 +194,14 @@ function configure_runners {
       fi
   done
 
+  # Convert the public key path to an absolute path
+  # This will convert a relative path , but leave an absolute path unchanged
+  RUNNERS_PUBLIC_KEY_PATH=$(to_absolute_path "$RUNNERS_PUBLIC_KEY_PATH")
+  if [[ $? -ne 0 ]]; then
+      _error "$RUNNERS_PUBLIC_KEY_PATH"
+      exit 1
+  fi
+
   # Validate that the file exists
   if [[ ! -f "$RUNNERS_PUBLIC_KEY_PATH" ]]; then
       _error "The specified public key file '$RUNNERS_PUBLIC_KEY_PATH' does not exist. Aborting."
@@ -256,7 +264,7 @@ function configure_runners {
               tar xzf "vsts-agent-linux-x64-\${RUNNER_VERSION}.tar.gz"
 
               # Configure the runner non-interactively using its respective token
-              ./config.sh --unattended --url "${AZDO_ORG_URI}" --auth pat --token "${token}" --pool "Default" --agent "agent-\$i" --acceptTeeEula
+              ./config.sh --unattended --url "${AZDO_ORG_URI}" --auth pat --token "${token}" --pool "Default" --agent "${AZDO_PROJECT_NAME}-agent-\$i" --acceptTeeEula
 
               # Install the service
               sudo ./svc.sh install
