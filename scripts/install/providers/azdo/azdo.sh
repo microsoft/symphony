@@ -38,6 +38,40 @@ function load_inputs {
   fi
 
   if [ -z "$AZDO_PAT" ]; then
+    # If on PAAS, ask to use az cli credentials instead of an actual PAT
+    if [ "$INSTALL_TYPE" == "PAAS" ]; then
+
+      local use_az_cli_credentials_azdo=""
+      _select_yes_no use_az_cli_credentials_azdo "Use Azure CLI credentials for Azure DevOps" "true"
+
+      if [ "$use_az_cli_credentials_azdo" == "yes" ]; then
+        _information "Retrieving a short lived access token for AzDO..."
+
+        # If AZDO_TENANT_ID is set, use it
+        if [ -n "$AZDO_TENANT_ID" ]; then
+          tenant_id=$AZDO_TENANT_ID
+        else
+          # Try to get the managedByTenantId first
+          local tenant_id=$(az account show --query managedByTenants[0].tenantId -o tsv)
+
+          # If that is empty, fallback to the tenantId
+          if [ -z "$tenant_id" ]; then
+              tenant_id=$(az account show --query tenantId -o tsv)
+          fi
+        fi
+
+        _information "Using tenant_id: $tenant_id"
+
+        local azdo_resource_id="499b84ac-1321-427f-aa17-267ca6975798"
+
+        AZDO_PAT=$(az account get-access-token --tenant $tenant_id --resource $azdo_resource_id --query accessToken --output tsv)
+
+        _information "Retrieved an access token for AzDO via az cli!"
+      fi
+    fi
+  fi
+
+  if [ -z "$AZDO_PAT" ]; then
     _prompt_input "Enter Azure Devops PAT" AZDO_PAT
   fi
 }
@@ -133,6 +167,134 @@ function configure_repo {
   _success "Project '${AZDO_PROJECT_NAME}' created."
 }
 
+function configure_runners {
+  # Replace in all files in ./.azure-pipelines "runs-on: ubuntu-latest" with "runs-on: self-hosted"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+      for file in ./.azure-pipelines/*; do
+          sed -i '' -E 's/([[:space:]]*)vmImage: \$\(agentImage\)([[:space:]]*)/\1name: 'Default'\2/g' "$file"
+      done
+  else
+      for file in ./.azure-pipelines/*; do
+          sed -i -E 's/([[:space:]]*)vmImage: \$\(agentImage\)([[:space:]]*)/\1name: 'Default'\2/g' "$file"
+      done
+  fi
+
+  # Verify that required variables exist
+  local REQUIRED_VARS=(\
+      AZDO_ORG_URI \
+      AZDO_PAT \
+      RUNNERS_RESOURCE_GROUP \
+      RUNNERS_LOCATION \
+      RUNNERS_SUBNET \
+      RUNNERS_PUBLIC_KEY_PATH)
+  for var in "${REQUIRED_VARS[@]}"; do
+      if [[ -z "${!var}" ]]; then
+          _error "The variable '$var' is not defined. Aborting."
+          exit 1
+      fi
+  done
+
+  # Validate that the file exists
+  if [[ ! -f "$RUNNERS_PUBLIC_KEY_PATH" ]]; then
+      _error "The specified public key file '$RUNNERS_PUBLIC_KEY_PATH' does not exist. Aborting."
+      exit 1
+  fi
+
+  # Optional parameter: VM size (default: Standard_D2s_v3)
+  RUNNERS_AZURE_VM_SIZE=${RUNNERS_AZURE_VM_SIZE:-Standard_D2s_v3}
+
+  # Optional parameter: Number of runners to launch (default: 1)
+  RUNNERS_COUNT=${RUNNERS_COUNT:-1}
+
+  # Optional parameter: Image (default: Ubuntu2404)
+  RUNNERS_AZURE_IMAGE=${RUNNERS_AZURE_IMAGE:-Ubuntu2404}
+
+  # Optional parameter: VM name (default: symphony-azdo-runner)
+  RUNNERS_VM_NAME=${RUNNERS_VM_NAME:-symphony-azdo-runner}-${AZDO_PROJECT_NAME}
+
+  # Optional parameter: VM username (default: azureuser)
+  RUNNERS_VM_USERNAME=${RUNNERS_VM_USERNAME:-azureuser}
+
+  local token=$AZDO_PAT
+
+  # Generate the cloud-init file (cloud-init.yaml)
+  cat > cloud-init.yaml <<EOF
+  #cloud-config
+  package_update: true
+
+  packages:
+    - curl
+    - tar
+    - uidmap
+    - unzip
+    - docker.io
+    - build-essential
+
+  write_files:
+    - path: /agent-install.sh
+      permissions: '0777'
+      content: |
+          #!/usr/bin/env bash
+
+          cd /home/$RUNNERS_VM_USERNAME
+
+          # Enable Docker
+          sudo systemctl enable --now docker
+          sudo usermod -aG docker $RUNNERS_VM_USERNAME
+
+          # Install AzDO runner
+
+          for i in \$(seq 1 ${RUNNERS_COUNT}); do
+              RUNNER_DIR="/home/$RUNNERS_VM_USERNAME/azdo-runner-\$i"
+              echo "Configuring runner in \$RUNNER_DIR..."
+              mkdir -p "\$RUNNER_DIR"
+              cd "\$RUNNER_DIR"
+
+              # Download a fixed version of the runner
+              RUNNER_VERSION="4.251.0"
+              curl -O -L "https://vstsagentpackage.azureedge.net/agent/\${RUNNER_VERSION}/vsts-agent-linux-x64-\${RUNNER_VERSION}.tar.gz"
+              tar xzf "vsts-agent-linux-x64-\${RUNNER_VERSION}.tar.gz"
+
+              # Configure the runner non-interactively using its respective token
+              ./config.sh --unattended --url "${AZDO_ORG_URI}" --auth pat --token "${token}" --pool "Default" --agent "agent-\$i" --acceptTeeEula
+
+              # Install the service
+              sudo ./svc.sh install
+
+              # Start the runner in the background
+              sudo ./svc.sh start
+
+              # Return to the home directory for the next iteration
+              cd /home/$RUNNERS_VM_USERNAME
+          done
+  runcmd:
+    - sudo -u $RUNNERS_VM_USERNAME /agent-install.sh
+EOF
+
+  echo "cloud-init.yaml file generated."
+
+  # Create the VM using Azure CLI with the specified parameters and cloud-init
+  _information "Creating the VM in Azure..."
+  vm_create_command="az vm create \
+    --resource-group \"$RUNNERS_RESOURCE_GROUP\" \
+    --name \"$RUNNERS_VM_NAME\" \
+    --location \"$RUNNERS_LOCATION\" \
+    --image \"$RUNNERS_AZURE_IMAGE\" \
+    --size \"$RUNNERS_AZURE_VM_SIZE\" \
+    --admin-username \"$RUNNERS_VM_USERNAME\" \
+    --ssh-key-values \"@$RUNNERS_PUBLIC_KEY_PATH\" \
+    --subnet \"$RUNNERS_AZURE_SUBNET\" \
+    --nsg \"\" \
+    --custom-data cloud-init.yaml"
+
+  _debug "Running command: $vm_create_command"
+  eval $vm_create_command
+
+  rm cloud-init.yaml
+
+  _information "The VM creation request has been submitted."
+}
+
 function configure_credentials {
   _information "Configure Service Connections"
   _create_arm_svc_connection
@@ -156,7 +318,7 @@ function create_pipelines_terraform() {
   pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
 
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion goVersion 1.18.1 true)"
-  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.6.2 true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion terraformVersion 1.11.0 true)"
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runLayerTest false true)"
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion runBackupState true true)"
   _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.terraform.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
@@ -216,7 +378,7 @@ function _create_arm_svc_connection() {
   sc_subject=$(jq <"$AZDO_TEMP_LOG_PATH/casc.json" -r '.authorization.parameters.workloadIdentityFederationSubject')
 
 
-  # Configuring federated identity for Github Actions, based on repo name and environment name
+  # Configuring federated identity for Azure DevOps Pipelines, based on repo name and environment name
   parameters=$(cat <<EOF
   {
     "name": "symphony-credential-${AZDO_PROJECT_ID}",

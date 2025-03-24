@@ -26,9 +26,10 @@ jobs:
         inputs:
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
           bashEnvValue: "~/.profile"
-          failOnStderr: true
+          failOnStderr: false
           targetType: "inline"
           script: |
+            set -e
             ./setup-azcli.sh
             ./setup-powershell.sh
             ./setup-pester.sh
