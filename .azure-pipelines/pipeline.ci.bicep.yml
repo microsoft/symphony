@@ -14,15 +14,9 @@ variables:
 
   - name: agentImage
     value: "ubuntu-latest"
-  # Commented out to use the values from the Azdo pipeline variables
-  # - name: environmentName
-  #   value: "dev"
 
-  # - name: locationName
-  #   value: "westus"
-
-  - name: excludedFolders
-    value: ","
+  # Several other variables are already set on the AzDO pipeline:
+  #   environmentName, locationName, excludedFolders, tenantId, subscriptionId
 
 pool:
   vmImage: $(agentImage)
@@ -39,6 +33,8 @@ jobs:
       environmentName: $(environmentName)
       locationName: $(locationName)
       excludedFolders: $(excludedFolders)
+      tenantId: $(tenantId)
+      subscriptionId: $(subscriptionId)
 
   - template: ./template.bicep.test.yml
     parameters:
