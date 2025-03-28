@@ -6,6 +6,10 @@ parameters:
     type: string
   - name: excludedFolders
     type: string
+  - name: tenantId
+    type: string
+  - name: subscriptionId
+    type: string
 
 jobs:
   - job: Test
@@ -41,31 +45,29 @@ jobs:
           path: "$(System.DefaultWorkingDirectory)/IAC/Bicep/bicep"
           key: '"$(Build.BuildId)"'
 
-      - task: AzurePowerShell@5
+      - task: AzureCLI@2
         displayName: 'Run E2E tests'
         inputs:
           azureSubscription: symphony
-          ScriptType: 'InlineScript'
-          pwsh: true
-          azurePowerShellVersion: 'LatestVersion'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
           workingDirectory: "$(System.DefaultWorkingDirectory)/scripts/orchestrators"
-          Inline: |
-            $bashScript = @"
-              export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
-              export RUN_ID="$(Build.BuildId)"
-              export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
-              export LOCATION_NAME="${{ parameters.locationName }}"
+          inlineScript: |
+            export WORKSPACE_PATH="$(System.DefaultWorkingDirectory)"
+            export RUN_ID="$(Build.BuildId)"
+            export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
+            export LOCATION_NAME="${{ parameters.locationName }}"
 
-              source ./tests.runner.sh
+            pwsh -Command "Connect-AzAccount -ApplicationId $servicePrincipalId -Tenant ${{ parameters.tenantId }} -Subscription ${{ parameters.subscriptionId }} -FederatedToken $idToken"
 
-              pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep
-                load_dotenv
-              popd
+            source ./tests.runner.sh
 
-              bicep pester
-            "@
+            pushd $(System.DefaultWorkingDirectory)/IAC/Bicep/bicep
+              load_dotenv
+            popd
 
-            bash -c "$bashScript"
+            bicep pester
 
       - task: PublishTestResults@2
         displayName: "Publish E2E test results"

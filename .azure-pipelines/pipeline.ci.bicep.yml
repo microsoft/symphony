@@ -27,6 +27,8 @@ jobs:
       environmentName: $(environmentName)
       locationName: $(locationName)
       excludedFolders: $(excludedFolders)
+      tenantId: $(tenantId)
+      subscriptionId: $(subscriptionId)
 
   - template: ./template.bicep.previewdeploy.yml
     parameters:
@@ -41,3 +43,5 @@ jobs:
       environmentName: $(environmentName)
       locationName: $(locationName)
       excludedFolders: $(excludedFolders)
+      tenantId: $(tenantId)
+      subscriptionId: $(subscriptionId)
