@@ -46,6 +46,7 @@ jobs:
             export STATE_CONTAINER="$(stateContainer)"
             export ENVIRONMENT_NAME="$(environmentName)"
             export TEST_TAG=""
+            export ARM_OIDC_TOKEN="$idToken"
 
             ./iac.tf.test.sh
 

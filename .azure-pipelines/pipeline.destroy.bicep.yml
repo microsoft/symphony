@@ -16,13 +16,8 @@ variables:
   - name: agentImage
     value: "ubuntu-latest"
 
-  # Commented out to use the values from the Azdo pipeline variables
-  # Name of the Environment
-  # - name: environmentName
-  #   value: "dev"
-
-  # - name: locationName
-  #   value: "westus"
+  # Several other variables are already set on the AzDO pipeline:
+  #   environmentName, locationName, tenantId, subscriptionId
 
 
 pool:
@@ -33,3 +28,5 @@ jobs:
     parameters:
       environmentName: $(environmentName)
       locationName: $(locationName)
+      tenantId: $(tenantId)
+      subscriptionId: $(subscriptionId)

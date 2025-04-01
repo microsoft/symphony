@@ -7,3 +7,13 @@ variable "env" {
   description = "The name of the environment to be deployed"
   type        = string
 }
+
+variable "target_tenant_id" {
+  description = "The target tenant id in which to deploy resources"
+  type        = string
+}
+
+variable "target_subscription_id" {
+  description = "The target subscription id in which to deploy resources"
+  type        = string
+}

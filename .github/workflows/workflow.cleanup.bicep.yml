@@ -7,6 +7,12 @@ on: # yamllint disable-line rule:truthy
       pullRequestNumber:
         description: "Pull Request Number"
         required: true
+      tenantId:
+        description: "Target tenant id (if overriding default)"
+        required: false
+      subscriptionId:
+        description: "Target subscription (if overriding default)"
+        required: false
 
 permissions:
   id-token: write
@@ -18,4 +24,6 @@ jobs:
     with:
       pullRequestnumber: ${{ github.event.inputs.pullRequestNumber }}
       githubEnvironment: symphony
+      tenantId: ${{ github.event.inputs.tenantId }}
+      subscriptionId: ${{ github.event.inputs.subscriptionId }}
     secrets: inherit

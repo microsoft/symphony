@@ -335,10 +335,14 @@ function create_pipelines_bicep() {
   pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)"
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion excludedFolders , true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion tenantId $SP_TENANT_ID true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion subscriptionId $SP_SUBSCRIPTION_ID true)"
   _create_pipeline "CI-Deploy" "/.azure-pipelines/pipeline.ci.bicep.yml" "Deploy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
   pipelineVariables=$(_get_pipeline_var_defintion environmentName dev true)
   pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion locationName westus true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion tenantId $SP_TENANT_ID true)"
+  pipelineVariables="$pipelineVariables, $(_get_pipeline_var_defintion subscriptionId $SP_SUBSCRIPTION_ID true)"
   _create_pipeline "Destroy" "/.azure-pipelines/pipeline.destroy.bicep.yml" "Destroy" "${pipelineVariables}" "${AZDO_PROJECT_NAME}"
 
 }
