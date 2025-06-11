@@ -180,7 +180,7 @@ configure_orchestrator() {
     create_pipelines_bicep
   else
     # Update SA state Name
-    eval "git grep -l 'symphonyremotestate360' | xargs $sedCommand \"s/symphonyremotestate360/${SYMPHONY_SA_STATE_NAME}/g\""
+    eval "git grep -l 'symphonyremotestate361' | xargs $sedCommand \"s/symphonyremotestate361/${SYMPHONY_SA_STATE_NAME}/g\""
     create_pipelines_terraform
   fi
 
