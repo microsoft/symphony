@@ -27,6 +27,7 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       githubEnvironment: ${{ inputs.githubEnvironment }}
+    secrets: inherit
 
   Destroy:
     name: Destroy

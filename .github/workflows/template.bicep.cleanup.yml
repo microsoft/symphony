@@ -24,6 +24,7 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       githubEnvironment: symphony
+    secrets: inherit
 
   Destroy:
     name: Destroy
