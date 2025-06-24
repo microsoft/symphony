@@ -90,12 +90,24 @@ bicep() {
     pushd ./end_to_end
     # if the test file is not specified, run for all files
     if [ -z "${1}" ]; then
-      pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML -EnableExit"
+      pwsh -Command "\$config = New-PesterConfiguration; \
+      \$config.Run.Path = '.'; \
+      \$config.Output.Verbosity = 'Detailed'; \
+      \$config.TestResult.Enabled = \$true; \
+      \$config.TestResult.OutputPath = 'test.xml'; \
+      \$config.TestResult.OutputFormat = 'NUnitXml'; \
+      Invoke-Pester -Configuration \$config"
     else
       TEST_FILE=$(find ${1})
 
       if [ ! -z "${TEST_FILE}" ]; then
-        pwsh -Command "Invoke-Pester -OutputFile test.xml -OutputFormat NUnitXML ${TEST_FILE} -EnableExit"
+        pwsh -Command "\$config = New-PesterConfiguration; \
+        \$config.Run.Path = '${TEST_FILE}'; \
+        \$config.Output.Verbosity = 'Detailed'; \
+        \$config.TestResult.Enabled = \$true; \
+        \$config.TestResult.OutputPath = 'test.xml'; \
+        \$config.TestResult.OutputFormat = 'NUnitXml'; \
+        Invoke-Pester -Configuration \$config"
       fi
     fi
 
