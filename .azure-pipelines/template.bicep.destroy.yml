@@ -4,6 +4,10 @@ parameters:
     type: string
   - name: locationName
     type: string
+  - name: tenantId
+    type: string
+  - name: subscriptionId
+    type: string
 
 jobs:
   - job: Destroy
@@ -27,5 +31,8 @@ jobs:
             export RUN_ID="$(Build.BuildId)"
             export ENVIRONMENT_NAME="${{ parameters.environmentName }}"
             export LOCATION_NAME="${{ parameters.locationName }}"
+
+            az login --service-principal --tenant ${{ parameters.tenantId }} -u $servicePrincipalId --federated-token $idToken
+            az account set --subscription ${{ parameters.subscriptionId }}
 
             ./iac.bicep.destroy.sh

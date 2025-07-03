@@ -20,6 +20,12 @@ on: # yamllint disable-line rule:truthy
         description: "Name of the deployment Location"
         required: true
         default: "westus"
+      tenantId:
+        description: "Target tenant id (if overriding default)"
+        required: false
+      subscriptionId:
+        description: "Target subscription (if overriding default)"
+        required: false
 
 permissions:
   id-token: write
@@ -39,6 +45,8 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
+      tenantId: ${{ github.event.inputs.tenantId }}
+      subscriptionId: ${{ github.event.inputs.subscriptionId }}
     secrets: inherit
 
   PreviewDeploy:
@@ -50,6 +58,8 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
+      tenantId: ${{ github.event.inputs.tenantId }}
+      subscriptionId: ${{ github.event.inputs.subscriptionId }}
     secrets: inherit
   Test:
     needs: PreviewDeploy
@@ -59,4 +69,6 @@ jobs:
       locationName: ${{ github.event.inputs.locationName }}
       branchName: ${{ github.ref_name }}
       githubEnvironment: symphony
+      tenantId: ${{ github.event.inputs.tenantId }}
+      subscriptionId: ${{ github.event.inputs.subscriptionId }}
     secrets: inherit
