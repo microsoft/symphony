@@ -27,6 +27,7 @@ jobs:
       eventName: NewEnvironment
       eventGroupId: PR-${{ inputs.pullRequestNumber }}-${{ github.repository_id }}
       githubEnvironment: ${{ inputs.githubEnvironment }}
+    secrets: inherit
 
   Destroy:
     name: Destroy
@@ -70,6 +71,9 @@ jobs:
               name=$(echo "${event}" | jq -r '.Name')
               directory=$(echo "${event}" | jq -r '.Directory')
 
+              echo "Fetching commit: $sha"
+              git fetch origin "${sha}"
+              echo "Checking out commit: $sha"
               git checkout "${sha}"
               echo "Destroying environment: $name"
               export ENVIRONMENT_NAME=$name
