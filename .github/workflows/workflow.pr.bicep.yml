@@ -63,7 +63,7 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
 
@@ -126,7 +126,7 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge # Now, deploy the diff on top of it
       githubEnvironment: symphony
     secrets: inherit
 
@@ -136,7 +136,7 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
 
@@ -147,6 +147,6 @@ jobs:
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       locationName: ${{ needs.Setup.outputs.locationName }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
