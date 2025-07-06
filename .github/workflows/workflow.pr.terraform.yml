@@ -68,7 +68,7 @@ jobs:
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
       runLayerTest: ${{ needs.Setup.outputs.runLayerTests }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
 
@@ -110,7 +110,7 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      branchName: ${{ github.head_ref }} # Now, deploy the diff on top of it
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge # Now, deploy the diff on top of it
       githubEnvironment: symphony
     secrets: inherit
 
@@ -121,7 +121,7 @@ jobs:
       environmentName: ${{  needs.Setup.outputs.environmentName }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
       goVersion: "1.18.1"
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
 
@@ -131,7 +131,7 @@ jobs:
     uses: ./.github/workflows/template.terraform.report.yml
     with:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
 
@@ -143,6 +143,6 @@ jobs:
       environmentName: ${{ needs.Setup.outputs.environmentName }}
       environmentDirectory: ${{ needs.Setup.outputs.prEnvironmentDirectory }}
       terraformVersion: ${{ needs.Setup.outputs.terraformVersion }}
-      branchName: ${{ github.head_ref }}
+      branchName: refs/pull/${{ github.event.pull_request.number }}/merge
       githubEnvironment: symphony
     secrets: inherit
