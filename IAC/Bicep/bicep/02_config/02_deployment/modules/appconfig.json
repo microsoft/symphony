@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.177.2456",
+      "templateHash": "3512017634112791455"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "layerName": {
+      "type": "string"
+    },
+    "configKeyValues": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "resources": {
+    "appConfig": {
+      "type": "Microsoft.AppConfiguration/configurationStores",
+      "apiVersion": "2022-05-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "tags": {
+        "EnvironmentName": "[parameters('environment')]",
+        "LayerName": "[parameters('layerName')]",
+        "GeneratedBy": "symphony"
+      }
+    },
+    "appConfigEntries": {
+      "copy": {
+        "name": "appConfigEntries",
+        "count": "[length(parameters('configKeyValues'))]"
+      },
+      "type": "Microsoft.AppConfiguration/configurationStores/keyValues",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('configKeyValues')[copyIndex()].name)]",
+      "properties": {
+        "value": "[parameters('configKeyValues')[copyIndex()].value]",
+        "contentType": "text/plain"
+      },
+      "dependsOn": [
+        "appConfig"
+      ]
+    }
+  },
+  "outputs": {
+    "id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('name'))]"
+    },
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]"
+    },
+    "keys": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('configKeyValues'))]",
+        "input": "[parameters('configKeyValues')[copyIndex()].name]"
+      }
+    }
+  }
+}

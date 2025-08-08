@@ -1,0 +1,204 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.177.2456",
+      "templateHash": "5134752307606428976"
+    }
+  },
+  "parameters": {
+    "environment": {
+      "type": "string"
+    },
+    "layerName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]"
+    },
+    "deploymentName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "_deploymentName": "[if(empty(parameters('deploymentName')), uniqueString(subscription().subscriptionId, parameters('location'), parameters('environment')), parameters('deploymentName'))]",
+    "uniqueToken": "[substring(uniqueString(variables('_deploymentName'), parameters('layerName')), 0, 6)]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-resourceGroupNameGenerator', variables('_deploymentName'))]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "rg-config"
+          },
+          "prefix": {
+            "value": "[parameters('environment')]"
+          },
+          "uniqueToken": {
+            "value": "[variables('uniqueToken')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.177.2456",
+              "templateHash": "3794219063409966570"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "maxLength": 12
+            },
+            "delimiter": {
+              "type": "string",
+              "defaultValue": "-",
+              "maxLength": 1
+            },
+            "prefix": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "suffix": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "uniqueToken": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "suffixLength": {
+              "type": "int",
+              "defaultValue": 3,
+              "minValue": 0,
+              "maxValue": 6
+            },
+            "suffixGenerated": {
+              "type": "bool",
+              "defaultValue": true
+            }
+          },
+          "variables": {
+            "outputPrefix": "[if(empty(parameters('prefix')), parameters('name'), format('{0}{1}{2}', parameters('prefix'), parameters('delimiter'), parameters('name')))]",
+            "outputSuffixTemp": "[if(parameters('suffixGenerated'), substring(uniqueString(parameters('uniqueToken'), subscription().id, guid(variables('outputPrefix'))), 0, parameters('suffixLength')), parameters('suffix'))]",
+            "output": "[if(empty(variables('outputSuffixTemp')), variables('outputPrefix'), format('{0}{1}{2}', variables('outputPrefix'), parameters('delimiter'), variables('outputSuffixTemp')))]"
+          },
+          "resources": [],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[variables('output')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-resourceGroup', variables('_deploymentName'))]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": "[if(empty(parameters('deploymentName')), createObject('value', reference(subscriptionResourceId('Microsoft.Resources/deployments', format('{0}-resourceGroupNameGenerator', variables('_deploymentName'))), '2022-09-01').outputs.name.value), createObject('value', parameters('resourceGroupName')))]",
+          "layerName": {
+            "value": "[parameters('layerName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.177.2456",
+              "templateHash": "12164297438368208095"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "environment": {
+              "type": "string"
+            },
+            "layerName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2024-07-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "EnvironmentName": "[parameters('environment')]",
+                "LayerName": "[parameters('layerName')]",
+                "GeneratedBy": "symphony"
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('name'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', format('{0}-resourceGroupNameGenerator', variables('_deploymentName')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "resourceGroupId": {
+      "type": "string",
+      "value": "[reference(subscriptionResourceId('Microsoft.Resources/deployments', format('{0}-resourceGroup', variables('_deploymentName'))), '2022-09-01').outputs.id.value]"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[reference(subscriptionResourceId('Microsoft.Resources/deployments', format('{0}-resourceGroup', variables('_deploymentName'))), '2022-09-01').outputs.name.value]"
+    }
+  }
+}

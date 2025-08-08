@@ -1,0 +1,247 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.177.2456",
+      "templateHash": "10099329040263450894"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "layerName": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "deploymentName": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "_deploymentName": "[if(empty(parameters('deploymentName')), uniqueString(subscription().subscriptionId, parameters('location'), parameters('environment')), parameters('deploymentName'))]",
+    "uniqueToken": "[substring(uniqueString(parameters('location'), subscription().id, guid('appconfig'), resourceGroup().id), 0, 6)]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-appConfigName', variables('_deploymentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "config"
+          },
+          "prefix": {
+            "value": "[parameters('environment')]"
+          },
+          "uniqueToken": {
+            "value": "[variables('uniqueToken')]"
+          },
+          "suffixLength": {
+            "value": 6
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.177.2456",
+              "templateHash": "4820815834669517283"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "maxLength": 12
+            },
+            "delimiter": {
+              "type": "string",
+              "defaultValue": "-",
+              "maxLength": 1
+            },
+            "prefix": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "suffix": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "uniqueToken": {
+              "type": "string",
+              "defaultValue": "",
+              "maxLength": 6
+            },
+            "suffixLength": {
+              "type": "int",
+              "defaultValue": 3,
+              "minValue": 0,
+              "maxValue": 6
+            }
+          },
+          "variables": {
+            "outputPrefix": "[if(empty(parameters('prefix')), parameters('name'), format('{0}{1}{2}', parameters('prefix'), parameters('delimiter'), parameters('name')))]",
+            "outputSuffixTemp": "[if(empty(parameters('suffix')), substring(uniqueString(parameters('uniqueToken'), subscription().id, guid(variables('outputPrefix'))), 0, parameters('suffixLength')), parameters('suffix'))]",
+            "output": "[if(empty(variables('outputSuffixTemp')), variables('outputPrefix'), format('{0}{1}{2}', variables('outputPrefix'), parameters('delimiter'), variables('outputSuffixTemp')))]"
+          },
+          "resources": [],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[variables('output')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-appConfig', variables('_deploymentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-appConfigName', variables('_deploymentName'))), '2022-09-01').outputs.name.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "layerName": {
+            "value": "[parameters('layerName')]"
+          },
+          "configKeyValues": {
+            "value": [
+              {
+                "name": "storageAccountName",
+                "value": "[parameters('storageAccountName')]"
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.177.2456",
+              "templateHash": "3512017634112791455"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "environment": {
+              "type": "string"
+            },
+            "layerName": {
+              "type": "string"
+            },
+            "configKeyValues": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "resources": {
+            "appConfig": {
+              "type": "Microsoft.AppConfiguration/configurationStores",
+              "apiVersion": "2022-05-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "tags": {
+                "EnvironmentName": "[parameters('environment')]",
+                "LayerName": "[parameters('layerName')]",
+                "GeneratedBy": "symphony"
+              }
+            },
+            "appConfigEntries": {
+              "copy": {
+                "name": "appConfigEntries",
+                "count": "[length(parameters('configKeyValues'))]"
+              },
+              "type": "Microsoft.AppConfiguration/configurationStores/keyValues",
+              "apiVersion": "2022-05-01",
+              "name": "[format('{0}/{1}', parameters('name'), parameters('configKeyValues')[copyIndex()].name)]",
+              "properties": {
+                "value": "[parameters('configKeyValues')[copyIndex()].value]",
+                "contentType": "text/plain"
+              },
+              "dependsOn": [
+                "appConfig"
+              ]
+            }
+          },
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('name'))]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "keys": {
+              "type": "array",
+              "copy": {
+                "count": "[length(parameters('configKeyValues'))]",
+                "input": "[parameters('configKeyValues')[copyIndex()].name]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}-appConfigName', variables('_deploymentName')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "appConfigResourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]"
+    },
+    "appConfigAccountName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}-appConfig', variables('_deploymentName'))), '2022-09-01').outputs.name.value]"
+    },
+    "appConfigItemsLength": {
+      "type": "int",
+      "value": "[length(reference(resourceId('Microsoft.Resources/deployments', format('{0}-appConfig', variables('_deploymentName'))), '2022-09-01').outputs.keys.value)]"
+    }
+  }
+}

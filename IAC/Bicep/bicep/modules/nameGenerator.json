@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.177.2456",
+      "templateHash": "4820815834669517283"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "maxLength": 12
+    },
+    "delimiter": {
+      "type": "string",
+      "defaultValue": "-",
+      "maxLength": 1
+    },
+    "prefix": {
+      "type": "string",
+      "defaultValue": "",
+      "maxLength": 6
+    },
+    "suffix": {
+      "type": "string",
+      "defaultValue": "",
+      "maxLength": 6
+    },
+    "uniqueToken": {
+      "type": "string",
+      "defaultValue": "",
+      "maxLength": 6
+    },
+    "suffixLength": {
+      "type": "int",
+      "defaultValue": 3,
+      "minValue": 0,
+      "maxValue": 6
+    }
+  },
+  "variables": {
+    "outputPrefix": "[if(empty(parameters('prefix')), parameters('name'), format('{0}{1}{2}', parameters('prefix'), parameters('delimiter'), parameters('name')))]",
+    "outputSuffixTemp": "[if(empty(parameters('suffix')), substring(uniqueString(parameters('uniqueToken'), subscription().id, guid(variables('outputPrefix'))), 0, parameters('suffixLength')), parameters('suffix'))]",
+    "output": "[if(empty(variables('outputSuffixTemp')), variables('outputPrefix'), format('{0}{1}{2}', variables('outputPrefix'), parameters('delimiter'), variables('outputSuffixTemp')))]"
+  },
+  "resources": [],
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[variables('output')]"
+    }
+  }
+}
