@@ -35,7 +35,7 @@ jobs:
     environment: ${{ inputs.githubEnvironment }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: azure/login@v2
         name: Run Azure Login
