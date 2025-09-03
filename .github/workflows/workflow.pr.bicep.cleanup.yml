@@ -2,7 +2,7 @@
 name: PR Cleanup Bicep
 
 on: # yamllint disable-line rule:truthy
-  pull_request_target:
+  pull_request:
     types:
       - closed
     branches:
@@ -10,7 +10,6 @@ on: # yamllint disable-line rule:truthy
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
-
 
 permissions:
   id-token: write
