@@ -99,7 +99,7 @@ jobs:
         working-directory: scripts/orchestrators
         shell: bash
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.goVersion }}
       - name: Run Layer Tests
