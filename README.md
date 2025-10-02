@@ -1,9 +1,7 @@
 # Symphony
 
-## ⚠️ Archived Repository
-
-This repository has been **archived** and is no longer maintained.
-All issues, pull requests, and workflows are disabled.
+> [!WARNING] 
+> This repository has been **archived** and is no longer maintained. All issues, pull requests, and workflows are disabled.
 
 ### Why Archived?
 
