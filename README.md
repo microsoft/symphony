@@ -1,5 +1,21 @@
 # Symphony
 
+## ⚠️ Archived Repository
+
+This repository has been **archived** and is no longer maintained.
+All issues, pull requests, and workflows are disabled.
+
+### Why Archived?
+
+This project is no longer actively developed.
+Archiving reduces risk from stale, unmaintained code.
+
+### What This Means
+
+- Code is available for reference only
+- No new issues or pull requests will be accepted
+- No security or feature updates will be provided
+
 Symphony is a framework, set of patterns, and best practices for developing, testing, and deploying infrastructure on Azure using Infrastructure as Code (IAC). It includes modern DevOps practices for IAC, such as Main and Pull Request workflows, IaC Code Validation and Lining, Automated Testing, Security Scanning, Multi-environment deployments, module dependencies, and more.
 
 It is an enterprise-level CI/CD multi-orchestrator, a multi-IaC framework that encapsulates best practices and guidelines for developing, testing, and deploying infrastructure as code, allowing you to prepare for and deploy to production quickly.
