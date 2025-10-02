@@ -14,6 +14,8 @@ Archiving reduces risk from stale, unmaintained code.
 - No new issues or pull requests will be accepted
 - No security or feature updates will be provided
 
+## Overview
+
 Symphony is a framework, set of patterns, and best practices for developing, testing, and deploying infrastructure on Azure using Infrastructure as Code (IAC). It includes modern DevOps practices for IAC, such as Main and Pull Request workflows, IaC Code Validation and Lining, Automated Testing, Security Scanning, Multi-environment deployments, module dependencies, and more.
 
 It is an enterprise-level CI/CD multi-orchestrator, a multi-IaC framework that encapsulates best practices and guidelines for developing, testing, and deploying infrastructure as code, allowing you to prepare for and deploy to production quickly.
